@@ -1,1 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>About – Love Game</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
+<div class="header">
+  <h1>About Love Game</h1>
+  <p>Why this game exists and how it helps you grow 💗</p>
+</div>
+
+<div class="navbar">
+  <a href="index.html">Play</a>
+  <a href="about.html">About</a>
+  <a href="#">Community</a>
+  <a href="#" class="right">Log In</a>
+</div>
+
+<div style="padding:40px;">
+  <h2>Our Mission</h2>
+  <p>
+    Love Game is an interactive journey designed to explore
+    emotional, mental, and physical well-being through play.
+  </p>
+</div>
+
+</body>
+</html>

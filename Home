@@ -51,7 +51,7 @@ margin: 0;
 </div>
 <div class="navbar">
   <a href="#">Play</a>
-  <a href="#">Origin</a>
+  <a href="#">About</a>
   <a href="#">Community</a>
   <a href="#" class="right">Log In</a> 
 </div>

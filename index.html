@@ -177,13 +177,23 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 /* Start */
 animate();
 
-const dots = document.getElementById("dots");
-let dotCount = 0;
+// New blinking dots code
+const dotSpans = document.querySelectorAll("#dots .dot");
+let dotIndex = 0;
 
 setInterval(() => {
-  dotCount = (dotCount + 1) % 4; // 0,1,2,3
-  dots.textContent = " ".repeat(dotCount).replace(/ /g, "."); // "." repeated
-}, 400); // change every 0.4s
+  // Hide all dots
+  dotSpans.forEach(dot => dot.style.opacity = 0);
+
+  // Show next dots up to dotIndex
+  for (let i = 0; i <= dotIndex; i++) {
+    dotSpans[i].style.opacity = 1;
+  }
+
+  // Move to next step
+  dotIndex = (dotIndex + 1) % 4; // cycles 0 → 1 → 2 → 3 → repeat
+}, 400); // every 0.4s
+
   
 </script>
 </body>

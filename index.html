@@ -146,7 +146,8 @@ const shootingInterval = setInterval(() => {
 /* End Intro */
 function endIntro() {
   running = false;
-  clearInterval(shootingInterval);
+  clearInterval(shootingInterval); // existing shooting stars
+  clearInterval(dotInterval);      // stop blinking dots
   overlay.style.transition = "opacity 0.6s ease";
   overlay.style.opacity = "0";
   setTimeout(() => overlay.remove(), 600);

@@ -120,18 +120,9 @@ body {
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   #intro-text {
+    animation: none;
   }
   #intro-overlay {
     animation: none;
   }
-}
-
-#dots {
-  display: inline-block;       /* keeps dots inline */
-  width: 1.2em;                /* reserve enough space for three dots */
-}
-
-.dot {
-  opacity: 0;                  /* initially invisible */
-  transition: opacity 0.2s;    /* smooth blink */
 }

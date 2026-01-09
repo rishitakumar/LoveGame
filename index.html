@@ -92,17 +92,22 @@ function animate() {
   star.y += star.speed;
   if (star.y > canvas.height) star.y = 0;
 
-  // Surreal pulsing: sin wave + random flicker + occasional flash
   star.pulsePhase += star.pulseSpeed;
-  let flicker = 0.6 + 0.3 * Math.sin(star.pulsePhase) + Math.random() * 0.2;
-  // occasional bright spike
+  let flicker = 0.7 + 0.3 * Math.sin(star.pulsePhase) + Math.random() * 0.3;
   if (Math.random() > 0.995) flicker += 0.5;
-  flicker = Math.min(flicker, 1); // cap at 1
+  flicker = Math.min(flicker, 1);
 
   ctx.fillStyle = `rgba(${star.color[0]}, ${star.color[1]}, ${star.color[2]}, ${flicker})`;
+  
+  // Glow effect
+  ctx.shadowBlur = star.r * 6;
+  ctx.shadowColor = `rgba(${star.color[0]}, ${star.color[1]}, ${star.color[2]}, ${flicker})`;
+
   ctx.beginPath();
   ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
   ctx.fill();
+
+  ctx.shadowBlur = 0; // reset
 });
 
   /* Shooting Stars */

@@ -125,3 +125,9 @@ body {
     animation: none;
   }
 }
+
+#dots {
+  display: inline-block;       /* treat dots as a block within the text */
+  width: 1.2em;                /* reserve some space so blinking doesn't shift text */
+  text-align: left;             /* align dots to left */
+}

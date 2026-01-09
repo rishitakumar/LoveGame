@@ -90,11 +90,17 @@ function animate() {
     s.y += s.vy;
     s.life++;
 
-    ctx.strokeStyle = "rgba(255,255,255,0.8)";
+    ctx.strokeStyle = "rgba(255,255,255,0.9)";
+    ctx.lineWidth = 1.2;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "rgba(255,255,255,0.8)";
+
     ctx.beginPath();
     ctx.moveTo(s.x, s.y);
-    ctx.lineTo(s.x - s.vx * 2, s.y - s.vy * 2);
+    ctx.lineTo(s.x - s.vx * 2.5, s.y - s.vy * 2.5);
     ctx.stroke();
+
+    ctx.shadowBlur = 0;
 
     if (s.life > 30) shootingStars.splice(i, 1);
   });
@@ -104,8 +110,8 @@ function animate() {
 
 /* Shooting Star Timing */
 const shootingInterval = setInterval(() => {
-  if (Math.random() > 0.6) createShootingStar();
-}, 600);
+  if (Math.random() > 0.35) createShootingStar();
+}, 500);
 
 /* End Intro */
 function endIntro() {

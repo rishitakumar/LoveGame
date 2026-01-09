@@ -60,15 +60,13 @@ function createStars(count = 140) {
     stars.push({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      r: Math.random() * 1.6 + 0.4,
+      r: Math.random() * 1.6 + 0.3,
       speed: Math.random() * 0.15 + 0.05,
-      color,
-      flare: Math.random() < 0.03 // 3% chance to flare
+      color
     });
   }
 }
 
-/* Create Shooting Star */
 function createShootingStar() {
   shootingStars.push({
     x: Math.random() * canvas.width,
@@ -89,28 +87,16 @@ function animate() {
 
   /* Background Stars */
   stars.forEach(star => {
-    star.y += star.speed;
-    if (star.y > canvas.height) star.y = 0;
+  star.y += star.speed;
+  if (star.y > canvas.height) star.y = 0;
 
-    // Star core with flicker
-    const flicker = 0.6 + Math.random() * 0.4;
-    ctx.fillStyle = `rgba(${star.color[0]}, ${star.color[1]}, ${star.color[2]}, ${flicker})`;
-    ctx.beginPath();
-    ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
-    ctx.fill();
+  const flicker = 0.6 + Math.random() * 0.4;
+  ctx.fillStyle = `rgba(${star.color[0]}, ${star.color[1]}, ${star.color[2]}, ${flicker})`;
 
-    // Star flare (twinkle effect)
-    if (star.flare && Math.random() > 0.985) {
-      ctx.beginPath();
-      ctx.arc(star.x, star.y, star.r * 2.5, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${star.color[0]}, ${star.color[1]}, ${star.color[2]}, 0.25)`;
-      ctx.shadowBlur = star.r * 22;
-      ctx.shadowColor = `rgba(${star.color[0]}, ${star.color[1]}, ${star.color[2]}, 1)`;
-      ctx.fill();
-    }
-
-    ctx.shadowBlur = 0; // reset blur for next star
-  });
+  ctx.beginPath();
+  ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+  ctx.fill();
+});
 
   /* Shooting Stars */
   shootingStars.forEach((s, i) => {
@@ -118,10 +104,17 @@ function animate() {
     s.y += s.vy;
     s.life++;
 
+    ctx.strokeStyle = "rgba(255,255,255,0.9)";
+    ctx.lineWidth = 1.2;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "rgba(255,255,255,0.8)";
+
     ctx.beginPath();
-    ctx.arc(s.x, s.y, 2.5, 0, Math.PI * 2);
-    ctx.fillStyle = "white";
-    ctx.fill();
+    ctx.moveTo(s.x, s.y);
+    ctx.lineTo(s.x - s.vx * 2.5, s.y - s.vy * 2.5);
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
 
     if (s.life > 30) shootingStars.splice(i, 1);
   });

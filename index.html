@@ -62,7 +62,9 @@ function createStars(count = 140) {
       y: Math.random() * canvas.height,
       r: Math.random() * 1.6 + 0.3,
       speed: Math.random() * 0.15 + 0.05,
-      color
+      color,
+      pulseSpeed: Math.random() * 0.05 + 0.01, // speed of pulse
+      pulsePhase: Math.random() * Math.PI * 2 // starting point in pulse
     });
   }
 }
@@ -90,9 +92,14 @@ function animate() {
   star.y += star.speed;
   if (star.y > canvas.height) star.y = 0;
 
-  const flicker = 0.6 + Math.random() * 0.4;
-  ctx.fillStyle = `rgba(${star.color[0]}, ${star.color[1]}, ${star.color[2]}, ${flicker})`;
+  // Surreal pulsing: sin wave + random flicker + occasional flash
+  star.pulsePhase += star.pulseSpeed;
+  let flicker = 0.6 + 0.3 * Math.sin(star.pulsePhase) + Math.random() * 0.2;
+  // occasional bright spike
+  if (Math.random() > 0.995) flicker += 0.5;
+  flicker = Math.min(flicker, 1); // cap at 1
 
+  ctx.fillStyle = `rgba(${star.color[0]}, ${star.color[1]}, ${star.color[2]}, ${flicker})`;
   ctx.beginPath();
   ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
   ctx.fill();

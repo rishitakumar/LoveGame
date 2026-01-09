@@ -21,7 +21,9 @@
   
 <div id="intro-overlay">
   <canvas id="starfield"></canvas>
-<div id="intro-text">ENTERING CYBERSPACE . . .</div>
+  <div id="intro-text">
+    ENTERING CYBERSPACE<span id="dots"> . . .</span>
+  </div>
 </div>
 
 
@@ -172,6 +174,14 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 
 /* Start */
 animate();
+
+const dots = document.getElementById("dots");
+let dotCount = 0;
+
+setInterval(() => {
+  dotCount = (dotCount + 1) % 4; // 0,1,2,3
+  dots.textContent = " ".repeat(dotCount).replace(/ /g, "."); // "." repeated
+}, 400); // change every 0.4s
   
 </script>
 </body>

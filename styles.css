@@ -120,7 +120,6 @@ body {
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   #intro-text {
-    animation: none;
   }
   #intro-overlay {
     animation: none;

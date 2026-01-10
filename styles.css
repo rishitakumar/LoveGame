@@ -50,6 +50,7 @@ body {
 /* Overlay */
 /* The Main Star Screen */
 /* Update the existing #intro-overlay */
+/* Update the main overlay */
 #intro-overlay {
   position: fixed;
   inset: 0;
@@ -59,37 +60,37 @@ body {
   animation: cosmicShift 8s ease-in-out infinite;
 }
 
-/* Add these new blocks for the flame border */
+/* Individual Flame Tendrils (Shared Styles) */
 #intro-overlay::before,
 #intro-overlay::after {
   content: "";
   position: absolute;
-  inset: -15px; /* Pulls fire slightly off-screen for a better edge */
+  inset: -25px; /* Pulls the solid base off-screen to show only the "shredded" tips */
   pointer-events: none;
   z-index: 10;
-  filter: url(#realistic-fire); /* This connects to the HTML SVG filter */
 }
 
-/* Vertical Flames (Left & Right) */
+/* Side Flames - Individual tongues pointing left/right */
 #intro-overlay::before {
+  filter: url(#side-flames); /* Connects to the SVG in your HTML */
   background: 
-    linear-gradient(to right, #ff0000, #ff8c00 4%, #ffff00 7%, transparent 15%),
-    linear-gradient(to left, #ff0000, #ff8c00 4%, #ffff00 7%, transparent 15%);
+    linear-gradient(to right, #ff0000, #ff8c00 4%, #ffff00 6%, transparent 12%),
+    linear-gradient(to left, #ff0000, #ff8c00 4%, #ffff00 6%, transparent 12%);
   animation: flameFlicker 0.1s infinite;
 }
 
-/* Horizontal Flames (Top & Bottom) */
+/* Top/Bottom Flames - Individual tongues pointing up/down */
 #intro-overlay::after {
+  filter: url(#top-flames); /* Connects to the SVG in your HTML */
   background: 
-    linear-gradient(to bottom, #ff0000, #ff8c00 4%, #ffff00 7%, transparent 15%),
-    linear-gradient(to top, #ff0000, #ff8c00 4%, #ffff00 7%, transparent 15%);
-  animation: flameFlicker 0.12s infinite;
+    linear-gradient(to bottom, #ff0000, #ff8c00 4%, #ffff00 6%, transparent 12%),
+    linear-gradient(to top, #ff0000, #ff8c00 4%, #ffff00 6%, transparent 12%);
+  animation: flameFlicker 0.15s infinite;
 }
 
 @keyframes flameFlicker {
-  0% { transform: translate(0, 0); }
-  50% { transform: translate(2px, -1px); }
-  100% { transform: translate(-1px, 2px); }
+  0%, 100% { opacity: 0.95; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.01); }
 }
 
 /* Make sure text stays on top of fire */

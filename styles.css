@@ -184,24 +184,30 @@ body {
   z-index: 100000;      /* Keeps streak above everything else */
 }
 .cyber-text {
-  /* Classic Terminal Fonts (Universal) */
-  font-family: "Courier New", Courier, monospace;
-  font-weight: bold;
-  font-size: 2.2rem;
-  letter-spacing: 4px;
+  /* Use 'Impact' for a bold arcade look, or 'Courier New' for a tech look */
+  font-family: 'Impact', 'Charcoal', sans-serif;
+  font-size: 3rem;
+  letter-spacing: 2px;
+  color: #f5ff3a; /* Your OG Yellow */
   
-  /* Your OG Yellow */
-  color: #f5ff3a; 
-  
-  /* Neon Yellow Glow */
+  /* "Video Game" Thick Outline Effect */
+  /* This creates a sharp black border so it's readable over stars */
   text-shadow: 
-    0 0 5px rgba(245, 255, 58, 0.8),
-    0 0 10px rgba(245, 255, 58, 0.5),
-    0 0 20px rgba(245, 255, 58, 0.3);
-    
-  /* Subtle "unstable" flicker */
-  animation: flicker 3s infinite;
+    2px 2px 0px #000, 
+    -1px -1px 0px #000,  
+    1px -1px 0px #000,
+    -1px 1px 0px #000,
+    1px 1px 0px #000,
+    0px 0px 10px rgba(245, 255, 58, 0.8); /* Glow layer */
+
+  /* Subtle "Floating" Animation like a start screen */
+  animation: float 2s ease-in-out infinite;
   text-transform: uppercase;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 @keyframes flicker {

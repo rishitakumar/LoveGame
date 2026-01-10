@@ -192,8 +192,38 @@ function endIntro() {
 }
 
 const timeout = setTimeout(endIntro, 3500);
-overlay.addEventListener("click", () => { clearTimeout(timeout); endIntro(); }, { once: true });
+/* --- Improved Skip Logic --- */
 
+// 1. Click to Skip
+overlay.addEventListener("click", () => {
+  clearTimeout(timeout);
+  endIntro();
+}, { once: true });
+
+// 2. Keypress to Skip (Now targeting the whole window)
+window.addEventListener("keydown", (e) => {
+  // This ensures the intro ends regardless of which key is pressed
+  clearTimeout(timeout);
+  endIntro();
+}, { once: true });
+
+/* --- End Intro Logic (Ensure this matches) --- */
+function endIntro() {
+  if (!running && !overlay.parentNode) return; // Prevent running twice
+  
+  running = false;
+  clearInterval(shootingInterval);
+  
+  // Smooth Fade Out
+  overlay.style.transition = "opacity 0.8s ease, visibility 0.8s";
+  overlay.style.opacity = "0";
+  overlay.style.visibility = "hidden";
+  
+  // Completely remove from memory after fade
+  setTimeout(() => {
+    if (overlay.parentNode) overlay.remove();
+  }, 800);
+}
 resizeCanvases();
 animate();
 </script>

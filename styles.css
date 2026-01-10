@@ -49,6 +49,7 @@ body {
 /* Overlay */
 /* Overlay */
 /* The Main Star Screen */
+/* Update the existing #intro-overlay */
 #intro-overlay {
   position: fixed;
   inset: 0;
@@ -58,39 +59,44 @@ body {
   animation: cosmicShift 8s ease-in-out infinite;
 }
 
-/* Base style for the fire layers */
+/* Add these new blocks for the flame border */
 #intro-overlay::before,
 #intro-overlay::after {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -15px; /* Pulls fire slightly off-screen for a better edge */
   pointer-events: none;
   z-index: 10;
-  /* This filter creates the jagged, realistic "flame" look */
-  filter: url(#fire-filter) blur(2px);
+  filter: url(#realistic-fire); /* This connects to the HTML SVG filter */
 }
 
-/* Side Flames (Left & Right) facing inward */
+/* Vertical Flames (Left & Right) */
 #intro-overlay::before {
   background: 
-    linear-gradient(to right, #ff4500, #ff8c00 4%, transparent 12%),
-    linear-gradient(to left, #ff4500, #ff8c00 4%, transparent 12%);
-  animation: flameFlicker 1s ease-in-out infinite alternate;
+    linear-gradient(to right, #ff0000, #ff8c00 4%, #ffff00 7%, transparent 15%),
+    linear-gradient(to left, #ff0000, #ff8c00 4%, #ffff00 7%, transparent 15%);
+  animation: flameFlicker 0.1s infinite;
 }
 
-/* Top & Bottom Flames facing inward */
+/* Horizontal Flames (Top & Bottom) */
 #intro-overlay::after {
   background: 
-    linear-gradient(to bottom, #ff4500, #ff8c00 4%, transparent 12%),
-    linear-gradient(to top, #ff4500, #ff8c00 4%, transparent 12%);
-  animation: flameFlicker 1.2s ease-in-out infinite alternate-reverse;
+    linear-gradient(to bottom, #ff0000, #ff8c00 4%, #ffff00 7%, transparent 15%),
+    linear-gradient(to top, #ff0000, #ff8c00 4%, #ffff00 7%, transparent 15%);
+  animation: flameFlicker 0.12s infinite;
 }
 
 @keyframes flameFlicker {
-  0% { opacity: 0.8; transform: scale(1); }
-  100% { opacity: 1; transform: scale(1.02); }
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(2px, -1px); }
+  100% { transform: translate(-1px, 2px); }
 }
 
+/* Make sure text stays on top of fire */
+#intro-text {
+  /* ... keep your existing styles ... */
+  z-index: 100; 
+}
 /* ... keep your existing Canvas, Caption, and other animations ... */
 
 /* Canvas */

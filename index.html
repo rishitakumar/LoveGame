@@ -164,24 +164,6 @@ function drawFireBorder() {
   fireCtx.shadowBlur = 0;
 }
 
-  const gradient = fireCtx.createRadialGradient(
-    w / 2,
-    h / 2,
-    Math.min(w, h) / 2 - 60,
-    w / 2,
-    h / 2,
-    Math.min(w, h) / 2
-  );
-
-  gradient.addColorStop(0, "rgba(255,180,60,0.05)");
-  gradient.addColorStop(0.6, "rgba(255,120,20,0.4)");
-  gradient.addColorStop(1, "rgba(255,40,0,0.9)");
-
-  fireCtx.strokeStyle = gradient;
-  fireCtx.stroke();
-
-  fireTime += 0.04;
-}
 
 /* Animation Loop */
 function animate() {

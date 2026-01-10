@@ -24,6 +24,14 @@
 <div id="intro-text">ENTERING CYBERSPACE . . .</div>
 </div>
 
+<svg width="0" height="0">
+  <filter id="fire-filter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.05 0.2" numOctaves="3" seed="2">
+      <animate attributeName="baseFrequency" dur="5s" values="0.05 0.2;0.05 0.5;0.05 0.2" repeatCount="indefinite" />
+    </feTurbulence>
+    <feDisplacementMap in="SourceGraphic" scale="25" />
+  </filter>
+</svg>
 
 <script>
 
@@ -174,7 +182,7 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 
 /* Start */
 animate();
-  
+
 </script>
 </body>
 </html>

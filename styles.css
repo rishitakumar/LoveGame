@@ -1,8 +1,20 @@
+/* --- Global Styles --- */
 body {
   font-family: Georgia, "Times New Roman", sans-serif;
   margin: 0;
-  background-color: #ffffff; /* This ensures the page isn't black after the intro */
-  color: #333333; /* Standard dark text for readability */
+  background-color: #ffffff; 
+  color: #333333;
+}
+
+/* --- Main Page Content (Hidden until Intro ends) --- */
+.header, .navbar {
+  opacity: 0; /* Start invisible */
+  animation: fadeInContent 0.8s ease forwards;
+  animation-delay: 3.2s; /* Shows up after the 3s intro */
+}
+
+@keyframes fadeInContent {
+  to { opacity: 1; }
 }
 
 .header {
@@ -39,143 +51,93 @@ body {
   color: black;
 }
 
-@media screen and (max-width: 400px) {
-  .navbar a {
-    float: none;
-    width: 100%;
-  }
-}
-
-/* Overlay */
+/* --- Intro Overlay & Starfield --- */
 #intro-overlay {
   position: fixed;
   inset: 0;
   z-index: 9999;
   overflow: hidden;
-
-  background: radial-gradient(
-    circle at 30% 30%,
-    #0a0f2c,
-    #02010a 70%
-  );
+  background: radial-gradient(circle at 30% 30%, #0a0f2c, #02010a 70%);
   animation: cosmicShift 8s ease-in-out infinite;
+
+  /* The Inner Fire Glow */
+  box-shadow: 
+    inset 0 0 60px #f44336, 
+    inset 0 0 110px #ff9800, 
+    inset 0 0 160px rgba(255, 235, 59, 0.3);
 }
 
-/* Canvas */
 #starfield {
   width: 100%;
   height: 100%;
   display: block;
 }
 
-/* Caption */
-#intro-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
-  font-family: inherit; /* match game font */
-  font-size: clamp(1.2rem, 3vw, 2.2rem);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  text-align: center;
-
-  color: #f5ff3a; /* neon yellow */
-
-  padding: 0.6em 1em;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.15);
-
-  animation: thrum 1.6s ease-in-out infinite;
-
-  text-shadow:
-    0 0 8px rgba(245, 255, 58, 0.6),
-    0 0 20px rgba(245, 255, 58, 0.4);
-}
-
-/* Caption Pulse */
-@keyframes thrum {
-  0%, 100% {
-    opacity: 0.75;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.04);
-  }
-}
-
-/* Background Shift */
-@keyframes cosmicShift {
-  0% {
-    background: radial-gradient(circle at 30% 30%, #0a0f2c, #02010a 70%);
-  }
-  50% {
-    background: radial-gradient(circle at 70% 60%, #120a2c, #02010a 70%);
-  }
-  100% {
-    background: radial-gradient(circle at 30% 30%, #0a0f2c, #02010a 70%);
-  }
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  #intro-text {
-    animation: none;
-  }
-  /* The Flame Container */
-#intro-overlay {
-  /* ... keep your existing styles ... */
-  box-shadow: inset 0 0 60px #f44336, 
-              inset 0 0 100px #ff9800, 
-              inset 0 0 140px #ffeb3b;
-  position: relative;
-}
-
-/* Creating the "Flames" on the edges */
+/* --- The Fiery Borders (Facing each other) --- */
 #intro-overlay::before,
 #intro-overlay::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 10;
+  z-index: 10000; /* Sit on top of stars */
 }
 
-/* Horizontal Flames (Top & Bottom) */
+/* Horizontal (Top & Bottom Flames) */
 #intro-overlay::before {
-  border-top: 15px solid transparent;
-  border-bottom: 15px solid transparent;
   background: 
-    linear-gradient(to bottom, rgba(255, 69, 0, 0.8), transparent 20%),
-    linear-gradient(to top, rgba(255, 69, 0, 0.8), transparent 20%);
+    linear-gradient(to bottom, rgba(255, 69, 0, 0.9), transparent 15%),
+    linear-gradient(to top, rgba(255, 69, 0, 0.9), transparent 15%);
   animation: flameFlicker 1.5s infinite alternate;
 }
 
-/* Vertical Flames (Left & Right) */
+/* Vertical (Left & Right Flames) */
 #intro-overlay::after {
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
   background: 
-    linear-gradient(to right, rgba(255, 140, 0, 0.6), transparent 15%),
-    linear-gradient(to left, rgba(255, 140, 0, 0.6), transparent 15%);
+    linear-gradient(to right, rgba(255, 140, 0, 0.7), transparent 10%),
+    linear-gradient(to left, rgba(255, 140, 0, 0.7), transparent 10%);
   animation: flameFlicker 2s infinite alternate-reverse;
 }
 
-/* Flame Pulse Animation */
+/* --- Animations --- */
 @keyframes flameFlicker {
-  0% {
-    filter: blur(2px) brightness(1);
-    opacity: 0.7;
-  }
-  50% {
-    filter: blur(4px) brightness(1.3);
-    opacity: 1;
-  }
-  100% {
-    filter: blur(3px) brightness(1.1);
-    opacity: 0.8;
-  }
+  0% { filter: blur(2px) brightness(1); opacity: 0.8; }
+  50% { filter: blur(6px) brightness(1.4); opacity: 1; }
+  100% { filter: blur(4px) brightness(1.2); opacity: 0.9; }
 }
+
+@keyframes cosmicShift {
+  0%, 100% { background: radial-gradient(circle at 30% 30%, #0a0f2c, #02010a 70%); }
+  50% { background: radial-gradient(circle at 70% 60%, #120a2c, #02010a 70%); }
+}
+
+/* --- Intro Text --- */
+#intro-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(1.2rem, 3vw, 2.2rem);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #f5ff3a;
+  z-index: 10001; /* Above the flames */
+  animation: thrum 1.6s ease-in-out infinite;
+  text-shadow: 0 0 8px rgba(245, 255, 58, 0.6), 0 0 20px rgba(245, 255, 58, 0.4);
+}
+
+@keyframes thrum {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+  50% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+}
+
+/* --- Responsive & Reduced Motion --- */
+@media screen and (max-width: 400px) {
+  .navbar a { float: none; width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #intro-text, #intro-overlay { animation: none; }
+  #intro-overlay::before, #intro-overlay::after { display: none; }
 }

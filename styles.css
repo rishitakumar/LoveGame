@@ -1,22 +1,11 @@
-/* --- Global Styles --- */
+/* Base Styles */
 body {
   font-family: Georgia, "Times New Roman", sans-serif;
   margin: 0;
-  background-color: #ffffff; 
-  color: #333333;
+  background: #02010a;
 }
 
-/* --- Main Page Content (Hidden until Intro ends) --- */
-.header, .navbar {
-  opacity: 0; /* Start invisible */
-  animation: fadeInContent 0.8s ease forwards;
-  animation-delay: 3.2s; /* Shows up after the 3s intro */
-}
-
-@keyframes fadeInContent {
-  to { opacity: 1; }
-}
-
+/* Header */
 .header {
   padding: 80px;
   text-align: center;
@@ -28,6 +17,7 @@ body {
   font-size: 40px;
 }
 
+/* Navbar */
 .navbar {
   overflow: hidden;
   background-color: #333;
@@ -51,7 +41,14 @@ body {
   color: black;
 }
 
-/* --- Intro Overlay & Starfield --- */
+@media screen and (max-width: 400px) {
+  .navbar a {
+    float: none;
+    width: 100%;
+  }
+}
+
+/* Intro Overlay */
 #intro-overlay {
   position: fixed;
   inset: 0;
@@ -59,85 +56,64 @@ body {
   overflow: hidden;
   background: radial-gradient(circle at 30% 30%, #0a0f2c, #02010a 70%);
   animation: cosmicShift 8s ease-in-out infinite;
-
-  /* The Inner Fire Glow */
-  box-shadow: 
-    inset 0 0 60px #f44336, 
-    inset 0 0 110px #ff9800, 
-    inset 0 0 160px rgba(255, 235, 59, 0.3);
 }
 
-#starfield {
+/* Starfield & Fire Canvases */
+#starfield,
+#fire-border {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   display: block;
 }
 
-/* --- The Fiery Borders (Facing each other) --- */
-#intro-overlay::before,
-#intro-overlay::after {
-  content: "";
-  position: absolute;
-  inset: 0;
+#starfield {
+  z-index: 1; /* stars behind flames */
+}
+
+#fire-border {
+  z-index: 2;              /* flames above stars */
   pointer-events: none;
-  z-index: 10000; /* Sit on top of stars */
+  mix-blend-mode: screen;  /* makes flames glow */
 }
 
-/* Horizontal (Top & Bottom Flames) */
-#intro-overlay::before {
-  background: 
-    linear-gradient(to bottom, rgba(255, 69, 0, 0.9), transparent 15%),
-    linear-gradient(to top, rgba(255, 69, 0, 0.9), transparent 15%);
-  animation: flameFlicker 1.5s infinite alternate;
-}
-
-/* Vertical (Left & Right Flames) */
-#intro-overlay::after {
-  background: 
-    linear-gradient(to right, rgba(255, 140, 0, 0.7), transparent 10%),
-    linear-gradient(to left, rgba(255, 140, 0, 0.7), transparent 10%);
-  animation: flameFlicker 2s infinite alternate-reverse;
-}
-
-/* --- Animations --- */
-@keyframes flameFlicker {
-  0% { filter: blur(2px) brightness(1); opacity: 0.8; }
-  50% { filter: blur(6px) brightness(1.4); opacity: 1; }
-  100% { filter: blur(4px) brightness(1.2); opacity: 0.9; }
-}
-
-@keyframes cosmicShift {
-  0%, 100% { background: radial-gradient(circle at 30% 30%, #0a0f2c, #02010a 70%); }
-  50% { background: radial-gradient(circle at 70% 60%, #120a2c, #02010a 70%); }
-}
-
-/* --- Intro Text --- */
+/* Intro Text / Caption */
 #intro-text {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  font-family: inherit;
   font-size: clamp(1.2rem, 3vw, 2.2rem);
   letter-spacing: 0.15em;
   text-transform: uppercase;
   text-align: center;
   color: #f5ff3a;
-  z-index: 10001; /* Above the flames */
+  padding: 0.6em 1em;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.15);
   animation: thrum 1.6s ease-in-out infinite;
-  text-shadow: 0 0 8px rgba(245, 255, 58, 0.6), 0 0 20px rgba(245, 255, 58, 0.4);
+  text-shadow:
+    0 0 8px rgba(245, 255, 58, 0.6),
+    0 0 20px rgba(245, 255, 58, 0.4);
+  z-index: 3; /* always on top */
 }
 
+/* Pulse Animation */
 @keyframes thrum {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
-  50% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+  0%, 100% {
+    opacity: 0.75;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.04);
+  }
 }
 
-/* --- Responsive & Reduced Motion --- */
-@media screen and (max-width: 400px) {
-  .navbar a { float: none; width: 100%; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #intro-text, #intro-overlay { animation: none; }
-  #intro-overlay::before, #intro-overlay::after { display: none; }
-}
+/* Background Animation */
+@keyframes cosmicShift {
+  0% {
+    ba

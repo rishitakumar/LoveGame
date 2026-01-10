@@ -226,6 +226,31 @@ function endIntro() {
 }
 resizeCanvases();
 animate();
+  
+const dotsElement = document.getElementById('loading-dots');
+let dotCount = 0;
+
+const dotInterval = setInterval(() => {
+  dotCount = (dotCount + 1) % 4; // Cycles 0, 1, 2, 3
+  dotsElement.textContent = '.'.repeat(dotCount);
+}, 500); // Changes every half-second
+
+/* Update your endIntro function to stop the dots too */
+function endIntro() {
+  if (!running) return;
+  running = false;
+  
+  clearInterval(shootingInterval);
+  clearInterval(dotInterval); // STOP THE DOTS
+  
+  overlay.style.pointerEvents = "none";
+  overlay.style.transition = "opacity 0.6s ease";
+  overlay.style.opacity = "0";
+  
+  setTimeout(() => {
+    if (overlay.parentNode) overlay.remove();
+  }, 600);
+}
 </script>
 </script>
 </body>

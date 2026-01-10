@@ -101,17 +101,16 @@ function drawFireBorder() {
   fireCtx.globalCompositeOperation = "lighter";
 
   const step = 50;       // spacing between flames
-  const maxHeight = 120; // how tall the flames can be
-  const baseWidth = 40;  // width of each flame
+  const maxHeight = 150; // max flame length
+  const baseWidth = 50;  // base width of flame
 
   function flame(x, y, dirX, dirY, seed) {
-    const height = maxHeight * (0.7 + Math.random() * 0.3) + Math.sin(fireTime * 4 + seed) * 20;
-    const width = baseWidth + Math.random() * 15;
+    const height = maxHeight * (0.7 + Math.random() * 0.3) + Math.sin(fireTime * 3 + seed) * 20;
+    const width = baseWidth * (0.7 + Math.random() * 0.3);
 
     const tipX = x + dirX * height;
     const tipY = y + dirY * height;
 
-    // radial gradient for realistic flame
     const grad = fireCtx.createRadialGradient(x, y, 2, tipX, tipY, height);
     grad.addColorStop(0, "rgba(255,255,180,1)");
     grad.addColorStop(0.3, "rgba(255,180,80,0.9)");
@@ -128,20 +127,21 @@ function drawFireBorder() {
     fireCtx.fill();
   }
 
-  // TOP → face down
-  for (let x = 50; x < w; x += step) flame(x, 0, 0, 1, x * 0.1);
+  // TOP → flames go downward
+  for (let x = 0; x < w; x += step) flame(x, 0, 0, 1, x * 0.1);
 
-  // BOTTOM → face up
-  for (let x = 50; x < w; x += step) flame(x, h, 0, -1, x * 0.12);
+  // BOTTOM → flames go upward
+  for (let x = 0; x < w; x += step) flame(x, h, 0, -1, x * 0.1);
 
-  // LEFT → face right
-  for (let y = 50; y < h; y += step) flame(0, y, 1, 0, y * 0.08);
+  // LEFT → flames go right
+  for (let y = 0; y < h; y += step) flame(0, y, 1, 0, y * 0.1);
 
-  // RIGHT → face left
-  for (let y = 50; y < h; y += step) flame(w, y, -1, 0, y * 0.1);
+  // RIGHT → flames go left
+  for (let y = 0; y < h; y += step) flame(w, y, -1, 0, y * 0.1);
 
   fireCtx.globalCompositeOperation = "source-over";
 }
+
 
 
 

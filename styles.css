@@ -183,3 +183,28 @@ body {
   pointer-events: none; /* Allows clicking links behind the trail */
   z-index: 100000;      /* Keeps streak above everything else */
 }
+.cyber-text {
+  /* Classic Terminal Fonts (Universal) */
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  font-size: 2.2rem;
+  letter-spacing: 4px;
+  
+  /* Your OG Yellow */
+  color: #f5ff3a; 
+  
+  /* Neon Yellow Glow */
+  text-shadow: 
+    0 0 5px rgba(245, 255, 58, 0.8),
+    0 0 10px rgba(245, 255, 58, 0.5),
+    0 0 20px rgba(245, 255, 58, 0.3);
+    
+  /* Subtle "unstable" flicker */
+  animation: flicker 3s infinite;
+  text-transform: uppercase;
+}
+
+@keyframes flicker {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.7; }
+}

@@ -93,13 +93,6 @@ body {
   50% { opacity: 1; transform: scale(1.01); }
 }
 
-/* Make sure text stays on top of fire */
-#intro-text {
-  /* ... keep your existing styles ... */
-  z-index: 100; 
-}
-/* ... keep your existing Canvas, Caption, and other animations ... */
-
 /* Canvas */
 #starfield {
   width: 100%;
@@ -183,34 +176,39 @@ body {
   pointer-events: none; /* Allows clicking links behind the trail */
   z-index: 100000;      /* Keeps streak above everything else */
 }
-.cyber-text {
-  /* Use 'Impact' for a bold arcade look, or 'Courier New' for a tech look */
+/* Merged Video Game Text Style */
+#intro-text.cyber-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* This ensures the centering AND the floating animation work together */
+  transform: translate(-50%, -50%);
+  z-index: 10001; /* Higher than the 9999 overlay */
+
+  /* The Video Game Font */
   font-family: 'Impact', 'Charcoal', sans-serif;
-  font-size: 3rem;
-  letter-spacing: 2px;
+  font-size: clamp(1.5rem, 5vw, 3.5rem); /* Responsive size */
+  letter-spacing: 4px;
   color: #f5ff3a; /* Your OG Yellow */
-  
-  /* "Video Game" Thick Outline Effect */
-  /* This creates a sharp black border so it's readable over stars */
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+
+  /* Arcade Outline Effect */
   text-shadow: 
-    2px 2px 0px #000, 
+    3px 3px 0px #000, 
     -1px -1px 0px #000,  
     1px -1px 0px #000,
     -1px 1px 0px #000,
     1px 1px 0px #000,
-    0px 0px 10px rgba(245, 255, 58, 0.8); /* Glow layer */
+    0px 0px 15px rgba(245, 255, 58, 0.7);
 
-  /* Subtle "Floating" Animation like a start screen */
-  animation: float 2s ease-in-out infinite;
-  text-transform: uppercase;
+  /* Using the combined animation */
+  animation: gameFloat 2s ease-in-out infinite;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes flicker {
-  0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
-  20%, 24%, 55% { opacity: 0.7; }
+/* New Animation that keeps the text centered while floating */
+@keyframes gameFloat {
+  0%, 100% { transform: translate(-50%, -50%); }
+  50% { transform: translate(-50%, -60%); }
 }

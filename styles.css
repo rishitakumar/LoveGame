@@ -161,21 +161,25 @@ body {
   z-index: 10001;
 
   font-family: 'Impact', sans-serif;
-  font-size: clamp(1.5rem, 8vw, 3.5rem);
-  letter-spacing: 4px;
-  color: #f5ff3a;
+  font-size: clamp(2rem, 10vw, 4rem);
+  color: #ff0000; /* TEMP RED to see if it changes */
   text-transform: uppercase;
-  
-  /* Apply the SVG Pixel Filter here */
-  filter: url(#pixelate);
 
-  /* The Black Outline */
-  text-shadow: 
-    3px 3px 0px #000, 
-    -1px -1px 0px #000,  
-    1px -1px 0px #000,
-    -1px 1px 0px #000,
-    1px 1px 0px #000;
+  /* THICK PIXEL GAPS */
+  -webkit-mask-image: repeating-linear-gradient(
+    to bottom,
+    black 0px,
+    black 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  mask-image: repeating-linear-gradient(
+    to bottom,
+    black 0px,
+    black 4px,
+    transparent 4px,
+    transparent 8px
+  );
 
   animation: gameFloat 2s ease-in-out infinite;
 }

@@ -97,29 +97,72 @@ function drawFireBorder() {
 
   const w = fireCanvas.width;
   const h = fireCanvas.height;
-  const thickness = 28;
+  const layers = 8;
+  const baseThickness = 26;
 
-  fireCtx.lineWidth = 2;
-  fireCtx.shadowBlur = 18;
-  fireCtx.shadowColor = "rgba(255,120,20,0.9)";
+  fireTime += 0.035;
 
-  fireCtx.beginPath();
+  for (let l = 0; l < layers; l++) {
+    const jitter = l * 2;
 
-  for (let i = 0; i <= 360; i += 4) {
-    const angle = (i * Math.PI) / 180;
-    const noise =
-      Math.sin(angle * 8 + fireTime) * 6 +
-      Math.sin(angle * 13 - fireTime * 1.5) * 4 +
-      Math.random() * 2;
+    fireCtx.beginPath();
+    fireCtx.lineWidth = 2 + l * 0.6;
+    fireCtx.shadowBlur = 20 + l * 4;
+    fireCtx.shadowColor = `rgba(255, ${120 + l * 10}, 20, 0.9)`;
 
-    const rX = w / 2 - thickness + noise;
-    const rY = h / 2 - thickness + noise;
+    // TOP
+    for (let x = 0; x <= w; x += 20) {
+      const y =
+        baseThickness +
+        Math.sin(x * 0.02 + fireTime * 2 + l) * 8 +
+        Math.random() * 4 +
+        jitter;
+      fireCtx.lineTo(x, y);
+    }
 
-    const x = w / 2 + Math.cos(angle) * rX;
-    const y = h / 2 + Math.sin(angle) * rY;
+    // RIGHT
+    for (let y = 0; y <= h; y += 20) {
+      const x =
+        w -
+        baseThickness +
+        Math.sin(y * 0.02 + fireTime * 2 + l) * 8 -
+        Math.random() * 4 -
+        jitter;
+      fireCtx.lineTo(x, y);
+    }
 
-    fireCtx.lineTo(x, y);
+    // BOTTOM
+    for (let x = w; x >= 0; x -= 20) {
+      const y =
+        h -
+        baseThickness +
+        Math.sin(x * 0.02 + fireTime * 2 + l) * 8 -
+        Math.random() * 4 -
+        jitter;
+      fireCtx.lineTo(x, y);
+    }
+
+    // LEFT
+    for (let y = h; y >= 0; y -= 20) {
+      const x =
+        baseThickness +
+        Math.sin(y * 0.02 + fireTime * 2 + l) * 8 +
+        Math.random() * 4 +
+        jitter;
+      fireCtx.lineTo(x, y);
+    }
+
+    const gradient = fireCtx.createLinearGradient(0, 0, 0, h);
+    gradient.addColorStop(0, `rgba(255,180,80,0.15)`);
+    gradient.addColorStop(0.5, `rgba(255,120,20,0.55)`);
+    gradient.addColorStop(1, `rgba(255,40,0,0.85)`);
+
+    fireCtx.strokeStyle = gradient;
+    fireCtx.stroke();
   }
+
+  fireCtx.shadowBlur = 0;
+}
 
   const gradient = fireCtx.createRadialGradient(
     w / 2,

@@ -2,6 +2,7 @@
 body {
   font-family: Georgia, "Times New Roman", sans-serif;
   margin: 0;
+  background: #02010a;
 }
 
 /* Header */
@@ -47,7 +48,7 @@ body {
   }
 }
 
-/* Overlay */
+/* Intro Overlay */
 #intro-overlay {
   position: fixed;
   inset: 0;
@@ -57,27 +58,28 @@ body {
   animation: cosmicShift 8s ease-in-out infinite;
 }
 
-/* Canvases */
+/* Starfield & Fire Canvases */
 #starfield,
 #fire-border {
   position: absolute;
-  inset: 0;                /* top:0; right:0; bottom:0; left:0; */
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   display: block;
 }
 
 #starfield {
-  z-index: 1;              /* Stars behind flames */
+  z-index: 1; /* stars behind flames */
 }
 
 #fire-border {
-  z-index: 2;              /* Flames above stars */
+  z-index: 2;              /* flames above stars */
   pointer-events: none;
-  mix-blend-mode: screen;  /* Makes fire glow over background */
+  mix-blend-mode: screen;  /* makes flames glow */
 }
 
-/* Caption / Intro Text */
+/* Intro Text / Caption */
 #intro-text {
   position: absolute;
   top: 50%;
@@ -96,10 +98,10 @@ body {
   text-shadow:
     0 0 8px rgba(245, 255, 58, 0.6),
     0 0 20px rgba(245, 255, 58, 0.4);
-  z-index: 3;              /* Always on top */
+  z-index: 3; /* always on top */
 }
 
-/* Caption Pulse Animation */
+/* Pulse Animation */
 @keyframes thrum {
   0%, 100% {
     opacity: 0.75;
@@ -111,25 +113,7 @@ body {
   }
 }
 
-/* Background Shift Animation */
+/* Background Animation */
 @keyframes cosmicShift {
   0% {
-    background: radial-gradient(circle at 30% 30%, #0a0f2c, #02010a 70%);
-  }
-  50% {
-    background: radial-gradient(circle at 70% 60%, #120a2c, #02010a 70%);
-  }
-  100% {
-    background: radial-gradient(circle at 30% 30%, #0a0f2c, #02010a 70%);
-  }
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  #intro-text {
-    animation: none;
-  }
-  #intro-overlay {
-    animation: none;
-  }
-}
+    ba

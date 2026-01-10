@@ -93,76 +93,72 @@ createStars();
 let fireTime = 0;
 
 function drawFireBorder() {
-  fireCtx.clearRect(0, 0, fireCanvas.width, fireCanvas.height);
-
   const w = fireCanvas.width;
   const h = fireCanvas.height;
-  const layers = 8;
-  const baseThickness = 26;
 
-  fireTime += 0.035;
+  fireCtx.clearRect(0, 0, w, h);
+  fireTime += 0.06;
 
-  for (let l = 0; l < layers; l++) {
-    const jitter = l * 2;
+  const thickness = 34;
+  const step = 18;
+  const flameHeight = 26;
+
+  fireCtx.globalCompositeOperation = "lighter";
+
+  function flame(x, y, dirX, dirY, phase) {
+    const rise =
+      Math.sin(fireTime * 2 + phase) * 10 +
+      Math.random() * 6;
+
+    const length = flameHeight + rise;
+
+    const grad = fireCtx.createLinearGradient(
+      x,
+      y,
+      x - dirX * length,
+      y - dirY * length
+    );
+
+    grad.addColorStop(0, "rgba(255,255,200,0.9)");
+    grad.addColorStop(0.3, "rgba(255,160,60,0.8)");
+    grad.addColorStop(0.7, "rgba(255,80,20,0.6)");
+    grad.addColorStop(1, "rgba(255,0,0,0)");
+
+    fireCtx.strokeStyle = grad;
+    fireCtx.lineWidth = 2;
 
     fireCtx.beginPath();
-    fireCtx.lineWidth = 2 + l * 0.6;
-    fireCtx.shadowBlur = 20 + l * 4;
-    fireCtx.shadowColor = `rgba(255, ${120 + l * 10}, 20, 0.9)`;
-
-    // TOP
-    for (let x = 0; x <= w; x += 20) {
-      const y =
-        baseThickness +
-        Math.sin(x * 0.02 + fireTime * 2 + l) * 8 +
-        Math.random() * 4 +
-        jitter;
-      fireCtx.lineTo(x, y);
-    }
-
-    // RIGHT
-    for (let y = 0; y <= h; y += 20) {
-      const x =
-        w -
-        baseThickness +
-        Math.sin(y * 0.02 + fireTime * 2 + l) * 8 -
-        Math.random() * 4 -
-        jitter;
-      fireCtx.lineTo(x, y);
-    }
-
-    // BOTTOM
-    for (let x = w; x >= 0; x -= 20) {
-      const y =
-        h -
-        baseThickness +
-        Math.sin(x * 0.02 + fireTime * 2 + l) * 8 -
-        Math.random() * 4 -
-        jitter;
-      fireCtx.lineTo(x, y);
-    }
-
-    // LEFT
-    for (let y = h; y >= 0; y -= 20) {
-      const x =
-        baseThickness +
-        Math.sin(y * 0.02 + fireTime * 2 + l) * 8 +
-        Math.random() * 4 +
-        jitter;
-      fireCtx.lineTo(x, y);
-    }
-
-    const gradient = fireCtx.createLinearGradient(0, 0, 0, h);
-    gradient.addColorStop(0, `rgba(255,180,80,0.15)`);
-    gradient.addColorStop(0.5, `rgba(255,120,20,0.55)`);
-    gradient.addColorStop(1, `rgba(255,40,0,0.85)`);
-
-    fireCtx.strokeStyle = gradient;
+    fireCtx.moveTo(x, y);
+    fireCtx.lineTo(
+      x - dirX * length,
+      y - dirY * length
+    );
     fireCtx.stroke();
   }
 
-  fireCtx.shadowBlur = 0;
+  // TOP (flames go up)
+  for (let x = thickness; x < w - thickness; x += step) {
+    flame(x, thickness, 0, 1, x * 0.1);
+  }
+
+  // BOTTOM (flames go down)
+  for (let x = thickness; x < w - thickness; x += step) {
+    flame(x, h - thickness, 0, -1, x * 0.12);
+  }
+
+  // LEFT (flames go left)
+  for (let y = thickness; y < h - thickness; y += step) {
+    flame(thickness, y, 1, 0, y * 0.1);
+  }
+
+  // RIGHT (flames go right)
+  for (let y = thickness; y < h - thickness; y += step) {
+    flame(w - thickness, y, -1, 0, y * 0.12);
+  }
+
+  fireCtx.globalCompositeOperation = "source-over";
 }
+
 
 
 /* Animation Loop */

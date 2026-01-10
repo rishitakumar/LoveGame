@@ -177,6 +177,7 @@ body {
 #mouse-canvas {
   position: fixed;
   inset: 0;
-  pointer-events: none; /* Allows you to click buttons through the canvas */
-  z-index: 9998; /* Sits just below the intro-overlay */
+  pointer-events: none; /* Crucial: allows you to click buttons underneath */
+  z-index: 100000;      /* Higher than the intro-overlay (9999) */
+  display: block;
 }

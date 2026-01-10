@@ -160,13 +160,16 @@ body {
   transform: translate(-50%, -50%);
   z-index: 10001;
 
-  font-family: 'Impact', 'Charcoal', sans-serif;
+  font-family: 'Impact', sans-serif;
   font-size: clamp(1.5rem, 8vw, 3.5rem);
   letter-spacing: 4px;
-  color: #f5ff3a; /* Your OG Yellow */
+  color: #f5ff3a;
   text-transform: uppercase;
   
-  /* The Solid Game Outline */
+  /* Apply the SVG Pixel Filter here */
+  filter: url(#pixelate);
+
+  /* The Black Outline */
   text-shadow: 
     3px 3px 0px #000, 
     -1px -1px 0px #000,  
@@ -175,28 +178,6 @@ body {
     1px 1px 0px #000;
 
   animation: gameFloat 2s ease-in-out infinite;
-  
-  /* This prevents the grid from going outside the text area */
-  overflow: hidden; 
-}
-
-/* THE PIXEL MESH - This creates the actual lines */
-#intro-text.cyber-text::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  
-  /* Creates a repeating pattern of black horizontal lines */
-  background: repeating-linear-gradient(
-    rgba(0, 0, 0, 0) 0px,
-    rgba(0, 0, 0, 0) 2px,
-    rgba(0, 0, 0, 0.4) 3px,
-    rgba(0, 0, 0, 0.4) 4px
-  );
-  
-  /* Makes the lines stay only on top of the letters */
-  pointer-events: none;
 }
 /* New Animation that keeps the text centered while floating */
 @keyframes gameFloat {

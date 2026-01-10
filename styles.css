@@ -167,3 +167,10 @@ body {
     animation: none;
   }
 }
+/* Add this to your styles.css */
+#starfield {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: crosshair; /* Optional: makes the mouse look like a target */
+}

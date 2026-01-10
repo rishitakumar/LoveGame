@@ -48,7 +48,7 @@
 const mCanvas = document.getElementById("mouse-canvas");
 const mCtx = mCanvas.getContext("2d");
 let mPoints = [];
-const TRAIL_LIFESPAN = 15; // Length of the streak
+const TRAIL_LIFESPAN = 15; 
 
 function resizeMouseCanvas() {
   mCanvas.width = window.innerWidth;
@@ -57,7 +57,6 @@ function resizeMouseCanvas() {
 window.addEventListener("resize", resizeMouseCanvas);
 resizeMouseCanvas();
 
-// Track mouse movement globally
 window.addEventListener("mousemove", (e) => {
   mPoints.push({ x: e.clientX, y: e.clientY, age: 0 });
 });
@@ -69,7 +68,7 @@ const canvas = document.getElementById("starfield");
 const ctx = canvas.getContext("2d");
 
 let stars = [];
-let shootingStars = [];
+let fireEmbers = []; // Renamed from shootingStars to keep it clear
 let running = true;
 
 function resize() {
@@ -93,21 +92,10 @@ function createStars(count = 140) {
   }
 }
 
-function createShootingStar() {
-  shootingStars.push({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height * 0.5,
-    vx: Math.random() * 8 + 6,
-    vy: Math.random() * 4 + 3,
-    life: 0
-  });
-}
-
 createStars();
 
 /* --- COMBINED ANIMATION LOOP --- */
 function animate() {
-  // Always draw mouse streak (even if running is false)
   drawMouseStreak();
 
   if (!running) {
@@ -117,7 +105,7 @@ function animate() {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  /* Background Stars */
+  /* 1. Background Stars */
   stars.forEach(star => {
     star.y += star.speed;
     if (star.y > canvas.height) star.y = 0;
@@ -128,24 +116,27 @@ function animate() {
     ctx.fill();
   });
 
-  /* Shooting Stars & Embers */
-  shootingStars.forEach((s, i) => {
+  /* 2. Fire Embers (Sparks from Border) */
+  fireEmbers.forEach((s, i) => {
     s.x += s.vx;
     s.y += s.vy;
     s.life++;
-    ctx.strokeStyle = s.color || "rgba(255,255,255,0.9)";
-    ctx.lineWidth = s.color ? 2 : 1.2;
-    ctx.shadowBlur = s.color ? 15 : 10;
-    ctx.shadowColor = s.color || "rgba(255,255,255,0.8)";
+    
+    ctx.strokeStyle = "#ff8c00"; 
+    ctx.lineWidth = 2;
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = "#ff8c00";
+    
     ctx.beginPath();
     ctx.moveTo(s.x, s.y);
     ctx.lineTo(s.x - s.vx * 2.5, s.y - s.vy * 2.5);
     ctx.stroke();
+    
     ctx.shadowBlur = 0;
-    if (s.life > 30) shootingStars.splice(i, 1);
+    if (s.life > 30) fireEmbers.splice(i, 1);
   });
 
-  /* Spawn Fire Embers */
+  /* 3. Spawn Fire Embers Logic */
   if (Math.random() > 0.85) {
     const side = Math.floor(Math.random() * 4);
     let ex, ey, evx, evy;
@@ -153,13 +144,13 @@ function animate() {
     else if (side === 1) { ex = Math.random()*canvas.width; ey = canvas.height; evx = (Math.random()-0.5)*2; evy = -Math.random()*5; } 
     else if (side === 2) { ex = 0; ey = Math.random()*canvas.height; evx = Math.random()*5; evy = (Math.random()-0.5)*2; } 
     else { ex = canvas.width; ey = Math.random()*canvas.height; evx = -Math.random()*5; evy = (Math.random()-0.5)*2; }
-    shootingStars.push({ x: ex, y: ey, vx: evx, vy: evy, life: 0, color: "#ff8c00" });
+    
+    fireEmbers.push({ x: ex, y: ey, vx: evx, vy: evy, life: 0 });
   }
 
   requestAnimationFrame(animate);
 }
 
-/* Draws the connected streak line */
 function drawMouseStreak() {
   mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
   if (mPoints.length > 1) {
@@ -184,32 +175,17 @@ function drawMouseStreak() {
   mPoints = mPoints.filter(p => p.age < TRAIL_LIFESPAN);
 }
 
-/* Shooting Star Timing */
-const shootingInterval = setInterval(() => {
-  if (Math.random() > 0.5) createShootingStar();
-}, 600);
-
-/* End Intro */
+/* End Intro Logic */
 function endIntro() {
-  running = false; // Only stops the starfield/fire logic
-  clearInterval(shootingInterval);
+  running = false;
   overlay.style.transition = "opacity 0.6s ease";
   overlay.style.opacity = "0";
   setTimeout(() => overlay.remove(), 600);
 }
 
-const AUTO_END = 3000;
-const timeout = setTimeout(endIntro, AUTO_END);
-
-overlay.addEventListener("click", () => {
-  clearTimeout(timeout);
-  endIntro();
-}, { once: true });
-
-window.addEventListener("keydown", () => {
-  clearTimeout(timeout);
-  endIntro();
-}, { once: true });
+const timeout = setTimeout(endIntro, 3000);
+overlay.addEventListener("click", () => { clearTimeout(timeout); endIntro(); }, { once: true });
+window.addEventListener("keydown", () => { clearTimeout(timeout); endIntro(); }, { once: true });
 
 animate();
 </script>

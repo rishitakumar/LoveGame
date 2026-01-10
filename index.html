@@ -25,12 +25,21 @@
 </div>
 
 <svg width="0" height="0" style="position: absolute;">
-  <filter id="realistic-fire">
-    <feTurbulence type="fractalNoise" baseFrequency="0.04 0.15" numOctaves="3" seed="5">
-      <animate attributeName="seed" from="1" to="100" dur="10s" repeatCount="indefinite" />
-    </feTurbulence>
-    <feDisplacementMap in="SourceGraphic" scale="30" />
-  </filter>
+  <defs>
+    <filter id="side-flames">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03 0.15" numOctaves="3">
+        <animate attributeName="seed" from="1" to="100" dur="10s" repeatCount="indefinite" />
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" scale="40" />
+    </filter>
+
+    <filter id="top-flames">
+      <feTurbulence type="fractalNoise" baseFrequency="0.15 0.03" numOctaves="3">
+        <animate attributeName="seed" from="1" to="100" dur="10s" repeatCount="indefinite" />
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" scale="40" />
+    </filter>
+  </defs>
 </svg>
 
 <script>

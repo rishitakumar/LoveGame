@@ -174,3 +174,9 @@ body {
   display: block;
   cursor: crosshair; /* Optional: makes the mouse look like a target */
 }
+#mouse-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none; /* Allows you to click buttons through the canvas */
+  z-index: 9998; /* Sits just below the intro-overlay */
+}

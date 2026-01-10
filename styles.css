@@ -152,7 +152,7 @@ body {
   pointer-events: none; /* Allows clicking links behind the trail */
   z-index: 100000;      /* Keeps streak above everything else */
 }
-/* Merged Video Game Text Style */
+
 #intro-text.cyber-text {
   position: absolute !important;
   top: 50% !important;
@@ -197,7 +197,6 @@ body {
 
   animation: gameFloat 2s ease-in-out infinite !important;
 }
-
 /* New Animation that keeps the text centered while floating */
 @keyframes gameFloat {
   0%, 100% { transform: translate(-50%, -50%); }

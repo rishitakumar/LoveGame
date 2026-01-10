@@ -97,11 +97,11 @@ function drawFireBorder() {
   const h = fireCanvas.height;
 
   fireCtx.clearRect(0, 0, w, h);
-  fireTime += 0.06;
+  fireTime += 0.08;
 
   const thickness = 34;
   const step = 18;
-  const flameHeight = 26;
+  const flameHeight = 42;
 
   fireCtx.globalCompositeOperation = "lighter";
 
@@ -125,7 +125,7 @@ function drawFireBorder() {
     grad.addColorStop(1, "rgba(255,0,0,0)");
 
     fireCtx.strokeStyle = grad;
-    fireCtx.lineWidth = 2;
+    fireCtx.lineWidth = 3;
 
     fireCtx.beginPath();
     fireCtx.moveTo(x, y);

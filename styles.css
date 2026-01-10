@@ -154,48 +154,49 @@ body {
 }
 
 #intro-text.cyber-text {
-  position: absolute !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  z-index: 10001 !important;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10001;
 
-  font-family: 'Impact', 'Charcoal', sans-serif !important;
-  font-size: clamp(1.5rem, 8vw, 3.5rem) !important;
-  letter-spacing: 4px !important;
-  text-transform: uppercase !important;
+  font-family: 'Impact', 'Charcoal', sans-serif;
+  font-size: clamp(1.5rem, 8vw, 3.5rem);
+  letter-spacing: 4px;
+  color: #f5ff3a; /* Your OG Yellow */
+  text-transform: uppercase;
   
-  /* Clear any old settings */
-  background-color: transparent !important;
-  padding: 0 !important;
-
-  /* THE PIXEL EFFECT - Forced */
-  background: linear-gradient(
-    rgba(0, 0, 0, 0) 50%, 
-    rgba(0, 0, 0, 0.4) 50%
-  ), linear-gradient(
-    90deg, 
-    rgba(255, 255, 255, 0.05), 
-    rgba(0, 0, 0, 0.05)
-  ) !important;
-  background-size: 100% 6px, 6px 100% !important;
-  
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  
-  /* This color is what fills the letters */
-  -webkit-text-fill-color: #f5ff3a !important; 
-  color: #f5ff3a !important;
-
-  /* Thick Arcade Outline */
+  /* The Solid Game Outline */
   text-shadow: 
     3px 3px 0px #000, 
     -1px -1px 0px #000,  
     1px -1px 0px #000,
     -1px 1px 0px #000,
-    1px 1px 0px #000 !important;
+    1px 1px 0px #000;
 
-  animation: gameFloat 2s ease-in-out infinite !important;
+  animation: gameFloat 2s ease-in-out infinite;
+  
+  /* This prevents the grid from going outside the text area */
+  overflow: hidden; 
+}
+
+/* THE PIXEL MESH - This creates the actual lines */
+#intro-text.cyber-text::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  
+  /* Creates a repeating pattern of black horizontal lines */
+  background: repeating-linear-gradient(
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.4) 3px,
+    rgba(0, 0, 0, 0.4) 4px
+  );
+  
+  /* Makes the lines stay only on top of the letters */
+  pointer-events: none;
 }
 /* New Animation that keeps the text centered while floating */
 @keyframes gameFloat {

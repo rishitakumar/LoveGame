@@ -95,85 +95,63 @@ let fireTime = 0;
 function drawFireBorder() {
   const w = fireCanvas.width;
   const h = fireCanvas.height;
-  const cx = w / 2;
-  const cy = h / 2;
 
   fireCtx.clearRect(0, 0, w, h);
   fireTime += 0.05;
 
   fireCtx.globalCompositeOperation = "lighter";
 
-  const thickness = 100; // how far fire extends inward
-  const step = 100;      // fewer flames, bigger spacing
-  const baseRadius = 60; // bigger flame width
+  const thickness = 100; // distance from edge inward
+  const step = 120;      // spacing between flames
+  const baseRadius = 60; // width of flames
 
-  function flameBlob(x, y, seed) {
-    const distToCenter = Math.hypot(cx - x, cy - y);
+  function flameBlob(x, y, seed, horizontal) {
+    // Simple dynamic height & flicker
+    const height = 80 + Math.sin(fireTime * 2 + seed) * 40 + Math.random() * 20;
+    const width = baseRadius + Math.sin(fireTime * 3 + seed) * 20;
 
-    // Bigger, more dynamic flame height
-    const height =
-      distToCenter * 0.4 +
-      Math.sin(fireTime * 1.5 + seed) * 40 +
-      Math.random() * 30;
+    // Tip position (toward canvas center if horizontal=false, else vertical)
+    const tipX = horizontal ? x : x + (w/2 - x) * 0.1;
+    const tipY = horizontal ? y + (h/2 - y) * 0.1 : y;
 
-    // Wider flame base
-    const width =
-      baseRadius +
-      Math.sin(fireTime * 2 + seed) * 20;
-
-    // Direction toward center
-    const dx = cx - x;
-    const dy = cy - y;
-    const mag = Math.hypot(dx, dy) || 1;
-    const nx = dx / mag;
-    const ny = dy / mag;
-
-    const tipX = x + nx * height;
-    const tipY = y + ny * height;
-
-    // Realistic gradient for flame
-    const grad = fireCtx.createRadialGradient(
-      x, y, 4,
-      tipX, tipY, height
-    );
-    grad.addColorStop(0, "rgba(255,255,200,1)");   // hot core
+    // Gradient
+    const grad = fireCtx.createRadialGradient(x, y, 4, tipX, tipY, height);
+    grad.addColorStop(0, "rgba(255,255,200,1)");
     grad.addColorStop(0.3, "rgba(255,180,80,0.9)");
     grad.addColorStop(0.6, "rgba(255,90,30,0.6)");
     grad.addColorStop(1, "rgba(255,0,0,0)");
 
     fireCtx.fillStyle = grad;
 
-    // Draw the flame shape
+    // Flame shape
     fireCtx.beginPath();
-    fireCtx.moveTo(x - width * ny, y + width * nx);
+    fireCtx.moveTo(x - width/2, y);
     fireCtx.quadraticCurveTo(x, y, tipX, tipY);
-    fireCtx.quadraticCurveTo(x, y, x + width * ny, y - width * nx);
+    fireCtx.quadraticCurveTo(x, y, x + width/2, y);
     fireCtx.closePath();
     fireCtx.fill();
   }
 
   // TOP
   for (let x = thickness; x < w - thickness; x += step) {
-    flameBlob(x, thickness, x * 0.1);
+    flameBlob(x, thickness, x * 0.1, false);
   }
-
   // BOTTOM
   for (let x = thickness; x < w - thickness; x += step) {
-    flameBlob(x, h - thickness, x * 0.12);
+    flameBlob(x, h - thickness, x * 0.12, false);
   }
-
   // LEFT
   for (let y = thickness; y < h - thickness; y += step) {
-    flameBlob(thickness, y, y * 0.08);
+    flameBlob(thickness, y, y * 0.08, true);
   }
-
   // RIGHT
   for (let y = thickness; y < h - thickness; y += step) {
-    flameBlob(w - thickness, y, y * 0.1);
+    flameBlob(w - thickness, y, y * 0.1, true);
   }
 
   fireCtx.globalCompositeOperation = "source-over";
 }
+
 
 
 

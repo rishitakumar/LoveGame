@@ -24,6 +24,51 @@
   <h2 style="text-align: center;">2) If you balance your Self and External love, you'll understand the reason for your existence.</h2>
   <h2 style="text-align: center;"> <i> The process to balance your Self and External love requires caring for both your own and others' mental, physical, and emotional health. Just as Yin and Yang, embrace the balance of opposite yet complementary forces — dark & light energy, brain & soul knowing, Self and Universal love, etc . . . </i> </h2>
 </div>
+<script>
+/* --- UNIVERSAL MOUSE STREAK --- */
+const mCanvas = document.getElementById("mouse-canvas");
+const mCtx = mCanvas.getContext("2d");
+let mPoints = [];
+const TRAIL_LIFESPAN = 15; 
 
+function resizeMouseCanvas() {
+  mCanvas.width = window.innerWidth;
+  mCanvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeMouseCanvas);
+resizeMouseCanvas();
+
+// Use 'window' to track the mouse even over the overlay
+window.addEventListener("mousemove", (e) => {
+  mPoints.push({ x: e.clientX, y: e.clientY, age: 0 });
+});
+
+function drawMouseStreak() {
+  mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
+  if (mPoints.length > 1) {
+    for (let i = 1; i < mPoints.length; i++) {
+      const p1 = mPoints[i - 1];
+      const p2 = mPoints[i];
+      const opacity = 1 - (p1.age / TRAIL_LIFESPAN);
+      
+      mCtx.strokeStyle = `rgba(245, 255, 58, ${opacity})`; 
+      mCtx.lineWidth = opacity * 5; // Slightly thicker for better visibility
+      mCtx.lineCap = "round";
+      mCtx.shadowBlur = 10 * opacity;
+      mCtx.shadowColor = "#f5ff3a";
+      
+      mCtx.beginPath();
+      mCtx.moveTo(p1.x, p1.y);
+      mCtx.lineTo(p2.x, p2.y);
+      mCtx.stroke();
+      p1.age++;
+    }
+  }
+  mPoints = mPoints.filter(p => p.age < TRAIL_LIFESPAN);
+  requestAnimationFrame(drawMouseStreak); // Self-calling loop
+}
+drawMouseStreak(); // Start it!
+
+</script>
 </body>
 </html>

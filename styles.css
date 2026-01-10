@@ -154,52 +154,48 @@ body {
 }
 /* Merged Video Game Text Style */
 #intro-text.cyber-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10001;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 10001 !important;
 
-  /* Standard Video Game Font */
-  font-family: 'Impact', 'Charcoal', sans-serif;
-  font-size: clamp(1.5rem, 5vw, 3.5rem);
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  text-align: center;
-  white-space: nowrap;
+  font-family: 'Impact', 'Charcoal', sans-serif !important;
+  font-size: clamp(1.5rem, 8vw, 3.5rem) !important;
+  letter-spacing: 4px !important;
+  text-transform: uppercase !important;
+  
+  /* Clear any old settings */
+  background-color: transparent !important;
+  padding: 0 !important;
 
-  /* FALLBACK: This color shows if the browser doesn't support the pixel effect */
-  color: #f5ff3a; 
-
-  /* THE PIXEL EFFECT */
+  /* THE PIXEL EFFECT - Forced */
   background: linear-gradient(
-    rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.25) 50%
+    rgba(0, 0, 0, 0) 50%, 
+    rgba(0, 0, 0, 0.4) 50%
   ), linear-gradient(
     90deg, 
-    rgba(255, 0, 0, 0.05), 
-    rgba(0, 255, 0, 0.02), 
-    rgba(0, 255, 0, 0.05)
-  );
-  background-size: 100% 4px, 4px 100%;
+    rgba(255, 255, 255, 0.05), 
+    rgba(0, 0, 0, 0.05)
+  ) !important;
+  background-size: 100% 6px, 6px 100% !important;
   
-  /* Browser Support for Clipping */
-  -webkit-background-clip: text; /* For Safari/Chrome */
-  background-clip: text;         /* Standard */
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
   
-  /* Ensures the yellow background shows THROUGH the pixel pattern */
-  -webkit-text-fill-color: #f5ff3a; 
+  /* This color is what fills the letters */
+  -webkit-text-fill-color: #f5ff3a !important; 
+  color: #f5ff3a !important;
 
-  /* Arcade Outline */
+  /* Thick Arcade Outline */
   text-shadow: 
     3px 3px 0px #000, 
     -1px -1px 0px #000,  
     1px -1px 0px #000,
     -1px 1px 0px #000,
-    1px 1px 0px #000,
-    0px 0px 15px rgba(245, 255, 58, 0.7);
+    1px 1px 0px #000 !important;
 
-  animation: gameFloat 2s ease-in-out infinite;
+  animation: gameFloat 2s ease-in-out infinite !important;
 }
 
 /* New Animation that keeps the text centered while floating */

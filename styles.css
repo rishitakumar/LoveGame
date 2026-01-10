@@ -126,3 +126,10 @@ body {
     animation: none;
   }
 }
+
+#fire-border {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}

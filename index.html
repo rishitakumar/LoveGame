@@ -60,6 +60,22 @@ let stars = [];
 let shootingStars = [];
 let running = true;
 
+/* --- MOUSE TRACKING --- */
+let mouseTrail = [];
+const MAX_TRAIL_LENGTH = 20;
+
+window.addEventListener("mousemove", (e) => {
+  if (!running) return;
+  mouseTrail.push({
+    x: e.clientX,
+    y: e.clientY,
+    life: 1.0, 
+    size: Math.random() * 3 + 2
+  });
+  if (mouseTrail.length > MAX_TRAIL_LENGTH) mouseTrail.shift();
+});
+
+  
 /* Resize */
 function resize() {
   canvas.width = window.innerWidth;
@@ -114,6 +130,24 @@ function animate() {
   ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
   ctx.fill();
 });
+  
+  /* --- MOUSE STREAK --- */
+  mouseTrail.forEach((p, i) => {
+    p.life -= 0.04; 
+    if (p.life <= 0) {
+      mouseTrail.splice(i, 1);
+      return;
+    }
+
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = "#f5ff3a"; 
+    ctx.fillStyle = `rgba(245, 255, 58, ${p.life})`;
+    
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0; 
+  });
 
  shootingStars.forEach((s, i) => {
     s.x += s.vx;

@@ -164,6 +164,11 @@ body {
   font-size: clamp(2rem, 10vw, 4rem);
   color: #f5ff3a; 
   text-transform: uppercase;
+  
+  /* Prevent text from shifting when dots are added */
+  display: inline-block;
+  min-width: 12em; 
+  text-align: center;
 
   /* THICK PIXEL GAPS */
   -webkit-mask-image: repeating-linear-gradient(
@@ -180,8 +185,6 @@ body {
     transparent 4px,
     transparent 8px
   );
-
-  animation: gameFloat 2s ease-in-out infinite;
 }
 /* New Animation that keeps the text centered while floating */
 @keyframes gameFloat {

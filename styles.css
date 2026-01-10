@@ -157,20 +157,40 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  /* This ensures the centering AND the floating animation work together */
   transform: translate(-50%, -50%);
-  z-index: 10001; /* Higher than the 9999 overlay */
+  z-index: 10001;
 
-  /* The Video Game Font */
+  /* Standard Video Game Font */
   font-family: 'Impact', 'Charcoal', sans-serif;
-  font-size: clamp(1.5rem, 5vw, 3.5rem); /* Responsive size */
+  font-size: clamp(1.5rem, 5vw, 3.5rem);
   letter-spacing: 4px;
-  color: #f5ff3a; /* Your OG Yellow */
   text-transform: uppercase;
   text-align: center;
   white-space: nowrap;
 
-  /* Arcade Outline Effect */
+  /* FALLBACK: This color shows if the browser doesn't support the pixel effect */
+  color: #f5ff3a; 
+
+  /* THE PIXEL EFFECT */
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg, 
+    rgba(255, 0, 0, 0.05), 
+    rgba(0, 255, 0, 0.02), 
+    rgba(0, 255, 0, 0.05)
+  );
+  background-size: 100% 4px, 4px 100%;
+  
+  /* Browser Support for Clipping */
+  -webkit-background-clip: text; /* For Safari/Chrome */
+  background-clip: text;         /* Standard */
+  
+  /* Ensures the yellow background shows THROUGH the pixel pattern */
+  -webkit-text-fill-color: #f5ff3a; 
+
+  /* Arcade Outline */
   text-shadow: 
     3px 3px 0px #000, 
     -1px -1px 0px #000,  
@@ -179,7 +199,6 @@ body {
     1px 1px 0px #000,
     0px 0px 15px rgba(245, 255, 58, 0.7);
 
-  /* Using the combined animation */
   animation: gameFloat 2s ease-in-out infinite;
 }
 

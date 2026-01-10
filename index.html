@@ -93,6 +93,8 @@ createStars();
 let fireTime = 0;
 
 function drawFireBorder() {
+  const cx = w / 2;
+  const cy = h / 2;
   const w = fireCanvas.width;
   const h = fireCanvas.height;
 
@@ -104,73 +106,71 @@ function drawFireBorder() {
   const thickness = 60;     // how far fire intrudes inward
   const step = 26;          // spacing between flame bases
   const baseRadius = 22;    // flame width
+function flameBlob(x, y, seed) {
+  const height =
+    40 +
+    Math.sin(fireTime * 2 + seed) * 20 +
+    Math.random() * 12;
 
-  function flameBlob(x, y, dirX, dirY, seed) {
-    const height =
-      30 +
-      Math.sin(fireTime * 2 + seed) * 18 +
-      Math.random() * 14;
+  const width =
+    baseRadius +
+    Math.sin(fireTime * 3 + seed) * 8;
 
-    const width =
-      baseRadius +
-      Math.sin(fireTime * 3 + seed) * 6;
+  // Direction toward center
+  const dx = cx - x;
+  const dy = cy - y;
+  const mag = Math.hypot(dx, dy) || 1;
 
-    const tipX = x - dirX * height;
-    const tipY = y - dirY * height;
+  const nx = dx / mag;
+  const ny = dy / mag;
 
-    const grad = fireCtx.createRadialGradient(
-      x,
-      y,
-      4,
-      x,
-      y,
-      height
-    );
+  const tipX = x + nx * height;
+  const tipY = y + ny * height;
 
-    grad.addColorStop(0, "rgba(255,255,220,0.95)");
-    grad.addColorStop(0.3, "rgba(255,180,80,0.9)");
-    grad.addColorStop(0.6, "rgba(255,90,30,0.75)");
-    grad.addColorStop(1, "rgba(255,0,0,0)");
+  const grad = fireCtx.createRadialGradient(
+    x,
+    y,
+    4,
+    x,
+    y,
+    height
+  );
 
-    fireCtx.fillStyle = grad;
+  grad.addColorStop(0, "rgba(255,255,220,0.95)");
+  grad.addColorStop(0.3, "rgba(255,180,80,0.9)");
+  grad.addColorStop(0.6, "rgba(255,90,30,0.75)");
+  grad.addColorStop(1, "rgba(255,0,0,0)");
 
-    fireCtx.beginPath();
-    fireCtx.moveTo(x - width, y);
-    fireCtx.quadraticCurveTo(
-      x,
-      y,
-      tipX,
-      tipY
-    );
-    fireCtx.quadraticCurveTo(
-      x,
-      y,
-      x + width,
-      y
-    );
-    fireCtx.closePath();
-    fireCtx.fill();
-  }
+  fireCtx.fillStyle = grad;
+
+  fireCtx.beginPath();
+  fireCtx.moveTo(x - width * ny, y + width * nx);
+  fireCtx.quadraticCurveTo(x, y, tipX, tipY);
+  fireCtx.quadraticCurveTo(x, y, x + width * ny, y - width * nx);
+  fireCtx.closePath();
+  fireCtx.fill();
+}
+
 
   // TOP
-  for (let x = thickness; x < w - thickness; x += step) {
-    flameBlob(x, thickness, 0, 1, x * 0.12);
-  }
+for (let x = thickness; x < w - thickness; x += step) {
+  flameBlob(x, thickness, x * 0.12);
+}
 
-  // BOTTOM
-  for (let x = thickness; x < w - thickness; x += step) {
-    flameBlob(x, h - thickness, 0, -1, x * 0.15);
-  }
+// BOTTOM
+for (let x = thickness; x < w - thickness; x += step) {
+  flameBlob(x, h - thickness, x * 0.15);
+}
 
-  // LEFT
-  for (let y = thickness; y < h - thickness; y += step) {
-    flameBlob(thickness, y, 1, 0, y * 0.1);
-  }
+// LEFT
+for (let y = thickness; y < h - thickness; y += step) {
+  flameBlob(thickness, y, y * 0.1);
+}
 
-  // RIGHT
-  for (let y = thickness; y < h - thickness; y += step) {
-    flameBlob(w - thickness, y, -1, 0, y * 0.14);
-  }
+// RIGHT
+for (let y = thickness; y < h - thickness; y += step) {
+  flameBlob(w - thickness, y, y * 0.14);
+}
 
   fireCtx.globalCompositeOperation = "source-over";
 }

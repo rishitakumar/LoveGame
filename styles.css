@@ -124,7 +124,58 @@ body {
   #intro-text {
     animation: none;
   }
-  #intro-overlay {
-    animation: none;
+  /* The Flame Container */
+#intro-overlay {
+  /* ... keep your existing styles ... */
+  box-shadow: inset 0 0 60px #f44336, 
+              inset 0 0 100px #ff9800, 
+              inset 0 0 140px #ffeb3b;
+  position: relative;
+}
+
+/* Creating the "Flames" on the edges */
+#intro-overlay::before,
+#intro-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Horizontal Flames (Top & Bottom) */
+#intro-overlay::before {
+  border-top: 15px solid transparent;
+  border-bottom: 15px solid transparent;
+  background: 
+    linear-gradient(to bottom, rgba(255, 69, 0, 0.8), transparent 20%),
+    linear-gradient(to top, rgba(255, 69, 0, 0.8), transparent 20%);
+  animation: flameFlicker 1.5s infinite alternate;
+}
+
+/* Vertical Flames (Left & Right) */
+#intro-overlay::after {
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  background: 
+    linear-gradient(to right, rgba(255, 140, 0, 0.6), transparent 15%),
+    linear-gradient(to left, rgba(255, 140, 0, 0.6), transparent 15%);
+  animation: flameFlicker 2s infinite alternate-reverse;
+}
+
+/* Flame Pulse Animation */
+@keyframes flameFlicker {
+  0% {
+    filter: blur(2px) brightness(1);
+    opacity: 0.7;
   }
+  50% {
+    filter: blur(4px) brightness(1.3);
+    opacity: 1;
+  }
+  100% {
+    filter: blur(3px) brightness(1.1);
+    opacity: 0.8;
+  }
+}
 }

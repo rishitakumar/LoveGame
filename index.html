@@ -101,59 +101,59 @@ function drawFireBorder() {
 
   fireCtx.globalCompositeOperation = "lighter";
 
-  const thickness = 100; // distance from edge inward
-  const step = 120;      // spacing between flames
-  const baseRadius = 60; // width of flames
+  const step = 60;       // spacing between flames
+  const maxHeight = 100; // maximum flame height
+  const baseWidth = 30;  // flame width
 
-  function flameBlob(x, y, seed, horizontal) {
-    // Simple dynamic height & flicker
-    const height = 80 + Math.sin(fireTime * 2 + seed) * 40 + Math.random() * 20;
-    const width = baseRadius + Math.sin(fireTime * 3 + seed) * 20;
+  function flame(x, y, dirX, dirY, seed) {
+    // Dynamic flame height
+    const height = 50 + Math.sin(fireTime * 2 + seed) * 30 + Math.random() * 20;
+    const width = baseWidth + Math.random() * 10;
 
-    // Tip position (toward canvas center if horizontal=false, else vertical)
-    const tipX = horizontal ? x : x + (w/2 - x) * 0.1;
-    const tipY = horizontal ? y + (h/2 - y) * 0.1 : y;
+    // Tip of flame
+    const tipX = x + dirX * height;
+    const tipY = y + dirY * height;
 
     // Gradient
-    const grad = fireCtx.createRadialGradient(x, y, 4, tipX, tipY, height);
-    grad.addColorStop(0, "rgba(255,255,200,1)");
-    grad.addColorStop(0.3, "rgba(255,180,80,0.9)");
+    const grad = fireCtx.createRadialGradient(x, y, 2, tipX, tipY, height);
+    grad.addColorStop(0, "rgba(255,255,180,1)");
+    grad.addColorStop(0.3, "rgba(255,180,80,0.85)");
     grad.addColorStop(0.6, "rgba(255,90,30,0.6)");
     grad.addColorStop(1, "rgba(255,0,0,0)");
 
     fireCtx.fillStyle = grad;
 
-    // Flame shape
+    // Flame shape (triangular-ish)
     fireCtx.beginPath();
     fireCtx.moveTo(x - width/2, y);
-    fireCtx.quadraticCurveTo(x, y, tipX, tipY);
-    fireCtx.quadraticCurveTo(x, y, x + width/2, y);
+    fireCtx.lineTo(tipX, tipY);
+    fireCtx.lineTo(x + width/2, y);
     fireCtx.closePath();
     fireCtx.fill();
   }
 
-  // TOP
-  for (let x = thickness; x < w - thickness; x += step) {
-    flameBlob(x, thickness, x * 0.1, false);
+  // TOP → flames face down
+  for (let x = 0; x < w; x += step) {
+    flame(x, 0, 0, 1, x * 0.1);
   }
-  // BOTTOM
-  for (let x = thickness; x < w - thickness; x += step) {
-    flameBlob(x, h - thickness, x * 0.12, false);
+
+  // BOTTOM → flames face up
+  for (let x = 0; x < w; x += step) {
+    flame(x, h, 0, -1, x * 0.12);
   }
-  // LEFT
-  for (let y = thickness; y < h - thickness; y += step) {
-    flameBlob(thickness, y, y * 0.08, true);
+
+  // LEFT → flames face right
+  for (let y = 0; y < h; y += step) {
+    flame(0, y, 1, 0, y * 0.08);
   }
-  // RIGHT
-  for (let y = thickness; y < h - thickness; y += step) {
-    flameBlob(w - thickness, y, y * 0.1, true);
+
+  // RIGHT → flames face left
+  for (let y = 0; y < h; y += step) {
+    flame(w, y, -1, 0, y * 0.1);
   }
 
   fireCtx.globalCompositeOperation = "source-over";
 }
-
-
-
 
 
 

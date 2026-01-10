@@ -21,8 +21,7 @@
   
 <div id="intro-overlay">
   <canvas id="starfield"></canvas>
-  <canvas id="fire-border"></canvas>
-  <div id="intro-text">ENTERING CYBERSPACE . . .</div>
+<div id="intro-text">ENTERING CYBERSPACE . . .</div>
 </div>
 
 
@@ -44,22 +43,11 @@ let stars = [];
 let shootingStars = [];
 let running = true;
 
-/* Fire Canvas Setup */
-const fireCanvas = document.getElementById("fire-border");
-const fireCtx = fireCanvas.getContext("2d");
-
-function resizeFire() {
-  fireCanvas.width = canvas.width;
-  fireCanvas.height = canvas.height;
-}
-
 /* Resize */
 function resize() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  resizeFire();
 }
-
 resize();
 window.addEventListener("resize", resize);
 
@@ -90,73 +78,6 @@ function createShootingStar() {
 }
 
 createStars();
-let fireTime = 0;
-
-function drawFireBorder() {
-  const w = fireCanvas.width;
-  const h = fireCanvas.height;
-  const cx = w / 2;
-  const cy = h / 2;
-
-  fireCtx.clearRect(0, 0, w, h);
-  fireTime += 0.08;
-
-  fireCtx.globalCompositeOperation = "lighter";
-
-  const flameCount = 20; // number of flames per side
-  const flameMaxHeight = 120; // max flame height
-  const flameBaseWidth = 30;   // width at base
-
-  function drawFlame(x, y, dirX, dirY, seed) {
-    const height = flameMaxHeight * (0.7 + Math.random() * 0.3) * Math.abs(Math.sin(fireTime + seed));
-    const width = flameBaseWidth * (0.7 + Math.random() * 0.3);
-
-    const tipX = x + dirX * height;
-    const tipY = y + dirY * height;
-
-    const grad = fireCtx.createRadialGradient(x, y, 5, tipX, tipY, height);
-    grad.addColorStop(0, "rgba(255,255,200,1)");
-    grad.addColorStop(0.3, "rgba(255,180,80,0.85)");
-    grad.addColorStop(0.6, "rgba(255,90,30,0.6)");
-    grad.addColorStop(1, "rgba(255,0,0,0)");
-
-    fireCtx.fillStyle = grad;
-
-    fireCtx.beginPath();
-    fireCtx.moveTo(x - width / 2, y);
-    fireCtx.quadraticCurveTo(x, y, tipX, tipY);
-    fireCtx.quadraticCurveTo(x, y, x + width / 2, y);
-    fireCtx.closePath();
-    fireCtx.fill();
-  }
-
-  // TOP - flames point down
-  for (let i = 0; i < flameCount; i++) {
-    const x = (i + 0.5) * w / flameCount;
-    drawFlame(x, 0, 0, 1, i * 0.5);
-  }
-
-  // BOTTOM - flames point up
-  for (let i = 0; i < flameCount; i++) {
-    const x = (i + 0.5) * w / flameCount;
-    drawFlame(x, h, 0, -1, i * 0.7);
-  }
-
-  // LEFT - flames point right
-  for (let i = 0; i < flameCount; i++) {
-    const y = (i + 0.5) * h / flameCount;
-    drawFlame(0, y, 1, 0, i * 0.6);
-  }
-
-  // RIGHT - flames point left
-  for (let i = 0; i < flameCount; i++) {
-    const y = (i + 0.5) * h / flameCount;
-    drawFlame(w, y, -1, 0, i * 0.8);
-  }
-
-  fireCtx.globalCompositeOperation = "source-over";
-}
-
 
 /* Animation Loop */
 function animate() {
@@ -176,8 +97,6 @@ function animate() {
   ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
   ctx.fill();
 });
-  
-drawFireBorder();
 
   /* Shooting Stars */
   shootingStars.forEach((s, i) => {

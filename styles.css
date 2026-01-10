@@ -1,6 +1,8 @@
 body {
   font-family: Georgia, "Times New Roman", sans-serif;
   margin: 0;
+  background-color: #ffffff; /* This ensures the page isn't black after the intro */
+  color: #333333; /* Standard dark text for readability */
 }
 
 .header {

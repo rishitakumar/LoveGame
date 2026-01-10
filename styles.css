@@ -162,7 +162,7 @@ body {
 
   font-family: 'Impact', sans-serif;
   font-size: clamp(2rem, 10vw, 4rem);
-  color: #ff0000; /* TEMP RED to see if it changes */
+  color: #f5ff3a; 
   text-transform: uppercase;
 
   /* THICK PIXEL GAPS */

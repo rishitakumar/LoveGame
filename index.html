@@ -104,7 +104,7 @@ function animate() {
     s.y += s.vy;
     s.life++;
 
-    ctx.strokeStyle = "rgba(255,255,255,0.9)";
+    ctx.strokeStyle = s.color || "rgba(255,255,255,0.9)";
     ctx.lineWidth = 1.2;
     ctx.shadowBlur = 10;
     ctx.shadowColor = "rgba(255,255,255,0.8)";
@@ -118,7 +118,23 @@ function animate() {
 
     if (s.life > 30) shootingStars.splice(i, 1);
   });
+if (Math.random() > 0.8) { 
+    const side = Math.floor(Math.random() * 4);
+    let x, y;
+    if (side === 0) { x = Math.random() * canvas.width; y = 0; } 
+    else if (side === 1) { x = Math.random() * canvas.width; y = canvas.height; } 
+    else if (side === 2) { x = 0; y = Math.random() * canvas.height; } 
+    else { x = canvas.width; y = Math.random() * canvas.height; }
 
+    shootingStars.push({
+      x: x,
+      y: y,
+      vx: (Math.random() - 0.5) * 4,
+      vy: (Math.random() - 0.5) * 4,
+      life: 0,
+      color: "rgba(255, 165, 0, 0.8)" 
+    });
+  }
   requestAnimationFrame(animate);
 }
 

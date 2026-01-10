@@ -103,23 +103,23 @@ function drawFireBorder() {
 
   fireCtx.globalCompositeOperation = "lighter";
 
-  const thickness = 80; // distance fire extends inward
-  const step = 60;      // fewer, larger flames
-  const baseRadius = 40; // base width of flames
+  const thickness = 100; // how far fire extends inward
+  const step = 100;      // fewer flames, bigger spacing
+  const baseRadius = 60; // bigger flame width
 
   function flameBlob(x, y, seed) {
     const distToCenter = Math.hypot(cx - x, cy - y);
 
-    // Flame height is bigger now and slightly random
+    // Bigger, more dynamic flame height
     const height =
-      distToCenter * 0.35 +
-      Math.sin(fireTime * 1.8 + seed) * 25 +
-      Math.random() * 20;
+      distToCenter * 0.4 +
+      Math.sin(fireTime * 1.5 + seed) * 40 +
+      Math.random() * 30;
 
-    // Flame width slightly varies
+    // Wider flame base
     const width =
       baseRadius +
-      Math.sin(fireTime * 2.5 + seed) * 12;
+      Math.sin(fireTime * 2 + seed) * 20;
 
     // Direction toward center
     const dx = cx - x;
@@ -131,13 +131,13 @@ function drawFireBorder() {
     const tipX = x + nx * height;
     const tipY = y + ny * height;
 
-    // Gradient for realistic flame
+    // Realistic gradient for flame
     const grad = fireCtx.createRadialGradient(
       x, y, 4,
       tipX, tipY, height
     );
-    grad.addColorStop(0, "rgba(255,255,200,1)"); // hot core
-    grad.addColorStop(0.3, "rgba(255,180,80,0.85)");
+    grad.addColorStop(0, "rgba(255,255,200,1)");   // hot core
+    grad.addColorStop(0.3, "rgba(255,180,80,0.9)");
     grad.addColorStop(0.6, "rgba(255,90,30,0.6)");
     grad.addColorStop(1, "rgba(255,0,0,0)");
 
@@ -154,26 +154,27 @@ function drawFireBorder() {
 
   // TOP
   for (let x = thickness; x < w - thickness; x += step) {
-    flameBlob(x, thickness, x * 0.12);
+    flameBlob(x, thickness, x * 0.1);
   }
 
   // BOTTOM
   for (let x = thickness; x < w - thickness; x += step) {
-    flameBlob(x, h - thickness, x * 0.15);
+    flameBlob(x, h - thickness, x * 0.12);
   }
 
   // LEFT
   for (let y = thickness; y < h - thickness; y += step) {
-    flameBlob(thickness, y, y * 0.1);
+    flameBlob(thickness, y, y * 0.08);
   }
 
   // RIGHT
   for (let y = thickness; y < h - thickness; y += step) {
-    flameBlob(w - thickness, y, y * 0.14);
+    flameBlob(w - thickness, y, y * 0.1);
   }
 
   fireCtx.globalCompositeOperation = "source-over";
 }
+
 
 
 

@@ -44,11 +44,22 @@ let stars = [];
 let shootingStars = [];
 let running = true;
 
+/* Fire Canvas Setup */
+const fireCanvas = document.getElementById("fire-border");
+const fireCtx = fireCanvas.getContext("2d");
+
+function resizeFire() {
+  fireCanvas.width = canvas.width;
+  fireCanvas.height = canvas.height;
+}
+
 /* Resize */
 function resize() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
+  resizeFire();
 }
+
 resize();
 window.addEventListener("resize", resize);
 
@@ -79,6 +90,55 @@ function createShootingStar() {
 }
 
 createStars();
+let fireTime = 0;
+
+function drawFireBorder() {
+  fireCtx.clearRect(0, 0, fireCanvas.width, fireCanvas.height);
+
+  const w = fireCanvas.width;
+  const h = fireCanvas.height;
+  const thickness = 28;
+
+  fireCtx.lineWidth = 2;
+  fireCtx.shadowBlur = 18;
+  fireCtx.shadowColor = "rgba(255,120,20,0.9)";
+
+  fireCtx.beginPath();
+
+  for (let i = 0; i <= 360; i += 4) {
+    const angle = (i * Math.PI) / 180;
+    const noise =
+      Math.sin(angle * 8 + fireTime) * 6 +
+      Math.sin(angle * 13 - fireTime * 1.5) * 4 +
+      Math.random() * 2;
+
+    const rX = w / 2 - thickness + noise;
+    const rY = h / 2 - thickness + noise;
+
+    const x = w / 2 + Math.cos(angle) * rX;
+    const y = h / 2 + Math.sin(angle) * rY;
+
+    fireCtx.lineTo(x, y);
+  }
+
+  const gradient = fireCtx.createRadialGradient(
+    w / 2,
+    h / 2,
+    Math.min(w, h) / 2 - 60,
+    w / 2,
+    h / 2,
+    Math.min(w, h) / 2
+  );
+
+  gradient.addColorStop(0, "rgba(255,180,60,0.05)");
+  gradient.addColorStop(0.6, "rgba(255,120,20,0.4)");
+  gradient.addColorStop(1, "rgba(255,40,0,0.9)");
+
+  fireCtx.strokeStyle = gradient;
+  fireCtx.stroke();
+
+  fireTime += 0.04;
+}
 
 /* Animation Loop */
 function animate() {
@@ -98,6 +158,8 @@ function animate() {
   ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
   ctx.fill();
 });
+  
+drawFireBorder();
 
   /* Shooting Stars */
   shootingStars.forEach((s, i) => {

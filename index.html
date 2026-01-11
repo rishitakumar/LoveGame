@@ -25,6 +25,25 @@
   <canvas id="starfield"></canvas>
   <div id="intro-text" class="cyber-text">ENTERING CYBERSPACE <span id="loading-dots"></span></div>
 </div>
+<!-- SECOND SCREEN: REMINDERS -->
+<div id="reminder-overlay" hidden>
+  <div class="reminder-box cyber-text">
+    <h2>REMINDERS</h2>
+    <ol class="reminder-list">
+      <li>Be as truthful as possible (to ensure that your final result truly reflects your current health!)</li>
+      <li>Play whenever you wish to reassess your wellbeing status . . .</li>
+      <li>Should you land in a territory that concerns you, apply balanced Self and External love — and return later.</li>
+      <li>Societal factors, including racial bias, socioeconomic barriers, and gender identity, may influence outcomes.</li>
+      <li><strong>Ecstasy</strong> — The highest realm where energy and love abound.</li>
+      <li><strong>Loveland</strong> — Balance exists, though some Murktivities linger.</li>
+      <li><strong>Murkland</strong> — Clouded energy causes fluctuating health.</li>
+      <li><strong>Darkland</strong> — A pit where murk compounds into darkness.</li>
+    </ol>
+
+    <button id="start-game">ENTER</button>
+  </div>
+</div>
+
 
 <svg width="0" height="0" style="position: absolute;">
   <defs>
@@ -240,18 +259,27 @@ const dotInterval = setInterval(() => {
 function endIntro() {
   if (!running) return;
   running = false;
-  
+
   clearInterval(shootingInterval);
-  clearInterval(dotInterval); // STOP THE DOTS
-  
+  clearInterval(dotInterval);
+
   overlay.style.pointerEvents = "none";
   overlay.style.transition = "opacity 0.6s ease";
   overlay.style.opacity = "0";
-  
+
   setTimeout(() => {
     if (overlay.parentNode) overlay.remove();
+
+    // 🔥 SHOW SECOND SCREEN HERE
+    const reminder = document.getElementById("reminder-overlay");
+    if (reminder) reminder.hidden = false;
+
   }, 600);
 }
+document.getElementById("start-game")?.addEventListener("click", () => {
+  document.getElementById("reminder-overlay")?.remove();
+});
+
 </script>
 </script>
 </body>

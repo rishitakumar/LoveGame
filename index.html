@@ -43,7 +43,20 @@
     <button id="start-game">FOR SURE :)</button>
   </div>
 </div>
-
+<!-- THIRD SCREEN: RULES -->
+<div id="rules-overlay" hidden>
+  <div class="reminder-box">
+    <h2>RULES</h2>
+    <ol class="reminder-list">
+      <li>Click the card presented and answer its question.</li>
+      <li>If you answer in a way that shows balanced Self and External love, your character will move up.</li>
+      <li>If you answer in a way that shows an imbalance of Self and External love, your character will move down.</li>
+      <li>Enough balanced answers will move your character into Loveland, and eventually, Ecstasy (without narcotics!)</li>
+      <li>Enough imbalanced answers will move your character into Murkland, and eventually, Darkland (the lowest one may ever feel!)</li>
+    </ol>
+    <button id="begin-game">ALRIGHTY!</button>
+  </div>
+</div>
 
 <svg width="0" height="0" style="position: absolute;">
   <defs>
@@ -308,7 +321,53 @@ function enableReminderSkip() {
   reminder.addEventListener("click", closeReminder);
   window.addEventListener("keydown", closeReminder);
 }
+function enableRulesScreen() {
+  const rules = document.getElementById("rules-overlay");
+  if (!rules) return;
 
+  rules.hidden = false;
+  rules.style.opacity = "0";
+
+  requestAnimationFrame(() => {
+    rules.style.transition = "opacity 0.4s ease";
+    rules.style.opacity = "1";
+  });
+
+  function closeRules() {
+    rules.style.transition = "opacity 0.4s ease";
+    rules.style.opacity = "0";
+
+    setTimeout(() => {
+      rules.remove();
+    }, 400);
+
+    window.removeEventListener("keydown", closeRules);
+    rules.removeEventListener("click", closeRules);
+  }
+
+  rules.addEventListener("click", closeRules);
+  window.addEventListener("keydown", closeRules);
+
+  // Button click also closes
+  document.getElementById("begin-game")?.addEventListener("click", closeRules);
+}
+
+// Call this after closing the reminder overlay
+function closeReminder() {
+  const reminder = document.getElementById("reminder-overlay");
+  if (!reminder) return;
+
+  reminder.style.transition = "opacity 0.4s ease";
+  reminder.style.opacity = "0";
+
+  setTimeout(() => {
+    reminder.remove();
+    enableRulesScreen(); // Show the third screen after reminder
+  }, 400);
+
+  window.removeEventListener("keydown", closeReminder);
+  reminder.removeEventListener("click", closeReminder);
+}
 </script>
 </script>
 </body>

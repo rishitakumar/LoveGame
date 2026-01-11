@@ -178,6 +178,28 @@ body {
     transparent 8px
   );
 }
+/* Softer scanlines for reminder screen (readability) */
+#reminder-overlay .cyber-scanlines {
+  -webkit-mask-image: repeating-linear-gradient(
+    to bottom,
+    black 0px,
+    black 5px,
+    transparent 5px,
+    transparent 9px
+  );
+  mask-image: repeating-linear-gradient(
+    to bottom,
+    black 0px,
+    black 5px,
+    transparent 5px,
+    transparent 9px
+  );
+
+  /* Dark neon overlay to soften contrast */
+  text-shadow:
+    0 0 6px #D011FD,
+    0 0 12px rgba(208, 17, 253, 0.6);
+}
 
 /* New Animation that keeps the text centered while floating */
 @keyframes gameFloat {

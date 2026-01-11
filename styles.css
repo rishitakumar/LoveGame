@@ -153,60 +153,39 @@ body {
   z-index: 100000;      /* Keeps streak above everything else */
 }
 
-/* BASE cyber font (safe for containers) */
 .cyber-text {
-  font-family: 'Impact', sans-serif;
-  color: #f5ff3a;
-  text-transform: uppercase;
-}
-
-/* SCANLINE EFFECT — TEXT ONLY */
-.cyber-scanlines {
-  display: inline-block;
-  -webkit-mask-image: repeating-linear-gradient(
-    to bottom,
-    black 0px,
-    black 4px,
-    transparent 4px,
-    transparent 8px
-  );
-  mask-image: repeating-linear-gradient(
-    to bottom,
-    black 0px,
-    black 4px,
-    transparent 4px,
-    transparent 8px
-  );
-}
-/* Softer scanlines for reminder screen (readability) */
-#reminder-overlay .cyber-scanlines {
-  -webkit-mask-image: repeating-linear-gradient(
-    to bottom,
-    black 0px,
-    black 5px,
-    transparent 5px,
-    transparent 9px
-  );
-  mask-image: repeating-linear-gradient(
-    to bottom,
-    black 0px,
-    black 5px,
-    transparent 5px,
-    transparent 9px
-  );
-
-  /* Dark neon overlay to soften contrast */
-  text-shadow:
-    0 0 6px #D011FD,
-    0 0 12px rgba(208, 17, 253, 0.6);
-}
-#intro-text {
   position: absolute;
-  z-index: 10002;
-  background-color: transparent;
-  isolation: isolate;
-}
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10001;
 
+  font-family: 'Impact', sans-serif;
+  font-size: clamp(2rem, 10vw, 4rem);
+  color: #f5ff3a; 
+  text-transform: uppercase;
+  
+  /* Prevent text from shifting when dots are added */
+  display: inline-block;
+  min-width: 12em; 
+  text-align: center;
+
+  /* THICK PIXEL GAPS */
+  -webkit-mask-image: repeating-linear-gradient(
+    to bottom,
+    black 0px,
+    black 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  mask-image: repeating-linear-gradient(
+    to bottom,
+    black 0px,
+    black 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
 /* New Animation that keeps the text centered while floating */
 @keyframes gameFloat {
   0%, 100% { transform: translate(-50%, -50%); }

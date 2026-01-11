@@ -271,14 +271,43 @@ function endIntro() {
     if (overlay.parentNode) overlay.remove();
 
     // 🔥 SHOW SECOND SCREEN HERE
-    const reminder = document.getElementById("reminder-overlay");
-    if (reminder) reminder.hidden = false;
+    enableReminderSkip();
+
 
   }, 600);
 }
 document.getElementById("start-game")?.addEventListener("click", () => {
   document.getElementById("reminder-overlay")?.remove();
 });
+function closeReminder() {
+  const reminder = document.getElementById("reminder-overlay");
+  if (!reminder) return;
+
+  reminder.style.transition = "opacity 0.4s ease";
+  reminder.style.opacity = "0";
+
+  setTimeout(() => reminder.remove(), 400);
+
+  window.removeEventListener("keydown", closeReminder);
+  reminder.removeEventListener("click", closeReminder);
+}
+
+/* Enable skip */
+function enableReminderSkip() {
+  const reminder = document.getElementById("reminder-overlay");
+  if (!reminder) return;
+
+  reminder.style.opacity = "0";
+  reminder.hidden = false;
+
+  requestAnimationFrame(() => {
+    reminder.style.transition = "opacity 0.4s ease";
+    reminder.style.opacity = "1";
+  });
+
+  reminder.addEventListener("click", closeReminder);
+  window.addEventListener("keydown", closeReminder);
+}
 
 </script>
 </script>

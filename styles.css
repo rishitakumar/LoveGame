@@ -216,6 +216,7 @@ body {
 .reminder-box h2 {
   font-size: 2.2rem;
   color: #fff234;
+  font-family: Impact, sans-serif;
   margin-bottom: 1rem;
   text-shadow: 0 0 10px #ffcb2d;
 }

@@ -200,6 +200,12 @@ body {
     0 0 6px #D011FD,
     0 0 12px rgba(208, 17, 253, 0.6);
 }
+#intro-text {
+  position: absolute;
+  z-index: 10002;
+  background-color: transparent;
+  isolation: isolate;
+}
 
 /* New Animation that keeps the text centered while floating */
 @keyframes gameFloat {

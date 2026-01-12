@@ -298,90 +298,104 @@ function endIntro() {
 
   }, 600);
 }
-document.getElementById("start-game")?.addEventListener("click", () => {
-  document.getElementById("reminder-overlay")?.remove();
-});
-function closeReminder() {
-  const reminder = document.getElementById("reminder-overlay");
-  if (!reminder) return;
+/* =============================
+   REMINDERS → RULES → START FLOW
+============================= */
 
-  reminder.style.transition = "opacity 0.4s ease";
-  reminder.style.opacity = "0";
-
-  setTimeout(() => reminder.remove(), 400);
-
-  window.removeEventListener("keydown", closeReminder);
-  reminder.removeEventListener("click", closeReminder);
-}
-
-/* Enable skip */
-function showRulesFromReminders() {
+function enableReminderScreen() {
+  const reminderOverlay = document.getElementById("reminder-overlay");
   const reminders = document.getElementById("reminders-content");
   const rules = document.getElementById("rules-content");
   const arrow = document.getElementById("rules-arrow");
   const startBtn = document.getElementById("start-game");
 
-  if (!reminders || !rules || !startBtn || !arrow) return;
+  if (!reminderOverlay || !reminders || !rules || !arrow || !startBtn) return;
 
-  // Hide reminders, show rules
-  reminders.style.display = "none";
-  rules.hidden = false;
-  startBtn.hidden = false;
+  // Show reminders
+  reminderOverlay.hidden = false;
+  reminderOverlay.style.opacity = "0";
+  requestAnimationFrame(() => {
+    reminderOverlay.style.transition = "opacity 0.4s ease";
+    reminderOverlay.style.opacity = "1";
+  });
 
-  // Hide arrow
-  arrow.style.display = "none";
+  // ------------------------
+  // STEP 1: Click or key on reminders → show rules
+  function showRules() {
+    reminders.style.display = "none";
+    rules.hidden = false;
+    startBtn.hidden = false;
+    arrow.style.display = "none";
 
-  // Remove listeners to avoid multiple triggers
-  window.removeEventListener("keydown", showRulesFromReminders);
-  document.getElementById("reminder-overlay")?.removeEventListener("click", showRulesFromReminders);
+    // Remove listeners for showing rules
+    reminderOverlay.removeEventListener("click", showRules);
+    window.removeEventListener("keydown", showRules);
 
-  // Enable fade-out closing for rules
-  enableRulesClose();
+    // Enable closing the rules screen
+    enableRulesClose();
+  }
+
+  reminderOverlay.addEventListener("click", showRules);
+  window.addEventListener("keydown", showRules);
+
+  // Keep arrow clickable as alternative
+  arrow.addEventListener("click", (e) => {
+    e.stopPropagation();
+    showRules();
+  });
 }
 
-
-// Add listeners: click anywhere OR any key
-const reminderOverlay = document.getElementById("reminder-overlay");
-if (reminderOverlay) {
-  reminderOverlay.addEventListener("click", showRulesFromReminders);
-  window.addEventListener("keydown", showRulesFromReminders);
-}
-
-// Optional: also keep arrow clickable (redundant, but safe)
-document.getElementById("rules-arrow")?.addEventListener("click", (e) => {
-  e.stopPropagation(); // prevents double trigger
-  showRulesFromReminders();
-});
+/* ------------------------
+   STEP 2: Close overlay from rules
+------------------------ */
 function closeRules() {
-  const rulesOverlay = document.getElementById("reminder-overlay"); // overlay wraps both reminders & rules
-  if (!rulesOverlay) return;
+  const overlay = document.getElementById("reminder-overlay");
+  if (!overlay) return;
 
-  // Fade out overlay smoothly
-  rulesOverlay.style.transition = "opacity 0.5s ease";
-  rulesOverlay.style.opacity = "0";
+  overlay.style.transition = "opacity 0.5s ease";
+  overlay.style.opacity = "0";
 
-  // Remove event listeners immediately to prevent double-trigger
+  // Remove listeners immediately to prevent double triggers
   window.removeEventListener("keydown", closeRules);
-  rulesOverlay.removeEventListener("click", closeRules);
+  overlay.removeEventListener("click", closeRules);
 
   setTimeout(() => {
-    if (rulesOverlay.parentNode) rulesOverlay.remove();
-  }, 500); // wait for fade-out to finish
+    if (overlay.parentNode) overlay.remove();
+  }, 500);
 }
 
-// Add event listeners once rules are visible
 function enableRulesClose() {
-  const rulesOverlay = document.getElementById("reminder-overlay");
-  if (!rulesOverlay) return;
+  const overlay = document.getElementById("reminder-overlay");
+  if (!overlay) return;
 
+  // Click anywhere OR any key closes the rules overlay
+  overlay.addEventListener("click", closeRules);
   window.addEventListener("keydown", closeRules);
-  rulesOverlay.addEventListener("click", closeRules);
 
-  // Optional: keep button functional
-  const startBtn = document.getElementById("start-game");
-  startBtn?.addEventListener("click", closeRules);
+  // Also allow button to close
+  document.getElementById("start-game")?.addEventListener("click", closeRules);
 }
 
+/* ------------------------
+   STEP 3: Call this after intro ends
+------------------------ */
+function endIntro() {
+  if (!running) return;
+  running = false;
+
+  clearInterval(shootingInterval);
+  clearInterval(dotInterval);
+
+  overlay.style.pointerEvents = "none";
+  overlay.style.transition = "opacity 0.6s ease";
+  overlay.style.opacity = "0";
+
+  setTimeout(() => {
+    if (overlay.parentNode) overlay.remove();
+    // 🔥 SHOW REMINDERS SCREEN ONLY NOW
+    enableReminderScreen();
+  }, 600);
+}
 
 </script>
 </script>

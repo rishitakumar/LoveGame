@@ -28,6 +28,9 @@
 <!-- SECOND SCREEN: REMINDERS -->
 <div id="reminder-overlay" hidden>
   <div class="reminder-box">
+
+  <!-- REMINDERS (visible first) -->
+  <div id="reminders-content">
     <h2>REMINDERS</h2>
     <ol class="reminder-list">
       <li>Be as truthful as possible (to ensure that your final result truly reflects your current health!)</li>
@@ -39,9 +42,28 @@
       <li><strong>Murkland</strong> — Clouded energy causes fluctuating health.</li>
       <li><strong>Darkland</strong> — A pit where murk compounds into darkness.</li>
     </ol>
-
-    <button id="start-game">FOR SURE :)</button>
   </div>
+
+  <!-- Arrow -->
+  <div id="rules-arrow" aria-label="Show rules">➜</div>
+
+  <!-- RULES (hidden initially) -->
+  <div id="rules-content" hidden>
+    <h2>RULES</h2>
+    <ol class="reminder-list">
+      <li>Click the card presented and answer its question.</li>
+      <li>If you answer in a way that shows balanced Self and External love, your character will move up.</li>
+      <li>If you answer in a way that shows an imbalance of Self and External love, your character will move down.</li>
+      <li>Enough balanced answers will move your character into <strong>Loveland</strong>, and eventually, <strong>Ecstasy</strong> (without narcotics!).</li>
+      <li>Enough imbalanced answers will move your character into <strong>Murkland</strong>, and eventually, <strong>Darkland</strong>.</li>
+    </ol>
+  </div>
+
+  <!-- BUTTON (hidden initially) -->
+  <button id="start-game" hidden>FOR SURE :)</button>
+
+</div>
+
 </div>
 
 
@@ -308,6 +330,19 @@ function enableReminderSkip() {
   reminder.addEventListener("click", closeReminder);
   window.addEventListener("keydown", closeReminder);
 }
+const arrow = document.getElementById("rules-arrow");
+const reminders = document.getElementById("reminders-content");
+const rules = document.getElementById("rules-content");
+const startBtn = document.getElementById("start-game");
+
+arrow?.addEventListener("click", (e) => {
+  e.stopPropagation(); // prevents overlay auto-close
+
+  reminders.style.display = "none";
+  rules.hidden = false;
+  startBtn.hidden = false;
+  arrow.style.display = "none";
+});
 
 </script>
 </script>

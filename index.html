@@ -40,7 +40,22 @@
       <li><strong>Darkland</strong> — A pit where murk compounds into darkness.</li>
     </ol>
 
-    <button id="start-game">FOR SURE :)</button>
+    <!-- Arrow trigger -->
+<div id="rules-arrow" aria-label="Show rules">➜</div>
+
+<!-- Rules (hidden initially) -->
+<div id="rules-content" hidden>
+  <h3 class="rules-title">RULES</h3>
+  <ul class="rules-list">
+    <li>No skipping questions</li>
+    <li>Answer instinctively</li>
+    <li>There are no wrong outcomes</li>
+  </ul>
+</div>
+
+<!-- Start button (hidden initially) -->
+<button id="start-game" hidden>FOR SURE :)</button>
+
   </div>
 </div>
 
@@ -308,6 +323,16 @@ function enableReminderSkip() {
   reminder.addEventListener("click", closeReminder);
   window.addEventListener("keydown", closeReminder);
 }
+const rulesArrow = document.getElementById("rules-arrow");
+const rulesContent = document.getElementById("rules-content");
+const startBtn = document.getElementById("start-game");
+
+rulesArrow?.addEventListener("click", (e) => {
+  e.stopPropagation(); // prevents overlay click-close
+  rulesContent.hidden = false;
+  startBtn.hidden = false;
+  rulesArrow.style.display = "none";
+});
 
 </script>
 </script>

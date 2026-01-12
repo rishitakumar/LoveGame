@@ -315,34 +315,40 @@ function closeReminder() {
 }
 
 /* Enable skip */
-function enableReminderSkip() {
-  const reminder = document.getElementById("reminder-overlay");
-  if (!reminder) return;
+function showRulesFromReminders() {
+  const reminders = document.getElementById("reminders-content");
+  const rules = document.getElementById("rules-content");
+  const arrow = document.getElementById("rules-arrow");
+  const startBtn = document.getElementById("start-game");
 
-  reminder.style.opacity = "0";
-  reminder.hidden = false;
+  if (!reminders || !rules || !startBtn || !arrow) return;
 
-  requestAnimationFrame(() => {
-    reminder.style.transition = "opacity 0.4s ease";
-    reminder.style.opacity = "1";
-  });
-
-  reminder.addEventListener("click", closeReminder);
-  window.addEventListener("keydown", closeReminder);
-}
-const arrow = document.getElementById("rules-arrow");
-const reminders = document.getElementById("reminders-content");
-const rules = document.getElementById("rules-content");
-const startBtn = document.getElementById("start-game");
-
-arrow?.addEventListener("click", (e) => {
-  e.stopPropagation(); // prevents overlay auto-close
-
+  // Hide reminders, show rules
   reminders.style.display = "none";
   rules.hidden = false;
   startBtn.hidden = false;
+
+  // Hide arrow
   arrow.style.display = "none";
+
+  // Remove event listeners to avoid multiple triggers
+  window.removeEventListener("keydown", showRulesFromReminders);
+  document.getElementById("reminder-overlay")?.removeEventListener("click", showRulesFromReminders);
+}
+
+// Add listeners: click anywhere OR any key
+const reminderOverlay = document.getElementById("reminder-overlay");
+if (reminderOverlay) {
+  reminderOverlay.addEventListener("click", showRulesFromReminders);
+  window.addEventListener("keydown", showRulesFromReminders);
+}
+
+// Optional: also keep arrow clickable (redundant, but safe)
+document.getElementById("rules-arrow")?.addEventListener("click", (e) => {
+  e.stopPropagation(); // prevents double trigger
+  showRulesFromReminders();
 });
+
 
 </script>
 </script>

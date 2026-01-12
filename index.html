@@ -26,27 +26,23 @@
   <div id="intro-text" class="cyber-text">ENTERING CYBERSPACE <span id="loading-dots"></span></div>
 </div>
 <!-- SECOND SCREEN: REMINDERS -->
-<div class="reminder-box">
+<div id="reminder-overlay" hidden>
+  <div class="reminder-box">
+    <h2>REMINDERS</h2>
+    <ol class="reminder-list">
+      <li>Be as truthful as possible (to ensure that your final result truly reflects your current health!)</li>
+      <li>Play whenever you wish to reassess your wellbeing status . . .</li>
+      <li>Should you land in a territory that concerns you, apply balanced Self and External love — and return later.</li>
+      <li>Societal factors, including racial bias, socioeconomic barriers, and gender identity, may influence outcomes.</li>
+      <li><strong>Ecstasy</strong> — The highest realm where energy and love abound.</li>
+      <li><strong>Loveland</strong> — Balance exists, though some Murktivities linger.</li>
+      <li><strong>Murkland</strong> — Clouded energy causes fluctuating health.</li>
+      <li><strong>Darkland</strong> — A pit where murk compounds into darkness.</li>
+    </ol>
 
-  <h2>RULES</h2>
-
-  <!-- Arrow trigger -->
-  <div id="rules-arrow" aria-label="Show rules">➜</div>
-
-  <!-- Rules text (hidden initially) -->
-  <ol id="rules-content" class="reminder-list" hidden>
-    <li>Click the card presented and answer its question.</li>
-    <li>If you answer in a way that shows balanced Self and External love, your character will move up.</li>
-    <li>If you answer in a way that shows an imbalance of Self and External love, your character will move down.</li>
-    <li>Enough balanced answers will move your character into <strong>Loveland</strong>, and eventually, <strong>Ecstasy</strong> (without narcotics!).</li>
-    <li>Enough imbalanced answers will move your character into <strong>Murkland</strong>, and eventually, <strong>Darkland</strong> (the lowest one may ever feel!).</li>
-  </ol>
-
-  <!-- Start button -->
-  <button id="start-game" hidden>FOR SURE :)</button>
-
+    <button id="start-game">FOR SURE :)</button>
+  </div>
 </div>
-
 
 
 <svg width="0" height="0" style="position: absolute;">
@@ -312,26 +308,6 @@ function enableReminderSkip() {
   reminder.addEventListener("click", closeReminder);
   window.addEventListener("keydown", closeReminder);
 }
-const rulesArrow = document.getElementById("rules-arrow");
-const rulesContent = document.getElementById("rules-content");
-const startBtn = document.getElementById("start-game");
-
-rulesArrow?.addEventListener("click", (e) => {
-  e.stopPropagation(); // prevents overlay click-close
-  rulesContent.hidden = false;
-  startBtn.hidden = false;
-  rulesArrow.style.display = "none";
-});
-const rulesArrow = document.getElementById("rules-arrow");
-const rulesContent = document.getElementById("rules-content");
-const startBtn = document.getElementById("start-game");
-
-rulesArrow?.addEventListener("click", (e) => {
-  e.stopPropagation(); // prevents overlay close
-  rulesContent.hidden = false;
-  startBtn.hidden = false;
-  rulesArrow.style.display = "none";
-});
 
 </script>
 </script>

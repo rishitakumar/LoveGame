@@ -305,7 +305,8 @@ body {
   justify-content: center;
   animation: fadeIn 0.6s ease forwards;
   opacity: 1;
-  transition: opacity 0.8s ease;
+  will-change: opacity;
+  transition: none;
 }
 .hidden {
   opacity: 0;

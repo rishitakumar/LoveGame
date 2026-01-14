@@ -395,7 +395,6 @@ body {
 /* Fade entire screen slightly after a character is chosen */
 #character-overlay.selection-made {
   background: radial-gradient(circle, #000000 30%, #080008);
-  transition: opacity 0.4s ease;
 }
 
 /* Slight global dim, selected character stays vivid */

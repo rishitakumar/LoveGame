@@ -413,6 +413,9 @@ function endIntro() {
 /* =============================
    CHARACTER SELECT LOGIC
 ============================= */
+/* =============================
+   CHARACTER SELECT LOGIC
+============================= */
 
 let selectedCharacter = null;
 
@@ -428,7 +431,7 @@ characters.forEach(char => {
   char.addEventListener("click", () => {
     const overlay = document.getElementById("character-overlay");
 
-    // Clear previous
+    // Clear previous state
     characters.forEach(c => c.classList.remove("selected", "dimmed"));
 
     // Select current
@@ -441,32 +444,24 @@ characters.forEach(char => {
       if (c !== char) c.classList.add("dimmed");
     });
 
-    // 🔥 FADE THE FOURTH SCREEN HERE
+    // Soft fade of screen
     overlay.classList.add("selection-made");
   });
 });
 
+// ✅ CONFIRM BUTTON — THIS WAS MISSING
+confirmBtn.addEventListener("click", () => {
+  if (!selectedCharacter) return;
 
-characters.forEach(char => {
-  char.addEventListener("click", () => {
-    const overlay = document.getElementById("character-overlay");
+  const overlay = document.getElementById("character-overlay");
 
-    // Clear previous
-    characters.forEach(c => c.classList.remove("selected", "dimmed"));
+  overlay.classList.add("fade-out");
 
-    // Select current
-    char.classList.add("selected");
-    selectedCharacter = char.dataset.char;
-    confirmBtn.disabled = false;
-
-    // Dim others
-    characters.forEach(c => {
-      if (c !== char) c.classList.add("dimmed");
-    });
-
-    // 🔥 FADE THE FOURTH SCREEN HERE
-    overlay.classList.add("selection-made");
-  });
+  setTimeout(() => {
+    overlay.remove();
+    console.log("Character chosen:", selectedCharacter);
+    // 🚀 Start your game here
+  }, 800);
 });
 
 

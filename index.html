@@ -426,26 +426,49 @@ const confirmBtn = document.getElementById("confirm-character");
 
 characters.forEach(char => {
   char.addEventListener("click", () => {
-    characters.forEach(c => c.classList.remove("selected"));
+    const overlay = document.getElementById("character-overlay");
+
+    // Clear previous
+    characters.forEach(c => c.classList.remove("selected", "dimmed"));
+
+    // Select current
     char.classList.add("selected");
     selectedCharacter = char.dataset.char;
     confirmBtn.disabled = false;
+
+    // Dim others
+    characters.forEach(c => {
+      if (c !== char) c.classList.add("dimmed");
+    });
+
+    // 🔥 FADE THE FOURTH SCREEN HERE
+    overlay.classList.add("selection-made");
   });
 });
 
-confirmBtn.addEventListener("click", () => {
-  if (!selectedCharacter) return;
 
-  const overlay = document.getElementById("character-overlay");
-  overlay.classList.add("fade-out");
+characters.forEach(char => {
+  char.addEventListener("click", () => {
+    const overlay = document.getElementById("character-overlay");
 
-  setTimeout(() => {
-    overlay.remove();
-    showCharacterSelect();
-    console.log("Character chosen:", selectedCharacter);
-    // 🚀 Start your actual game here
-  }, 800);
+    // Clear previous
+    characters.forEach(c => c.classList.remove("selected", "dimmed"));
+
+    // Select current
+    char.classList.add("selected");
+    selectedCharacter = char.dataset.char;
+    confirmBtn.disabled = false;
+
+    // Dim others
+    characters.forEach(c => {
+      if (c !== char) c.classList.add("dimmed");
+    });
+
+    // 🔥 FADE THE FOURTH SCREEN HERE
+    overlay.classList.add("selection-made");
+  });
 });
+
 
 </script>
 </script>

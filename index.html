@@ -374,7 +374,7 @@ function closeRules() {
   overlay.removeEventListener("click", closeRules);
 
   setTimeout(() => {
-    if (overlay.parentNode) overlay.remove();
+    if (overlay.parentNode) overlay.remove(); showCharacterSelect();
   }, 500);
 }
 
@@ -441,6 +441,7 @@ confirmBtn.addEventListener("click", () => {
 
   setTimeout(() => {
     overlay.remove();
+    showCharacterSelect();
     console.log("Character chosen:", selectedCharacter);
     // 🚀 Start your actual game here
   }, 800);

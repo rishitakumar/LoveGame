@@ -422,14 +422,11 @@ let selectedCharacter = null;
 function showCharacterSelect() {
   const overlay = document.getElementById("character-overlay");
 
-  overlay.style.opacity = "0";
-  overlay.style.pointerEvents = "none";
-
-  requestAnimationFrame(() => {
-    overlay.style.opacity = "1";
-    overlay.style.pointerEvents = "auto";
-  });
+  // force initial state
+  overlay.classList.remove("fade-out");
+  overlay.classList.add("visible");
 }
+
 
 const characters = document.querySelectorAll(".character");
 
@@ -463,16 +460,14 @@ confirmBtn.addEventListener("click", () => {
 
   const overlay = document.getElementById("character-overlay");
 
-  // trigger fade
-  overlay.style.opacity = "0";
-  overlay.style.pointerEvents = "none";
+  overlay.classList.remove("visible");
+  overlay.classList.add("fade-out");
 
   setTimeout(() => {
     overlay.remove();
     console.log("Character chosen:", selectedCharacter);
   }, 800);
 });
-
 
 
 </script>

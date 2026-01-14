@@ -421,11 +421,12 @@ let selectedCharacter = null;
 
 function showCharacterSelect() {
   const overlay = document.getElementById("character-overlay");
-  overlay.hidden = false;
+  overlay.classList.remove("hidden");    // Make overlay visible
+  overlay.style.opacity = "1";           // Fully visible
+  overlay.style.pointerEvents = "auto";  // Allow clicks
 }
 
 const characters = document.querySelectorAll(".character");
-const confirmBtn = document.getElementById("confirm-character");
 
 characters.forEach(char => {
   char.addEventListener("click", () => {
@@ -450,17 +451,20 @@ characters.forEach(char => {
 });
 
 // ✅ CONFIRM BUTTON — THIS WAS MISSING
+const confirmBtn = document.getElementById("confirm-character");
+
 confirmBtn.addEventListener("click", () => {
   if (!selectedCharacter) return;
 
   const overlay = document.getElementById("character-overlay");
 
-  overlay.classList.add("fade-out");
+  // Fade out
+  overlay.classList.add("fade-out");  // triggers opacity 0 + disables clicks
 
   setTimeout(() => {
-    overlay.remove();
+    overlay.remove();                  // remove overlay after fade
     console.log("Character chosen:", selectedCharacter);
-    // 🚀 Start your game here
+    // 🔥 Start your game here
   }, 800);
 });
 

@@ -66,6 +66,20 @@
 
 </div>
 
+<!-- CHARACTER SELECT SCREEN -->
+<div id="character-overlay" hidden>
+  <h2 class="character-title">Choose Your Character</h2>
+
+  <div class="character-grid">
+    <img src="char1.png" class="character" data-char="1">
+    <img src="char2.png" class="character" data-char="2">
+    <img src="char3.png" class="character" data-char="3">
+    <img src="char4.png" class="character" data-char="4">
+    <img src="char5.png" class="character" data-char="5">
+  </div>
+
+  <button id="confirm-character" disabled>CONFIRM</button>
+</div>
 
 <svg width="0" height="0" style="position: absolute;">
   <defs>
@@ -396,6 +410,41 @@ function endIntro() {
     enableReminderScreen();
   }, 600);
 }
+/* =============================
+   CHARACTER SELECT LOGIC
+============================= */
+
+let selectedCharacter = null;
+
+function showCharacterSelect() {
+  const overlay = document.getElementById("character-overlay");
+  overlay.hidden = false;
+}
+
+const characters = document.querySelectorAll(".character");
+const confirmBtn = document.getElementById("confirm-character");
+
+characters.forEach(char => {
+  char.addEventListener("click", () => {
+    characters.forEach(c => c.classList.remove("selected"));
+    char.classList.add("selected");
+    selectedCharacter = char.dataset.char;
+    confirmBtn.disabled = false;
+  });
+});
+
+confirmBtn.addEventListener("click", () => {
+  if (!selectedCharacter) return;
+
+  const overlay = document.getElementById("character-overlay");
+  overlay.classList.add("fade-out");
+
+  setTimeout(() => {
+    overlay.remove();
+    console.log("Character chosen:", selectedCharacter);
+    // 🚀 Start your actual game here
+  }, 800);
+});
 
 </script>
 </script>

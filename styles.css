@@ -292,30 +292,6 @@ body {
   to { opacity: 1; transform: translateX(0); }
 }
 
-/* CHARACTER SELECT OVERLAY */
-#character-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 8500;
-  background: rgba(0,0,0,0.9);
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  opacity: 0;
-  pointer-events: none;
-
-  transition: opacity 0.8s ease;
-  will-change: opacity;
-}
-
-.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
 
 /* Title */
 .character-title {
@@ -390,11 +366,6 @@ body {
   to { opacity: 1 }
 }
 
-#character-overlay.fade-out {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.8s ease;
-}
 
 /* Fade entire screen slightly after a character is chosen */
 #character-overlay.selection-made {
@@ -409,4 +380,31 @@ body {
 /* Selected character overrides fade */
 #character-overlay.selection-made .character.selected {
   opacity: 1;
+}
+#character-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 8500;
+  background: rgba(0,0,0,0.9);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition: opacity 0.8s ease;
+  will-change: opacity;
+}
+
+#character-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#character-overlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
 }

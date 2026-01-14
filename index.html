@@ -68,6 +68,7 @@
 
 <!-- CHARACTER SELECT SCREEN -->
 <div id="character-overlay" class="hidden">
+  <div id="character-caption" class="hidden"></div>
   <h2 class="character-title">CHOOSE YOUR CHARACTER!</h2>
 
   <div class="character-grid">
@@ -467,6 +468,26 @@ confirmBtn.addEventListener("click", () => {
     overlay.remove();
     console.log("Character chosen:", selectedCharacter);
   }, 800);
+});
+const subtitles = {
+  phoenix: "The Fiery Phoenix . . .",
+  kitsune: "The Cunning Kitsune . . .",
+  mamiwata: "The Alluring Mami Wata . . .",
+  hydra: "The Immortal Hydra . . .",
+  human: "The Ruthless Human . . ."
+};
+
+const caption = document.getElementById("character-caption");
+
+document.querySelectorAll(".character").forEach(char => {
+  char.addEventListener("click", () => {
+    const key = char.dataset.character;
+    if (!subtitles[key]) return;
+
+    caption.textContent = subtitles[key];
+    caption.classList.remove("hidden");
+    caption.classList.add("visible");
+  });
 });
 
 

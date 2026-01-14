@@ -480,15 +480,31 @@ const subtitles = {
 
 const caption = document.getElementById("character-caption");
 
+// Typewriter function
+function typeWriter(element, text, speed = 50) {
+  element.textContent = "";        // clear previous text
+  let i = 0;
+
+  const interval = setInterval(() => {
+    element.textContent += text.charAt(i);
+    i++;
+    if (i >= text.length) clearInterval(interval);
+  }, speed);
+}
+
+// Character click logic
 document.querySelectorAll(".character").forEach(char => {
   char.addEventListener("click", () => {
-    const key = char.dataset.character; // now matches your HTML
+    const key = char.dataset.character;
     if (!subtitles[key]) return;
 
-    caption.textContent = subtitles[key];
     caption.classList.add("visible");
+
+    // Trigger typewriter animation instead of setting text directly
+    typeWriter(caption, subtitles[key], 50); // 50ms per character
   });
 });
+
 
 
 

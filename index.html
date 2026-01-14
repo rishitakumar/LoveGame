@@ -458,13 +458,16 @@ confirmBtn.addEventListener("click", () => {
 
   const overlay = document.getElementById("character-overlay");
 
-  overlay.classList.remove("selection-made"); // remove conflict
-  overlay.classList.add("fade-out");          // triggers fade
+  // Add fade class
+  overlay.classList.add("fade-out");
 
+  // Pause transitions for children to prevent stutter
+  overlay.querySelectorAll("*").forEach(el => el.style.transition = "none");
+
+  // Remove after fade
   setTimeout(() => {
     overlay.remove();
     console.log("Character chosen:", selectedCharacter);
-    // 🔥 Start your game here
   }, 800);
 });
 

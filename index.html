@@ -72,11 +72,12 @@
   <h2 class="character-title">CHOOSE YOUR CHARACTER!</h2>
 
   <div class="character-grid">
-    <img src="1phoenix.png" class="character" data-char="1">
-    <img src="2kitsune.png" class="character" data-char="2">
-    <img src="3wata.png" class="character" data-char="3">
-    <img src="4hydra.png" class="character" data-char="4">
-    <img src="5girl.png" class="character" data-char="5">
+    <img src="1phoenix.png" class="character" data-character="phoenix">
+    <img src="2kitsune.png" class="character" data-character="kitsune">
+    <img src="3wata.png" class="character" data-character="mamiwata">
+    <img src="4hydra.png" class="character" data-character="hydra">
+    <img src="5girl.png" class="character" data-character="human">
+
   </div>
 
   <button id="confirm-character" disabled>CONFIRM</button>
@@ -481,14 +482,14 @@ const caption = document.getElementById("character-caption");
 
 document.querySelectorAll(".character").forEach(char => {
   char.addEventListener("click", () => {
-    const key = char.dataset.character;
+    const key = char.dataset.character; // now matches your HTML
     if (!subtitles[key]) return;
 
     caption.textContent = subtitles[key];
-    caption.classList.remove("hidden");
     caption.classList.add("visible");
   });
 });
+
 
 
 </script>

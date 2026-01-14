@@ -385,4 +385,18 @@ body {
 @keyframes fadeOut {
   to { opacity: 0; transform: scale(0.95); }
 }
+/* Fade entire screen slightly after a character is chosen */
+#character-overlay.selection-made {
+  background: radial-gradient(circle, #000000 30%, #080008);
+  transition: opacity 0.4s ease;
+}
 
+/* Slight global dim, selected character stays vivid */
+#character-overlay.selection-made .character-grid {
+  opacity: 0.85;
+}
+
+/* Selected character overrides fade */
+#character-overlay.selection-made .character.selected {
+  opacity: 1;
+}

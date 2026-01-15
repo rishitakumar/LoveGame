@@ -481,16 +481,27 @@ const subtitles = {
 const caption = document.getElementById("character-caption");
 
 // Typewriter function
+let typingInterval = null;
 function typeWriter(element, text, speed = 50) {
-  element.textContent = "";        // clear previous text
+  if (typingInterval) {
+    clearInterval(typingInterval);
+    typingInterval = null;
+  }
+
+  element.textContent = "";
   let i = 0;
 
-  const interval = setInterval(() => {
+  typingInterval = setInterval(() => {
     element.textContent += text.charAt(i);
     i++;
-    if (i >= text.length) clearInterval(interval);
+
+    if (i >= text.length) {
+      clearInterval(typingInterval);
+      typingInterval = null;
+    }
   }, speed);
 }
+
 
 // Character click logic
 document.querySelectorAll(".character").forEach(char => {
@@ -499,11 +510,10 @@ document.querySelectorAll(".character").forEach(char => {
     if (!subtitles[key]) return;
 
     caption.classList.add("visible");
-
-    // Trigger typewriter animation instead of setting text directly
-    typeWriter(caption, subtitles[key], 50); // 50ms per character
+    typeWriter(caption, subtitles[key], 50);
   });
 });
+
 
 
 

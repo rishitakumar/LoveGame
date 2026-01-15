@@ -416,7 +416,7 @@ body {
   letter-spacing: 0.12em;
   font-style: italic;
 
-  color: rgba(220, 190, 255, 0.9);
+  color: #fff234;
   text-shadow:
     0 0 6px rgba(190, 140, 255, 0.5),
     0 0 14px rgba(130, 80, 220, 0.35);

@@ -411,8 +411,8 @@ body {
 #character-caption {
   text-align: center;
   margin-bottom: 18px;
-  font-family: 'Cinzel', serif; /* or your existing font */
-  font-size: 0.95rem;
+  font-family: 'Georgia', serif; /* or your existing font */
+  font-size: 1.5rem;
   letter-spacing: 0.12em;
   font-style: italic;
 

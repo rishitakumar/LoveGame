@@ -475,15 +475,17 @@ function positionCharacter() {
 
   const rung = RUNG_COORDS.darkland[GameState.rungIndex];
 
-  const scaleX = img.clientWidth / 1545;
-  const scaleY = img.clientHeight / 2000;
+  const x = (rung.x / 1545) * img.clientWidth;
+  const y = (rung.y / 2000) * img.clientHeight;
 
-  char.style.left = `${rung.x * scaleX}px`;
-  char.style.bottom = `${(2000 - rung.y) * scaleY}px`;
+  // place character by TOP coords
+  char.style.left = `${x}px`;
+  char.style.top  = `${y}px`;
 
-  // auto-scroll so the letter is visible
-  img.parentElement.parentElement.scrollTo({
-    top: img.clientHeight - rung.y * scaleY - window.innerHeight * 0.6,
+  // scroll so character starts near bottom area
+  const screen = document.getElementById("game-screen");
+  screen.scrollTo({
+    top: Math.max(0, y - screen.clientHeight * 0.7),
     behavior: "smooth"
   });
 }
@@ -556,50 +558,46 @@ document.querySelectorAll(".character").forEach(char => {
 function startLoveGame() {
   const screen = document.getElementById("game-screen");
   screen.hidden = false;
-  screen.style.display = "flex";
+  screen.style.display = "block";
+
   GameState.land = "darkland";
-  GameState.category = "physical";
   GameState.rungIndex = 0;
-  GameState.questionIndex = 0;
-  GameState.correctCount = 0;
 
-  document.getElementById("game-background").src =
-    "darkland_screen.png";
+  const img = document.getElementById("game-background");
+  img.onload = () => {
+    const char = document.getElementById("player-character");
+    char.src = characterImages[selectedCharacter];
 
-  const char = document.getElementById("player-character");
-  char.src = characterImages[selectedCharacter];
-  char.classList.add("glow");
+    positionCharacter();
+    showBeginText();
+  };
 
-  positionCharacter();
-  setTimeout(showBeginText, 400);
-  setTimeout(() => {
-  document.getElementById("game-screen").scrollTo({
-    top: document.getElementById("game-screen").scrollHeight,
-    behavior: "smooth"
-  });
-}, 200);
+  img.src = "darkland_screen.png";
+}
 
 function showBeginText() {
   if (beginShown) return;
   beginShown = true;
 
   const begin = document.getElementById("begin-text");
-  const img = document.getElementById("game-background");
-  const rung = RUNG_COORDS.darkland[0];
+  const img   = document.getElementById("game-background");
 
-  const scaleX = img.clientWidth / 1545;
-  const scaleY = img.clientHeight / 2000;
+  const rung = RUNG_COORDS.darkland[0]; // first letter (bottom D)
 
-  begin.style.left = `${rung.x * scaleX}px`;
-  begin.style.bottom = `${(2000 - rung.y) * scaleY + 120}px`;
+  const x = (rung.x / 1545) * img.clientWidth;
+  const y = (rung.y / 2000) * img.clientHeight;
+
+  begin.style.left = `${x}px`;
+  begin.style.top  = `${y - 180}px`; // a little above the first letter
   begin.style.opacity = 1;
   begin.textContent = "";
 
   typeWriter(begin, "BEGIN", 120);
 
   setTimeout(() => {
+    begin.style.transition = "opacity 0.8s ease";
     begin.style.opacity = 0;
-  }, 3000);
+  }, 2800);
 }
 
 setTimeout(showBeginText, 300);

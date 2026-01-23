@@ -483,17 +483,16 @@ confirmBtn.addEventListener("click", () => {
 // =============================
 function positionCharacter() {
   const char = document.getElementById("player-character");
+  const board = document.getElementById("board");
 
-  char.style.position = "absolute";
-  char.style.left = "50%";
-  char.style.transform = "translateX(-50%)";
+  const y = RUNG_POSITIONS[GameState.land][GameState.rungIndex];
 
-  const y = getRungY(GameState.land, GameState.rungIndex);
   char.style.bottom = `${y}px`;
 
-  char.scrollIntoView({
-    behavior: "smooth",
-    block: "end"
+  // Auto-scroll so player starts low and climbs upward
+  board.parentElement.scrollTo({
+    top: board.scrollHeight - y - 300,
+    behavior: "smooth"
   });
 }
 
@@ -581,6 +580,12 @@ function startLoveGame() {
   char.classList.add("glow");
 
   positionCharacter();
+  setTimeout(() => {
+  document.getElementById("game-screen").scrollTo({
+    top: document.getElementById("game-screen").scrollHeight,
+    behavior: "smooth"
+  });
+}, 200);
 
   if (!beginShown) {
   beginShown = true;
@@ -599,6 +604,24 @@ function startLoveGame() {
 
 
 }
+const RUNG_POSITIONS = {
+  darkland: [ 
+    80,   // D (bottom)
+    220,  // n
+    360,  // A
+    500,  // L
+    640,  // K
+    780,  // R
+    920,  // A
+    1060  // D (top)
+  ],
+  murkland: [
+    140, 260, 380, 500, 620, 740, 860, 980
+  ],
+  loveland: [
+    160, 300, 440, 580, 720, 860, 1000, 1140
+  ]
+};
 
 </script>
   <div id="game-screen" hidden>

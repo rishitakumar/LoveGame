@@ -434,24 +434,8 @@ body {
 .hidden {
   pointer-events: none;
 }
-#begin-text {
-  position: absolute;   /* NOT sticky */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 5000;
-  pointer-events: none;
-  opacity: 0;
-}
 
-.player-avatar {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120px;
-  pointer-events: none;
-  filter: drop-shadow(0 0 18px #f5ff3a);
-}
+
 
 #game-screen {
   position: relative;
@@ -475,12 +459,33 @@ body {
   width: auto;
   pointer-events: none;
 }
+#ladder-wrapper {
+  position: relative;
+  height: 200vh;      /* tall ladder */
+  width: fit-content;
+  margin: 0 auto;
+}
+
+#game-background {
+  display: block;
+  height: 100%;
+  width: auto;
+}
 
 #player-character {
   position: absolute;
-  left: 50%;
-  transform: translate(-50%, 50%);
   width: 120px;
   pointer-events: none;
+  transform: translate(-50%, -85%);
   filter: drop-shadow(0 0 18px #f5ff3a);
+}
+
+#begin-text {
+  position: absolute;
+  left: 50%;
+  bottom: 110px;      /* near bottom D */
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 20;
 }

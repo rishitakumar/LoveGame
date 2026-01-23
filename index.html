@@ -555,6 +555,9 @@ document.querySelectorAll(".character").forEach(char => {
 // =============================
 // START LOVE GAME
 // =============================
+// =============================
+// START LOVE GAME
+// =============================
 function startLoveGame() {
   const screen = document.getElementById("game-screen");
   screen.hidden = false;
@@ -564,6 +567,10 @@ function startLoveGame() {
   GameState.rungIndex = 0;
 
   const img = document.getElementById("game-background");
+
+  // important: clear previous onload (prevents weirdness on replays)
+  img.onload = null;
+
   img.onload = () => {
     const char = document.getElementById("player-character");
     char.src = characterImages[selectedCharacter];
@@ -582,13 +589,13 @@ function showBeginText() {
   const begin = document.getElementById("begin-text");
   const img   = document.getElementById("game-background");
 
-  const rung = RUNG_COORDS.darkland[0]; // first letter (bottom D)
+  const rung = RUNG_COORDS.darkland[0]; // bottom D
 
   const x = (rung.x / 1545) * img.clientWidth;
   const y = (rung.y / 2000) * img.clientHeight;
 
   begin.style.left = `${x}px`;
-  begin.style.top  = `${y - 180}px`; // a little above the first letter
+  begin.style.top  = `${y - 180}px`;
   begin.style.opacity = 1;
   begin.textContent = "";
 
@@ -600,19 +607,17 @@ function showBeginText() {
   }, 2800);
 }
 
-setTimeout(showBeginText, 300);
-
-}
+// Your coordinates
 const RUNG_COORDS = {
   darkland: [
-    { x: 904, y: 1854 }, // D
+    { x: 904,  y: 1854 }, // D bottom
     { x: 1057, y: 1574 }, // A
-    { x: 969, y: 1280 }, // R
+    { x: 969,  y: 1280 }, // R
     { x: 1108, y: 1097 }, // K
-    { x: 731, y: 827 }, // L
-    { x: 884, y: 529 }, // A
-    { x: 583, y: 354 }, // N
-    { x: 735, y: 93 }   // D
+    { x: 731,  y: 827  }, // L
+    { x: 884,  y: 529  }, // A
+    { x: 583,  y: 354  }, // N
+    { x: 735,  y: 93   }  // D top
   ]
 };
 

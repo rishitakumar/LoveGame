@@ -414,20 +414,6 @@ const LADDERS = {
   loveland: 8    // l o v e l a n d
 };
 
-// Pixel Y-positions of rungs (bottom → top)
-function getRungY(land, index) {
-  const screen = document.getElementById("game-screen");
-  const height = screen.clientHeight;
-
-  const rungCount = LADDERS[land];
-  const paddingBottom = 40;
-  const paddingTop = 60;
-
-  const usableHeight = height - paddingTop - paddingBottom;
-  const step = usableHeight / (rungCount - 1);
-
-  return paddingBottom + step * index;
-}
 
 function showCharacterSelect() {
   const overlay = document.getElementById("character-overlay");
@@ -485,15 +471,15 @@ confirmBtn.addEventListener("click", () => {
 // =============================
 function positionCharacter() {
   const char = document.getElementById("player-character");
-  const board = document.getElementById("board");
+  const ladder = document.getElementById("ladder-wrapper");
 
   const y = RUNG_POSITIONS[GameState.land][GameState.rungIndex];
 
+  char.style.left = "50%";
   char.style.bottom = `${y}px`;
 
-  // Auto-scroll so player starts low and climbs upward
-  board.parentElement.scrollTo({
-    top: board.scrollHeight - y - 300,
+  ladder.parentElement.scrollTo({
+    top: ladder.scrollHeight - y - 200,
     behavior: "smooth"
   });
 }
@@ -581,6 +567,7 @@ function startLoveGame() {
   char.classList.add("glow");
 
   positionCharacter();
+  setTimeout(showBeginText, 400);
   setTimeout(() => {
   document.getElementById("game-screen").scrollTo({
     top: document.getElementById("game-screen").scrollHeight,
@@ -588,21 +575,21 @@ function startLoveGame() {
   });
 }, 200);
 
- function showBeginText() {
+function showBeginText() {
   if (beginShown) return;
   beginShown = true;
 
   const begin = document.getElementById("begin-text");
-  begin.style.opacity = 1;
   begin.textContent = "";
+  begin.style.opacity = 1;
 
   typeWriter(begin, "BEGIN", 120);
 
   setTimeout(() => {
-    begin.style.transition = "opacity 1s ease";
     begin.style.opacity = 0;
   }, 3000);
 }
+
 setTimeout(showBeginText, 300);
 
 }

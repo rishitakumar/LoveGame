@@ -258,11 +258,20 @@ const shootingInterval = setInterval(() => { if (Math.random() > 0.4) createShoo
 
 /* End Intro Logic */
 function endIntro() {
+  if (!running) return;
   running = false;
+
   clearInterval(shootingInterval);
+  clearInterval(dotInterval);
+
+  overlay.style.pointerEvents = "none";
   overlay.style.transition = "opacity 0.6s ease";
   overlay.style.opacity = "0";
-  setTimeout(() => overlay.remove(), 600);
+
+  setTimeout(() => {
+    if (overlay.parentNode) overlay.remove();
+    enableReminderScreen(); // ✅ THIS is correct
+  }, 600);
 }
 
 const timeout = setTimeout(endIntro, 3500);
@@ -281,23 +290,6 @@ window.addEventListener("keydown", (e) => {
   endIntro();
 }, { once: true });
 
-/* --- End Intro Logic (Ensure this matches) --- */
-function endIntro() {
-  if (!running && !overlay.parentNode) return; // Prevent running twice
-  
-  running = false;
-  clearInterval(shootingInterval);
-  
-  // Smooth Fade Out
-  overlay.style.transition = "opacity 0.8s ease, visibility 0.8s";
-  overlay.style.opacity = "0";
-  overlay.style.visibility = "hidden";
-  
-  // Completely remove from memory after fade
-  setTimeout(() => {
-    if (overlay.parentNode) overlay.remove();
-  }, 800);
-}
 resizeCanvases();
 animate();
   
@@ -311,26 +303,6 @@ const dotInterval = setInterval(() => {
 }, 400);
 
 /* Update your endIntro function to stop the dots too */
-function endIntro() {
-  if (!running) return;
-  running = false;
-
-  clearInterval(shootingInterval);
-  clearInterval(dotInterval);
-
-  overlay.style.pointerEvents = "none";
-  overlay.style.transition = "opacity 0.6s ease";
-  overlay.style.opacity = "0";
-
-  setTimeout(() => {
-    if (overlay.parentNode) overlay.remove();
-
-    // 🔥 SHOW SECOND SCREEN HERE
-    enableReminderSkip();
-
-
-  }, 600);
-}
 /* =============================
    REMINDERS → RULES → START FLOW
 ============================= */
@@ -412,23 +384,7 @@ function enableRulesClose() {
 /* ------------------------
    STEP 3: Call this after intro ends
 ------------------------ */
-function endIntro() {
-  if (!running) return;
-  running = false;
 
-  clearInterval(shootingInterval);
-  clearInterval(dotInterval);
-
-  overlay.style.pointerEvents = "none";
-  overlay.style.transition = "opacity 0.6s ease";
-  overlay.style.opacity = "0";
-
-  setTimeout(() => {
-    if (overlay.parentNode) overlay.remove();
-    // 🔥 SHOW REMINDERS SCREEN ONLY NOW
-    enableReminderScreen();
-  }, 600);
-}
 /* =============================
    CHARACTER SELECT LOGIC
 ============================= */
@@ -519,11 +475,12 @@ confirmBtn.addEventListener("click", () => {
 // =============================
 function positionCharacter() {
   const char = document.getElementById("player-character");
-  char.style.position = "absolute";
-  char.style.left = "120px";
-  char.style.top = RUNG_Y[GameState.land][GameState.rungIndex] + "px";
 
-  // 🔽 Auto-scroll to character
+  char.style.position = "absolute";
+  char.style.left = "50%";
+  char.style.transform = "translateX(-50%)";
+  char.style.bottom = RUNG_Y[GameState.land][GameState.rungIndex] + "px";
+
   char.scrollIntoView({
     behavior: "smooth",
     block: "end"
@@ -598,7 +555,7 @@ document.querySelectorAll(".character").forEach(char => {
 function startLoveGame() {
   const screen = document.getElementById("game-screen");
   screen.hidden = false;
-
+  screen.style.display = "flex";
   GameState.land = "darkland";
   GameState.category = "physical";
   GameState.rungIndex = 0;
@@ -615,7 +572,6 @@ function startLoveGame() {
   positionCharacter();
 
   const begin = document.getElementById("begin-text");
-  begin.const begin = document.getElementById("begin-text");
 begin.style.opacity = 1;
 begin.textContent = "";
 
@@ -626,10 +582,9 @@ setTimeout(() => {
   begin.style.opacity = 0;
 }, 3200);
 
+
 }
 
-
-</script>
 </script>
   <div id="game-screen" hidden>
   <img id="game-background" />

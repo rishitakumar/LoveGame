@@ -444,13 +444,6 @@ body {
   opacity: 0;
 }
 
-#game-container {
-  position: relative;
-  height: calc(100vh - 80px); /* navbar stays visible */
-  overflow-y: auto;
-  margin-top: 80px;
-}
-
 .player-avatar {
   position: absolute;
   left: 50%;

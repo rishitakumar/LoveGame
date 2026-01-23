@@ -117,6 +117,8 @@ if (localStorage.getItem("lovegame-played") === todayKey) {
 
 localStorage.setItem("lovegame-played", todayKey); --- */
 
+
+let beginShown = false;
   
 /* --- UNIVERSAL MOUSE STREAK SETUP --- */
 const mCanvas = document.getElementById("mouse-canvas");
@@ -562,7 +564,6 @@ document.querySelectorAll(".character").forEach(char => {
 // START LOVE GAME
 // =============================
 function startLoveGame() {
-  let beginShown = false;
   const screen = document.getElementById("game-screen");
   screen.hidden = false;
   screen.style.display = "flex";

@@ -434,34 +434,9 @@ body {
 .hidden {
   pointer-events: none;
 }
-#game-screen {
-  position: relative;
-  width: 100%;
-  height: calc(100vh - 220px); /* header + navbar approx */
-  margin-top: 0;
-  background: black;
-
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-
-  overflow-y: auto;
-}
-#player-character {
-  width: 120px;
-  filter: drop-shadow(0 0 18px #f5ff3a);
-  pointer-events: none;
-}
 #begin-text {
   opacity: 0;
   pointer-events: none;
-}
-#game-background {
-  position: absolute;
-  bottom: 0;
-  max-height: 100%;
-  width: auto;
-  max-width: 100%;
 }
 #game-container {
   position: relative;
@@ -470,15 +445,41 @@ body {
   margin-top: 80px;
 }
 
-#board {
-  position: relative;
-  height: 200vh; /* 🔥 twice the screen height */
-  width: 100%;
-}
 .character {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
   bottom: auto;
   transition: top 0.8s ease;
+}
+#game-screen {
+  position: relative;
+  height: calc(100vh - 220px); /* header + navbar */
+  overflow-y: auto;
+  background: black;
+}
+
+#board {
+  position: relative;
+  height: 200vh; /* 🔥 tall mythic ascent */
+  width: 100%;
+}
+
+#game-background {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+  width: auto;
+  pointer-events: none;
+}
+
+#player-character {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  pointer-events: none;
+  filter: drop-shadow(0 0 18px #f5ff3a);
 }

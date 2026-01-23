@@ -465,14 +465,33 @@ body {
   z-index: 30;
 }
 
-#begin-text{
-  position: absolute;
-  transform: translate(-50%, 0);
+.begin-text{
+  position: absolute;              /* stays where JS places it */
+  transform: translate(-50%, 0);   /* center on x only */
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+
   font-family: Impact, sans-serif;
   font-size: clamp(2rem, 10vw, 4rem);
   color: #f5ff3a;
   text-transform: uppercase;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 40;
+  text-align: center;
+  letter-spacing: 0.04em;
+
+  /* same pixel-gaps effect as cyber-text */
+  -webkit-mask-image: repeating-linear-gradient(
+    to bottom,
+    black 0px,
+    black 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  mask-image: repeating-linear-gradient(
+    to bottom,
+    black 0px,
+    black 4px,
+    transparent 4px,
+    transparent 8px
+  );
 }

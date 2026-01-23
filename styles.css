@@ -448,3 +448,7 @@ body {
   filter: drop-shadow(0 0 18px #f5ff3a);
   pointer-events: none;
 }
+#begin-text {
+  opacity: 0;
+  pointer-events: none;
+}

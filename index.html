@@ -522,6 +522,12 @@ function positionCharacter() {
   char.style.position = "absolute";
   char.style.left = "120px";
   char.style.top = RUNG_Y[GameState.land][GameState.rungIndex] + "px";
+
+  // 🔽 Auto-scroll to character
+  char.scrollIntoView({
+    behavior: "smooth",
+    block: "end"
+  });
 }
 
 function moveCharacter(delta) {
@@ -539,6 +545,14 @@ const subtitles = {
   mamiwata: "The Alluring Mami Wata . . .",
   hydra: "The Immortal Hydra . . .",
   human: "The Ruthless Human . . ."
+};
+
+const characterImages = {
+  phoenix: "1phoenix.png",
+  kitsune: "2kitsune.png",
+  mamiwata: "3wata.png",
+  hydra: "4hydra.png",
+  human: "5girl.png"
 };
 
 const caption = document.getElementById("character-caption");
@@ -595,15 +609,23 @@ function startLoveGame() {
     "darkland_screen.png";
 
   const char = document.getElementById("player-character");
-  char.src = `${selectedCharacter}.png`;
+  char.src = characterImages[selectedCharacter];
   char.classList.add("glow");
 
   positionCharacter();
 
   const begin = document.getElementById("begin-text");
-  begin.style.opacity = 1;
+  begin.const begin = document.getElementById("begin-text");
+begin.style.opacity = 1;
+begin.textContent = "";
 
-  setTimeout(() => begin.style.opacity = 0, 3000);
+typeWriter(begin, "BEGIN", 120);
+
+setTimeout(() => {
+  begin.style.transition = "opacity 1s ease";
+  begin.style.opacity = 0;
+}, 3200);
+
 }
 
 

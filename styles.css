@@ -434,3 +434,17 @@ body {
 .hidden {
   pointer-events: none;
 }
+#game-screen {
+  position: fixed;
+  inset: 0;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; /* important: bottom alignment */
+  overflow-y: auto;
+}
+#player-character {
+  width: 120px;
+  filter: drop-shadow(0 0 18px #f5ff3a);
+  pointer-events: none;
+}

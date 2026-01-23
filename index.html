@@ -101,6 +101,23 @@
 </svg>
   
 <script>
+// =============================
+// DAILY PLAY LIMIT
+// =============================
+const todayKey = new Date().toDateString();
+
+if (localStorage.getItem("lovegame-played") === todayKey) {
+  document.body.innerHTML = `
+    <div class="cyber-text" style="text-align:center; margin-top:40vh;">
+      Come back tomorrow, fellow traveler . . .
+    </div>
+  `;
+  throw new Error("Daily limit reached");
+}
+
+localStorage.setItem("lovegame-played", todayKey);
+
+  
 /* --- UNIVERSAL MOUSE STREAK SETUP --- */
 const mCanvas = document.getElementById("mouse-canvas");
 const mCtx = mCanvas.getContext("2d");
@@ -421,6 +438,31 @@ function endIntro() {
 
 let selectedCharacter = null;
 
+  // =============================
+// LOVE GAME STATE
+// =============================
+const GameState = {
+  land: "darkland",
+  category: "physical",
+  rungIndex: 0,
+  questionIndex: 0,
+  correctCount: 0
+};
+
+// Each land has ALL letters (not just murk / love)
+const LADDERS = {
+  darkland: 8,   // D n A L K R A D
+  murkland: 8,   // m u r k l a n d
+  loveland: 8    // l o v e l a n d
+};
+
+// Pixel Y-positions of rungs (bottom → top)
+const RUNG_Y = {
+  darkland: [720,660,600,540,480,420,360,300],
+  murkland: [720,660,600,540,480,420,360,300],
+  loveland: [720,660,600,540,480,420,360,300]
+};
+
 function showCharacterSelect() {
   const overlay = document.getElementById("character-overlay");
 
@@ -467,9 +509,30 @@ confirmBtn.addEventListener("click", () => {
 
   setTimeout(() => {
     overlay.remove();
-    console.log("Character chosen:", selectedCharacter);
+    startLoveGame();
   }, 800);
 });
+
+
+  // =============================
+// CHARACTER MOVEMENT
+// =============================
+function positionCharacter() {
+  const char = document.getElementById("player-character");
+  char.style.position = "absolute";
+  char.style.left = "120px";
+  char.style.top = RUNG_Y[GameState.land][GameState.rungIndex] + "px";
+}
+
+function moveCharacter(delta) {
+  const max = LADDERS[GameState.land] - 1;
+  GameState.rungIndex = Math.max(
+    0,
+    Math.min(max, GameState.rungIndex + delta)
+  );
+  positionCharacter();
+}
+
 const subtitles = {
   phoenix: "The Fiery Phoenix . . .",
   kitsune: "The Cunning Kitsune . . .",
@@ -515,10 +578,44 @@ document.querySelectorAll(".character").forEach(char => {
 });
 
 
+// =============================
+// START LOVE GAME
+// =============================
+function startLoveGame() {
+  const screen = document.getElementById("game-screen");
+  screen.hidden = false;
 
+  GameState.land = "darkland";
+  GameState.category = "physical";
+  GameState.rungIndex = 0;
+  GameState.questionIndex = 0;
+  GameState.correctCount = 0;
+
+  document.getElementById("game-background").src =
+    "darkland_screen.png";
+
+  const char = document.getElementById("player-character");
+  char.src = `${selectedCharacter}.png`;
+  char.classList.add("glow");
+
+  positionCharacter();
+
+  const begin = document.getElementById("begin-text");
+  begin.style.opacity = 1;
+
+  setTimeout(() => begin.style.opacity = 0, 3000);
+}
 
 
 </script>
 </script>
+  <div id="game-screen" hidden>
+  <img id="game-background" />
+  <img id="player-character" />
+
+  <div id="begin-text" class="cyber-text">BEGIN</div>
+
+  <div id="card-container"></div>
+</div>
 </body>
 </html>

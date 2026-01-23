@@ -471,15 +471,19 @@ confirmBtn.addEventListener("click", () => {
 // =============================
 function positionCharacter() {
   const char = document.getElementById("player-character");
-  const ladder = document.getElementById("ladder-wrapper");
+  const img  = document.getElementById("game-background");
 
-  const y = RUNG_POSITIONS[GameState.land][GameState.rungIndex];
+  const rung = RUNG_COORDS.darkland[GameState.rungIndex];
 
-  char.style.left = "50%";
-  char.style.bottom = `${y}px`;
+  const scaleX = img.clientWidth / 1545;
+  const scaleY = img.clientHeight / 2000;
 
-  ladder.parentElement.scrollTo({
-    top: ladder.scrollHeight - y - 200,
+  char.style.left = `${rung.x * scaleX}px`;
+  char.style.bottom = `${(2000 - rung.y) * scaleY}px`;
+
+  // auto-scroll so the letter is visible
+  img.parentElement.parentElement.scrollTo({
+    top: img.clientHeight - rung.y * scaleY - window.innerHeight * 0.6,
     behavior: "smooth"
   });
 }
@@ -580,8 +584,16 @@ function showBeginText() {
   beginShown = true;
 
   const begin = document.getElementById("begin-text");
-  begin.textContent = "";
+  const img = document.getElementById("game-background");
+  const rung = RUNG_COORDS.darkland[0];
+
+  const scaleX = img.clientWidth / 1545;
+  const scaleY = img.clientHeight / 2000;
+
+  begin.style.left = `${rung.x * scaleX}px`;
+  begin.style.bottom = `${(2000 - rung.y) * scaleY + 120}px`;
   begin.style.opacity = 1;
+  begin.textContent = "";
 
   typeWriter(begin, "BEGIN", 120);
 
@@ -593,22 +605,16 @@ function showBeginText() {
 setTimeout(showBeginText, 300);
 
 }
-const RUNG_POSITIONS = {
-  darkland: [ 
-    80,   // D (bottom)
-    220,  // n
-    360,  // A
-    500,  // L
-    640,  // K
-    780,  // R
-    920,  // A
-    1060  // D (top)
-  ],
-  murkland: [
-    140, 260, 380, 500, 620, 740, 860, 980
-  ],
-  loveland: [
-    160, 300, 440, 580, 720, 860, 1000, 1140
+const RUNG_COORDS = {
+  darkland: [
+    { x: 904, y: 1854 }, // D
+    { x: 1057, y: 1574 }, // A
+    { x: 969, y: 1280 }, // R
+    { x: 1108, y: 1097 }, // K
+    { x: 731, y: 827 }, // L
+    { x: 884, y: 529 }, // A
+    { x: 583, y: 354 }, // N
+    { x: 735, y: 93 }   // D
   ]
 };
 

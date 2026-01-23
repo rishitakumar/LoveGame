@@ -553,6 +553,7 @@ document.querySelectorAll(".character").forEach(char => {
 // START LOVE GAME
 // =============================
 function startLoveGame() {
+  let beginShown = false;
   const screen = document.getElementById("game-screen");
   screen.hidden = false;
   screen.style.display = "flex";
@@ -571,16 +572,20 @@ function startLoveGame() {
 
   positionCharacter();
 
+  if (!beginShown) {
+  beginShown = true;
+
   const begin = document.getElementById("begin-text");
-begin.style.opacity = 1;
-begin.textContent = "";
+  begin.style.opacity = 1;
+  begin.textContent = "";
 
-typeWriter(begin, "BEGIN", 120);
+  typeWriter(begin, "BEGIN", 120);
 
-setTimeout(() => {
-  begin.style.transition = "opacity 1s ease";
-  begin.style.opacity = 0;
-}, 3200);
+  setTimeout(() => {
+    begin.style.transition = "opacity 1s ease";
+    begin.style.opacity = 0;
+  }, 3200);
+}
 
 
 }

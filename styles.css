@@ -444,15 +444,6 @@ body {
   background: black;
 }
 
-#game-background {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 100%;
-  width: auto;
-  pointer-events: none;
-}
 #ladder-wrapper{
   position: relative;
   display: inline-block;   /* wrapper becomes exact size of image */

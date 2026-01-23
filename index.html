@@ -588,7 +588,8 @@ function startLoveGame() {
   });
 }, 200);
 
-  if (!beginShown) {
+ function showBeginText() {
+  if (beginShown) return;
   beginShown = true;
 
   const begin = document.getElementById("begin-text");
@@ -600,7 +601,7 @@ function startLoveGame() {
   setTimeout(() => {
     begin.style.transition = "opacity 1s ease";
     begin.style.opacity = 0;
-  }, 3200);
+  }, 3000);
 }
 
 

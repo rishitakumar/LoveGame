@@ -482,10 +482,7 @@ body {
 
 #begin-text {
   position: absolute;
-  left: 50%;
-  bottom: 110px;      /* near bottom D */
-  transform: translateX(-50%);
-  opacity: 0;
+  transform: translate(-50%, 0);
   pointer-events: none;
   z-index: 20;
 }

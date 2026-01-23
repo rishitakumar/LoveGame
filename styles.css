@@ -435,12 +435,16 @@ body {
   pointer-events: none;
 }
 #game-screen {
-  position: fixed;
-  inset: 0;
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 220px); /* header + navbar approx */
+  margin-top: 0;
   background: black;
+
   display: flex;
   justify-content: center;
-  align-items: flex-end; /* important: bottom alignment */
+  align-items: flex-end;
+
   overflow-y: auto;
 }
 #player-character {
@@ -451,4 +455,11 @@ body {
 #begin-text {
   opacity: 0;
   pointer-events: none;
+}
+#game-background {
+  position: absolute;
+  bottom: 0;
+  max-height: 100%;
+  width: auto;
+  max-width: 100%;
 }

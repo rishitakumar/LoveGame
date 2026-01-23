@@ -444,12 +444,6 @@ body {
   background: black;
 }
 
-#board {
-  position: relative;
-  height: 200vh; /* 🔥 tall mythic ascent */
-  width: 100%;
-}
-
 #game-background {
   position: absolute;
   bottom: 0;
@@ -459,30 +453,35 @@ body {
   width: auto;
   pointer-events: none;
 }
-#ladder-wrapper {
+#ladder-wrapper{
   position: relative;
-  height: 200vh;      /* tall ladder */
-  width: fit-content;
+  display: inline-block;   /* wrapper becomes exact size of image */
   margin: 0 auto;
 }
 
-#game-background {
+#game-background{
   display: block;
-  height: 100%;
-  width: auto;
+  height: auto;
+  width: min(900px, 95vw);  /* pick a width; image scales from this */
 }
 
-#player-character {
+#player-character{
   position: absolute;
   width: 120px;
-  pointer-events: none;
-  transform: translate(-50%, -85%);
+  transform: translate(-50%, -85%);  /* anchor feet */
   filter: drop-shadow(0 0 18px #f5ff3a);
+  pointer-events: none;
+  z-index: 30;
 }
 
-#begin-text {
+#begin-text{
   position: absolute;
   transform: translate(-50%, 0);
+  font-family: Impact, sans-serif;
+  font-size: clamp(2rem, 10vw, 4rem);
+  color: #f5ff3a;
+  text-transform: uppercase;
+  opacity: 0;
   pointer-events: none;
-  z-index: 20;
+  z-index: 40;
 }

@@ -463,3 +463,22 @@ body {
   width: auto;
   max-width: 100%;
 }
+#game-container {
+  position: relative;
+  height: calc(100vh - 80px); /* navbar stays visible */
+  overflow-y: auto;
+  margin-top: 80px;
+}
+
+#board {
+  position: relative;
+  height: 200vh; /* 🔥 twice the screen height */
+  width: 100%;
+}
+.character {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: auto;
+  transition: top 0.8s ease;
+}

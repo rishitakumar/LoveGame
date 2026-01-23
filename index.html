@@ -413,11 +413,19 @@ const LADDERS = {
 };
 
 // Pixel Y-positions of rungs (bottom → top)
-const RUNG_Y = {
-  darkland: [720,660,600,540,480,420,360,300],
-  murkland: [720,660,600,540,480,420,360,300],
-  loveland: [720,660,600,540,480,420,360,300]
-};
+function getRungY(land, index) {
+  const screen = document.getElementById("game-screen");
+  const height = screen.clientHeight;
+
+  const rungCount = LADDERS[land];
+  const paddingBottom = 40;
+  const paddingTop = 60;
+
+  const usableHeight = height - paddingTop - paddingBottom;
+  const step = usableHeight / (rungCount - 1);
+
+  return paddingBottom + step * index;
+}
 
 function showCharacterSelect() {
   const overlay = document.getElementById("character-overlay");
@@ -479,7 +487,9 @@ function positionCharacter() {
   char.style.position = "absolute";
   char.style.left = "50%";
   char.style.transform = "translateX(-50%)";
-  char.style.bottom = RUNG_Y[GameState.land][GameState.rungIndex] + "px";
+
+  const y = getRungY(GameState.land, GameState.rungIndex);
+  char.style.bottom = `${y}px`;
 
   char.scrollIntoView({
     behavior: "smooth",

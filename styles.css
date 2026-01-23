@@ -435,26 +435,34 @@ body {
   pointer-events: none;
 }
 
-
-
-#game-screen {
+#game-screen{
   position: relative;
-  height: calc(100vh - 220px); /* header + navbar */
+  height: calc(100vh - 220px);
   overflow-y: auto;
   background: black;
+
+  display: flex;
+  justify-content: center;   /* centers the ladder horizontally */
+}
+
+#board{
+  width: 100%;
+  display: flex;
+  justify-content: center;   /* centers ladder-wrapper */
+  padding: 30px 0;
 }
 
 #ladder-wrapper{
   position: relative;
-  display: inline-block;   /* wrapper becomes exact size of image */
-  margin: 0 auto;
+  display: inline-block;     /* wrapper becomes exact image size */
 }
 
 #game-background{
   display: block;
+  width: min(900px, 95vw);
   height: auto;
-  width: min(900px, 95vw);  /* pick a width; image scales from this */
 }
+
 
 #player-character{
   position: absolute;

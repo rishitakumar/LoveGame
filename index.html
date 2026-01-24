@@ -119,6 +119,45 @@ localStorage.setItem("lovegame-played", todayKey); --- */
 
 
 let beginShown = false;
+
+// =============================
+// CARD DATA (QUESTIONS + ANSWERS)
+// =============================
+
+const PHYSICAL_CARDS = [
+  {
+    id: 1,
+    questionFront: "cards/physical/q1_front.png",
+    questionBack:  "cards/physical/q1_back.png",
+    answerFront:   "cards/physical/a1_front.png",
+    answerBack:    "cards/physical/a1_back.png",
+
+    outcomes: {
+      a: -1,
+      b: -1,
+      c:  0,
+      d: +1,
+      e: +1
+    }
+  },
+
+  {
+    id: 2,
+    questionFront: "cards/physical/q2_front.png",
+    questionBack:  "cards/physical/q2_back.png",
+    answerFront:   "cards/physical/a2_front.png",
+    answerBack:    "cards/physical/a2_back.png",
+
+    outcomes: {
+      a: -1,
+      b:  0,
+      c: +1
+    }
+  }
+
+  // add up to 8
+];
+
   
 /* --- UNIVERSAL MOUSE STREAK SETUP --- */
 const mCanvas = document.getElementById("mouse-canvas");
@@ -551,6 +590,85 @@ document.querySelectorAll(".character").forEach(char => {
   });
 });
 
+// =============================
+// CARD ENGINE
+// =============================
+
+let currentCard = null;
+let cardSide = "front";
+let cardIndex = 0;
+
+function showQuestionCard(cardData) {
+  currentCard = cardData;
+  cardSide = "front";
+
+  const layer = document.getElementById("card-layer");
+  const card  = document.getElementById("card");
+  const front = document.getElementById("card-front");
+  const back  = document.getElementById("card-back");
+
+  front.src = cardData.questionFront;
+  back.src  = cardData.questionBack;
+
+  card.classList.remove("flipped");
+  layer.style.display = "flex";
+}
+
+document.getElementById("card").addEventListener("click", () => {
+  if (!currentCard) return;
+
+  const card = document.getElementById("card");
+  if (cardSide === "front") {
+    card.classList.add("flipped");
+    cardSide = "back";
+  }
+});
+
+window.addEventListener("keydown", e => {
+  if (!currentCard) return;
+
+  const key = e.key.toLowerCase();
+  if (!(key in currentCard.outcomes)) return;
+
+  resolveAnswer(key);
+});
+
+function resolveAnswer(letter) {
+  const delta = currentCard.outcomes[letter];
+  showAnswerCard(currentCard, delta);
+}
+
+function showAnswerCard(cardData, delta) {
+  const card  = document.getElementById("card");
+  const front = document.getElementById("card-front");
+  const back  = document.getElementById("card-back");
+
+  card.classList.remove("flipped");
+
+  front.src = cardData.answerFront;
+  back.src  = cardData.answerBack;
+
+  setTimeout(() => {
+    card.classList.add("flipped");
+  }, 200);
+
+  setTimeout(() => {
+    document.getElementById("card-layer").style.display = "none";
+    currentCard = null;
+    moveCharacter(delta);
+    advanceCard();
+  }, 2600);
+}
+
+function advanceCard() {
+  cardIndex++;
+
+  if (cardIndex < PHYSICAL_CARDS.length) {
+    setTimeout(() => {
+      showQuestionCard(PHYSICAL_CARDS[cardIndex]);
+    }, 1200);
+  }
+}
 
 // =============================
 // START LOVE GAME
@@ -577,6 +695,12 @@ function startLoveGame() {
 
     positionCharacter();
     showBeginText();
+    cardIndex = 0;
+
+setTimeout(() => {
+  showQuestionCard(PHYSICAL_CARDS[0]);
+}, 1200);
+
   };
 
   img.src = "darkland_screen.png";
@@ -623,6 +747,12 @@ const RUNG_COORDS = {
 
 </script>
   <div id="game-screen" hidden>
+    <div id="card-layer">
+  <div id="card" class="card">
+    <img id="card-front">
+    <img id="card-back">
+  </div>
+</div>
   <div id="board">
     <div id="ladder-wrapper">
       <img id="game-background" />

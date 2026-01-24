@@ -737,9 +737,10 @@ function advanceCard() {
   if (cardIndex < PHYSICAL_CARDS.length) {
     setTimeout(() => {
       showQuestionCard(PHYSICAL_CARDS[cardIndex]);
-    }, 1200);
+    }, 2000); // ⏳ wait 2 seconds after movement
   }
 }
+
 
 // =============================
 // START LOVE GAME
@@ -766,25 +767,19 @@ function startLoveGame() {
     positionCharacter();
     showBeginText();
     cardIndex = 0;
-
-setTimeout(() => {
-  showQuestionCard(PHYSICAL_CARDS[0]);
-}, 1200);
-
   };
 
   img.src = "darkland_screen.png";
 }
 
-function showBeginText() {
+function showBeginText(onDone) {
   if (beginShown) return;
   beginShown = true;
 
   const begin = document.getElementById("begin-text");
   const img   = document.getElementById("game-background");
 
-  const rung = RUNG_COORDS.darkland[0]; // bottom D
-
+  const rung = RUNG_COORDS.darkland[0];
   const x = (rung.x / 1545) * img.clientWidth;
   const y = (rung.y / 2000) * img.clientHeight;
 
@@ -795,9 +790,16 @@ function showBeginText() {
 
   typeWriter(begin, "BEGIN", 120);
 
+  // keep it visible, then fade
   setTimeout(() => {
     begin.style.transition = "opacity 0.8s ease";
     begin.style.opacity = 0;
+
+    // AFTER fade finishes, show cards
+    setTimeout(() => {
+      if (typeof onDone === "function") onDone();
+    }, 800);
+
   }, 2800);
 }
 

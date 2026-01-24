@@ -610,6 +610,98 @@ document.querySelectorAll(".character").forEach(char => {
     typeWriter(caption, subtitles[key], 50);
   });
 });
+ 
+// =============================
+// CARD ENGINE
+// =============================
+
+let currentCard = null;
+let cardSide = "front";
+let cardIndex = 0;
+
+function showQuestionCard(cardData) {
+  currentCard = cardData;
+  cardSide = "front";
+  cardMode = "question";
+
+  const layer = document.getElementById("card-layer");
+  const card  = document.getElementById("card");
+  const front = document.getElementById("card-front");
+  const back  = document.getElementById("card-back");
+
+  front.src = cardData.questionFront;
+  back.src  = cardData.questionBack;
+
+  card.classList.remove("flipped");
+  layer.style.display = "flex";
+
+  scrollToCards(); // ✅ ADD THIS
+}
+
+window.addEventListener("keydown", e => {
+  if (!currentCard) return;
+  if (cardMode !== "question") return;
+  if (cardSide !== "back") return;
+
+  const key = e.key.toLowerCase();
+  if (!(key in currentCard.outcomes)) return;
+
+  resolveAnswer(key);
+});
+
+
+
+function resolveAnswer(letter) {
+  const delta = currentCard.outcomes[letter];
+  showAnswerCard(currentCard, delta);
+}
+
+let cardMode = "question"; // "question" | "answer"
+
+
+const cardEl = document.getElementById("card");
+const layer  = document.getElementById("card-layer");
+
+cardEl.addEventListener("click", () => {
+  if (!currentCard) return;
+
+  // QUESTION: click flips front -> back only
+  if (cardMode === "question") {
+    if (cardSide === "front") {
+      cardEl.classList.add("flipped");
+      cardSide = "back";
+    }
+    return;
+  }
+
+  // ANSWER: click #1 flips front -> back
+  if (cardMode === "answer" && cardSide === "front") {
+    cardEl.classList.add("flipped");
+    cardSide = "back";
+    return;
+  }
+
+  // ANSWER: click #2 fades + closes + moves
+  if (cardMode === "answer" && cardSide === "back") {
+    layer.classList.add("fade-out");
+
+    setTimeout(() => {
+      layer.classList.remove("fade-out");
+      layer.style.display = "none";
+
+      const delta = Number(layer.dataset.delta || 0);
+
+      currentCard = null;
+      cardMode = "question";
+      cardSide = "front";
+
+      moveCharacter(delta);
+      advanceCard();
+    }, 350);
+  }
+});
+
+  
 
 const cardEl = document.getElementById("card");
 const layer  = document.getElementById("card-layer");
@@ -653,101 +745,7 @@ cardEl.addEventListener("click", () => {
     }, 350);
   }
 });
-
-
   
-// =============================
-// CARD ENGINE
-// =============================
-
-let currentCard = null;
-let cardSide = "front";
-let cardIndex = 0;
-
-function showQuestionCard(cardData) {
-  currentCard = cardData;
-  cardSide = "front";
-  cardMode = "question";
-
-  const layer = document.getElementById("card-layer");
-  const card  = document.getElementById("card");
-  const front = document.getElementById("card-front");
-  const back  = document.getElementById("card-back");
-
-  front.src = cardData.questionFront;
-  back.src  = cardData.questionBack;
-
-  card.classList.remove("flipped");
-  layer.style.display = "flex";
-
-  scrollToCards(); // ✅ ADD THIS
-}
-
-const cardEl = document.getElementById("card");
-
-cardEl.addEventListener("click", () => {
-  if (!currentCard) return;
-
-  const layer = document.getElementById("card-layer");
-
-  /* QUESTION MODE */
-  if (cardMode === "question") {
-    if (cardSide === "front") {
-      cardEl.classList.add("flipped");
-      cardSide = "back";
-    }
-    return;
-  }
-
-  /* ANSWER MODE */
-  if (cardMode === "answer") {
-    // click #1 → flip to back
-    if (cardSide === "front") {
-      cardEl.classList.add("flipped");
-      cardSide = "back";
-      return;
-    }
-
-    // click #2 → fade + close + move
-    layer.classList.add("fade-out");
-
-    setTimeout(() => {
-      layer.classList.remove("fade-out");
-      layer.style.display = "none";
-
-      const delta = Number(layer.dataset.delta || 0);
-
-      currentCard = null;
-      cardMode = "question";
-      cardSide = "front";
-
-      moveCharacter(delta);
-      advanceCard();
-    }, 350);
-  }
-});
-
-
-window.addEventListener("keydown", e => {
-  if (!currentCard) return;
-  if (cardMode !== "question") return;
-  if (cardSide !== "back") return;
-
-  const key = e.key.toLowerCase();
-  if (!(key in currentCard.outcomes)) return;
-
-  resolveAnswer(key);
-});
-
-
-
-function resolveAnswer(letter) {
-  const delta = currentCard.outcomes[letter];
-  showAnswerCard(currentCard, delta);
-}
-
-let cardMode = "question"; // "question" | "answer"
-
 function scrollToCards() {
   const screen = document.getElementById("game-screen");
   if (!screen) return;

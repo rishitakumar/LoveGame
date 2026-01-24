@@ -700,51 +700,6 @@ cardEl.addEventListener("click", () => {
     }, 350);
   }
 });
-
-  
-
-const cardEl = document.getElementById("card");
-const layer  = document.getElementById("card-layer");
-
-cardEl.addEventListener("click", () => {
-  if (!currentCard) return;
-
-  // QUESTION MODE: click flips front -> back only
-  if (cardMode === "question") {
-    if (cardSide === "front") {
-      cardEl.classList.add("flipped");
-      cardSide = "back";
-    }
-    return;
-  }
-
-  // ANSWER MODE:
-  // click #1 flips answer front -> back
-  if (cardMode === "answer" && cardSide === "front") {
-    cardEl.classList.add("flipped");
-    cardSide = "back";
-    return;
-  }
-
-  // click #2 fades + closes + moves
-  if (cardMode === "answer" && cardSide === "back") {
-    layer.classList.add("fade-out");
-
-    setTimeout(() => {
-      layer.classList.remove("fade-out");
-      layer.style.display = "none";
-
-      const delta = Number(layer.dataset.delta || 0);
-
-      currentCard = null;
-      cardMode = "question";
-      cardSide = "front";
-
-      moveCharacter(delta);
-      advanceCard();
-    }, 350);
-  }
-});
   
 function scrollToCards() {
   const screen = document.getElementById("game-screen");

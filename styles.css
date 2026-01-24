@@ -467,7 +467,7 @@ body {
 #player-character{
   position: absolute;
   width: 120px;
-  transform: translate(-50%, -85%) scale(0.33);  /* anchor feet */
+  transform: translate(-50%, -85%) scale(0.66);  /* anchor feet */
   filter: drop-shadow(0 0 18px #f5ff3a);
   pointer-events: none;
   z-index: 30;

@@ -747,7 +747,6 @@ function startLoveGame() {
   img.onload = () => {
     const char = document.getElementById("player-character");
     char.src = characterImages[selectedCharacter];
-    wireCardEventsOnce();
     positionCharacter();
     showBeginText();
     cardIndex = 0;

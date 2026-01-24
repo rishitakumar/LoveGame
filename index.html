@@ -620,31 +620,62 @@ function showQuestionCard(cardData) {
   scrollToCards(); // ✅ ADD THIS
 }
 
-function wireCardEventsOnce() {
-  const card = document.getElementById("card");
-  if (!card || card.dataset.wired === "1") return;
+const cardEl = document.getElementById("card");
 
-  card.dataset.wired = "1";
-  card.addEventListener("click", () => {
+cardEl.addEventListener("click", () => {
   if (!currentCard) return;
-  if (cardMode !== "question") return;
 
-  if (cardSide === "front") {
-    card.classList.add("flipped");
-    cardSide = "back";
+  const layer = document.getElementById("card-layer");
+
+  /* QUESTION MODE */
+  if (cardMode === "question") {
+    if (cardSide === "front") {
+      cardEl.classList.add("flipped");
+      cardSide = "back";
+    }
+    return;
+  }
+
+  /* ANSWER MODE */
+  if (cardMode === "answer") {
+    // click #1 → flip to back
+    if (cardSide === "front") {
+      cardEl.classList.add("flipped");
+      cardSide = "back";
+      return;
+    }
+
+    // click #2 → fade + close + move
+    layer.classList.add("fade-out");
+
+    setTimeout(() => {
+      layer.classList.remove("fade-out");
+      layer.style.display = "none";
+
+      const delta = Number(layer.dataset.delta || 0);
+
+      currentCard = null;
+      cardMode = "question";
+      cardSide = "front";
+
+      moveCharacter(delta);
+      advanceCard();
+    }, 350);
   }
 });
-}
+
 
 window.addEventListener("keydown", e => {
   if (!currentCard) return;
   if (cardMode !== "question") return;
+  if (cardSide !== "back") return;
 
   const key = e.key.toLowerCase();
   if (!(key in currentCard.outcomes)) return;
 
   resolveAnswer(key);
 });
+
 
 
 function resolveAnswer(letter) {
@@ -663,38 +694,24 @@ function scrollToCards() {
 }
 
 function showAnswerCard(cardData, delta) {
-  cardMode = "answer";
-
   const layer = document.getElementById("card-layer");
   const card  = document.getElementById("card");
   const front = document.getElementById("card-front");
   const back  = document.getElementById("card-back");
 
-  // show layer + answer FRONT first
-  layer.style.display = "flex";
+  // store movement for later
+  layer.dataset.delta = String(delta);
+
+  currentCard = cardData;
+  cardMode = "answer";
+  cardSide = "front";
+
   card.classList.remove("flipped");
 
   front.src = cardData.answerFront;
   back.src  = cardData.answerBack;
 
-  // give the front time to be seen
-  const FRONT_MS = 900;
-  const BACK_MS  = 1400;
-
-  setTimeout(() => {
-    card.classList.add("flipped"); // now reveal answer BACK
-  }, FRONT_MS);
-
-  setTimeout(() => {
-    layer.style.display = "none";
-    currentCard = null;
-    cardSide = "front";
-    cardMode = "question";
-
-    moveCharacter(delta);      // this scrolls to character
-    advanceCard();
-  }, FRONT_MS + BACK_MS);
-  document.getElementById("card-layer").style.display = "none";
+  layer.style.display = "flex";
 }
 
 

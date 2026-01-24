@@ -509,22 +509,25 @@ confirmBtn.addEventListener("click", () => {
 // CHARACTER MOVEMENT
 // =============================
 function positionCharacter() {
-  const char = document.getElementById("player-character");
-  const img  = document.getElementById("game-background");
+  const char   = document.getElementById("player-character");
+  const img    = document.getElementById("game-background");
+  const ladder = document.getElementById("ladder-wrapper");
+  const screen = document.getElementById("game-screen");
 
   const rung = RUNG_COORDS.darkland[GameState.rungIndex];
 
+  // map your original image coords -> current rendered image pixels
   const x = (rung.x / 1545) * img.clientWidth;
   const y = (rung.y / 2000) * img.clientHeight;
 
-  // place character by TOP coords
+  // IMPORTANT: position relative to ladder-wrapper
   char.style.left = `${x}px`;
   char.style.top  = `${y}px`;
 
-  // scroll so character starts near bottom area
-  const screen = document.getElementById("game-screen");
+  // ✅ scroll game-screen back to character using the element’s actual layout position
+  const targetTop = char.offsetTop - screen.clientHeight * 0.65;
   screen.scrollTo({
-    top: Math.max(0, y - screen.clientHeight * 0.7),
+    top: Math.max(0, targetTop),
     behavior: "smooth"
   });
 }
@@ -691,6 +694,7 @@ function showAnswerCard(cardData, delta) {
     moveCharacter(delta);      // this scrolls to character
     advanceCard();
   }, FRONT_MS + BACK_MS);
+  document.getElementById("card-layer").style.display = "none";
 }
 
 

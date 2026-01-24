@@ -779,7 +779,8 @@ function showBeginText() {
   const begin = document.getElementById("begin-text");
   const img   = document.getElementById("game-background");
 
-  const rung = RUNG_COORDS.darkland[0];
+  const rung = RUNG_COORDS.darkland[0]; // bottom D
+
   const x = (rung.x / 1545) * img.clientWidth;
   const y = (rung.y / 2000) * img.clientHeight;
 
@@ -790,15 +791,16 @@ function showBeginText() {
 
   typeWriter(begin, "BEGIN", 120);
 
-  // keep it visible, then fade
+  // BEGIN stays visible, then fades
   setTimeout(() => {
     begin.style.transition = "opacity 0.8s ease";
     begin.style.opacity = 0;
 
-    // AFTER fade finishes, show cards
+    // ✅ AFTER fade finishes, show first card
     setTimeout(() => {
-      if (typeof onDone === "function") onDone();
-    }, 800);
+      cardIndex = 0;
+      showQuestionCard(PHYSICAL_CARDS[0]);
+    }, 850);
 
   }, 2800);
 }

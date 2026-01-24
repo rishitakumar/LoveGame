@@ -503,3 +503,43 @@ body {
     transparent 8px
   );
 }
+/* =============================
+   CARD LAYER
+============================= */
+#card-layer{
+  position: absolute;
+  inset: 0;
+  display: none;              /* shown by JS */
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  pointer-events: none;       /* so board can still scroll */
+}
+
+#card{
+  width: min(520px, 85vw);
+  aspect-ratio: 2 / 3;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.7s ease;
+  pointer-events: auto;       /* allow clicking the card */
+}
+
+#card.flipped{
+  transform: rotateY(180deg);
+}
+
+#card-front,
+#card-back{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  backface-visibility: hidden;
+  filter: drop-shadow(0 0 22px rgba(245,255,58,0.25));
+}
+
+#card-back{
+  transform: rotateY(180deg);
+}

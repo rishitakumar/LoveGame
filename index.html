@@ -696,7 +696,11 @@ cardEl.addEventListener("click", () => {
       cardSide = "front";
 
       moveCharacter(delta);
-      advanceCard();
+
+// ⏳ wait 1 extra second before next card
+setTimeout(() => {
+  advanceCard();
+}, 1000);
     }, 350);
   }
 });

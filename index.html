@@ -614,15 +614,19 @@ function showQuestionCard(cardData) {
   layer.style.display = "flex";
 }
 
-document.getElementById("card").addEventListener("click", () => {
-  if (!currentCard) return;
-
+function wireCardEventsOnce() {
   const card = document.getElementById("card");
-  if (cardSide === "front") {
-    card.classList.add("flipped");
-    cardSide = "back";
-  }
-});
+  if (!card || card.dataset.wired === "1") return;
+
+  card.dataset.wired = "1";
+  card.addEventListener("click", () => {
+    if (!currentCard) return;
+    if (cardSide === "front") {
+      card.classList.add("flipped");
+      cardSide = "back";
+    }
+  });
+}
 
 window.addEventListener("keydown", e => {
   if (!currentCard) return;
@@ -692,7 +696,7 @@ function startLoveGame() {
   img.onload = () => {
     const char = document.getElementById("player-character");
     char.src = characterImages[selectedCharacter];
-
+    wireCardEventsOnce();
     positionCharacter();
     showBeginText();
     cardIndex = 0;

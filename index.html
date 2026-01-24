@@ -601,6 +601,7 @@ let cardIndex = 0;
 function showQuestionCard(cardData) {
   currentCard = cardData;
   cardSide = "front";
+  cardMode = "question";
 
   const layer = document.getElementById("card-layer");
   const card  = document.getElementById("card");
@@ -612,6 +613,8 @@ function showQuestionCard(cardData) {
 
   card.classList.remove("flipped");
   layer.style.display = "flex";
+
+  scrollToCards(); // ✅ ADD THIS
 }
 
 function wireCardEventsOnce() {
@@ -620,16 +623,19 @@ function wireCardEventsOnce() {
 
   card.dataset.wired = "1";
   card.addEventListener("click", () => {
-    if (!currentCard) return;
-    if (cardSide === "front") {
-      card.classList.add("flipped");
-      cardSide = "back";
-    }
-  });
+  if (!currentCard) return;
+  if (cardMode !== "question") return;
+
+  if (cardSide === "front") {
+    card.classList.add("flipped");
+    cardSide = "back";
+  }
+});
 }
 
 window.addEventListener("keydown", e => {
   if (!currentCard) return;
+  if (cardMode !== "question") return;
 
   const key = e.key.toLowerCase();
   if (!(key in currentCard.outcomes)) return;
@@ -637,32 +643,56 @@ window.addEventListener("keydown", e => {
   resolveAnswer(key);
 });
 
+
 function resolveAnswer(letter) {
   const delta = currentCard.outcomes[letter];
   showAnswerCard(currentCard, delta);
 }
 
+let cardMode = "question"; // "question" | "answer"
+
+function scrollToCards() {
+  const screen = document.getElementById("game-screen");
+  if (!screen) return;
+
+  // make sure the GAME SCREEN is visible in the page
+  screen.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
 function showAnswerCard(cardData, delta) {
+  cardMode = "answer";
+
+  const layer = document.getElementById("card-layer");
   const card  = document.getElementById("card");
   const front = document.getElementById("card-front");
   const back  = document.getElementById("card-back");
 
+  // show layer + answer FRONT first
+  layer.style.display = "flex";
   card.classList.remove("flipped");
 
   front.src = cardData.answerFront;
   back.src  = cardData.answerBack;
 
-  setTimeout(() => {
-    card.classList.add("flipped");
-  }, 200);
+  // give the front time to be seen
+  const FRONT_MS = 900;
+  const BACK_MS  = 1400;
 
   setTimeout(() => {
-    document.getElementById("card-layer").style.display = "none";
+    card.classList.add("flipped"); // now reveal answer BACK
+  }, FRONT_MS);
+
+  setTimeout(() => {
+    layer.style.display = "none";
     currentCard = null;
-    moveCharacter(delta);
+    cardSide = "front";
+    cardMode = "question";
+
+    moveCharacter(delta);      // this scrolls to character
     advanceCard();
-  }, 2600);
+  }, FRONT_MS + BACK_MS);
 }
+
 
 function advanceCard() {
   cardIndex++;

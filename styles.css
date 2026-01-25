@@ -475,7 +475,7 @@ body {
 
 .begin-text{
   position: absolute;              /* stays where JS places it */
-  transform: translate(-50%, 0);   /* center on x only */
+  transform: translate(-50%, 0) scale(3);   /* center on x only */
   z-index: 9999;
   pointer-events: none;
   opacity: 0;

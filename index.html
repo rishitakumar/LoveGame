@@ -385,6 +385,13 @@ const MENTAL_CARDS = [
   // add more...
 ];
 
+function getDeckForPhase() {
+  if (questionPhase === "physical") return PHYSICAL_CARDS;
+  if (questionPhase === "emotional") return MURK_CARDS;
+  if (questionPhase === "mental") return MENTAL_CARDS;
+  return PHYSICAL_CARDS;
+}
+
 
   
 function getActiveDeck() {
@@ -880,18 +887,24 @@ let cardIndex = 0;
 let murkLastSeenIndex = -1; // -1 means none seen yet
 let emotionalMode = false; // true when we’re running Murk (emotional) questions
 let mentalMode = false;
+let questionPhase = "physical"; // physical → emotional → mental
+let lovelandUnlocked = false;
 
 
 
 function showQuestionCard(cardData) {
-  // quick mode detection by id ranges (your murk ids are 100s, mental 200s)
-emotionalMode = !!cardData && cardData.id >= 100 && cardData.id < 200;
-mentalMode    = !!cardData && cardData.id >= 200 && cardData.id < 300;
-  emotionalMode = cardData && cardData.id >= 100; // since your Murk ids are 101,102,...
+  if (!cardData) return;
+
+  // ✅ Phase detection by ID range
+  if (cardData.id >= 100 && cardData.id < 200) questionPhase = "emotional";
+  if (cardData.id >= 200 && cardData.id < 300) questionPhase = "mental";
+
   currentCard = cardData;
-  // Track Murk progress even if Murk questions appear in Darkland
-const mIdx = MURK_CARDS.findIndex(c => c.id === cardData.id);
-if (mIdx !== -1) murkLastSeenIndex = mIdx;
+
+  // ✅ Track Murk progress even if Murk questions appear before Murkland visuals
+  const mIdx = MURK_CARDS.findIndex(c => c.id === cardData.id);
+  if (mIdx !== -1) murkLastSeenIndex = mIdx;
+
   cardSide = "front";
   cardMode = "question";
 
@@ -906,8 +919,9 @@ if (mIdx !== -1) murkLastSeenIndex = mIdx;
   card.classList.remove("flipped");
   layer.style.display = "flex";
 
-  scrollToCards(); // ✅ ADD THIS
+  scrollToCards();
 }
+
 
 window.addEventListener("keydown", e => {
   if (!currentCard) return;
@@ -970,17 +984,16 @@ cardEl.addEventListener("click", () => {
 // ✅ only "pass" final d of Murkland if you're on top rung AND the answer moves you UP
 const passedMurkFinalD =
   GameState.land === "murkland" &&
-  GameState.rungIndex === 7 &&   // top 'd'
+  GameState.rungIndex === 7 &&
   delta > 0;
 
 moveCharacter(delta);
 
+// ✅ unlock Loveland, but DON'T switch visuals yet
 if (passedMurkFinalD) {
-  setTimeout(() => {
-    transitionToLoveland();
-  }, 2000);
-  return;
+  lovelandUnlocked = true;
 }
+
 
 
 
@@ -1025,16 +1038,28 @@ function showAnswerCard(cardData, delta) {
 
 
 function advanceCard() {
-  const deck = activeDeck; // ✅ use the current question deck
-
   cardIndex++;
 
-  if (cardIndex < deck.length) {
+  // ✅ If we finished emotional questions, move to mental questions (ANYWHERE)
+  if (questionPhase === "emotional" && cardIndex >= MURK_CARDS.length) {
+    questionPhase = "mental";
+    activeDeck = MENTAL_CARDS;
+    cardIndex = 0;
+
+    // ✅ ONLY show Loveland visuals if unlocked
+    if (lovelandUnlocked) {
+      transitionToLoveland();
+      return;
+    }
+  }
+
+  if (cardIndex < activeDeck.length) {
     setTimeout(() => {
-      showQuestionCard(deck[cardIndex]);
+      showQuestionCard(activeDeck[cardIndex]);
     }, 2000);
   }
 }
+
 
 
 function transitionToMurkland() {
@@ -1062,7 +1087,7 @@ function transitionToMurkland() {
 
   // ✅ Murk deck
   activeDeck = MURK_CARDS;
-
+  questionPhase = "emotional";
   // ✅ start Murkland where they left off on emotional questions
   const nextMurkIndex = Math.max(
     0,
@@ -1144,8 +1169,11 @@ function startLoveGame() {
 
   GameState.land = "darkland";
   GameState.rungIndex = 0;
-  activeDeck = getActiveDeck(); // or PHYSICAL_CARDS if you want only physical at start
+  questionPhase = "physical";
+lovelandUnlocked = false;
+activeDeck = getDeckForPhase();
 cardIndex = 0;
+murkLastSeenIndex = -1;
 murkTransitionDone = false;
   const img = document.getElementById("game-background");
 

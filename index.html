@@ -358,10 +358,34 @@ const MURK_CARDS = [
       a:+1, b:0, c:-1, d:+1
     }
   },
-
   
   // add more...
 ];
+
+// -----------------------------
+// LOVELAND CARDS (MENTAL)
+// -----------------------------
+const MENTAL_CARDS = [
+  {
+    id: 201,
+    questionFront: "mental_q1_front.png",
+    questionBack:  "mental_q1_back.png",
+    answerFront:   "mental_a1_front.png",
+    answerBack:    "mental_a1_back.png",
+    outcomes: { a:-1, b:0, c:+1 }
+  },
+  {
+    id: 202,
+    questionFront: "mental_q2_front.png",
+    questionBack:  "mental_q2_back.png",
+    answerFront:   "mental_a2_front.png",
+    answerBack:    "mental_a2_back.png",
+    outcomes: { a:+1, b:-1, c:+1, d:0 }
+  }
+  // add more...
+];
+
+
   
 function getActiveDeck() {
   // Murkland screen uses Murk-only
@@ -855,9 +879,15 @@ let cardSide = "front";
 let cardIndex = 0;
 let murkLastSeenIndex = -1; // -1 means none seen yet
 let emotionalMode = false; // true when we’re running Murk (emotional) questions
+let emotionalMode = false;
+let mentalMode = false;
+
 
 
 function showQuestionCard(cardData) {
+  // quick mode detection by id ranges (your murk ids are 100s, mental 200s)
+emotionalMode = !!cardData && cardData.id >= 100 && cardData.id < 200;
+mentalMode    = !!cardData && cardData.id >= 200 && cardData.id < 300;
   emotionalMode = cardData && cardData.id >= 100; // since your Murk ids are 101,102,...
   currentCard = cardData;
   // Track Murk progress even if Murk questions appear in Darkland
@@ -938,24 +968,21 @@ cardEl.addEventListener("click", () => {
 
       // ✅ were we on FINAL D before moving?
      // ✅ only "pass" final D if you are ON the last D AND the answer moves you UP
-const passedFinalD =
-  !murkTransitionDone &&
-  GameState.land === "darkland" &&
-  GameState.rungIndex === 7 &&   // top D
-  delta > 0;                     // must be a + move to "pass" it
+// ✅ only "pass" final d of Murkland if you're on top rung AND the answer moves you UP
+const passedMurkFinalD =
+  GameState.land === "murkland" &&
+  GameState.rungIndex === 7 &&   // top 'd'
+  delta > 0;
 
 moveCharacter(delta);
 
-// ✅ If they PASSED final D, then transition
-if (passedFinalD) {
-  murkTransitionDone = true;
-
+if (passedMurkFinalD) {
   setTimeout(() => {
-    transitionToMurkland();
+    transitionToLoveland();
   }, 2000);
-
   return;
 }
+
 
 
       // ✅ normal flow: wait 2s after move, then next card
@@ -1062,6 +1089,46 @@ function transitionToMurkland() {
 
   img.src = "murkland_screen.png";
 }
+  
+function transitionToLoveland() {
+  // glow flash (same effect)
+  const flash = document.createElement("div");
+  flash.style.position = "fixed";
+  flash.style.inset = "0";
+  flash.style.zIndex = "999999";
+  flash.style.pointerEvents = "none";
+  flash.style.background =
+    "radial-gradient(circle at center, rgba(245,255,58,0.85), rgba(0,0,0,0) 60%)";
+  flash.style.opacity = "0";
+  flash.style.transition = "opacity 0.35s ease";
+  document.body.appendChild(flash);
+
+  requestAnimationFrame(() => (flash.style.opacity = "1"));
+  setTimeout(() => {
+    flash.style.opacity = "0";
+    setTimeout(() => flash.remove(), 450);
+  }, 450);
+
+  // swap land + reset position
+  GameState.land = "loveland";
+  GameState.rungIndex = 0;
+
+  // ✅ switch to mental deck (Loveland questions)
+  activeDeck = MENTAL_CARDS;
+  cardIndex = 0;
+
+  const img = document.getElementById("game-background");
+  if (!img) return;
+
+  img.onload = () => {
+    positionCharacter();
+    setTimeout(() => {
+      showQuestionCard(activeDeck[cardIndex]);
+    }, 1200);
+  };
+
+  img.src = "loveland_screen.png";
+}
 
 
 
@@ -1153,8 +1220,22 @@ const RUNG_COORDS = {
     { x: 884,  y: 609  },
     { x: 583,  y: 434  },
     { x: 735,  y: 173  }
-  ]
+  ],
+
+  loveland: [
+  { x: 904,  y: 1934 },
+  { x: 1057, y: 1654 },
+  { x: 969,  y: 1380 },
+  { x: 1108, y: 1177 },
+  { x: 731,  y: 907  },
+  { x: 884,  y: 609  },
+  { x: 583,  y: 434  },
+  { x: 735,  y: 173  }
+]
+  
 };
+
+
 
 </script>
 </body>

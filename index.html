@@ -765,7 +765,6 @@ function resolveAnswer(letter) {
 
 let cardMode = "question"; // "question" | "answer"
 
-
 const cardEl = document.getElementById("card");
 const layer  = document.getElementById("card-layer");
 
@@ -803,31 +802,33 @@ cardEl.addEventListener("click", () => {
       cardSide = "front";
 
       // ✅ were we on FINAL D before moving?
-const completedFinalD =
-  !murkTransitionDone &&
-  GameState.land === "darkland" &&
-  GameState.rungIndex === 7; // top D
+      const completedFinalD =
+        !murkTransitionDone &&
+        GameState.land === "darkland" &&
+        GameState.rungIndex === 7; // top D
 
-moveCharacter(delta);
+      moveCharacter(delta);
 
-// If completed final D, transition instead of advancing
-if (completedFinalD) {
-  murkTransitionDone = true;
+      // ✅ If completed final D, transition instead of advancing
+      if (completedFinalD) {
+        murkTransitionDone = true;
 
-  // wait 2 seconds after move, then transition
-  setTimeout(() => {
-    transitionToMurkland();
-  }, 2000);
+        setTimeout(() => {
+          transitionToMurkland();
+        }, 2000);
 
-  return;
-}
+        return;
+      }
 
-// normal flow: wait 2s after move, then next card
-setTimeout(() => {
-  advanceCard();
-}, 2000);
+      // ✅ normal flow: wait 2s after move, then next card
+      setTimeout(() => {
+        advanceCard();
+      }, 2000);
+
+    }, 350);
   }
 });
+
   
 function scrollToCards() {
   const screen = document.getElementById("game-screen");

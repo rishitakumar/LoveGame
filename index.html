@@ -296,10 +296,16 @@ const MURK_CARDS = [
 ];
   
 function getActiveDeck() {
+  // Murkland screen uses Murk-only
   if (GameState.land === "murkland") return MURK_CARDS;
-  if (GameState.land === "darkland") return PHYSICAL_CARDS;
+
+  // Darkland screen can still ask emotional (Murk) questions,
+  // BUT we do NOT show Murkland visuals yet.
+  if (GameState.land === "darkland") return [...PHYSICAL_CARDS, ...MURK_CARDS];
+
   return PHYSICAL_CARDS; // fallback
 }
+
 
 // -----------------------------
 // ACTIVE DECK + TRANSITION FLAG
@@ -821,23 +827,26 @@ cardEl.addEventListener("click", () => {
       cardSide = "front";
 
       // ✅ were we on FINAL D before moving?
-      const completedFinalD =
-        !murkTransitionDone &&
-        GameState.land === "darkland" &&
-        GameState.rungIndex === 7; // top D
+     // ✅ only "pass" final D if you are ON the last D AND the answer moves you UP
+const passedFinalD =
+  !murkTransitionDone &&
+  GameState.land === "darkland" &&
+  GameState.rungIndex === 7 &&   // top D
+  delta > 0;                     // must be a + move to "pass" it
 
-      moveCharacter(delta);
+moveCharacter(delta);
 
-      // ✅ If completed final D, transition instead of advancing
-      if (completedFinalD) {
-        murkTransitionDone = true;
+// ✅ If they PASSED final D, then transition
+if (passedFinalD) {
+  murkTransitionDone = true;
 
-        setTimeout(() => {
-          transitionToMurkland();
-        }, 2000);
+  setTimeout(() => {
+    transitionToMurkland();
+  }, 2000);
 
-        return;
-      }
+  return;
+}
+
 
       // ✅ normal flow: wait 2s after move, then next card
       setTimeout(() => {
@@ -946,7 +955,7 @@ function startLoveGame() {
 
   GameState.land = "darkland";
   GameState.rungIndex = 0;
-
+murkTransitionDone = false;
   const img = document.getElementById("game-background");
 
   // important: clear previous onload (prevents weirdness on replays)

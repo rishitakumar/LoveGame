@@ -981,16 +981,17 @@ function showAnswerCard(cardData, delta) {
 
 
 function advanceCard() {
-  const deck = getActiveDeck();
+  const deck = activeDeck; // ✅ use the current question deck
 
   cardIndex++;
 
   if (cardIndex < deck.length) {
     setTimeout(() => {
       showQuestionCard(deck[cardIndex]);
-    }, 2000); // your delay
+    }, 2000);
   }
 }
+
 
 function transitionToMurkland() {
   // dramatic glow flash
@@ -1059,6 +1060,8 @@ function startLoveGame() {
 
   GameState.land = "darkland";
   GameState.rungIndex = 0;
+  activeDeck = getActiveDeck(); // or PHYSICAL_CARDS if you want only physical at start
+cardIndex = 0;
 murkTransitionDone = false;
   const img = document.getElementById("game-background");
 
@@ -1103,7 +1106,7 @@ function showBeginText() {
     // ✅ AFTER fade finishes, show first card
     setTimeout(() => {
       cardIndex = 0;
-showQuestionCard(getActiveDeck()[0]);
+showQuestionCard(activeDeck[0]);
     }, 850);
 
   }, 2800);

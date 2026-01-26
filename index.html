@@ -267,6 +267,27 @@ const PHYSICAL_CARDS = [
   // add up to 8
 ];
 
+// -----------------------------
+// MURKLAND CARDS (make your own)
+// -----------------------------
+const MURK_CARDS = [
+  {
+    id: 101,
+    questionFront: "murk_q1_front.png",
+    questionBack:  "murk_q1_back.png",
+    answerFront:   "murk_a1_front.png",
+    answerBack:    "murk_a1_back.png",
+    outcomes: { a:-1, b:0, c:+1, d:+1 }
+  }
+  // add more...
+];
+
+// -----------------------------
+// ACTIVE DECK + TRANSITION FLAG
+// -----------------------------
+let activeDeck = PHYSICAL_CARDS;
+let murkTransitionDone = false;
+
   
 /* --- UNIVERSAL MOUSE STREAK SETUP --- */
 const mCanvas = document.getElementById("mouse-canvas");
@@ -620,26 +641,21 @@ confirmBtn.addEventListener("click", () => {
 function positionCharacter() {
   const char   = document.getElementById("player-character");
   const img    = document.getElementById("game-background");
-  const ladder = document.getElementById("ladder-wrapper");
   const screen = document.getElementById("game-screen");
 
-  const rung = RUNG_COORDS.darkland[GameState.rungIndex];
+  const coords = RUNG_COORDS[GameState.land]; // ✅ land-aware
+  const rung = coords[GameState.rungIndex];
 
-  // map your original image coords -> current rendered image pixels
   const x = (rung.x / 1545) * img.clientWidth;
   const y = (rung.y / 2000) * img.clientHeight;
 
-  // IMPORTANT: position relative to ladder-wrapper
   char.style.left = `${x}px`;
   char.style.top  = `${y}px`;
 
-  // ✅ scroll game-screen back to character using the element’s actual layout position
   const targetTop = char.offsetTop - screen.clientHeight * 0.65;
-  screen.scrollTo({
-    top: Math.max(0, targetTop),
-    behavior: "smooth"
-  });
+  screen.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
 }
+
 
 function moveCharacter(delta) {
   const max = LADDERS[GameState.land] - 1;
@@ -786,13 +802,30 @@ cardEl.addEventListener("click", () => {
       cardMode = "question";
       cardSide = "front";
 
-      moveCharacter(delta);
+      // ✅ were we on FINAL D before moving?
+const completedFinalD =
+  !murkTransitionDone &&
+  GameState.land === "darkland" &&
+  GameState.rungIndex === 7; // top D
 
-// ⏳ wait 1 extra second before next card
+moveCharacter(delta);
+
+// If completed final D, transition instead of advancing
+if (completedFinalD) {
+  murkTransitionDone = true;
+
+  // wait 2 seconds after move, then transition
+  setTimeout(() => {
+    transitionToMurkland();
+  }, 2000);
+
+  return;
+}
+
+// normal flow: wait 2s after move, then next card
 setTimeout(() => {
   advanceCard();
-}, 600);
-    }, 350);
+}, 2000);
   }
 });
   
@@ -829,11 +862,53 @@ function showAnswerCard(cardData, delta) {
 function advanceCard() {
   cardIndex++;
 
-  if (cardIndex < PHYSICAL_CARDS.length) {
+  if (cardIndex < activeDeck.length) {
     setTimeout(() => {
-      showQuestionCard(PHYSICAL_CARDS[cardIndex]);
+      showQuestionCard(activeDeck[cardIndex]);
     }, 2000); // ⏳ wait 2 seconds after movement
   }
+}
+
+function transitionToMurkland() {
+  // dramatic glow flash
+  const flash = document.createElement("div");
+  flash.style.position = "fixed";
+  flash.style.inset = "0";
+  flash.style.zIndex = "999999";
+  flash.style.pointerEvents = "none";
+  flash.style.background =
+    "radial-gradient(circle at center, rgba(245,255,58,0.85), rgba(0,0,0,0) 60%)";
+  flash.style.opacity = "0";
+  flash.style.transition = "opacity 0.35s ease";
+  document.body.appendChild(flash);
+
+  requestAnimationFrame(() => (flash.style.opacity = "1"));
+  setTimeout(() => {
+    flash.style.opacity = "0";
+    setTimeout(() => flash.remove(), 450);
+  }, 450);
+
+  // swap land + deck + board image
+  GameState.land = "murkland";
+  GameState.rungIndex = 0;
+
+  activeDeck = MURK_CARDS;
+  cardIndex = 0;
+
+  const img = document.getElementById("game-background");
+  img.onload = null;
+
+  img.onload = () => {
+    positionCharacter();
+    activeDeck = PHYSICAL_CARDS;
+murkTransitionDone = false;
+    // wait a beat, then show first murk card
+    setTimeout(() => {
+      showQuestionCard(activeDeck[0]);
+    }, 1200);
+  };
+
+  img.src = "murkland_screen.png";
 }
 
 
@@ -903,14 +978,26 @@ function showBeginText() {
 // Your coordinates
 const RUNG_COORDS = {
   darkland: [
-    { x: 904,  y: 1934 }, // D bottom
-    { x: 1057, y: 1654 }, // A
-    { x: 969,  y: 1380 }, // R
-    { x: 1108, y: 1177 }, // K
-    { x: 731,  y: 907  }, // L
-    { x: 884,  y: 609  }, // A
-    { x: 583,  y: 434  }, // N
-    { x: 735,  y: 173   }  // D top
+    { x: 904,  y: 1934 },
+    { x: 1057, y: 1654 },
+    { x: 969,  y: 1380 },
+    { x: 1108, y: 1177 },
+    { x: 731,  y: 907  },
+    { x: 884,  y: 609  },
+    { x: 583,  y: 434  },
+    { x: 735,  y: 173  }
+  ],
+
+  // TODO: replace these with your real murkland rung positions
+  murkland: [
+    { x: 904,  y: 1934 },
+    { x: 1057, y: 1654 },
+    { x: 969,  y: 1380 },
+    { x: 1108, y: 1177 },
+    { x: 731,  y: 907  },
+    { x: 884,  y: 609  },
+    { x: 583,  y: 434  },
+    { x: 735,  y: 173  }
   ]
 };
 

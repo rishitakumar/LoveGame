@@ -885,8 +885,6 @@ let currentCard = null;
 let cardSide = "front";
 let cardIndex = 0;
 let murkLastSeenIndex = -1; // -1 means none seen yet
-let emotionalMode = false; // true when we’re running Murk (emotional) questions
-let mentalMode = false;
 let questionPhase = "physical"; // physical → emotional → mental
 let lovelandUnlocked = false;
 
@@ -986,6 +984,12 @@ cardEl.addEventListener("click", () => {
       // ✅ were we on FINAL D before moving?
      // ✅ only "pass" final D if you are ON the last D AND the answer moves you UP
 // ✅ only "pass" final d of Murkland if you're on top rung AND the answer moves you UP
+const passedDarkFinalD =
+  !murkTransitionDone &&
+  GameState.land === "darkland" &&
+  GameState.rungIndex === 7 &&
+  delta > 0;
+
 const passedMurkFinalD =
   GameState.land === "murkland" &&
   GameState.rungIndex === 7 &&
@@ -997,9 +1001,11 @@ moveCharacter(delta);
 if (passedMurkFinalD) {
   lovelandUnlocked = true;
 }
-
-
-
+if (passedDarkFinalD) {
+  murkTransitionDone = true;
+  setTimeout(() => transitionToMurkland(), 2000);
+  return;
+}
 
       // ✅ normal flow: wait 2s after move, then next card
       setTimeout(() => {
@@ -1044,7 +1050,16 @@ function showAnswerCard(cardData, delta) {
 function advanceCard() {
   cardIndex++;
 
-  // ✅ If we finished emotional questions, move to mental questions (ANYWHERE)
+  // ✅ PHYSICAL finished -> start EMOTIONAL (Murk) questions (ANYWHERE)
+  if (questionPhase === "physical" && cardIndex >= PHYSICAL_CARDS.length) {
+    questionPhase = "emotional";
+    activeDeck = MURK_CARDS;
+
+    // start from where they left off (if any Murk cards were already seen)
+    cardIndex = Math.max(0, murkLastSeenIndex + 1);
+  }
+
+  // ✅ EMOTIONAL finished -> start MENTAL questions (ANYWHERE)
   if (questionPhase === "emotional" && cardIndex >= MURK_CARDS.length) {
     questionPhase = "mental";
     activeDeck = MENTAL_CARDS;

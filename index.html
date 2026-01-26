@@ -750,33 +750,32 @@ function positionCharacter() {
 }
 
 function moveCharacter(delta) {
-  // 🚨 SPECIAL CASE:
   // Falling from Murkland M goes back to Darkland final D
   if (
     GameState.land === "murkland" &&
     GameState.rungIndex === 0 &&
-    delta < 0
+    delta <= 0   // ✅ changed from < 0 to <= 0
   ) {
     GameState.land = "darkland";
     GameState.rungIndex = LADDERS.darkland - 1; // last D
 
     const img = document.getElementById("game-background");
-    if (img) img.src = "darkland_screen.png";
+    if (img) {
+      img.onload = () => positionCharacter();
+      img.src = "darkland_screen.png";
+    } else {
+      positionCharacter();
+    }
 
-    // wait for image swap, then position
-    setTimeout(positionCharacter, 50);
     return;
   }
 
-  // 🧭 NORMAL MOVEMENT
+  // normal movement
   const max = LADDERS[GameState.land] - 1;
-  GameState.rungIndex = Math.max(
-    0,
-    Math.min(max, GameState.rungIndex + delta)
-  );
-
+  GameState.rungIndex = Math.max(0, Math.min(max, GameState.rungIndex + delta));
   positionCharacter();
 }
+
 
 
 const subtitles = {

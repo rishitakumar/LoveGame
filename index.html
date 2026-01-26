@@ -750,14 +750,10 @@ function positionCharacter() {
 }
 
 function moveCharacter(delta) {
-  // 1) FALL RULE: Murkland M + wrong/neutral drops to Darkland last D
-  if (
-    GameState.land === "murkland" &&
-    GameState.rungIndex === 0 &&
-    delta <= 0
-  ) {
+  // FALL: Murkland M + wrong/neutral -> Darkland last D (but keep emotionalMode ON)
+  if (GameState.land === "murkland" && GameState.rungIndex === 0 && delta <= 0) {
     GameState.land = "darkland";
-    GameState.rungIndex = LADDERS.darkland - 1; // last D
+    GameState.rungIndex = LADDERS.darkland - 1; // 7
 
     const img = document.getElementById("game-background");
     if (img) {
@@ -769,16 +765,15 @@ function moveCharacter(delta) {
     return;
   }
 
-  // 2) RETURN RULE: If you're stuck on Darkland last D while on emotional deck,
-  // a correct answer bumps you back into Murkland (screen switches back)
+  // RETURN: Darkland last D + emotionalMode + correct -> Murkland M (switch screen back)
   if (
     GameState.land === "darkland" &&
     GameState.rungIndex === LADDERS.darkland - 1 &&
-    activeDeck === MURK_CARDS &&
+    emotionalMode &&
     delta > 0
   ) {
     GameState.land = "murkland";
-    GameState.rungIndex = 0; // back to M
+    GameState.rungIndex = 0;
 
     const img = document.getElementById("game-background");
     if (img) {
@@ -790,11 +785,12 @@ function moveCharacter(delta) {
     return;
   }
 
-  // 3) NORMAL MOVEMENT
+  // NORMAL MOVEMENT
   const max = LADDERS[GameState.land] - 1;
   GameState.rungIndex = Math.max(0, Math.min(max, GameState.rungIndex + delta));
   positionCharacter();
 }
+
 
 
 
@@ -858,9 +854,11 @@ let currentCard = null;
 let cardSide = "front";
 let cardIndex = 0;
 let murkLastSeenIndex = -1; // -1 means none seen yet
+let emotionalMode = false; // true when we’re running Murk (emotional) questions
 
 
 function showQuestionCard(cardData) {
+  emotionalMode = cardData && cardData.id >= 100; // since your Murk ids are 101,102,...
   currentCard = cardData;
   // Track Murk progress even if Murk questions appear in Darkland
 const mIdx = MURK_CARDS.findIndex(c => c.id === cardData.id);

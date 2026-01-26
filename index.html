@@ -781,7 +781,7 @@ function positionCharacter() {
 }
 
 function moveCharacter(delta) {
-  // FALL: Murkland M + wrong/neutral -> Darkland last D (but keep emotionalMode ON)
+  // FALL: Murkland M + wrong/neutral -> Darkland last D
   if (GameState.land === "murkland" && GameState.rungIndex === 0 && delta <= 0) {
     GameState.land = "darkland";
     GameState.rungIndex = LADDERS.darkland - 1; // 7
@@ -796,11 +796,11 @@ function moveCharacter(delta) {
     return;
   }
 
-  // RETURN: Darkland last D + emotionalMode + correct -> Murkland M (switch screen back)
+  // RETURN: If we are still in EMOTIONAL phase and get a + at Darkland last D, go back to Murkland visuals
   if (
     GameState.land === "darkland" &&
     GameState.rungIndex === LADDERS.darkland - 1 &&
-    emotionalMode &&
+    questionPhase === "emotional" &&
     delta > 0
   ) {
     GameState.land = "murkland";
@@ -893,7 +893,10 @@ let lovelandUnlocked = false;
 
 
 function showQuestionCard(cardData) {
-  if (!cardData) return;
+  if (!cardData) {
+    console.error("showQuestionCard called with:", cardData);
+    return;
+  }
 
   // ✅ Phase detection by ID range
   if (cardData.id >= 100 && cardData.id < 200) questionPhase = "emotional";
@@ -901,7 +904,7 @@ function showQuestionCard(cardData) {
 
   currentCard = cardData;
 
-  // ✅ Track Murk progress even if Murk questions appear before Murkland visuals
+  // ✅ Track Murk progress
   const mIdx = MURK_CARDS.findIndex(c => c.id === cardData.id);
   if (mIdx !== -1) murkLastSeenIndex = mIdx;
 
@@ -921,6 +924,7 @@ function showQuestionCard(cardData) {
 
   scrollToCards();
 }
+
 
 
 window.addEventListener("keydown", e => {

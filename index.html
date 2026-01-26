@@ -992,22 +992,39 @@ function transitionToMurkland() {
     setTimeout(() => flash.remove(), 450);
   }, 450);
 
-  // swap land + reset position + reset cards
+  // swap land + reset position
   GameState.land = "murkland";
-GameState.rungIndex = 0;
+  GameState.rungIndex = 0;
 
-// ✅ start Murkland where they left off on emotional questions
-cardIndex = Math.min(murkLastSeenIndex + 1, MURK_CARDS.length - 1);
+  // ✅ Murk deck
+  activeDeck = MURK_CARDS;
 
-activeDeck = MURK_CARDS;
+  // ✅ start Murkland where they left off on emotional questions
+  const nextMurkIndex = Math.max(
+    0,
+    Math.min((typeof murkLastSeenIndex === "number" ? murkLastSeenIndex : -1) + 1, MURK_CARDS.length - 1)
+  );
+  cardIndex = nextMurkIndex;
 
-...
-setTimeout(() => {
-  showQuestionCard(activeDeck[cardIndex]);
-}, 1200);
+  const img = document.getElementById("game-background");
+  if (!img) return;
+
+  img.onload = () => {
+    positionCharacter();
+
+    setTimeout(() => {
+      const nextCard = activeDeck[cardIndex];
+      if (!nextCard) {
+        console.error("No Murk card at index:", cardIndex, "Deck:", activeDeck);
+        return;
+      }
+      showQuestionCard(nextCard);
+    }, 1200);
+  };
 
   img.src = "murkland_screen.png";
 }
+
 
 
 // =============================

@@ -818,9 +818,14 @@ document.querySelectorAll(".character").forEach(char => {
 let currentCard = null;
 let cardSide = "front";
 let cardIndex = 0;
+let murkLastSeenIndex = -1; // -1 means none seen yet
+
 
 function showQuestionCard(cardData) {
   currentCard = cardData;
+  // Track Murk progress even if Murk questions appear in Darkland
+const mIdx = MURK_CARDS.findIndex(c => c.id === cardData.id);
+if (mIdx !== -1) murkLastSeenIndex = mIdx;
   cardSide = "front";
   cardMode = "question";
 
@@ -989,22 +994,17 @@ function transitionToMurkland() {
 
   // swap land + reset position + reset cards
   GameState.land = "murkland";
-  GameState.rungIndex = 0;
-  cardIndex = 0;
+GameState.rungIndex = 0;
 
-  // ✅ keep Murk deck active
-  activeDeck = MURK_CARDS;
+// ✅ start Murkland where they left off on emotional questions
+cardIndex = Math.min(murkLastSeenIndex + 1, MURK_CARDS.length - 1);
 
-  const img = document.getElementById("game-background");
+activeDeck = MURK_CARDS;
 
-  img.onload = () => {
-    positionCharacter();
-
-    // wait a beat, then show first murk card
-    setTimeout(() => {
-      showQuestionCard(activeDeck[0]); // ✅ MURK_CARDS[0]
-    }, 1200);
-  };
+...
+setTimeout(() => {
+  showQuestionCard(activeDeck[cardIndex]);
+}, 1200);
 
   img.src = "murkland_screen.png";
 }

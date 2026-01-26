@@ -294,6 +294,12 @@ const MURK_CARDS = [
   }
   // add more...
 ];
+  
+function getActiveDeck() {
+  if (GameState.land === "murkland") return MURK_CARDS;
+  if (GameState.land === "darkland") return PHYSICAL_CARDS;
+  return PHYSICAL_CARDS; // fallback
+}
 
 // -----------------------------
 // ACTIVE DECK + TRANSITION FLAG
@@ -657,7 +663,7 @@ function positionCharacter() {
   const screen = document.getElementById("game-screen");
 
   const coords = RUNG_COORDS[GameState.land]; // ✅ land-aware
-  const rung = coords[GameState.rungIndex];
+  const rung = RUNG_COORDS[GameState.land][GameState.rungIndex];
 
   const x = (rung.x / 1545) * img.clientWidth;
   const y = (rung.y / 2000) * img.clientHeight;
@@ -874,12 +880,14 @@ function showAnswerCard(cardData, delta) {
 
 
 function advanceCard() {
+  const deck = getActiveDeck();
+
   cardIndex++;
 
-  if (cardIndex < activeDeck.length) {
+  if (cardIndex < deck.length) {
     setTimeout(() => {
-      showQuestionCard(activeDeck[cardIndex]);
-    }, 2000); // ⏳ wait 2 seconds after movement
+      showQuestionCard(deck[cardIndex]);
+    }, 2000); // your delay
   }
 }
 
@@ -902,23 +910,22 @@ function transitionToMurkland() {
     setTimeout(() => flash.remove(), 450);
   }, 450);
 
-  // swap land + deck + board image
+  // swap land + reset position + reset cards
   GameState.land = "murkland";
   GameState.rungIndex = 0;
-
-  activeDeck = MURK_CARDS;
   cardIndex = 0;
 
+  // ✅ keep Murk deck active
+  activeDeck = MURK_CARDS;
+
   const img = document.getElementById("game-background");
-  img.onload = null;
 
   img.onload = () => {
     positionCharacter();
-    activeDeck = PHYSICAL_CARDS;
-murkTransitionDone = false;
+
     // wait a beat, then show first murk card
     setTimeout(() => {
-      showQuestionCard(activeDeck[0]);
+      showQuestionCard(activeDeck[0]); // ✅ MURK_CARDS[0]
     }, 1200);
   };
 
@@ -983,7 +990,7 @@ function showBeginText() {
     // ✅ AFTER fade finishes, show first card
     setTimeout(() => {
       cardIndex = 0;
-      showQuestionCard(PHYSICAL_CARDS[0]);
+showQuestionCard(getActiveDeck()[0]);
     }, 850);
 
   }, 2800);

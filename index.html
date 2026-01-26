@@ -750,11 +750,11 @@ function positionCharacter() {
 }
 
 function moveCharacter(delta) {
-  // Falling from Murkland M goes back to Darkland final D
+  // 1) FALL RULE: Murkland M + wrong/neutral drops to Darkland last D
   if (
     GameState.land === "murkland" &&
     GameState.rungIndex === 0 &&
-    delta <= 0   // ✅ changed from < 0 to <= 0
+    delta <= 0
   ) {
     GameState.land = "darkland";
     GameState.rungIndex = LADDERS.darkland - 1; // last D
@@ -766,11 +766,31 @@ function moveCharacter(delta) {
     } else {
       positionCharacter();
     }
-
     return;
   }
 
-  // normal movement
+  // 2) RETURN RULE: If you're stuck on Darkland last D while on emotional deck,
+  // a correct answer bumps you back into Murkland (screen switches back)
+  if (
+    GameState.land === "darkland" &&
+    GameState.rungIndex === LADDERS.darkland - 1 &&
+    activeDeck === MURK_CARDS &&
+    delta > 0
+  ) {
+    GameState.land = "murkland";
+    GameState.rungIndex = 0; // back to M
+
+    const img = document.getElementById("game-background");
+    if (img) {
+      img.onload = () => positionCharacter();
+      img.src = "murkland_screen.png";
+    } else {
+      positionCharacter();
+    }
+    return;
+  }
+
+  // 3) NORMAL MOVEMENT
   const max = LADDERS[GameState.land] - 1;
   GameState.rungIndex = Math.max(0, Math.min(max, GameState.rungIndex + delta));
   positionCharacter();

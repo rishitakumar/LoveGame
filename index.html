@@ -836,10 +836,11 @@ function positionCharacter() {
 }
 
 function moveCharacter(delta) {
+
   // FALL: Murkland M + wrong/neutral -> Darkland last D
   if (GameState.land === "murkland" && GameState.rungIndex === 0 && delta <= 0) {
     GameState.land = "darkland";
-    GameState.rungIndex = LADDERS.darkland - 1; // 7
+    GameState.rungIndex = LADDERS.darkland - 1;
 
     const img = document.getElementById("game-background");
     if (img) {
@@ -848,31 +849,10 @@ function moveCharacter(delta) {
     } else {
       positionCharacter();
     }
-    return;
+    return true; // ✅ IMPORTANT
   }
-// FALL: Loveland first rung + wrong/neutral -> Murkland last D (top)
-if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
-  GameState.land = "murkland";
-  GameState.rungIndex = LADDERS.murkland - 1; // 7
 
-  // switch question phase back to emotional (Murk deck) when falling
-  questionPhase = "emotional";
-  activeDeck = MURK_CARDS;
-
-  // resume Murk questions where they left off
-  cardIndex = Math.max(0, Math.min(murkLastSeenIndex + 1, MURK_CARDS.length - 1));
-
-  const img = document.getElementById("game-background");
-  if (img) {
-    img.onload = () => positionCharacter();
-    img.src = "murkland_screen.png";
-  } else {
-    positionCharacter();
-  }
-  return;
-}
-
-  // RETURN: If we are still in EMOTIONAL phase and get a + at Darkland last D, go back to Murkland visuals
+  // RETURN: Darkland last D + emotional + + -> Murkland
   if (
     GameState.land === "darkland" &&
     GameState.rungIndex === LADDERS.darkland - 1 &&
@@ -889,14 +869,37 @@ if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
     } else {
       positionCharacter();
     }
-    return;
+    return true; // ✅ IMPORTANT
+  }
+
+  // FALL: Loveland first rung + wrong -> Murkland top rung
+  if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
+    GameState.land = "murkland";
+    GameState.rungIndex = LADDERS.murkland - 1;
+
+    questionPhase = "emotional";
+    activeDeck = MURK_CARDS;
+
+    // IMPORTANT: set cardIndex to a safe in-range value
+    cardIndex = Math.max(0, Math.min(murkLastSeenIndex, MURK_CARDS.length - 1));
+
+    const img = document.getElementById("game-background");
+    if (img) {
+      img.onload = () => positionCharacter();
+      img.src = "murkland_screen.png";
+    } else {
+      positionCharacter();
+    }
+    return true; // ✅ IMPORTANT
   }
 
   // NORMAL MOVEMENT
   const max = LADDERS[GameState.land] - 1;
   GameState.rungIndex = Math.max(0, Math.min(max, GameState.rungIndex + delta));
   positionCharacter();
+  return false; // ✅ IMPORTANT
 }
+
 
 
 
@@ -1075,7 +1078,8 @@ const passedDarkFinalD =
   delta > 0;
 
 // move first
-moveCharacter(delta);
+const transitioned = moveCharacter(delta);
+if (transitioned) return;
 
 // If they just earned a "move up" while already at Murk top,
 // go straight to Loveland now (don’t wait for the deck to end).

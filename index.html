@@ -1039,34 +1039,39 @@ cardEl.addEventListener("click", () => {
       // ✅ were we on FINAL D before moving?
      // ✅ only "pass" final D if you are ON the last D AND the answer moves you UP
 // ✅ only "pass" final d of Murkland if you're on top rung AND the answer moves you UP
+const wasAtTopMurk =
+  GameState.land === "murkland" &&
+  GameState.rungIndex === (LADDERS.murkland - 1) &&
+  delta > 0;
+
 const passedDarkFinalD =
   !murkTransitionDone &&
   GameState.land === "darkland" &&
-  GameState.rungIndex === 7 &&
+  GameState.rungIndex === (LADDERS.darkland - 1) &&
   delta > 0;
 
-const passedMurkFinalD =
-  GameState.land === "murkland" &&
-  GameState.rungIndex === 7 &&
-  delta > 0;
-
+// move first
 moveCharacter(delta);
 
-// ✅ unlock Loveland, but DON'T switch visuals yet
-if (passedMurkFinalD) {
+// If they just earned a "move up" while already at Murk top,
+// go straight to Loveland now (don’t wait for the deck to end).
+if (wasAtTopMurk) {
   lovelandUnlocked = true;
+  setTimeout(() => transitionToLoveland(), 1200);
+  return;
 }
+
+// Darkland → Murkland transition (your existing logic)
 if (passedDarkFinalD) {
   murkTransitionDone = true;
   setTimeout(() => transitionToMurkland(), 2000);
   return;
 }
 
-      // ✅ normal flow: wait 2s after move, then next card
-      setTimeout(() => {
-        advanceCard();
-      }, 2000);
-
+// Normal flow: next card
+setTimeout(() => {
+  advanceCard();
+}, 2000);
     }, 350);
   }
 });

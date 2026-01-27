@@ -850,6 +850,27 @@ function moveCharacter(delta) {
     }
     return;
   }
+// FALL: Loveland first rung + wrong/neutral -> Murkland last D (top)
+if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
+  GameState.land = "murkland";
+  GameState.rungIndex = LADDERS.murkland - 1; // 7
+
+  // switch question phase back to emotional (Murk deck) when falling
+  questionPhase = "emotional";
+  activeDeck = MURK_CARDS;
+
+  // resume Murk questions where they left off
+  cardIndex = Math.max(0, Math.min(murkLastSeenIndex + 1, MURK_CARDS.length - 1));
+
+  const img = document.getElementById("game-background");
+  if (img) {
+    img.onload = () => positionCharacter();
+    img.src = "murkland_screen.png";
+  } else {
+    positionCharacter();
+  }
+  return;
+}
 
   // RETURN: If we are still in EMOTIONAL phase and get a + at Darkland last D, go back to Murkland visuals
   if (
@@ -960,6 +981,9 @@ function showQuestionCard(cardData) {
   // ✅ Track Murk progress
   const mIdx = MURK_CARDS.findIndex(c => c.id === cardData.id);
   if (mIdx !== -1) murkLastSeenIndex = mIdx;
+  // ✅ Track Mental progress
+const tIdx = MENTAL_CARDS.findIndex(c => c.id === cardData.id);
+if (tIdx !== -1) mentalLastSeenIndex = tIdx;
 
   cardSide = "front";
   cardMode = "question";
@@ -1123,7 +1147,13 @@ function advanceCard() {
   if (questionPhase === "emotional" && cardIndex >= MURK_CARDS.length) {
     questionPhase = "mental";
     activeDeck = MENTAL_CARDS;
-    cardIndex = 0;
+// resume from where they left off
+const nextMentalIndex = Math.max(
+  0,
+  Math.min((typeof mentalLastSeenIndex === "number" ? mentalLastSeenIndex : -1) + 1, MENTAL_CARDS.length - 1)
+);
+cardIndex = nextMentalIndex;
+
 
     // ✅ ONLY show Loveland visuals if unlocked
     if (lovelandUnlocked) {
@@ -1217,8 +1247,15 @@ function transitionToLoveland() {
   GameState.rungIndex = 0;
 
   // ✅ switch to mental deck (Loveland questions)
-  activeDeck = MENTAL_CARDS;
-  cardIndex = 0;
+  // ✅ switch to mental deck (Loveland questions) — RESUME
+activeDeck = MENTAL_CARDS;
+
+const nextMentalIndex = Math.max(
+  0,
+  Math.min((typeof mentalLastSeenIndex === "number" ? mentalLastSeenIndex : -1) + 1, MENTAL_CARDS.length - 1)
+);
+cardIndex = nextMentalIndex;
+
 
   const img = document.getElementById("game-background");
   if (!img) return;
@@ -1253,6 +1290,7 @@ lovelandUnlocked = false;
 activeDeck = getDeckForPhase();
 cardIndex = 0;
 murkLastSeenIndex = -1;
+mentalLastSeenIndex = -1;
 murkTransitionDone = false;
   const img = document.getElementById("game-background");
 

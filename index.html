@@ -842,14 +842,20 @@ function moveCharacter(delta) {
     GameState.rungIndex = LADDERS.darkland - 1; // 7
 
     const img = document.getElementById("game-background");
-    if (img) {
-      img.onload = () => positionCharacter();
-      img.src = "darkland_screen.png";
-    } else {
-      positionCharacter();
-    }
-    return true; // ✅ transitioned
-  }
+   const continueAfterTransition = () => {
+  positionCharacter();
+  setTimeout(() => {
+    advanceCard(); // ✅ keep the game flowing
+  }, 450);
+};
+
+if (img) {
+  img.onload = continueAfterTransition;
+  img.src = "darkland_screen.png";
+} else {
+  continueAfterTransition();
+}
+return true;
 
   // RETURN: Darkland last D + emotional + + -> Murkland visuals
   if (
@@ -861,15 +867,23 @@ function moveCharacter(delta) {
     GameState.land = "murkland";
     GameState.rungIndex = 0;
 
-    const img = document.getElementById("game-background");
-    if (img) {
-      img.onload = () => positionCharacter();
-      img.src = "murkland_screen.png";
-    } else {
-      positionCharacter();
-    }
-    return true; // ✅ transitioned
-  }
+   const img = document.getElementById("game-background");
+
+const continueAfterTransition = () => {
+  positionCharacter();
+  setTimeout(() => {
+    advanceCard(); // ✅ keep the game flowing
+  }, 450);
+};
+
+if (img) {
+  img.onload = continueAfterTransition;
+  img.src = "murkland_screen.png";
+} else {
+  continueAfterTransition();
+}
+return true;
+
 
   // FALL: Loveland first rung + wrong -> Murkland top rung
   if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {

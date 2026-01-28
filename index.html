@@ -886,34 +886,33 @@ function moveCharacter(delta) {
   /* =====================
      LOVELAND → MURKLAND
   ===================== */
-  if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
-    GameState.land = "murkland";
-    GameState.rungIndex = LADDERS.murkland - 1;
+ /* =====================
+   LOVELAND → MURKLAND (visual drop only; KEEP current deck)
+===================== */
+if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
+  GameState.land = "murkland";
+  GameState.rungIndex = LADDERS.murkland - 1;
 
-    questionPhase = "emotional";
-    activeDeck = MURK_CARDS;
+  // ✅ DO NOT change questionPhase / activeDeck here.
+  // Keep whatever you were doing (mental cards continue).
 
-    cardIndex = Math.max(
-      0,
-      Math.min((murkLastSeenIndex ?? -1) + 1, MURK_CARDS.length - 1)
-    );
+  const continueSameDeck = () => {
+    positionCharacter();
+    setTimeout(() => {
+      advanceCard(); // continues from current activeDeck/questionPhase
+    }, 450);
+  };
 
-    const resumeMurk = () => {
-      positionCharacter();
-      setTimeout(() => {
-        showQuestionCard(activeDeck[cardIndex]);
-      }, 450);
-    };
-
-    if (img) {
-      img.onload = resumeMurk;
-      img.src = "murkland_screen.png";
-    } else {
-      resumeMurk();
-    }
-
-    return true;
+  if (img) {
+    img.onload = continueSameDeck;
+    img.src = "murkland_screen.png";
+  } else {
+    continueSameDeck();
   }
+
+  return true;
+}
+
 
   /* =====================
      NORMAL MOVEMENT

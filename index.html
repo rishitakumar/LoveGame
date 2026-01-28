@@ -836,11 +836,10 @@ function positionCharacter() {
 }
 
 function moveCharacter(delta) {
-
   // FALL: Murkland M + wrong/neutral -> Darkland last D
   if (GameState.land === "murkland" && GameState.rungIndex === 0 && delta <= 0) {
     GameState.land = "darkland";
-    GameState.rungIndex = LADDERS.darkland - 1;
+    GameState.rungIndex = LADDERS.darkland - 1; // 7
 
     const img = document.getElementById("game-background");
     if (img) {
@@ -849,10 +848,10 @@ function moveCharacter(delta) {
     } else {
       positionCharacter();
     }
-    return true; // ✅ IMPORTANT
+    return true; // ✅ transitioned
   }
 
-  // RETURN: Darkland last D + emotional + + -> Murkland
+  // RETURN: Darkland last D + emotional + + -> Murkland visuals
   if (
     GameState.land === "darkland" &&
     GameState.rungIndex === LADDERS.darkland - 1 &&
@@ -869,18 +868,18 @@ function moveCharacter(delta) {
     } else {
       positionCharacter();
     }
-    return true; // ✅ IMPORTANT
+    return true; // ✅ transitioned
   }
 
   // FALL: Loveland first rung + wrong -> Murkland top rung
   if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
     GameState.land = "murkland";
-    GameState.rungIndex = LADDERS.murkland - 1;
+    GameState.rungIndex = LADDERS.murkland - 1; // 7
 
     questionPhase = "emotional";
     activeDeck = MURK_CARDS;
 
-    // IMPORTANT: set cardIndex to a safe in-range value
+    // ✅ keep cardIndex in range (prevents instant "deck finished" bounce)
     cardIndex = Math.max(0, Math.min(murkLastSeenIndex, MURK_CARDS.length - 1));
 
     const img = document.getElementById("game-background");
@@ -890,15 +889,16 @@ function moveCharacter(delta) {
     } else {
       positionCharacter();
     }
-    return true; // ✅ IMPORTANT
+    return true; // ✅ transitioned
   }
 
   // NORMAL MOVEMENT
   const max = LADDERS[GameState.land] - 1;
   GameState.rungIndex = Math.max(0, Math.min(max, GameState.rungIndex + delta));
   positionCharacter();
-  return false; // ✅ IMPORTANT
+  return false; // ✅ no transition
 }
+
 
 
 

@@ -440,6 +440,19 @@ const MENTAL_CARDS = [
   // add more...
 ];
 
+// -----------------------------
+// ECSTASY BONUS CARD (SPECIAL)
+// -----------------------------
+const ECSTASY_CARD = {
+  id: 301,
+  questionFront: "ecstasy_q_front.png",
+  questionBack:  "ecstasy_q_back.png",
+  answerFront:   "ecstasy_a_front.png",
+  answerBack:    "ecstasy_a_back.png",
+  outcomes: { a: 0, b: -1, c: +1, d: +1 } // edit letters/outcomes to match your design
+};
+
+  
 function getDeckForPhase() {
   if (questionPhase === "physical") return PHYSICAL_CARDS;
   if (questionPhase === "emotional") return MURK_CARDS;
@@ -922,7 +935,7 @@ if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
   positionCharacter();
   return false;
 }
-
+  
 
 
 
@@ -989,6 +1002,7 @@ let cardIndex = 0;
 let murkLastSeenIndex = -1; // -1 means none seen yet
 let questionPhase = "physical"; // physical → emotional → mental
 let lovelandUnlocked = false;
+let mentalLastSeenIndex = -1;
 
 
 
@@ -1081,10 +1095,22 @@ cardEl.addEventListener("click", () => {
       layer.style.display = "none";
 
       const delta = Number(layer.dataset.delta || 0);
-
+      const answeredCardId = Number(layer.dataset.cardId || 0);
       currentCard = null;
       cardMode = "question";
       cardSide = "front";
+      // ✅ ECSTASY bonus resolution
+if (answeredCardId === ECSTASY_CARD.id) {
+  if (delta > 0) {
+    transitionToEcstasy();
+    setTimeout(() => showJourneyEnd("ecstasy"), 2000);
+  } else {
+    // stay Loveland
+    GameState.land = "loveland";
+    setTimeout(() => showJourneyEnd("loveland"), 800);
+  }
+  return;
+}
 
       // ✅ were we on FINAL D before moving?
      // ✅ only "pass" final D if you are ON the last D AND the answer moves you UP
@@ -1142,8 +1168,8 @@ function showAnswerCard(cardData, delta) {
   const front = document.getElementById("card-front");
   const back  = document.getElementById("card-back");
 
-  // store movement for later
   layer.dataset.delta = String(delta);
+  layer.dataset.cardId = String(cardData.id); // ✅ add this
 
   currentCard = cardData;
   cardMode = "answer";
@@ -1158,9 +1184,28 @@ function showAnswerCard(cardData, delta) {
 }
 
 
+
 function advanceCard() {
   cardIndex++;
+  // ✅ END: after last mental card
+if (questionPhase === "mental" && cardIndex >= MENTAL_CARDS.length) {
+  const onTopLoveland =
+    GameState.land === "loveland" &&
+    GameState.rungIndex === (LADDERS.loveland - 1);
 
+  if (onTopLoveland) {
+    // show ONE bonus ecstasy card
+    questionPhase = "ecstasy";
+    activeDeck = [ECSTASY_CARD];
+    cardIndex = 0;
+
+    setTimeout(() => showQuestionCard(ECSTASY_CARD), 700);
+  } else {
+    // otherwise just show final land
+    setTimeout(() => showJourneyEnd(GameState.land), 700);
+  }
+  return;
+}
   // ✅ PHYSICAL finished -> start EMOTIONAL (Murk) questions (ANYWHERE)
   if (questionPhase === "physical" && cardIndex >= PHYSICAL_CARDS.length) {
     questionPhase = "emotional";
@@ -1297,6 +1342,88 @@ cardIndex = nextMentalIndex;
   img.src = "loveland_screen.png";
 }
 
+function landLabel(land) {
+  const map = {
+    darkland: "Darkland",
+    murkland: "Murkland",
+    loveland: "Loveland",
+    ecstasy: "Ecstasy"
+  };
+  return map[land] || "Loveland";
+}
+
+function showJourneyEnd(finalLand) {
+  // hide cards
+  const layer = document.getElementById("card-layer");
+  if (layer) layer.style.display = "none";
+
+  // fade the game screen
+  const screen = document.getElementById("game-screen");
+  if (screen) {
+    screen.style.transition = "opacity 0.9s ease";
+    screen.style.opacity = "0";
+  }
+
+  // glow overlay
+  const end = document.createElement("div");
+  end.style.position = "fixed";
+  end.style.inset = "0";
+  end.style.zIndex = "9999999";
+  end.style.display = "flex";
+  end.style.alignItems = "center";
+  end.style.justifyContent = "center";
+  end.style.background = "rgba(0,0,0,0.78)";
+  end.style.opacity = "0";
+  end.style.transition = "opacity 1.0s ease";
+
+  const msg = document.createElement("div");
+  msg.style.fontFamily = "Georgia, 'Times New Roman', serif";
+  msg.style.textTransform = "uppercase";
+  msg.style.letterSpacing = "2px";
+  msg.style.fontSize = "clamp(20px, 3vw, 44px)";
+  msg.style.textAlign = "center";
+  msg.style.color = "#f5ff3a";
+  msg.style.textShadow = "0 0 16px rgba(245,255,58,0.95), 0 0 44px rgba(245,255,58,0.35)";
+  msg.style.padding = "24px";
+  msg.textContent = `Your journey has brought you to ${landLabel(finalLand)}.`;
+
+  end.appendChild(msg);
+  document.body.appendChild(end);
+
+  requestAnimationFrame(() => {
+    end.style.opacity = "1";
+  });
+}
+
+function transitionToEcstasy() {
+  // glow flash
+  const flash = document.createElement("div");
+  flash.style.position = "fixed";
+  flash.style.inset = "0";
+  flash.style.zIndex = "999999";
+  flash.style.pointerEvents = "none";
+  flash.style.background =
+    "radial-gradient(circle at center, rgba(245,255,58,0.85), rgba(0,0,0,0) 60%)";
+  flash.style.opacity = "0";
+  flash.style.transition = "opacity 0.35s ease";
+  document.body.appendChild(flash);
+
+  requestAnimationFrame(() => (flash.style.opacity = "1"));
+  setTimeout(() => {
+    flash.style.opacity = "0";
+    setTimeout(() => flash.remove(), 450);
+  }, 450);
+
+  GameState.land = "ecstasy";
+
+  const char = document.getElementById("player-character");
+  if (char) char.style.display = "none";
+
+  const img = document.getElementById("game-background");
+  if (!img) return;
+  img.onload = () => {};
+  img.src = "ecstasy_screen.png"; // <-- your file
+}
 
 
 // =============================

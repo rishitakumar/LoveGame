@@ -836,28 +836,35 @@ function positionCharacter() {
 }
 
 function moveCharacter(delta) {
-  // FALL: Murkland M + wrong/neutral -> Darkland last D
+
+  const img = document.getElementById("game-background");
+
+  const continueWithNextCard = () => {
+    positionCharacter();
+    setTimeout(() => {
+      advanceCard();
+    }, 450);
+  };
+
+  /* =====================
+     MURKLAND → DARKLAND
+  ===================== */
   if (GameState.land === "murkland" && GameState.rungIndex === 0 && delta <= 0) {
     GameState.land = "darkland";
-    GameState.rungIndex = LADDERS.darkland - 1; // 7
+    GameState.rungIndex = LADDERS.darkland - 1;
 
-    const img = document.getElementById("game-background");
-   const continueAfterTransition = () => {
-  positionCharacter();
-  setTimeout(() => {
-    advanceCard(); // ✅ keep the game flowing
-  }, 450);
-};
+    if (img) {
+      img.onload = continueWithNextCard;
+      img.src = "darkland_screen.png";
+    } else {
+      continueWithNextCard();
+    }
+    return true;
+  }
 
-if (img) {
-  img.onload = continueAfterTransition;
-  img.src = "darkland_screen.png";
-} else {
-  continueAfterTransition();
-}
-return true;
-
-  // RETURN: Darkland last D + emotional + + -> Murkland visuals
+  /* =====================
+     DARKLAND → MURKLAND
+  ===================== */
   if (
     GameState.land === "darkland" &&
     GameState.rungIndex === LADDERS.darkland - 1 &&
@@ -867,52 +874,55 @@ return true;
     GameState.land = "murkland";
     GameState.rungIndex = 0;
 
-   const img = document.getElementById("game-background");
+    if (img) {
+      img.onload = continueWithNextCard;
+      img.src = "murkland_screen.png";
+    } else {
+      continueWithNextCard();
+    }
+    return true;
+  }
 
-const continueAfterTransition = () => {
-  positionCharacter();
-  setTimeout(() => {
-    advanceCard(); // ✅ keep the game flowing
-  }, 450);
-};
-
-if (img) {
-  img.onload = continueAfterTransition;
-  img.src = "murkland_screen.png";
-} else {
-  continueAfterTransition();
-}
-return true;
-
-
-  // FALL: Loveland first rung + wrong -> Murkland top rung
+  /* =====================
+     LOVELAND → MURKLAND
+  ===================== */
   if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
     GameState.land = "murkland";
-    GameState.rungIndex = LADDERS.murkland - 1; // 7
+    GameState.rungIndex = LADDERS.murkland - 1;
 
     questionPhase = "emotional";
     activeDeck = MURK_CARDS;
 
-    // ✅ keep cardIndex in range (prevents instant "deck finished" bounce)
-    cardIndex = Math.max(0, Math.min(murkLastSeenIndex, MURK_CARDS.length - 1));
+    cardIndex = Math.max(
+      0,
+      Math.min((murkLastSeenIndex ?? -1) + 1, MURK_CARDS.length - 1)
+    );
 
-    const img = document.getElementById("game-background");
+    const resumeMurk = () => {
+      positionCharacter();
+      setTimeout(() => {
+        showQuestionCard(activeDeck[cardIndex]);
+      }, 450);
+    };
+
     if (img) {
-      img.onload = () => positionCharacter();
+      img.onload = resumeMurk;
       img.src = "murkland_screen.png";
     } else {
-      positionCharacter();
+      resumeMurk();
     }
-    return true; // ✅ transitioned
+
+    return true;
   }
 
-  // NORMAL MOVEMENT
+  /* =====================
+     NORMAL MOVEMENT
+  ===================== */
   const max = LADDERS[GameState.land] - 1;
   GameState.rungIndex = Math.max(0, Math.min(max, GameState.rungIndex + delta));
   positionCharacter();
-  return false; // ✅ no transition
+  return false;
 }
-
 
 
 

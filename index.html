@@ -1206,6 +1206,9 @@ if (questionPhase === "mental" && cardIndex >= MENTAL_CARDS.length) {
   }
   return;
 }
+    // ✅ If we are in ecstasy bonus phase, don't auto-advance past the single card
+  if (questionPhase === "ecstasy") return;
+
   // ✅ PHYSICAL finished -> start EMOTIONAL (Murk) questions (ANYWHERE)
   if (questionPhase === "physical" && cardIndex >= PHYSICAL_CARDS.length) {
     questionPhase = "emotional";
@@ -1366,6 +1369,7 @@ function showJourneyEnd(finalLand) {
 
   // glow overlay
   const end = document.createElement("div");
+end.id = "journey-end-overlay";
   end.style.position = "fixed";
   end.style.inset = "0";
   end.style.zIndex = "9999999";
@@ -1436,6 +1440,19 @@ function startLoveGame() {
   const screen = document.getElementById("game-screen");
   screen.hidden = false;
   screen.style.display = "block";
+  // ✅ reset from end-screen fade
+  screen.style.opacity = "1";
+  screen.style.transition = "none";
+  requestAnimationFrame(() => {
+    screen.style.transition = ""; // restore normal transitions later if you want
+  });
+
+  // ✅ remove any previous journey overlay if it exists
+  document.getElementById("journey-end-overlay")?.remove();
+
+  // ✅ make sure character is visible again (ecstasy hides it)
+  const char = document.getElementById("player-character");
+  if (char) char.style.display = "block";
 
   GameState.land = "darkland";
   GameState.rungIndex = 0;
@@ -1450,7 +1467,7 @@ murkTransitionDone = false;
 
   // important: clear previous onload (prevents weirdness on replays)
   img.onload = null;
-
+  beginShown = false;
   img.onload = () => {
     const char = document.getElementById("player-character");
     char.src = characterImages[selectedCharacter];

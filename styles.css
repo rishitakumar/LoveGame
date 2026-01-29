@@ -555,3 +555,43 @@ body {
 #card-layer.fade-out{
   opacity: 0;
 }
+
+/* hotspot layer sits on top of the card */
+#choice-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none; /* you turn this on in JS */
+}
+
+/* the invisible button zones */
+.choice-hotspot {
+  position: absolute;
+  background: rgba(245, 255, 58, 0.08);
+  border: 2px solid rgba(245, 255, 58, 0.45);
+  border-radius: 14px;
+  cursor: pointer;
+
+  /* ✅ glow */
+  box-shadow:
+    0 0 14px rgba(245, 255, 58, 0.65),
+    0 0 34px rgba(245, 255, 58, 0.25);
+
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+
+.choice-hotspot:hover {
+  transform: scale(1.02);
+  background: rgba(245, 255, 58, 0.14);
+  box-shadow:
+    0 0 18px rgba(245, 255, 58, 0.9),
+    0 0 46px rgba(245, 255, 58, 0.35);
+}
+
+/* little “pulse” when pressed/selected */
+.choice-hotspot.flash {
+  box-shadow:
+    0 0 22px rgba(245, 255, 58, 1),
+    0 0 70px rgba(245, 255, 58, 0.5);
+  transform: scale(1.04);
+}

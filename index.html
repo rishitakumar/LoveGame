@@ -1303,13 +1303,17 @@ cardEl.addEventListener("click", () => {
   if (!currentCard) return;
 
   // QUESTION: click flips front -> back only
-  if (cardMode === "question") {
-    if (cardSide === "front") {
-      cardEl.classList.add("flipped");
-      cardSide = "back";
-    }
-    return;
+  // QUESTION: click flips front -> back only
+if (cardMode === "question") {
+  if (cardSide === "front") {
+    cardEl.classList.add("flipped");
+    cardSide = "back";
+
+    // ✅ ADD THIS so hotspots appear when flipping by CLICK
+    requestAnimationFrame(() => renderChoiceHotspots(currentCard));
   }
+  return;
+}
 
   // ANSWER: click #1 flips front -> back
   if (cardMode === "answer" && cardSide === "front") {

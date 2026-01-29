@@ -129,7 +129,7 @@ body {
 
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-  .cybertext {
+  .cyber-text {
     animation: none;
   }
   #intro-overlay {
@@ -474,8 +474,8 @@ body {
 }
 
 .begin-text{
-  position: absolute;              /* stays where JS places it */
-  transform: translate(-50%, 0) scale(3);   /* center on x only */
+  position: absolute;
+  transform: translate(-50%, 0) scale(3);
   z-index: 9999;
   pointer-events: none;
   opacity: 0;
@@ -487,7 +487,7 @@ body {
   text-align: center;
   letter-spacing: 0.04em;
 
-  /* same pixel-gaps effect as cyber-text */
+  /* pixel-gaps effect */
   -webkit-mask-image: repeating-linear-gradient(
     to bottom,
     black 0px,
@@ -502,7 +502,32 @@ body {
     transparent 4px,
     transparent 8px
   );
+
+  /* ✅ BIG GLOW (THIS is what you were missing) */
+  text-shadow:
+    0 0 10px rgba(245,255,58,0.95),
+    0 0 26px rgba(245,255,58,0.70),
+    0 0 60px rgba(245,255,58,0.35),
+    0 0 110px rgba(245,255,58,0.20);
+
+  /* ✅ extra aura */
+  filter: drop-shadow(0 0 18px rgba(245,255,58,0.9));
+
+  /* ✅ subtle pulsing glow */
+  animation: beginPulse 1.05s ease-in-out infinite;
 }
+
+@keyframes beginPulse{
+  0%,100%{
+    filter: drop-shadow(0 0 10px rgba(245,255,58,0.55));
+    transform: translate(-50%, 0) scale(3);
+  }
+  50%{
+    filter: drop-shadow(0 0 26px rgba(245,255,58,1));
+    transform: translate(-50%, 0) scale(3.06);
+  }
+}
+
 /* =============================
    CARD LAYER
 ============================= */

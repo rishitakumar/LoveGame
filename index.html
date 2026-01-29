@@ -443,7 +443,20 @@ const MENTAL_CARDS = [
     answerFront:   "mental_a1_front.png",
     answerBack:    "mental_a8_back.png",
     outcomes: { a:-1, b:-1, c:+1, d:0, e:0}
+  },
+
+  {
+  
+    // ✅ ADD THIS (example values!)
+    backSize: { w: 1000, h: 1400 },
+    zones: {
+      a: { x: 90,  y: 920, w: 360, h: 120 },
+      b: { x: 550, y: 920, w: 360, h: 120 },
+      c: { x: 90,  y: 1060, w: 360, h: 120 },
+      d: { x: 550, y: 1060, w: 360, h: 120 }
+    }
   }
+
   // add more...
 ];
 
@@ -1769,26 +1782,6 @@ const RUNG_COORDS = {
 ]
   
 };
-const MENTAL_CARDS = [
-  {
-    id: 201,
-    questionFront: "mental_q1_front.png",
-    questionBack:  "mental_q1_back.png",
-    answerFront:   "mental_a1_front.png",
-    answerBack:    "mental_a1_back.png",
-    outcomes: { a:-1, b:+1, c:0, d:-1 },
-
-    // ✅ ADD THIS (example values!)
-    backSize: { w: 1000, h: 1400 },
-    zones: {
-      a: { x: 90,  y: 920, w: 360, h: 120 },
-      b: { x: 550, y: 920, w: 360, h: 120 },
-      c: { x: 90,  y: 1060, w: 360, h: 120 },
-      d: { x: 550, y: 1060, w: 360, h: 120 }
-    }
-  },
-  // ...
-];
 
 
 </script>

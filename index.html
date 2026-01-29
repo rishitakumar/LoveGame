@@ -445,9 +445,15 @@ const MENTAL_CARDS = [
     outcomes: { a:-1, b:-1, c:+1, d:0, e:0}
   },
 
-  {
-  
-    // ✅ ADD THIS (example values!)
+   {
+    id: 201,
+    questionFront: "mental_q1_front.png",
+    questionBack:  "mental_q1_back.png",
+    answerFront:   "mental_a1_front.png",
+    answerBack:    "mental_a1_back.png",
+    outcomes: { a:-1, b:+1, c:0, d:-1 },
+
+    // ✅ MOVE zones HERE
     backSize: { w: 1000, h: 1400 },
     zones: {
       a: { x: 90,  y: 920, w: 360, h: 120 },
@@ -455,7 +461,7 @@ const MENTAL_CARDS = [
       c: { x: 90,  y: 1060, w: 360, h: 120 },
       d: { x: 550, y: 1060, w: 360, h: 120 }
     }
-  }
+  },
 
   // add more...
 ];

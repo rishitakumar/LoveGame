@@ -105,6 +105,7 @@
   <div id="card" class="card">
     <img id="card-front">
     <img id="card-back">
+    <div id="choice-layer" aria-hidden="true"></div>
   </div>
 </div>
   <div id="board">
@@ -137,6 +138,12 @@ localStorage.setItem("lovegame-played", todayKey); --- */
 
 
 let beginShown = false;
+// =============================
+// TIMING TUNES (faster pacing)
+// =============================
+const NEXT_CARD_DELAY = 1000;      // was ~2000 in your code
+const MOVE_TO_CARD_DELAY = 250;    // was ~450
+const LAND_SWAP_DELAY = 80;        // small delay to let the new background appear under glow
 
 // =============================
 // CARD DATA (QUESTIONS + ANSWERS)
@@ -473,6 +480,64 @@ function getActiveDeck() {
   return PHYSICAL_CARDS; // fallback
 }
 
+function closeAnswerAndContinue() {
+  const layer = document.getElementById("card-layer");
+  if (!layer || layer.style.display === "none") return;
+
+  layer.classList.add("fade-out");
+
+  setTimeout(() => {
+    layer.classList.remove("fade-out");
+    layer.style.display = "none";
+
+    const delta = Number(layer.dataset.delta || 0);
+    const answeredCardId = Number(layer.dataset.cardId || 0);
+
+    currentCard = null;
+    cardMode = "question";
+    cardSide = "front";
+
+    // ECSTASY special handling (if you’re using it)
+    if (typeof ECSTASY_CARD !== "undefined" && answeredCardId === ECSTASY_CARD.id) {
+      if (delta > 0) {
+        transitionToEcstasy();
+        setTimeout(() => showJourneyEnd("ecstasy"), 2000);
+      } else {
+        GameState.land = "loveland";
+        setTimeout(() => showJourneyEnd("loveland"), 800);
+      }
+      return;
+    }
+
+    const wasAtTopMurk =
+      GameState.land === "murkland" &&
+      GameState.rungIndex === (LADDERS.murkland - 1) &&
+      delta > 0;
+
+    const passedDarkFinalD =
+      !murkTransitionDone &&
+      GameState.land === "darkland" &&
+      GameState.rungIndex === (LADDERS.darkland - 1) &&
+      delta > 0;
+
+    const transitioned = moveCharacter(delta);
+    if (transitioned) return;
+
+    if (wasAtTopMurk) {
+      lovelandUnlocked = true;
+      setTimeout(() => transitionToLoveland(), 700);
+      return;
+    }
+
+    if (passedDarkFinalD) {
+      murkTransitionDone = true;
+      setTimeout(() => transitionToMurkland(), 700);
+      return;
+    }
+
+    setTimeout(() => advanceCard(), NEXT_CARD_DELAY);
+  }, 220);
+}
 
 // -----------------------------
 // ACTIVE DECK + TRANSITION FLAG
@@ -1100,21 +1165,113 @@ if (tIdx !== -1) mentalLastSeenIndex = tIdx;
 
   card.classList.remove("flipped");
   layer.style.display = "flex";
-
+  clearChoiceHotspots();
   scrollToCards();
+}
+function clearChoiceHotspots() {
+  const choiceLayer = document.getElementById("choice-layer");
+  if (!choiceLayer) return;
+  choiceLayer.innerHTML = "";
+  choiceLayer.style.pointerEvents = "none";
+}
+
+function renderChoiceHotspots(cardData) {
+  clearChoiceHotspots();
+
+  // Only show hotspots when user is on QUESTION BACK
+  if (!cardData || cardMode !== "question" || cardSide !== "back") return;
+  if (!cardData.zones || !cardData.backSize) return;
+
+  const choiceLayer = document.getElementById("choice-layer");
+  const backImg = document.getElementById("card-back");
+  if (!choiceLayer || !backImg) return;
+
+  const rect = backImg.getBoundingClientRect();
+  if (!rect.width || !rect.height) return;
+
+  choiceLayer.style.pointerEvents = "auto";
+
+  const sx = rect.width / cardData.backSize.w;
+  const sy = rect.height / cardData.backSize.h;
+
+  Object.entries(cardData.zones).forEach(([letter, z]) => {
+    // only create if this letter exists in outcomes
+    if (!cardData.outcomes || !(letter in cardData.outcomes)) return;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "choice-hotspot";
+    btn.dataset.letter = letter;
+    btn.setAttribute("aria-label", `Answer ${letter.toUpperCase()}`);
+
+    btn.style.left = `${z.x * sx}px`;
+    btn.style.top = `${z.y * sy}px`;
+    btn.style.width = `${z.w * sx}px`;
+    btn.style.height = `${z.h * sy}px`;
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation(); // don’t flip card when clicking an answer
+      if (!currentCard) return;
+      if (cardMode !== "question") return;
+      if (cardSide !== "back") return;
+
+      flashHotspot(letter);
+      resolveAnswer(letter);
+    });
+
+    choiceLayer.appendChild(btn);
+  });
+}
+
+function flashHotspot(letter) {
+  const choiceLayer = document.getElementById("choice-layer");
+  if (!choiceLayer) return;
+  const el = choiceLayer.querySelector(`.choice-hotspot[data-letter="${letter}"]`);
+  if (!el) return;
+  el.classList.add("flash");
+  setTimeout(() => el.classList.remove("flash"), 170);
 }
 
 
-
-window.addEventListener("keydown", e => {
+window.addEventListener("keydown", (e) => {
   if (!currentCard) return;
-  if (cardMode !== "question") return;
-  if (cardSide !== "back") return;
 
   const key = e.key.toLowerCase();
-  if (!(key in currentCard.outcomes)) return;
 
-  resolveAnswer(key);
+  // ANSWER MODE: any key flips/advances
+  if (cardMode === "answer") {
+    if (cardSide === "front") {
+      cardEl.classList.add("flipped");
+      cardSide = "back";
+      return;
+    }
+    if (cardSide === "back") {
+      closeAnswerAndContinue();
+      return;
+    }
+  }
+
+  // QUESTION MODE:
+  if (cardMode === "question") {
+    // Any key flips FRONT -> BACK
+    if (cardSide === "front") {
+      cardEl.classList.add("flipped");
+      cardSide = "back";
+
+      // show hotspots now that back is visible
+      requestAnimationFrame(() => renderChoiceHotspots(currentCard));
+      return;
+    }
+
+    // BACK: only A–E answers. Other keys do nothing.
+    if (cardSide === "back") {
+      if (currentCard.outcomes && (key in currentCard.outcomes)) {
+        flashHotspot(key);
+        resolveAnswer(key);
+      }
+      return;
+    }
+  }
 });
 
 
@@ -1210,7 +1367,7 @@ if (passedDarkFinalD) {
 // Normal flow: next card
 setTimeout(() => {
   advanceCard();
-}, 2000);
+}, NEXT_CARD_DELAY);
     }, 350);
   }
 });
@@ -1225,6 +1382,7 @@ function scrollToCards() {
 }
 
 function showAnswerCard(cardData, delta) {
+  clearChoiceHotspots();
   const layer = document.getElementById("card-layer");
   const card  = document.getElementById("card");
   const front = document.getElementById("card-front");
@@ -1302,7 +1460,7 @@ cardIndex = nextMentalIndex;
   if (cardIndex < activeDeck.length) {
     setTimeout(() => {
       showQuestionCard(activeDeck[cardIndex]);
-    }, 2000);
+    }, NEXT_CARD_DELAY);
   }
 }
 
@@ -1611,7 +1769,26 @@ const RUNG_COORDS = {
 ]
   
 };
+const MENTAL_CARDS = [
+  {
+    id: 201,
+    questionFront: "mental_q1_front.png",
+    questionBack:  "mental_q1_back.png",
+    answerFront:   "mental_a1_front.png",
+    answerBack:    "mental_a1_back.png",
+    outcomes: { a:-1, b:+1, c:0, d:-1 },
 
+    // ✅ ADD THIS (example values!)
+    backSize: { w: 1000, h: 1400 },
+    zones: {
+      a: { x: 90,  y: 920, w: 360, h: 120 },
+      b: { x: 550, y: 920, w: 360, h: 120 },
+      c: { x: 90,  y: 1060, w: 360, h: 120 },
+      d: { x: 550, y: 1060, w: 360, h: 120 }
+    }
+  },
+  // ...
+];
 
 
 </script>

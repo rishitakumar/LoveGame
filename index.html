@@ -848,6 +848,50 @@ function positionCharacter() {
   screen.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
 }
 
+function bigGlowTransition(doDuringGlow, doAfterGlow = null) {
+  const glow = document.createElement("div");
+  glow.style.position = "fixed";
+  glow.style.inset = "0";
+  glow.style.zIndex = "9999999";
+  glow.style.pointerEvents = "none";
+
+  // ✅ Bigger glow: larger radius + stronger spread
+  glow.style.background = `
+    radial-gradient(circle at center,
+      rgba(245,255,58,0.95) 0%,
+      rgba(245,255,58,0.55) 25%,
+      rgba(245,255,58,0.25) 50%,
+      rgba(0,0,0,0) 78%
+    )
+  `;
+  glow.style.opacity = "0";
+  glow.style.transition = "opacity 0.45s ease";
+  glow.style.filter = "blur(1px)"; // subtle “wrap” feel
+
+  document.body.appendChild(glow);
+
+  // fade IN
+  requestAnimationFrame(() => {
+    glow.style.opacity = "1";
+  });
+
+  // run the work while glow is fully visible
+  setTimeout(() => {
+    try { doDuringGlow?.(); } catch (e) { console.error(e); }
+
+    // fade OUT after the new screen is in place
+    setTimeout(() => {
+      glow.style.transition = "opacity 0.65s ease";
+      glow.style.opacity = "0";
+      setTimeout(() => {
+        glow.remove();
+        doAfterGlow?.();
+      }, 700);
+    }, 350);
+  }, 250);
+}
+
+  
 function moveCharacter(delta) {
 
   const img = document.getElementById("game-background");
@@ -863,38 +907,53 @@ function moveCharacter(delta) {
      MURKLAND → DARKLAND
   ===================== */
   if (GameState.land === "murkland" && GameState.rungIndex === 0 && delta <= 0) {
-    GameState.land = "darkland";
-    GameState.rungIndex = LADDERS.darkland - 1;
+  GameState.land = "darkland";
+  GameState.rungIndex = LADDERS.darkland - 1;
 
-    if (img) {
-      img.onload = continueWithNextCard;
-      img.src = "darkland_screen.png";
-    } else {
-      continueWithNextCard();
-    }
-    return true;
-  }
+  const img = document.getElementById("game-background");
+
+  bigGlowTransition(() => {
+    if (!img) return;
+
+    img.onload = () => {
+      positionCharacter();
+      setTimeout(() => advanceCard(), 450);
+    };
+
+    img.src = "darkland_screen.png";
+  });
+
+  return true;
+}
 
   /* =====================
      DARKLAND → MURKLAND
   ===================== */
   if (
-    GameState.land === "darkland" &&
-    GameState.rungIndex === LADDERS.darkland - 1 &&
-    questionPhase === "emotional" &&
-    delta > 0
-  ) {
-    GameState.land = "murkland";
-    GameState.rungIndex = 0;
+  GameState.land === "darkland" &&
+  GameState.rungIndex === LADDERS.darkland - 1 &&
+  questionPhase === "emotional" &&
+  delta > 0
+) {
+  GameState.land = "murkland";
+  GameState.rungIndex = 0;
 
-    if (img) {
-      img.onload = continueWithNextCard;
-      img.src = "murkland_screen.png";
-    } else {
-      continueWithNextCard();
-    }
-    return true;
-  }
+  const img = document.getElementById("game-background");
+
+  bigGlowTransition(() => {
+    if (!img) return;
+
+    img.onload = () => {
+      positionCharacter();
+      setTimeout(() => advanceCard(), 450);
+    };
+
+    img.src = "murkland_screen.png";
+  });
+
+  return true;
+}
+
 
   /* =====================
      LOVELAND → MURKLAND
@@ -907,24 +966,27 @@ if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
   GameState.rungIndex = LADDERS.murkland - 1;
 
   // ✅ DO NOT change questionPhase / activeDeck here.
-  // Keep whatever you were doing (mental cards continue).
 
-  const continueSameDeck = () => {
-    positionCharacter();
-    setTimeout(() => {
-      advanceCard(); // continues from current activeDeck/questionPhase
-    }, 450);
-  };
+  const img = document.getElementById("game-background");
 
-  if (img) {
-    img.onload = continueSameDeck;
+  bigGlowTransition(() => {
+    if (!img) {
+      positionCharacter();
+      setTimeout(() => advanceCard(), 450);
+      return;
+    }
+
+    img.onload = () => {
+      positionCharacter();
+      setTimeout(() => advanceCard(), 450);
+    };
+
     img.src = "murkland_screen.png";
-  } else {
-    continueSameDeck();
-  }
+  });
 
   return true;
 }
+
 
 
   /* =====================

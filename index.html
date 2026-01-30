@@ -374,13 +374,21 @@ const MURK_CARDS = [
 // -----------------------------
 const MENTAL_CARDS = [
   {
-    id: 201,
-    questionFront: "mental_q1_front.png",
-    questionBack:  "mental_q1_back.png",
-    answerFront:   "mental_a1_front.png",
-    answerBack:    "mental_a1_back.png",
-    outcomes: { a:-1, b:+1, c:0, d:-1 }
-  },
+  id: 201,
+  questionFront: "mental_q1_front.png",
+  questionBack:  "mental_q1_back.png",
+  answerFront:   "mental_a1_front.png",
+  answerBack:    "mental_a1_back.png",
+  outcomes: { a:-1, b:+1, c:0, d:-1 },
+
+  backSize: { w: 1000, h: 1400 },
+  zones: {
+    a: { x: 90,  y: 920,  w: 360, h: 120 },
+    b: { x: 550, y: 920,  w: 360, h: 120 },
+    c: { x: 90,  y: 1060, w: 360, h: 120 },
+    d: { x: 550, y: 1060, w: 360, h: 120 }
+  }
+},
   
   {
     id: 202,
@@ -445,23 +453,6 @@ const MENTAL_CARDS = [
     outcomes: { a:-1, b:-1, c:+1, d:0, e:0}
   },
 
-   {
-    id: 201,
-    questionFront: "mental_q1_front.png",
-    questionBack:  "mental_q1_back.png",
-    answerFront:   "mental_a1_front.png",
-    answerBack:    "mental_a1_back.png",
-    outcomes: { a:-1, b:+1, c:0, d:-1 },
-
-    // ✅ MOVE zones HERE
-    backSize: { w: 1000, h: 1400 },
-    zones: {
-      a: { x: 90,  y: 920, w: 360, h: 120 },
-      b: { x: 550, y: 920, w: 360, h: 120 },
-      c: { x: 90,  y: 1060, w: 360, h: 120 },
-      d: { x: 550, y: 1060, w: 360, h: 120 }
-    }
-  },
 
   // add more...
 ];
@@ -1178,6 +1169,12 @@ if (tIdx !== -1) mentalLastSeenIndex = tIdx;
   const card  = document.getElementById("card");
   const front = document.getElementById("card-front");
   const back  = document.getElementById("card-back");
+  
+back.onload = () => {
+  if (currentCard && cardMode === "question" && cardSide === "back") {
+    renderChoiceHotspots(currentCard);
+  }
+};
 
   front.src = cardData.questionFront;
   back.src  = cardData.questionBack;

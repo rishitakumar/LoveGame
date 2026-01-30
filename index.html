@@ -1226,14 +1226,26 @@ function renderChoiceHotspots(cardData) {
     btn.style.height = `${z.h * sy}px`;
 
     btn.addEventListener("click", (e) => {
-      e.stopPropagation(); // don’t flip card when clicking an answer
-      if (!currentCard) return;
-      if (cardMode !== "question") return;
-      if (cardSide !== "back") return;
+  e.stopPropagation();
+  if (!currentCard) return;
+  if (cardMode !== "question") return;
+  if (cardSide !== "back") return;
 
-      flashHotspot(letter);
-      resolveAnswer(letter);
-    });
+  // ✅ clear previous selection
+  choiceLayer.querySelectorAll(".choice-hotspot")
+    .forEach(h => h.classList.remove("selected"));
+
+  // ✅ lock this one in visually
+  btn.classList.add("selected");
+
+  flashHotspot(letter);
+
+  // slight delay so the fill is perceptible before flip
+  setTimeout(() => {
+    resolveAnswer(letter);
+  }, 120);
+});
+
 
     choiceLayer.appendChild(btn);
   });

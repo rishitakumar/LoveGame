@@ -584,30 +584,38 @@ body {
 }
 
 .choice-hotspot{
-  position:absolute;
-  opacity: 1;                 /* DEBUG: always visible */
-  background: rgba(245,255,58,0.10);
-  border: 2px solid rgba(245,255,58,0.85);
+  position: absolute;
+
+  /* ✅ still clickable even when invisible */
+  opacity: 0;
+  background: rgba(245,255,58,0.00);
+  border: 2px solid rgba(245,255,58,0.00);
+
   border-radius: 14px;
-  box-shadow: 0 0 16px rgba(245,255,58,0.9);
   cursor: pointer;
+
+  /* keep transitions smooth */
+  transition: opacity 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, transform 0.12s ease;
 }
 
-
-.choice-hotspot:hover{
+/* show ONLY on hover/focus */
+.choice-hotspot:hover,
+.choice-hotspot:focus-visible{
   opacity: 1;
-  background: rgba(245,255,58,0.10);
-  border-color: rgba(245,255,58,0.85);
+  background: rgba(245,255,58,0.14);
+  border-color: rgba(245,255,58,0.55);
   box-shadow:
-    0 0 16px rgba(245,255,58,0.9),
-    inset 0 0 18px rgba(245,255,58,0.35);
+    0 0 18px rgba(245,255,58,0.9),
+    0 0 46px rgba(245,255,58,0.35);
   transform: scale(1.02);
 }
 
+/* your “flash” still works, and makes it visible briefly */
 .choice-hotspot.flash{
   opacity: 1;
   box-shadow:
     0 0 22px rgba(245,255,58,1),
-    0 0 60px rgba(245,255,58,0.45);
+    0 0 70px rgba(245,255,58,0.5);
   transform: scale(1.04);
 }
+

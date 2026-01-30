@@ -583,39 +583,30 @@ body {
   pointer-events: none; /* you turn this on in JS */
 }
 
-/* the invisible button zones */
-.choice-hotspot {
-  position: absolute;
-  background: rgba(245,255,58,0);   /* invisible */
+.choice-hotspot{
+  position:absolute;
+  opacity: 0;
+  background: rgba(245,255,58,0);
   border: 2px solid rgba(245,255,58,0);
   border-radius: 14px;
-  cursor: pointer;
-
   box-shadow: none;
-  opacity: 0;
+  cursor: pointer;
+  pointer-events: auto;
 
-  transition:
-    opacity 0.15s ease,
-    box-shadow 0.15s ease,
-    background 0.15s ease,
-    transform 0.12s ease;
+  transition: opacity 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, transform 0.12s ease;
 }
 
-/* ✨ Only appears when hovered */
-.choice-hotspot:hover {
+.choice-hotspot:hover{
   opacity: 1;
   background: rgba(245,255,58,0.10);
   border-color: rgba(245,255,58,0.85);
-
   box-shadow:
     0 0 16px rgba(245,255,58,0.9),
     inset 0 0 18px rgba(245,255,58,0.35);
-
   transform: scale(1.02);
 }
 
-/* little confirmation pulse */
-.choice-hotspot.flash {
+.choice-hotspot.flash{
   opacity: 1;
   box-shadow:
     0 0 22px rgba(245,255,58,1),

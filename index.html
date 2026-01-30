@@ -1315,7 +1315,7 @@ if (cardMode === "question") {
     cardEl.classList.add("flipped");
     cardSide = "back";
 
-    // ✅ ADD THIS so hotspots appear when flipping by CLICK
+    // ✅ IMPORTANT: enable + build hotspots on click flip too
     requestAnimationFrame(() => renderChoiceHotspots(currentCard));
   }
   return;

@@ -474,20 +474,38 @@ body {
 }
 
 .begin-text{
-  position: absolute;
+  position:absolute;
   transform: translate(-50%, 0) scale(3);
   z-index: 9999;
-  pointer-events: none;
-  opacity: 0;
+  pointer-events:none;
+  opacity:0;
 
   font-family: Impact, sans-serif;
   font-size: clamp(2rem, 10vw, 4rem);
-  color: #f5ff3a;
   text-transform: uppercase;
-  text-align: center;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
+  text-align:center;
 
-  /* pixel-gaps effect */
+  color: transparent;
+
+  /* ✨ light, airy aura */
+  filter:
+    drop-shadow(0 0 4px rgba(245,255,58,0.6))
+    drop-shadow(0 0 14px rgba(245,255,58,0.25));
+
+  animation: beginPulse 1.6s ease-in-out infinite;
+}
+
+.begin-text .begin-core{
+  color:#f5ff3a;
+
+  /* crisp glow rings (no blur fog) */
+  text-shadow:
+    0 0 3px rgba(245,255,58,0.95),
+    0 0 8px rgba(245,255,58,0.55),
+    0 0 18px rgba(245,255,58,0.22);
+
+  /* pixel-gap effect */
   -webkit-mask-image: repeating-linear-gradient(
     to bottom,
     black 0px,
@@ -502,31 +520,23 @@ body {
     transparent 4px,
     transparent 8px
   );
-
-  /* ✅ BIG GLOW (THIS is what you were missing) */
-  text-shadow:
-    0 0 10px rgba(245,255,58,0.95),
-    0 0 26px rgba(245,255,58,0.70),
-    0 0 60px rgba(245,255,58,0.35),
-    0 0 110px rgba(245,255,58,0.20);
-
-  /* ✅ extra aura */
-  filter: drop-shadow(0 0 18px rgba(245,255,58,0.9));
-
-  /* ✅ subtle pulsing glow */
-  animation: beginPulse 1.05s ease-in-out infinite;
 }
 
 @keyframes beginPulse{
   0%,100%{
-    filter: drop-shadow(0 0 10px rgba(245,255,58,0.55));
-    transform: translate(-50%, 0) scale(3);
+    transform: translate(-50%,0) scale(3);
+    filter:
+      drop-shadow(0 0 4px rgba(245,255,58,0.5))
+      drop-shadow(0 0 12px rgba(245,255,58,0.2));
   }
   50%{
-    filter: drop-shadow(0 0 26px rgba(245,255,58,1));
-    transform: translate(-50%, 0) scale(3.06);
+    transform: translate(-50%,0) scale(3.025);
+    filter:
+      drop-shadow(0 0 6px rgba(245,255,58,0.85))
+      drop-shadow(0 0 18px rgba(245,255,58,0.35));
   }
 }
+
 
 /* =============================
    CARD LAYER

@@ -583,20 +583,15 @@ body {
   pointer-events: none; /* you turn this on in JS */
 }
 
-.choice-hotspot{
+.choice-hotspot {
   position: absolute;
-
-  /* ✅ still clickable even when invisible */
-  opacity: 0;
-  background: rgba(245,255,58,0.00);
-  border: 2px solid rgba(245,255,58,0.00);
-
-  border-radius: 14px;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 10px;
   cursor: pointer;
-
-  /* keep transitions smooth */
-  transition: opacity 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, transform 0.12s ease;
+  pointer-events: auto;
 }
+
 
 /* show ONLY on hover/focus */
 .choice-hotspot:hover,
@@ -651,11 +646,15 @@ body {
   box-shadow: 0 0 14px rgba(245,255,58,0.9);
 }
 
-.choice-hotspot.letter.selected{
-  opacity:1;
-  border-color: rgba(245,255,58,1);
-  box-shadow:
-    0 0 18px rgba(245,255,58,1),
-    inset 0 0 10px rgba(245,255,58,0.35);
+.choice-hotspot:hover {
+  border-color: rgba(245,255,58,0.95);
+  box-shadow: 0 0 18px rgba(245,255,58,0.85);
+}
+
+/* Selected effect */
+.choice-hotspot.selected {
+  background: rgba(245,255,58,0.18);
+  border-color: rgba(245,255,58,0.95);
+  box-shadow: 0 0 22px rgba(245,255,58,0.85);
 }
 

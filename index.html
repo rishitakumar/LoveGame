@@ -1208,24 +1208,35 @@ function clearChoiceHotspots() {
 function renderChoiceHotspots(cardData) {
   clearChoiceHotspots();
 
-  // Only show hotspots when user is on QUESTION BACK
   if (!cardData || cardMode !== "question" || cardSide !== "back") return;
-  if (!cardData.zones || !cardData.backSize) return;
+  if (!cardData.zones) return;
 
   const choiceLayer = document.getElementById("choice-layer");
   const backImg = document.getElementById("card-back");
   if (!choiceLayer || !backImg) return;
 
-  const rect = backImg.getBoundingClientRect();
-  if (!rect.width || !rect.height) return;
+  // must be loaded
+  if (!backImg.naturalWidth || !backImg.naturalHeight) return;
 
+  // the host box (because your img fills it, but the actual drawn image is letterboxed)
+  const hostRect = backImg.getBoundingClientRect();
+  if (!hostRect.width || !hostRect.height) return;
+
+  // inner drawn image rect within host (object-fit: contain)
+  const inner = getContainedImageRect(backImg);
+
+  // make overlay match the HOST exactly
+  choiceLayer.style.left = "0px";
+  choiceLayer.style.top = "0px";
+  choiceLayer.style.width = `${hostRect.width}px`;
+  choiceLayer.style.height = `${hostRect.height}px`;
   choiceLayer.style.pointerEvents = "auto";
 
-  const sx = rect.width / cardData.backSize.w;
-  const sy = rect.height / cardData.backSize.h;
+  // scale from IMAGE pixels -> on-screen drawn image pixels
+  const sx = inner.width / backImg.naturalWidth;
+  const sy = inner.height / backImg.naturalHeight;
 
   Object.entries(cardData.zones).forEach(([letter, z]) => {
-    // only create if this letter exists in outcomes
     if (!cardData.outcomes || !(letter in cardData.outcomes)) return;
 
     const btn = document.createElement("button");
@@ -1234,25 +1245,18 @@ function renderChoiceHotspots(cardData) {
     btn.dataset.letter = letter;
     btn.setAttribute("aria-label", `Answer ${letter.toUpperCase()}`);
 
-    btn.style.left = `${z.x * sx}px`;
-    btn.style.top = `${z.y * sy}px`;
-    btn.style.width = `${z.w * sx}px`;
+    // ✅ KEY: add letterbox offset AND then scale
+    btn.style.left   = `${inner.left + (z.x * sx)}px`;
+    btn.style.top    = `${inner.top  + (z.y * sy)}px`;
+    btn.style.width  = `${z.w * sx}px`;
     btn.style.height = `${z.h * sy}px`;
 
-  btn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  if (!currentCard) return;
-  if (cardMode !== "question") return;
-  if (cardSide !== "back") return;
-
-  selectHotspot(letter);   // ✅ stays filled
-  flashHotspot(letter);    // optional sparkle
-
-  // ✅ give the browser a moment to paint the fill, THEN resolve
-  setTimeout(() => resolveAnswer(letter), 140);
-});
-
-
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      selectHotspot(letter);
+      flashHotspot(letter);
+      setTimeout(() => resolveAnswer(letter), 140);
+    });
 
     choiceLayer.appendChild(btn);
   });

@@ -658,3 +658,27 @@ body {
   box-shadow: 0 0 22px rgba(245,255,58,0.85);
 }
 
+/* make card a positioning parent */
+#card { position: relative; }
+
+/* make the imgs NOT steal clicks */
+#card-front, #card-back {
+  pointer-events: none !important;
+}
+
+/* ensure choice-layer is above imgs */
+#choice-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 9999 !important;
+  pointer-events: auto !important; /* allow clicking */
+}
+
+/* make hotspots visible for debugging */
+.choice-hotspot {
+  position: absolute;
+  z-index: 10000 !important;
+  background: rgba(255, 0, 0, 0.20) !important; /* TEMP: so you can see them */
+  border: 2px solid rgba(255, 0, 0, 0.7) !important;
+}
+

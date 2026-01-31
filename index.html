@@ -1307,7 +1307,7 @@ window.addEventListener("keydown", (e) => {
       cardSide = "back";
 
       // show hotspots now that back is visible
-      requestAnimationFrame(() => renderChoiceHotspots(currentCard));
+      showAnswerUIForCard(currentCard);
       return;
     }
 
@@ -1346,7 +1346,7 @@ if (cardMode === "question") {
     cardSide = "back";
 
     // ✅ IMPORTANT: enable + build hotspots on click flip too
-    requestAnimationFrame(() => renderChoiceHotspots(currentCard));
+    showAnswerUIForCard(currentCard);
   }
   return;
 }
@@ -1425,6 +1425,42 @@ setTimeout(() => {
   }
 });
 
+function showAnswerUIForCard(cardData){
+  const ui = document.getElementById("answer-ui");
+  if (!ui) return;
+
+  // show only on question BACK
+  const shouldShow = (cardMode === "question" && cardSide === "back");
+
+  ui.hidden = !shouldShow;
+
+  // hide buttons that aren't valid for this card
+  ui.querySelectorAll(".answer-btn").forEach(btn => {
+    const letter = btn.dataset.letter;
+    const valid = !!(cardData?.outcomes && (letter in cardData.outcomes));
+    btn.hidden = !valid;
+    btn.classList.remove("selected");
+  });
+}
+
+document.getElementById("answer-ui")?.addEventListener("click", (e) => {
+  const btn = e.target.closest(".answer-btn");
+  if (!btn) return;
+
+  if (!currentCard) return;
+  if (cardMode !== "question") return;
+  if (cardSide !== "back") return;
+
+  const letter = btn.dataset.letter;
+
+  // highlight selected
+  document.querySelectorAll(".answer-btn").forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+
+  // answer
+  setTimeout(() => resolveAnswer(letter), 120);
+});
+
   
 function scrollToCards() {
   const screen = document.getElementById("game-screen");
@@ -1435,6 +1471,7 @@ function scrollToCards() {
 }
 
 function showAnswerCard(cardData, delta) {
+  document.getElementById("answer-ui").hidden = true;
   clearChoiceHotspots();
   const layer = document.getElementById("card-layer");
   const card  = document.getElementById("card");

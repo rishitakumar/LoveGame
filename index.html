@@ -1192,7 +1192,6 @@ back.onload = () => {
   card.classList.remove("flipped");
   layer.style.display = "flex";
   clearChoiceHotspots();
-  renderChoiceHotspots(cardData);
   scrollToCards();
 }
 
@@ -1246,47 +1245,95 @@ function renderChoiceHotspots(cardData) {
   clearChoiceHotspots();
 
   if (!cardData || cardMode !== "question" || cardSide !== "back") return;
-  if (!cardData.centers || !cardData.outcomes) return;
+  if (!cardData.outcomes) return;
 
   const choiceLayer = document.getElementById("choice-layer");
   const backImg = document.getElementById("card-back");
   if (!choiceLayer || !backImg) return;
 
-  // make sure the image is loaded so naturalWidth/Height is known
-  if (!backImg.complete || !backImg.naturalWidth) return;
+  // Wait for the back image to be loaded
+  if (!backImg.complete || !backImg.naturalWidth) {
+    backImg.addEventListener(
+      "load",
+      () => {
+        // Only render if we're STILL on this card and still on the back
+        if (currentCard === cardData && cardMode === "question" && cardSide === "back") {
+          renderChoiceHotspots(cardData);
+        }
+      },
+      { once: true }
+    );
+    return;
+  }
 
-  // where the contained image actually draws inside the <img> box
   const fit = getContainedImageRect(backImg);
-
   choiceLayer.style.pointerEvents = "auto";
 
-  Object.entries(cardData.centers).forEach(([letter, p]) => {
-    if (!(letter in cardData.outcomes)) return;
+  // -------- Option A: "centers" (A–E centers + fixed box)
+  if (cardData.centers) {
+    const boxW = (cardData.letterBox?.w ?? LETTER_BOX.w);
+    const boxH = (cardData.letterBox?.h ?? LETTER_BOX.h);
 
-    // convert center -> top-left in original image pixel space
-    const x = p.cx - LETTER_BOX.w / 2;
-    const y = p.cy - LETTER_BOX.h / 2;
+    Object.entries(cardData.centers).forEach(([letter, p]) => {
+      if (!(letter in cardData.outcomes)) return;
 
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "choice-hotspot letter";
-    btn.dataset.letter = letter;
-    btn.setAttribute("aria-label", `Answer ${letter.toUpperCase()}`);
+      const x = p.cx - boxW / 2;
+      const y = p.cy - boxH / 2;
 
-    // map image pixels -> on-screen pixels (with contain scaling + letterbox offset)
-    btn.style.left   = `${fit.left + x * fit.scaleX}px`;
-    btn.style.top    = `${fit.top  + y * fit.scaleY}px`;
-    btn.style.width  = `${LETTER_BOX.w * fit.scaleX}px`;
-    btn.style.height = `${LETTER_BOX.h * fit.scaleY}px`;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "choice-hotspot letter";
+      btn.dataset.letter = letter;
+      btn.setAttribute("aria-label", `Answer ${letter.toUpperCase()}`);
 
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      selectHotspot(letter);
-      setTimeout(() => resolveAnswer(letter), 80);
+      btn.style.left = `${fit.left + x * fit.scaleX}px`;
+      btn.style.top = `${fit.top + y * fit.scaleY}px`;
+      btn.style.width = `${boxW * fit.scaleX}px`;
+      btn.style.height = `${boxH * fit.scaleY}px`;
+
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        selectHotspot(letter);
+        flashHotspot(letter);
+        setTimeout(() => resolveAnswer(letter), 100);
+      });
+
+      choiceLayer.appendChild(btn);
     });
 
-    choiceLayer.appendChild(btn);
-  });
+    return;
+  }
+
+  // -------- Option B: "zones" (rectangles)
+  if (cardData.zones) {
+    Object.entries(cardData.zones).forEach(([letter, z]) => {
+      if (!(letter in cardData.outcomes)) return;
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "choice-hotspot";
+      btn.dataset.letter = letter;
+      btn.setAttribute("aria-label", `Answer ${letter.toUpperCase()}`);
+
+      btn.style.left = `${fit.left + z.x * fit.scaleX}px`;
+      btn.style.top = `${fit.top + z.y * fit.scaleY}px`;
+      btn.style.width = `${z.w * fit.scaleX}px`;
+      btn.style.height = `${z.h * fit.scaleY}px`;
+
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        selectHotspot(letter);
+        flashHotspot(letter);
+        setTimeout(() => resolveAnswer(letter), 100);
+      });
+
+      choiceLayer.appendChild(btn);
+    });
+
+    return;
+  }
+
+  // If neither exists, nothing to draw
 }
 
 

@@ -390,14 +390,6 @@ const MENTAL_CARDS = [
   answerFront:   "mental_a1_front.png",
   answerBack:    "mental_a1_back.png",
   outcomes: { a:-1, b:+1, c:0, d:-1 },
-
-  backSize: { w: 1000, h: 1400 },
-  zones: {
-    a: { x: 270,  y: 1213,  w: 863, h: 255 },
-    b: { x: 270, y: 1464,  w: 703, h: 109 },
-    c: { x: 90,  y: 1586, w: 795, h: 109 },
-    d: { x: 550, y: 1701, w: 1001, h: 114 }
-  }
 },
   
   {
@@ -1311,6 +1303,7 @@ if (cardData.centers) {
 
 
   // -------- Option B: "zones" (rectangles)
+// -------- Option B: "zones" (rectangles)
 if (cardData.zones) {
   Object.entries(cardData.zones).forEach(([letter, z]) => {
     if (!(letter in cardData.outcomes)) return;
@@ -1322,8 +1315,12 @@ if (cardData.zones) {
     btn.textContent = letter.toUpperCase();
     btn.setAttribute("aria-label", `Answer ${letter.toUpperCase()}`);
 
-    btn.style.left   = `${fit.left + z.x * fit.scaleX}px`;
-    btn.style.top    = `${fit.top  + z.y * fit.scaleY}px`;
+    // ✅ convert TOP-LEFT zone to CENTER coords (because CSS is centered)
+    const cx = z.x + z.w / 2;
+    const cy = z.y + z.h / 2;
+
+    btn.style.left   = `${fit.left + cx * fit.scaleX}px`;
+    btn.style.top    = `${fit.top  + cy * fit.scaleY}px`;
     btn.style.width  = `${z.w * fit.scaleX}px`;
     btn.style.height = `${z.h * fit.scaleY}px`;
 
@@ -1339,6 +1336,7 @@ if (cardData.zones) {
 
   return;
 }
+
 
   // If neither exists, nothing to draw
 }

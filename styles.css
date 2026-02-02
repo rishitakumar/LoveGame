@@ -575,110 +575,45 @@ body {
   opacity: 0;
 }
 
-/* hotspot layer sits on top of the card */
-#choice-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 50;
-  pointer-events: none; /* you turn this on in JS */
+/* imgs should not steal clicks */
+#card-front, #card-back { pointer-events: none; }
+
+/* hotspot layer sits on top */
+#choice-layer{
+  position:absolute;
+  inset:0;
+  z-index: 9999;
+  pointer-events:none; /* JS turns on via choiceLayer.style.pointerEvents = "auto" */
 }
 
-.choice-hotspot {
-  position: absolute;
-  background: transparent;
-  border: 2px solid transparent;
-  border-radius: 10px;
-  cursor: pointer;
-  pointer-events: auto;
+/* buttons */
+.choice-hotspot{
+  position:absolute;
+  border-radius:10px;
+  cursor:pointer;
+  border: 2px solid rgba(245,255,58,0);
+  background: rgba(245,255,58,0.10);
+  box-shadow: none;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
 }
 
-
-/* show ONLY on hover/focus */
+/* hover glow */
 .choice-hotspot:hover,
 .choice-hotspot:focus-visible{
-  opacity: 1;
-  background: rgba(245,255,58,0.14);
-  border-color: rgba(245,255,58,0.55);
-  box-shadow:
-    0 0 18px rgba(245,255,58,0.9),
-    0 0 46px rgba(245,255,58,0.35);
-  transform: scale(1.02);
-}
-
-/* your “flash” still works, and makes it visible briefly */
-.choice-hotspot.flash{
-  opacity: 1;
-  box-shadow:
-    0 0 22px rgba(245,255,58,1),
-    0 0 70px rgba(245,255,58,0.5);
-  transform: scale(1.04);
-}
-/* ✅ stays filled after click */
-.choice-hotspot.selected{
-  opacity: 1;
-  background: rgba(245,255,58,0.22);
-  border-color: rgba(245,255,58,1);
-
-  box-shadow:
-    0 0 22px rgba(245,255,58,1),
-    inset 0 0 20px rgba(245,255,58,0.45);
-
+  border-color: rgba(245,255,58,0.8);
+  box-shadow: 0 0 18px rgba(245,255,58,0.9);
   transform: scale(1.03);
 }
 
-/* prevent hover from changing it once selected */
-.choice-hotspot.selected:hover{
+/* flash */
+.choice-hotspot.flash{
+  box-shadow: 0 0 26px rgba(245,255,58,1);
+  transform: scale(1.05);
+}
+
+/* selected */
+.choice-hotspot.selected{
+  border-color: rgba(245,255,58,1);
   background: rgba(245,255,58,0.22);
+  box-shadow: 0 0 22px rgba(245,255,58,0.9), inset 0 0 18px rgba(245,255,58,0.35);
 }
-.choice-hotspot.letter{
-  position:absolute;
-  opacity:0;
-  background: rgba(245,255,58,0.12);
-  border: 2px solid rgba(245,255,58,0.0);
-  border-radius: 8px;
-  cursor:pointer;
-  transition: opacity .12s ease, box-shadow .12s ease, border-color .12s ease;
-}
-
-.choice-hotspot.letter:hover{
-  opacity:1;
-  border-color: rgba(245,255,58,0.65);
-  box-shadow: 0 0 14px rgba(245,255,58,0.9);
-}
-
-.choice-hotspot:hover {
-  border-color: rgba(245,255,58,0.95);
-  box-shadow: 0 0 18px rgba(245,255,58,0.85);
-}
-
-/* Selected effect */
-.choice-hotspot.selected {
-  background: rgba(245,255,58,0.18);
-  border-color: rgba(245,255,58,0.95);
-  box-shadow: 0 0 22px rgba(245,255,58,0.85);
-}
-
-/* make card a positioning parent */
-#card { position: relative; }
-
-/* make the imgs NOT steal clicks */
-#card-front, #card-back {
-  pointer-events: none !important;
-}
-
-/* ensure choice-layer is above imgs */
-#choice-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 9999 !important;
-  pointer-events: auto !important; /* allow clicking */
-}
-
-/* make hotspots visible for debugging */
-.choice-hotspot {
-  position: absolute;
-  z-index: 10000 !important;
-  background: rgba(255, 0, 0, 0.20) !important; /* TEMP: so you can see them */
-  border: 2px solid rgba(255, 0, 0, 0.7) !important;
-}
-

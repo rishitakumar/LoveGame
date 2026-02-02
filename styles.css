@@ -590,66 +590,48 @@ body {
 /* ===== HOTSPOT BUTTON LOOK (square neon) ===== */
 .choice-hotspot{
   position:absolute;
-  transform: translate(-50%, -50%);
-  border-radius: 6px;              /* square-ish */
+  border-radius: 8px;              /* square-ish, not circle */
   cursor:pointer;
-  background: rgba(0,0,0,0.55);    /* black glass */
-  border: 2px solid rgba(255, 242, 52, 0.75); /* yellow */
-  box-shadow:
-    0 0 10px rgba(255,242,52,0.45),
-    inset 0 0 10px rgba(208,17,253,0.18);
+
+  transform: translate(-50%, -50%); /* ✅ centers on your cx/cy */
+  transform-origin: center;
+
+  border: 2px solid rgba(245,255,58,0);
+  background: rgba(245,255,58,0.10);
+  box-shadow: none;
   transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+
+  display: grid;                    /* ✅ centers label */
+  place-items: center;
   font-family: Impact, sans-serif;
-  font-weight: 700;
-  letter-spacing: .06em;
-  user-select: none;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
-
-/* label text */
-.choice-hotspot::after{
-  content: attr(data-letter);
-  text-transform: uppercase;
-  font-size: clamp(12px, 2.2vw, 20px);
-  color: #fff234; /* yellow */
-  text-shadow:
-    0 0 6px rgba(255,242,52,0.95),
-    0 0 14px rgba(208,17,253,0.55);
-}
-
-/* hover */
 .choice-hotspot:hover,
 .choice-hotspot:focus-visible{
-  border-color: rgba(17,253,90,0.95); /* green */
-  box-shadow:
-    0 0 16px rgba(17,253,90,0.65),
-    0 0 28px rgba(208,17,253,0.35),
-    inset 0 0 14px rgba(253,17,180,0.28);
-  transform: scale(1.04);
+  border-color: rgba(245,255,58,0.8);
+  box-shadow: 0 0 18px rgba(245,255,58,0.9);
+  transform: translate(-50%, -50%) scale(1.03);  /* ✅ keep translate */
 }
 
-/* click flash */
 .choice-hotspot.flash{
-  box-shadow:
-    0 0 26px rgba(253,17,180,0.9),
-    0 0 40px rgba(255,208,17,0.65);
-  transform: scale(1.06);
+  box-shadow: 0 0 26px rgba(245,255,58,1);
+  transform: translate(-50%, -50%) scale(1.05);  /* ✅ keep translate */
 }
 
-/* selected */
 .choice-hotspot.selected{
-  background: rgba(253,17,180,0.18); /* pink tint */
-  border-color: rgba(253,17,180,0.95);
-  box-shadow:
-    0 0 18px rgba(253,17,180,0.75),
-    0 0 34px rgba(255,242,52,0.35),
-    inset 0 0 16px rgba(17,253,90,0.25);
+  border-color: rgba(245,255,58,1);
+  background: rgba(245,255,58,0.22);
+  box-shadow: 0 0 22px rgba(245,255,58,0.9), inset 0 0 18px rgba(245,255,58,0.35);
+  transform: translate(-50%, -50%) scale(1.02);  /* ✅ keep translate */
 }
-/* Per-letter accent colors */
-.choice-hotspot[data-letter="a"]{ border-color: rgba(253,17,180,0.95); } /* #fd11b4 pink */
-.choice-hotspot[data-letter="b"]{ border-color: rgba(255,208,17,0.95); } /* #FDD011 orange */
-.choice-hotspot[data-letter="c"]{ border-color: rgba(255,242,52,0.95); } /* #fff234 yellow */
-.choice-hotspot[data-letter="d"]{ border-color: rgba(208,17,253,0.95); } /* #D011FD purple */
-.choice-hotspot[data-letter="e"]{ border-color: rgba(17,253,90,0.95); }  /* #11FD5A green */
+.choice-hotspot.letter{
+  background: rgba(253, 17, 180, 0.22);  /* #fd11b4 */
+  border-color: rgba(255, 242, 52, 0.55);/* #fff234 */
+  color: #fff234;
+  text-shadow: 0 0 10px rgba(208,17,253,0.55); /* #D011FD */
+}
+.choice-hotspot.letter:hover{
+  background: rgba(17, 253, 90, 0.20);   /* #11FD5A */
+  border-color: rgba(255, 208, 17, 0.85);/* #FDD011 */
+}

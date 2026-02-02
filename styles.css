@@ -581,52 +581,54 @@ body {
 
 /* buttons */
 /* ===== HOTSPOT BUTTON LOOK (square neon) ===== */
+/* HOTSPOTS: invisible until hover */
 .choice-hotspot{
   position:absolute;
-  border-radius: 8px;              /* square-ish, not circle */
+  border-radius: 999px;           /* circles */
   cursor:pointer;
   transform: translate(-50%, -50%);
   transform-origin: center;
 
+  /* invisible by default */
+  background: rgba(245,255,58,0);
   border: 2px solid rgba(245,255,58,0);
-  background: rgba(245,255,58,0.10);
   box-shadow: none;
-  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+  opacity: 0;
 
-  display: grid;                    /* ✅ centers label */
-  place-items: center;
-  font-family: Impact, sans-serif;
-  font-weight: 800;
-  letter-spacing: 0.02em;
+  transition: opacity .12s ease, transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+
+  /* remove letter visuals */
+  color: transparent;
+  text-shadow: none;
+  font-size: 0;
 }
+
+/* show only on hover/focus */
 .choice-hotspot:hover,
 .choice-hotspot:focus-visible{
-  border-color: rgba(245,255,58,0.8);
+  opacity: 1;
+  background: rgba(245,255,58,0.18);
+  border-color: rgba(245,255,58,0.85);
   box-shadow: 0 0 18px rgba(245,255,58,0.9);
-  transform: translate(-50%, -50%) scale(1.03);  /* ✅ keep translate */
+  transform: translate(-50%, -50%) scale(1.04);
 }
 
-.choice-hotspot.flash{
-  box-shadow: 0 0 26px rgba(245,255,58,1);
-  transform: translate(-50%, -50%) scale(1.05);  /* ✅ keep translate */
-}
-
+/* clicked/selected color */
 .choice-hotspot.selected{
-  border-color: rgba(245,255,58,1);
-  background: rgba(245,255,58,0.22);
-  box-shadow: 0 0 22px rgba(245,255,58,0.9), inset 0 0 18px rgba(245,255,58,0.35);
-  transform: translate(-50%, -50%) scale(1.02);  /* ✅ keep translate */
+  opacity: 1;
+  background: rgba(17,253,90,0.25);     /* green */
+  border-color: rgba(17,253,90,0.95);
+  box-shadow: 0 0 22px rgba(17,253,90,0.95), inset 0 0 16px rgba(17,253,90,0.35);
 }
-.choice-hotspot.letter{
-  background: rgba(253, 17, 180, 0.22);  /* #fd11b4 */
-  border-color: rgba(255, 242, 52, 0.55);/* #fff234 */
-  color: #fff234;
-  text-shadow: 0 0 10px rgba(208,17,253,0.55); /* #D011FD */
+
+/* optional “click flash” */
+.choice-hotspot.flash{
+  opacity: 1;
+  background: rgba(253,17,180,0.22);    /* pink flash */
+  border-color: rgba(255,242,52,0.95);
+  box-shadow: 0 0 26px rgba(245,255,58,1);
 }
-.choice-hotspot.letter:hover{
-  background: rgba(17, 253, 90, 0.20);   /* #11FD5A */
-  border-color: rgba(255, 208, 17, 0.85);/* #FDD011 */
-}
+
 #choice-layer{
   backface-visibility: hidden;
   transform: rotateY(180deg);

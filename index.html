@@ -1271,16 +1271,12 @@ function renderChoiceHotspots(cardData) {
 
   // -------- Option A: "centers" (A–E centers + fixed box)
   // -------- Option A: "centers" (A–E centers + fixed box)
- if (cardData.centers) {
+if (cardData.centers) {
   const boxW = (cardData.letterBox?.w ?? LETTER_BOX.w);
   const boxH = (cardData.letterBox?.h ?? LETTER_BOX.h);
 
   Object.entries(cardData.centers).forEach(([letter, p]) => {
     if (!(letter in cardData.outcomes)) return;
-
-    // ✅ convert center -> top-left
-    const x = p.cx - boxW / 2;
-    const y = p.cy - boxH / 2;
 
     const btn = document.createElement("button");
     btn.type = "button";
@@ -1289,8 +1285,9 @@ function renderChoiceHotspots(cardData) {
     btn.textContent = letter.toUpperCase();
     btn.setAttribute("aria-label", `Answer ${letter.toUpperCase()}`);
 
-    btn.style.left = `${fit.left + x * fit.scaleX}px`;
-    btn.style.top  = `${fit.top  + y * fit.scaleY}px`;
+    // ✅ left/top are CENTER coords again
+    btn.style.left = `${fit.left + p.cx * fit.scaleX}px`;
+    btn.style.top  = `${fit.top  + p.cy * fit.scaleY}px`;
     btn.style.width  = `${boxW * fit.scaleX}px`;
     btn.style.height = `${boxH * fit.scaleY}px`;
 
@@ -1306,6 +1303,7 @@ function renderChoiceHotspots(cardData) {
 
   return;
 }
+
 
 
   // -------- Option B: "zones" (rectangles)

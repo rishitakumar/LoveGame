@@ -590,6 +590,7 @@ body {
 /* ===== HOTSPOT BUTTON LOOK (square neon) ===== */
 .choice-hotspot{
   position:absolute;
+  transform: translate(-50%, -50%);
   border-radius: 6px;              /* square-ish */
   cursor:pointer;
   background: rgba(0,0,0,0.55);    /* black glass */

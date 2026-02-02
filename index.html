@@ -1306,36 +1306,43 @@ if (cardData.centers) {
 }
 
 
-  // -------- Option B: "zones" (rectangles)
-  if (cardData.zones) {
-    Object.entries(cardData.zones).forEach(([letter, z]) => {
-      if (!(letter in cardData.outcomes)) return;
+ if (cardData.zones) {
+  Object.entries(cardData.zones).forEach(([letter, z]) => {
+    if (!(letter in cardData.outcomes)) return;
 
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "choice-hotspot";
-      btn.dataset.letter = letter;
-      btn.setAttribute("aria-label", `Answer ${letter.toUpperCase()}`);
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "choice-hotspot";
+    btn.dataset.letter = letter;
 
-      btn.style.left = `${fit.left + z.x * fit.scaleX}px`;
-      btn.style.top = `${fit.top + z.y * fit.scaleY}px`;
-      btn.style.width = `${z.w * fit.scaleX}px`;
-      btn.style.height = `${z.h * fit.scaleY}px`;
+    btn.textContent = letter.toUpperCase(); // ✅ ADD THIS
 
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        selectHotspot(letter);
-        flashHotspot(letter);
-        setTimeout(() => resolveAnswer(letter), 100);
-      });
+    btn.setAttribute("aria-label", `Answer ${letter.toUpperCase()}`);
 
-      choiceLayer.appendChild(btn);
+    // zones are top-left based, but your CSS centers via translate(-50%,-50%)
+    // so we must convert zones to "center" coordinates:
+    const cx = z.x + z.w / 2;
+    const cy = z.y + z.h / 2;
+
+    btn.style.left = `${fit.left + cx * fit.scaleX}px`;
+    btn.style.top  = `${fit.top  + cy * fit.scaleY}px`;
+    btn.style.width  = `${z.w * fit.scaleX}px`;
+    btn.style.height = `${z.h * fit.scaleY}px`;
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      selectHotspot(letter);
+      flashHotspot(letter);
+      setTimeout(() => resolveAnswer(letter), 100);
     });
 
-    return;
-  }
-  // If neither exists, nothing to draw
+    choiceLayer.appendChild(btn);
+  });
+
+  return;
 }
+
+
 
 
 

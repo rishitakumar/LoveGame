@@ -1187,6 +1187,19 @@ back.onload = () => {
   scrollToCards();
 }
 
+function flashHotspot(letter) {
+  const choiceLayer = document.getElementById("choice-layer");
+  if (!choiceLayer) return;
+
+  const el = choiceLayer.querySelector(`.choice-hotspot[data-letter="${letter}"]`);
+  if (!el) return;
+
+  el.classList.add("flash");
+  setTimeout(() => el.classList.remove("flash"), 180);
+}
+
+
+  
 function selectHotspot(letter) {
   const choiceLayer = document.getElementById("choice-layer");
   if (!choiceLayer) return;

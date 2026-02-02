@@ -1284,6 +1284,7 @@ if (cardData.centers) {
     btn.type = "button";
     btn.className = "choice-hotspot letter";
     btn.dataset.letter = letter;
+    btn.textContent = letter.toUpperCase();
     btn.setAttribute("aria-label", `Answer ${letter.toUpperCase()}`);
 
     btn.style.left = `${fit.left + x * fit.scaleX}px`;

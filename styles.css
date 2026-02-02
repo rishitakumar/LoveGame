@@ -627,3 +627,12 @@ body {
   background: rgba(17, 253, 90, 0.20);   /* #11FD5A */
   border-color: rgba(255, 208, 17, 0.85);/* #FDD011 */
 }
+#choice-layer{
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
+  opacity: 0;
+}
+
+#card.flipped #choice-layer{
+  opacity: 1;
+}

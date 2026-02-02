@@ -550,13 +550,6 @@ body {
   background: rgba(0,0,0,0.35); /* optional dim */
 }
 
-.card{
-  position: relative;
-  width: min(420px, 86vw);
-  aspect-ratio: 3 / 4;
-  cursor: pointer;
-}
-
 /* front/back images fill */
 #card-front, #card-back{
   position: absolute;

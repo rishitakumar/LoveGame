@@ -1215,15 +1215,18 @@ function clearChoiceHotspots() {
   choiceLayer.style.pointerEvents = "none";
 }
 
-function getContainedImageRect(imgEl) {
+function getContainedImageRect(imgEl, refSize) {
+  // host box (the on-screen img element inside the card)
   const host = imgEl.getBoundingClientRect();
-  const naturalW = imgEl.naturalWidth || host.width;
-  const naturalH = imgEl.naturalHeight || host.height;
 
-  const scale = Math.min(host.width / naturalW, host.height / naturalH);
+  // ✅ Use your measured design size when provided
+  const refW = refSize?.w || imgEl.naturalWidth || host.width;
+  const refH = refSize?.h || imgEl.naturalHeight || host.height;
 
-  const drawW = naturalW * scale;
-  const drawH = naturalH * scale;
+  const scale = Math.min(host.width / refW, host.height / refH);
+
+  const drawW = refW * scale;
+  const drawH = refH * scale;
 
   const offsetX = (host.width - drawW) / 2;
   const offsetY = (host.height - drawH) / 2;
@@ -1237,6 +1240,7 @@ function getContainedImageRect(imgEl) {
     scaleY: scale
   };
 }
+
 
   
 const LETTER_BOX = { w: 56, h: 56 }; // same for all A–E
@@ -1266,7 +1270,7 @@ function renderChoiceHotspots(cardData) {
     return;
   }
 
-  const fit = getContainedImageRect(backImg);
+  const fit = getContainedImageRect(backImg, cardData.backSize);
   choiceLayer.style.pointerEvents = "auto";
 
   // -------- Option A: "centers" (A–E centers + fixed box)

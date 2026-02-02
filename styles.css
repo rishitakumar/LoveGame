@@ -592,7 +592,7 @@ body {
   position:absolute;
   border-radius: 8px;              /* square-ish, not circle */
   cursor:pointer;
-
+  transform: translate(-50%, -50%);
   transform-origin: center;
 
   border: 2px solid rgba(245,255,58,0);

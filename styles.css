@@ -649,3 +649,9 @@ body {
 #choice-layer .choice-hotspot.flash::before{
   background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20fill='rgba(253,17,180,0.95)'%20d='M12%2021s-6.716-4.35-9.428-8.063C.688%2010.438%201.326%207.5%203.64%205.91%205.954%204.32%208
 
+#choice-layer { opacity: 1 !important; }
+#choice-layer .choice-hotspot{
+  opacity: 1 !important;
+  outline: 3px solid red !important;
+  background: rgba(0,255,0,0.25) !important;
+}

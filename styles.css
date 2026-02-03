@@ -638,3 +638,109 @@ body {
 #card.flipped #choice-layer{
   opacity: 1;
 }
+/* =============================
+   HEART HOTSPOTS (replace circles)
+   - hidden until hoverable (subtle)
+   - neon heart glow on hover
+   - fills pink when selected/clicked
+============================= */
+
+/* Make the hotspot bigger (heart size) */
+.choice-hotspot {
+  /* size: tweak these if you want bigger */
+  width: 72px !important;
+  height: 72px !important;
+
+  /* remove old square rounding */
+  border-radius: 0 !important;
+
+  /* heart base invisible-ish until hover */
+  background: rgba(0,0,0,0.0) !important;
+  border: 2px solid rgba(0,0,0,0.0) !important;
+  box-shadow: none !important;
+
+  /* hide any letter text */
+  color: transparent !important;
+  text-shadow: none !important;
+  font-size: 0 !important;
+
+  /* keep your centering transform */
+  transform: translate(-50%, -50%) !important;
+
+  /* smoother feel */
+  transition: transform .12s ease, filter .12s ease, opacity .12s ease !important;
+
+  /* allow pseudo elements for heart */
+  position: absolute;
+}
+
+/* Build the heart with pseudo-elements */
+.choice-hotspot::before,
+.choice-hotspot::after {
+  content: "";
+  position: absolute;
+  width: 50%;
+  height: 75%;
+  top: 18%;
+  background: rgba(0,0,0,0); /* invisible base */
+  border-radius: 999px 999px 0 0;
+
+  /* “soft outline” (yellow-ish) but mostly hidden */
+  box-shadow: 0 0 0 2px rgba(255,242,52,0.0);
+
+  transition: background .12s ease, box-shadow .12s ease, filter .12s ease !important;
+}
+
+.choice-hotspot::before {
+  left: 18%;
+  transform: rotate(-45deg);
+  transform-origin: 0 100%;
+}
+
+.choice-hotspot::after {
+  left: 32%;
+  transform: rotate(45deg);
+  transform-origin: 100% 100%;
+}
+
+/* Slightly visible hint so users can discover them */
+.choice-hotspot {
+  opacity: 0.25;
+}
+.choice-hotspot:hover,
+.choice-hotspot:focus-visible {
+  opacity: 1;
+}
+
+/* Hover glow using your palette */
+.choice-hotspot:hover::before,
+.choice-hotspot:hover::after,
+.choice-hotspot:focus-visible::before,
+.choice-hotspot:focus-visible::after {
+  /* heart outline glow */
+  box-shadow:
+    0 0 0 2px rgba(253, 17, 180, 0.9),   /* #fd11b4 */
+    0 0 10px rgba(208, 17, 253, 0.55),   /* #D011FD */
+    0 0 18px rgba(255, 242, 52, 0.55);   /* #fff234 */
+  filter: drop-shadow(0 0 14px rgba(253, 59, 150, 0.55)); /* #fd3b96 */
+}
+
+/* Your click feedback: when JS adds .selected OR .flash */
+.choice-hotspot.selected::before,
+.choice-hotspot.selected::after,
+.choice-hotspot.flash::before,
+.choice-hotspot.flash::after {
+  /* fill with any pink */
+  background: rgba(253, 17, 180, 0.92); /* #fd11b4 */
+
+  box-shadow:
+    0 0 0 2px rgba(255, 208, 17, 0.85),  /* #FDD011 */
+    0 0 14px rgba(253, 59, 150, 0.75),   /* #fd3b96 */
+    0 0 24px rgba(208, 17, 253, 0.55),   /* #D011FD */
+    0 0 34px rgba(17, 253, 90, 0.20);    /* #11FD5A */
+}
+
+/* Tiny “press” feel */
+.choice-hotspot:active {
+  transform: translate(-50%, -50%) scale(0.98) !important;
+}

@@ -572,69 +572,82 @@ body {
 #card-front, #card-back { pointer-events: none; }
 
 /* hotspot layer sits on top */
+/* =============================
+   HEART HOTSPOTS ONLY
+   (hover glow + click fill)
+============================= */
+
+/* keep choice-layer exactly as you already had earlier (no rotate) */
 #choice-layer{
-  position:absolute;
-  inset:0;
+  position: absolute;
+  inset: 0;
   z-index: 9999;
-  pointer-events:none; /* JS turns on via choiceLayer.style.pointerEvents = "auto" */
+  pointer-events: none; /* JS toggles to auto */
 }
 
-/* buttons */
-/* ===== HOTSPOT BUTTON LOOK (square neon) ===== */
-/* HOTSPOTS: invisible until hover */
+/* invisible until hover */
 .choice-hotspot{
   position:absolute;
-  border-radius: 999px;           /* circles */
-  cursor:pointer;
   transform: translate(-50%, -50%);
   transform-origin: center;
 
-  /* invisible by default */
-  background: rgba(245,255,58,0);
-  border: 2px solid rgba(245,255,58,0);
-  box-shadow: none;
-  opacity: 0;
+  width: 52px;
+  height: 52px;
 
-  transition: opacity .12s ease, transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
 
-  /* remove letter visuals */
+  /* hide letters */
   color: transparent;
-  text-shadow: none;
   font-size: 0;
+  line-height: 0;
+  text-shadow: none;
+
+  opacity: 0;
+  transition: opacity .12s ease, transform .12s ease;
 }
 
 /* show only on hover/focus */
 .choice-hotspot:hover,
 .choice-hotspot:focus-visible{
   opacity: 1;
-  background: rgba(245,255,58,0.18);
-  border-color: rgba(245,255,58,0.85);
-  box-shadow: 0 0 18px rgba(245,255,58,0.9);
   transform: translate(-50%, -50%) scale(1.04);
 }
 
-/* clicked/selected color */
+/* heart shape */
+.choice-hotspot::before{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background: rgba(253, 17, 180, 0); /* invisible base */
+
+  -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2029'%3E%3Cpath%20d='M23.6%200c-2.7%200-5.1%201.3-6.6%203.3C15.5%201.3%2013.1%200%2010.4%200%206.3%200%203%203.3%203%207.4c0%209.2%2014%2020.3%2014%2020.3S31%2016.6%2031%207.4C31%203.3%2027.7%200%2023.6%200z'/%3E%3C/svg%3E") no-repeat center / contain;
+          mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2029'%3E%3Cpath%20d='M23.6%200c-2.7%200-5.1%201.3-6.6%203.3C15.5%201.3%2013.1%200%2010.4%200%206.3%200%203%203.3%203%207.4c0%209.2%2014%2020.3%2014%2020.3S31%2016.6%2031%207.4C31%203.3%2027.7%200%2023.6%200z'/%3E%3C/svg%3E") no-repeat center / contain;
+
+  transition: background .12s ease, filter .12s ease;
+}
+
+/* hover glow (yellow hover with neon edges) */
+.choice-hotspot:hover::before,
+.choice-hotspot:focus-visible::before{
+  background: rgba(255, 242, 52, 0.14); /* #fff234 faint */
+  filter:
+    drop-shadow(0 0 6px rgba(253, 17, 180, 0.85))  /* #fd11b4 */
+    drop-shadow(0 0 10px rgba(208, 17, 253, 0.55)) /* #D011FD */
+    drop-shadow(0 0 14px rgba(255, 208, 17, 0.55));/* #FDD011 */
+}
+
+/* clicked/selected = filled pink + stronger glow */
 .choice-hotspot.selected{
   opacity: 1;
-  background: rgba(17,253,90,0.25);     /* green */
-  border-color: rgba(17,253,90,0.95);
-  box-shadow: 0 0 22px rgba(17,253,90,0.95), inset 0 0 16px rgba(17,253,90,0.35);
 }
-
-/* optional “click flash” */
-.choice-hotspot.flash{
-  opacity: 1;
-  background: rgba(253,17,180,0.22);    /* pink flash */
-  border-color: rgba(255,242,52,0.95);
-  box-shadow: 0 0 26px rgba(245,255,58,1);
-}
-
-#choice-layer{
-  backface-visibility: hidden;
-  transform: rotateY(180deg);
-  opacity: 0;
-}
-
-#card.flipped #choice-layer{
-  opacity: 1;
+.choice-hotspot.selected::before{
+  background: rgba(253, 17, 180, 0.92); /* pink fill */
+  filter:
+    drop-shadow(0 0 10px rgba(253, 59, 150, 0.85)) /* #fd3b96 */
+    drop-shadow(0 0 18px rgba(208, 17, 253, 0.55)) /* #D011FD */
+    drop-shadow(0 0 22px rgba(17, 253, 90, 0.20)); /* #11FD5A */
 }

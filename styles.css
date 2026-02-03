@@ -611,8 +611,8 @@ body {
   transform: translate(-50%, -50%);
 
   /* slightly bigger */
-  width: 150px;
-  height: 150px;
+  width: 200px;
+  height: 200px;
 
   border:0;
   background:transparent;

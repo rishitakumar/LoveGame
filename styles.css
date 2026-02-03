@@ -579,79 +579,62 @@ body {
   pointer-events:none; /* JS turns on via choiceLayer.style.pointerEvents = "auto" */
 }
 
-/* =============================
-   HEART HOTSPOTS (reliable)
-   - faint hint so users can find them
-   - bright glow on hover
-   - fills pink on selected/flash
-============================= */
-
-#choice-layer .choice-hotspot{
-  position: absolute;
-  width: 52px;
-  height: 52px;
+/* buttons */
+/* ===== HOTSPOT BUTTON LOOK (square neon) ===== */
+/* HOTSPOTS: invisible until hover */
+.choice-hotspot{
+  position:absolute;
+  border-radius: 999px;           /* circles */
+  cursor:pointer;
   transform: translate(-50%, -50%);
   transform-origin: center;
 
-  border: 0;
-  background: transparent;
-  padding: 0;
-  cursor: pointer;
+  /* invisible by default */
+  background: rgba(245,255,58,0);
+  border: 2px solid rgba(245,255,58,0);
+  box-shadow: none;
+  opacity: 0;
 
-  /* hide any letter */
+  transition: opacity .12s ease, transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+
+  /* remove letter visuals */
   color: transparent;
+  text-shadow: none;
   font-size: 0;
-
-  /* IMPORTANT: faint hint so you can find it */
-  opacity: 0.18;
-  transition: opacity .12s ease, transform .12s ease, filter .12s ease;
 }
 
-/* the HEART icon (SVG as background) */
-#choice-layer .choice-hotspot::before{
-  content:"";
-  position:absolute;
-  inset: 0;
-
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-
-  /* default faint heart (yellow tint) */
-  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20fill='rgba(255,242,52,0.20)'%20d='M12%2021s-6.716-4.35-9.428-8.063C.688%2010.438%201.326%207.5%203.64%205.91%205.954%204.32%208.48%205.02%2010%206.62c.74.79%201.24%201.47%202%202.38.76-.91%201.26-1.59%202-2.38%201.52-1.6%204.046-2.3%206.36-.71%202.314%201.59%202.952%204.528%201.068%207.027C18.716%2016.65%2012%2021%2012%2021z'/%3E%3C/svg%3E");
-
-  transition: filter .12s ease, background-image .12s ease;
-}
-
-/* hover = neon glow */
-#choice-layer .choice-hotspot:hover,
-#choice-layer .choice-hotspot:focus-visible{
+/* show only on hover/focus */
+.choice-hotspot:hover,
+.choice-hotspot:focus-visible{
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1.05);
+  background: rgba(245,255,58,0.18);
+  border-color: rgba(245,255,58,0.85);
+  box-shadow: 0 0 18px rgba(245,255,58,0.9);
+  transform: translate(-50%, -50%) scale(1.04);
 }
 
-#choice-layer .choice-hotspot:hover::before,
-#choice-layer .choice-hotspot:focus-visible::before{
-  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20fill='rgba(255,242,52,0.28)'%20d='M12%2021s-6.716-4.35-9.428-8.063C.688%2010.438%201.326%207.5%203.64%205.91%205.954%204.32%208.48%205.02%2010%206.62c.74.79%201.24%201.47%202%202.38.76-.91%201.26-1.59%202-2.38%201.52-1.6%204.046-2.3%206.36-.71%202.314%201.59%202.952%204.528%201.068%207.027C18.716%2016.65%2012%2021%2012%2021z'/%3E%3C/svg%3E");
-  filter:
-    drop-shadow(0 0 6px rgba(253, 17, 180, 0.90))  /* #fd11b4 */
-    drop-shadow(0 0 10px rgba(208, 17, 253, 0.55)) /* #D011FD */
-    drop-shadow(0 0 14px rgba(255, 208, 17, 0.55));/* #FDD011 */
-}
-
-/* selected / click fill = pink */
-#choice-layer .choice-hotspot.selected,
-#choice-layer .choice-hotspot.flash{
+/* clicked/selected color */
+.choice-hotspot.selected{
   opacity: 1;
+  background: rgba(17,253,90,0.25);     /* green */
+  border-color: rgba(17,253,90,0.95);
+  box-shadow: 0 0 22px rgba(17,253,90,0.95), inset 0 0 16px rgba(17,253,90,0.35);
 }
 
-#choice-layer .choice-hotspot.selected::before,
-#choice-layer .choice-hotspot.flash::before{
-  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20fill='rgba(253,17,180,0.95)'%20d='M12%2021s-6.716-4.35-9.428-8.063C.688%2010.438%201.326%207.5%203.64%205.91%205.954%204.32%208
+/* optional “click flash” */
+.choice-hotspot.flash{
+  opacity: 1;
+  background: rgba(253,17,180,0.22);    /* pink flash */
+  border-color: rgba(255,242,52,0.95);
+  box-shadow: 0 0 26px rgba(245,255,58,1);
+}
 
-#choice-layer { opacity: 1 !important; }
-#choice-layer .choice-hotspot{
-  opacity: 1 !important;
-  outline: 3px solid red !important;
-  background: rgba(0,255,0,0.25) !important;
+#choice-layer{
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
+  opacity: 0;
+}
+
+#card.flipped #choice-layer{
+  opacity: 1;
 }

@@ -579,308 +579,63 @@ body {
   pointer-events:none; /* JS turns on via choiceLayer.style.pointerEvents = "auto" */
 }
 
-/* buttons */
-/* ===== HOTSPOT BUTTON LOOK (square neon) ===== */
-/* HOTSPOTS: invisible until hover */
-.choice-hotspot{
-  position:absolute;
-  border-radius: 999px;           /* circles */
-  cursor:pointer;
+/* =============================
+   HEART HOTSPOTS (single source of truth)
+   - invisible until hover/focus
+   - centered heart icon
+   - fills pink on selected/flash
+============================= */
+
+#choice-layer .choice-hotspot{
+  position: absolute;
+  width: 48px;
+  height: 48px;
   transform: translate(-50%, -50%);
   transform-origin: center;
 
-  /* invisible by default */
-  background: rgba(245,255,58,0);
-  border: 2px solid rgba(245,255,58,0);
-  box-shadow: none;
-  opacity: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
 
-  transition: opacity .12s ease, transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
-
-  /* remove letter visuals */
+  /* hide any letter */
   color: transparent;
-  text-shadow: none;
   font-size: 0;
-}
+  text-shadow: none;
 
-/* show only on hover/focus */
-.choice-hotspot:hover,
-.choice-hotspot:focus-visible{
-  opacity: 1;
-  background: rgba(245,255,58,0.18);
-  border-color: rgba(245,255,58,0.85);
-  box-shadow: 0 0 18px rgba(245,255,58,0.9);
-  transform: translate(-50%, -50%) scale(1.04);
-}
-
-/* clicked/selected color */
-.choice-hotspot.selected{
-  opacity: 1;
-  background: rgba(17,253,90,0.25);     /* green */
-  border-color: rgba(17,253,90,0.95);
-  box-shadow: 0 0 22px rgba(17,253,90,0.95), inset 0 0 16px rgba(17,253,90,0.35);
-}
-
-/* optional “click flash” */
-.choice-hotspot.flash{
-  opacity: 1;
-  background: rgba(253,17,180,0.22);    /* pink flash */
-  border-color: rgba(255,242,52,0.95);
-  box-shadow: 0 0 26px rgba(245,255,58,1);
-}
-
-#choice-layer{
-  backface-visibility: hidden;
-  transform: rotateY(180deg);
   opacity: 0;
-}
-
-#card.flipped #choice-layer{
-  opacity: 1;
-}
-/* =============================
-   HEART HOTSPOTS (replace circles)
-   - hidden until hoverable (subtle)
-   - neon heart glow on hover
-   - fills pink when selected/clicked
-============================= */
-
-/* Make the hotspot bigger (heart size) */
-.choice-hotspot {
-  /* size: tweak these if you want bigger */
-  width: 72px !important;
-  height: 72px !important;
-
-  /* remove old square rounding */
-  border-radius: 0 !important;
-
-  /* heart base invisible-ish until hover */
-  background: rgba(0,0,0,0.0) !important;
-  border: 2px solid rgba(0,0,0,0.0) !important;
-  box-shadow: none !important;
-
-  /* hide any letter text */
-  color: transparent !important;
-  text-shadow: none !important;
-  font-size: 0 !important;
-
-  /* keep your centering transform */
-  transform: translate(-50%, -50%) !important;
-
-  /* smoother feel */
-  transition: transform .12s ease, filter .12s ease, opacity .12s ease !important;
-
-  /* allow pseudo elements for heart */
-  position: absolute;
-}
-
-/* Build the heart with pseudo-elements */
-.choice-hotspot::before,
-.choice-hotspot::after {
-  content: "";
-  position: absolute;
-  width: 50%;
-  height: 75%;
-  top: 18%;
-  background: rgba(0,0,0,0); /* invisible base */
-  border-radius: 999px 999px 0 0;
-
-  /* “soft outline” (yellow-ish) but mostly hidden */
-  box-shadow: 0 0 0 2px rgba(255,242,52,0.0);
-
-  transition: background .12s ease, box-shadow .12s ease, filter .12s ease !important;
-}
-
-.choice-hotspot::before {
-  left: 18%;
-  transform: rotate(-45deg);
-  transform-origin: 0 100%;
-}
-
-.choice-hotspot::after {
-  left: 32%;
-  transform: rotate(45deg);
-  transform-origin: 100% 100%;
-}
-
-/* Slightly visible hint so users can discover them */
-.choice-hotspot {
-  opacity: 0.25;
-}
-.choice-hotspot:hover,
-.choice-hotspot:focus-visible {
-  opacity: 1;
-}
-
-/* Hover glow using your palette */
-.choice-hotspot:hover::before,
-.choice-hotspot:hover::after,
-.choice-hotspot:focus-visible::before,
-.choice-hotspot:focus-visible::after {
-  /* heart outline glow */
-  box-shadow:
-    0 0 0 2px rgba(253, 17, 180, 0.9),   /* #fd11b4 */
-    0 0 10px rgba(208, 17, 253, 0.55),   /* #D011FD */
-    0 0 18px rgba(255, 242, 52, 0.55);   /* #fff234 */
-  filter: drop-shadow(0 0 14px rgba(253, 59, 150, 0.55)); /* #fd3b96 */
-}
-
-/* Your click feedback: when JS adds .selected OR .flash */
-.choice-hotspot.selected::before,
-.choice-hotspot.selected::after,
-.choice-hotspot.flash::before,
-.choice-hotspot.flash::after {
-  /* fill with any pink */
-  background: rgba(253, 17, 180, 0.92); /* #fd11b4 */
-
-  box-shadow:
-    0 0 0 2px rgba(255, 208, 17, 0.85),  /* #FDD011 */
-    0 0 14px rgba(253, 59, 150, 0.75),   /* #fd3b96 */
-    0 0 24px rgba(208, 17, 253, 0.55),   /* #D011FD */
-    0 0 34px rgba(17, 253, 90, 0.20);    /* #11FD5A */
-}
-
-/* Tiny “press” feel */
-.choice-hotspot:active {
-  transform: translate(-50%, -50%) scale(0.98) !important;
-}
-/* =============================
-   HEART HOTSPOTS (FIXED)
-   - invisible until hover/focus
-   - clean heart centered (SVG mask)
-   - neon glow on hover
-   - fills pink when selected/flash
-============================= */
-
-/* smaller so it doesn't cover your text */
-.choice-hotspot{
-  width: 44px !important;
-  height: 44px !important;
-
-  /* keep your positioning math */
-  transform: translate(-50%, -50%) !important;
-
-  border: 0 !important;
-  background: transparent !important;
-
-  /* hide any letter text */
-  color: transparent !important;
-  text-shadow: none !important;
-  font-size: 0 !important;
-
-  /* invisible until hover */
-  opacity: 0 !important;
-  transition: opacity .12s ease, transform .12s ease, filter .12s ease !important;
-}
-
-/* Heart icon (masked) */
-.choice-hotspot::before{
-  content:"";
-  position:absolute;
-  inset: 0;
-
-  /* default: no fill (invisible) */
-  background: rgba(253, 17, 180, 0.0);
-
-  /* SVG heart mask */
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2029'%3E%3Cpath%20d='M23.6%200c-2.7%200-5.1%201.3-6.6%203.3C15.5%201.3%2013.1%200%2010.4%200%206.3%200%203%203.3%203%207.4c0%209.2%2014%2020.3%2014%2020.3S31%2016.6%2031%207.4C31%203.3%2027.7%200%2023.6%200z'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2029'%3E%3Cpath%20d='M23.6%200c-2.7%200-5.1%201.3-6.6%203.3C15.5%201.3%2013.1%200%2010.4%200%206.3%200%203%203.3%203%207.4c0%209.2%2014%2020.3%2014%2020.3S31%2016.6%2031%207.4C31%203.3%2027.7%200%2023.6%200z'/%3E%3C/svg%3E");
-
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-size: contain;
-  mask-size: contain;
-
-  transition: background .12s ease, filter .12s ease !important;
-}
-
-/* show on hover/focus */
-.choice-hotspot:hover,
-.choice-hotspot:focus-visible{
-  opacity: 1 !important;
-}
-
-/* hover glow (outline-ish) */
-.choice-hotspot:hover::before,
-.choice-hotspot:focus-visible::before{
-  background: rgba(255, 242, 52, 0.12); /* #fff234 faint */
-  filter:
-    drop-shadow(0 0 6px rgba(253, 17, 180, 0.85))  /* #fd11b4 */
-    drop-shadow(0 0 10px rgba(208, 17, 253, 0.55)) /* #D011FD */
-    drop-shadow(0 0 14px rgba(255, 208, 17, 0.55));/* #FDD011 */
-}
-
-/* clicked/selected fill (your JS adds .selected and .flash) */
-.choice-hotspot.selected{ opacity: 1 !important; }
-.choice-hotspot.flash{ opacity: 1 !important; }
-
-.choice-hotspot.selected::before,
-.choice-hotspot.flash::before{
-  background: rgba(253, 17, 180, 0.92); /* pink fill */
-  filter:
-    drop-shadow(0 0 10px rgba(253, 59, 150, 0.85)) /* #fd3b96 */
-    drop-shadow(0 0 18px rgba(208, 17, 253, 0.55)) /* #D011FD */
-    drop-shadow(0 0 22px rgba(17, 253, 90, 0.18)); /* #11FD5A */
-}
-
-/* tiny press feel */
-.choice-hotspot:active{
-  transform: translate(-50%, -50%) scale(0.97) !important;
-}
-/* === HEART HOTSPOTS: OVERRIDE EVERYTHING ABOVE === */
-#choice-layer .choice-hotspot,
-#choice-layer .choice-hotspot.letter{
-  width: 44px !important;
-  height: 44px !important;
-  transform: translate(-50%, -50%) !important;
-
-  border: 0 !important;
-  outline: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-
-  /* hide letter text no matter what */
-  color: transparent !important;
-  text-shadow: none !important;
-  font-size: 0 !important;
-
-  opacity: 0 !important;
-  transition: opacity .12s ease, transform .12s ease, filter .12s ease !important;
-}
-
-#choice-layer .choice-hotspot::before{
-  content:"";
-  position:absolute;
-  inset: 0;
-  background: rgba(253, 17, 180, 0); /* invisible base */
-
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2029'%3E%3Cpath%20d='M23.6%200c-2.7%200-5.1%201.3-6.6%203.3C15.5%201.3%2013.1%200%2010.4%200%206.3%200%203%203.3%203%207.4c0%209.2%2014%2020.3%2014%2020.3S31%2016.6%2031%207.4C31%203.3%2027.7%200%2023.6%200z'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2029'%3E%3Cpath%20d='M23.6%200c-2.7%200-5.1%201.3-6.6%203.3C15.5%201.3%2013.1%200%2010.4%200%206.3%200%203%203.3%203%207.4c0%209.2%2014%2020.3%2014%2020.3S31%2016.6%2031%207.4C31%203.3%2027.7%200%2023.6%200z'/%3E%3C/svg%3E");
-
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-size: contain;
-  mask-size: contain;
-
-  transition: background .12s ease, filter .12s ease !important;
+  transition: opacity .12s ease, transform .12s ease, filter .12s ease;
 }
 
 /* show on hover/focus */
 #choice-layer .choice-hotspot:hover,
 #choice-layer .choice-hotspot:focus-visible{
-  opacity: 1 !important;
+  opacity: 1;
 }
 
-/* hover glow (neon outline vibe) */
+/* the HEART itself (centered) */
+#choice-layer .choice-hotspot::before{
+  content:"";
+  position:absolute;
+  inset: 0;
+
+  /* default: invisible heart */
+  background: rgba(253, 17, 180, 0);
+
+  /* centered heart SVG mask (better centered than your 32x29 one) */
+  -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M12%2021s-6.716-4.35-9.428-8.063C.688%2010.438%201.326%207.5%203.64%205.91%205.954%204.32%208.48%205.02%2010%206.62c.74.79%201.24%201.47%202%202.38.76-.91%201.26-1.59%202-2.38%201.52-1.6%204.046-2.3%206.36-.71%202.314%201.59%202.952%204.528%201.068%207.027C18.716%2016.65%2012%2021%2012%2021z'/%3E%3C/svg%3E") center/contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M12%2021s-6.716-4.35-9.428-8.063C.688%2010.438%201.326%207.5%203.64%205.91%205.954%204.32%208.48%205.02%2010%206.62c.74.79%201.24%201.47%202%202.38.76-.91%201.26-1.59%202-2.38%201.52-1.6%204.046-2.3%206.36-.71%202.314%201.59%202.952%204.528%201.068%207.027C18.716%2016.65%2012%2021%2012%2021z'/%3E%3C/svg%3E") center/contain no-repeat;
+
+  transition: background .12s ease, filter .12s ease;
+}
+
+/* hover glow (your palette) */
 #choice-layer .choice-hotspot:hover::before,
 #choice-layer .choice-hotspot:focus-visible::before{
-  background: rgba(255, 242, 52, 0.14); /* #fff234 faint fill */
+  background: rgba(255, 242, 52, 0.12); /* #fff234 faint */
   filter:
-    drop-shadow(0 0 6px rgba(253, 17, 180, 0.85))  /* #fd11b4 */
+    drop-shadow(0 0 6px rgba(253, 17, 180, 0.90))  /* #fd11b4 */
     drop-shadow(0 0 10px rgba(208, 17, 253, 0.55)) /* #D011FD */
     drop-shadow(0 0 14px rgba(255, 208, 17, 0.55));/* #FDD011 */
 }
@@ -888,14 +643,18 @@ body {
 /* clicked/selected fill */
 #choice-layer .choice-hotspot.selected,
 #choice-layer .choice-hotspot.flash{
-  opacity: 1 !important;
+  opacity: 1;
 }
-
 #choice-layer .choice-hotspot.selected::before,
 #choice-layer .choice-hotspot.flash::before{
   background: rgba(253, 17, 180, 0.92); /* pink fill */
   filter:
     drop-shadow(0 0 10px rgba(253, 59, 150, 0.85)) /* #fd3b96 */
     drop-shadow(0 0 18px rgba(208, 17, 253, 0.55)) /* #D011FD */
-    drop-shadow(0 0 22px rgba(17, 253, 90, 0.20)); /* #11FD5A */
+    drop-shadow(0 0 22px rgba(17, 253, 90, 0.18)); /* #11FD5A */
+}
+
+/* press feel */
+#choice-layer .choice-hotspot:active{
+  transform: translate(-50%, -50%) scale(0.97);
 }

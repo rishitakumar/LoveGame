@@ -829,3 +829,73 @@ body {
 .choice-hotspot:active{
   transform: translate(-50%, -50%) scale(0.97) !important;
 }
+/* === HEART HOTSPOTS: OVERRIDE EVERYTHING ABOVE === */
+#choice-layer .choice-hotspot,
+#choice-layer .choice-hotspot.letter{
+  width: 44px !important;
+  height: 44px !important;
+  transform: translate(-50%, -50%) !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+
+  /* hide letter text no matter what */
+  color: transparent !important;
+  text-shadow: none !important;
+  font-size: 0 !important;
+
+  opacity: 0 !important;
+  transition: opacity .12s ease, transform .12s ease, filter .12s ease !important;
+}
+
+#choice-layer .choice-hotspot::before{
+  content:"";
+  position:absolute;
+  inset: 0;
+  background: rgba(253, 17, 180, 0); /* invisible base */
+
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2029'%3E%3Cpath%20d='M23.6%200c-2.7%200-5.1%201.3-6.6%203.3C15.5%201.3%2013.1%200%2010.4%200%206.3%200%203%203.3%203%207.4c0%209.2%2014%2020.3%2014%2020.3S31%2016.6%2031%207.4C31%203.3%2027.7%200%2023.6%200z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2029'%3E%3Cpath%20d='M23.6%200c-2.7%200-5.1%201.3-6.6%203.3C15.5%201.3%2013.1%200%2010.4%200%206.3%200%203%203.3%203%207.4c0%209.2%2014%2020.3%2014%2020.3S31%2016.6%2031%207.4C31%203.3%2027.7%200%2023.6%200z'/%3E%3C/svg%3E");
+
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+
+  transition: background .12s ease, filter .12s ease !important;
+}
+
+/* show on hover/focus */
+#choice-layer .choice-hotspot:hover,
+#choice-layer .choice-hotspot:focus-visible{
+  opacity: 1 !important;
+}
+
+/* hover glow (neon outline vibe) */
+#choice-layer .choice-hotspot:hover::before,
+#choice-layer .choice-hotspot:focus-visible::before{
+  background: rgba(255, 242, 52, 0.14); /* #fff234 faint fill */
+  filter:
+    drop-shadow(0 0 6px rgba(253, 17, 180, 0.85))  /* #fd11b4 */
+    drop-shadow(0 0 10px rgba(208, 17, 253, 0.55)) /* #D011FD */
+    drop-shadow(0 0 14px rgba(255, 208, 17, 0.55));/* #FDD011 */
+}
+
+/* clicked/selected fill */
+#choice-layer .choice-hotspot.selected,
+#choice-layer .choice-hotspot.flash{
+  opacity: 1 !important;
+}
+
+#choice-layer .choice-hotspot.selected::before,
+#choice-layer .choice-hotspot.flash::before{
+  background: rgba(253, 17, 180, 0.92); /* pink fill */
+  filter:
+    drop-shadow(0 0 10px rgba(253, 59, 150, 0.85)) /* #fd3b96 */
+    drop-shadow(0 0 18px rgba(208, 17, 253, 0.55)) /* #D011FD */
+    drop-shadow(0 0 22px rgba(17, 253, 90, 0.20)); /* #11FD5A */
+}

@@ -1755,7 +1755,7 @@ end.id = "journey-end-overlay";
   msg.style.textShadow = "0 0 16px rgba(245,255,58,0.95), 0 0 44px rgba(245,255,58,0.35)";
   msg.style.padding = "24px";
   msg.textContent = `Your journey has brought you to ${landLabel(finalLand)}.`;
-
+  showReflectionCards();
   end.appendChild(msg);
   document.body.appendChild(end);
 
@@ -1915,7 +1915,267 @@ const RUNG_COORDS = {
   
 };
 
+/* =============================
+   REFLECTION CARDS (Front + Back)
+   draw + flip + download blank/written
+============================= */
+
+// 1) SET THESE to your actual files
+const REFLECT_FRONT_SRC = "assets/reflection_front.png";
+const REFLECT_BACK_SRC  = "assets/reflection_back.png";
+
+const reflectionOverlay = document.getElementById("reflection-overlay");
+const refBg = document.getElementById("ref-bg");
+const refCanvas = document.getElementById("ref-draw");
+const refFlipBtn = document.getElementById("ref-flip");
+const refClearBtn = document.getElementById("ref-clear");
+const refDownloadBlank = document.getElementById("ref-download-blank");
+const refDownloadWritten = document.getElementById("ref-download-written");
+const refClose = document.getElementById("ref-close");
+
+let refSide = "front"; // "front" | "back"
+let isDrawing = false;
+let lastX = 0, lastY = 0;
+
+// Separate drawings per side
+const drawings = {
+  front: null, // ImageData
+  back: null
+};
+
+function openReflectionCards(){
+  reflectionOverlay.hidden = false;
+  setRefSide("front");
+  requestAnimationFrame(resizeRefCanvasToStage);
+}
+
+function closeReflectionCards(){
+  reflectionOverlay.hidden = true;
+}
+
+function setRefSide(side){
+  // save current drawing before switching
+  saveDrawingForSide(refSide);
+
+  refSide = side;
+  refBg.src = (refSide === "front") ? REFLECT_FRONT_SRC : REFLECT_BACK_SRC;
+
+  // wait for bg to load, then resize + restore drawing
+  refBg.onload = () => {
+    resizeRefCanvasToStage();
+    restoreDrawingForSide(refSide);
+  };
+}
+
+function getRefCtx(){
+  return refCanvas.getContext("2d");
+}
+
+function resizeRefCanvasToStage(){
+  const rect = refCanvas.getBoundingClientRect();
+  // scale for crisp drawing on retina
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+
+  // IMPORTANT: before resizing, save current side drawing (resizing clears canvas)
+  saveDrawingForSide(refSide);
+
+  refCanvas.width = Math.floor(rect.width * dpr);
+  refCanvas.height = Math.floor(rect.height * dpr);
+
+  const ctx = getRefCtx();
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  // pen style (edit if you want)
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = "rgba(255,242,52,0.95)"; // neon yellow ink
+  ctx.shadowColor = "rgba(208,17,253,0.35)";
+  ctx.shadowBlur = 6;
+
+  restoreDrawingForSide(refSide);
+}
+
+function saveDrawingForSide(side){
+  if (!side) return;
+  const ctx = getRefCtx();
+  try{
+    drawings[side] = ctx.getImageData(0, 0, refCanvas.width, refCanvas.height);
+  }catch(e){
+    // if canvas is tainted (shouldn't be, since drawing only)
+    drawings[side] = null;
+  }
+}
+
+function restoreDrawingForSide(side){
+  const ctx = getRefCtx();
+  ctx.clearRect(0, 0, refCanvas.width, refCanvas.height);
+
+  const data = drawings[side];
+  if (data){
+    try{
+      ctx.putImageData(data, 0, 0);
+    }catch(e){
+      // ignore
+    }
+  }
+}
+
+/* Drawing helpers */
+function canvasPointFromEvent(e){
+  const rect = refCanvas.getBoundingClientRect();
+  const touch = e.touches && e.touches[0];
+  const clientX = touch ? touch.clientX : e.clientX;
+  const clientY = touch ? touch.clientY : e.clientY;
+
+  const x = clientX - rect.left;
+  const y = clientY - rect.top;
+  return { x, y };
+}
+
+function startDraw(e){
+  isDrawing = true;
+  const p = canvasPointFromEvent(e);
+  lastX = p.x;
+  lastY = p.y;
+}
+
+function drawMove(e){
+  if (!isDrawing) return;
+  e.preventDefault();
+
+  const ctx = getRefCtx();
+  const p = canvasPointFromEvent(e);
+
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(p.x, p.y);
+  ctx.stroke();
+
+  lastX = p.x;
+  lastY = p.y;
+}
+
+function endDraw(){
+  if (!isDrawing) return;
+  isDrawing = false;
+  saveDrawingForSide(refSide);
+}
+
+/* Clear writing (current side only) */
+function clearCurrentWriting(){
+  const ctx = getRefCtx();
+  ctx.clearRect(0, 0, refCanvas.width, refCanvas.height);
+  drawings[refSide] = null;
+}
+
+/* Download helpers */
+function downloadImage(dataURL, filename){
+  const a = document.createElement("a");
+  a.href = dataURL;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function exportComposite(includeWriting){
+  // Create an offscreen canvas at the same pixel size as refCanvas
+  const out = document.createElement("canvas");
+  out.width = refCanvas.width;
+  out.height = refCanvas.height;
+  const ctx = out.getContext("2d");
+
+  // Draw background image into output canvas
+  // We need to draw it with the same "contain" behavior as CSS object-fit: contain.
+  // We'll replicate contain math.
+  const img = new Image();
+  img.onload = () => {
+    // Fit image into output canvas with contain
+    const cw = out.width, ch = out.height;
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+
+    const scale = Math.min(cw / iw, ch / ih);
+    const w = iw * scale;
+    const h = ih * scale;
+    const x = (cw - w) / 2;
+    const y = (ch - h) / 2;
+
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.drawImage(img, x, y, w, h);
+
+    if (includeWriting){
+      ctx.drawImage(refCanvas, 0, 0);
+    }
+
+    const file = `reflection_${refSide}_${includeWriting ? "written" : "blank"}.png`;
+    downloadImage(out.toDataURL("image/png"), file);
+  };
+
+  img.crossOrigin = "anonymous"; // safe if hosted same-origin; harmless otherwise
+  img.src = (refSide === "front") ? REFLECT_FRONT_SRC : REFLECT_BACK_SRC;
+}
+
+/* Wire up listeners */
+refCanvas.addEventListener("mousedown", startDraw);
+refCanvas.addEventListener("mousemove", drawMove);
+window.addEventListener("mouseup", endDraw);
+
+refCanvas.addEventListener("touchstart", startDraw, { passive: false });
+refCanvas.addEventListener("touchmove", drawMove, { passive: false });
+refCanvas.addEventListener("touchend", endDraw);
+
+refFlipBtn.addEventListener("click", () => {
+  setRefSide(refSide === "front" ? "back" : "front");
+});
+
+refClearBtn.addEventListener("click", clearCurrentWriting);
+
+refDownloadBlank.addEventListener("click", () => exportComposite(false));
+refDownloadWritten.addEventListener("click", () => exportComposite(true));
+
+refClose.addEventListener("click", closeReflectionCards);
+
+window.addEventListener("resize", () => {
+  if (!reflectionOverlay.hidden) resizeRefCanvasToStage();
+});
+
+/* ====== HOOK: call this when your text happens ====== */
+// Example: call this right after you display "Your journey has brought you to..."
+window.showReflectionCards = openReflectionCards;
 
 </script>
+  <!-- REFLECTION CARDS OVERLAY -->
+<div id="reflection-overlay" class="reflection-overlay" hidden>
+  <div class="reflection-modal">
+    <div class="reflection-top">
+      <div class="reflection-title">Reflection Cards</div>
+
+      <div class="reflection-actions">
+        <button id="ref-flip" class="ref-btn">Flip (Front/Back)</button>
+        <button id="ref-clear" class="ref-btn">Clear Writing</button>
+      </div>
+    </div>
+
+    <!-- Card stage -->
+    <div class="reflection-stage">
+      <!-- Background image (front/back) -->
+      <img id="ref-bg" class="ref-bg" alt="Reflection card" />
+
+      <!-- Drawing layer -->
+      <canvas id="ref-draw" class="ref-canvas"></canvas>
+    </div>
+
+    <div class="reflection-bottom">
+      <div class="reflection-downloads">
+        <button id="ref-download-blank" class="ref-btn ref-btn-ghost">Download Blank</button>
+        <button id="ref-download-written" class="ref-btn ref-btn-primary">Download With Writing</button>
+      </div>
+
+      <button id="ref-close" class="ref-btn ref-btn-danger">Close</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

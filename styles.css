@@ -653,26 +653,51 @@ body {
   transform: translate(-50%, -50%) scale(1.12);
 }
 
-.choice-hotspot:hover::before{
-  opacity: 1;
-
-  filter:
-    drop-shadow(0 0 8px currentColor)
-    drop-shadow(0 0 16px currentColor)
-    drop-shadow(0 0 26px currentColor);
-}
-
 /* =============================
-   CLICK — ALL FILL PINK
+   ANGELIC GLOW EFFECT
 ============================= */
 
-.choice-hotspot.selected::before{
-  background:#fd11b4 !important;
+/* 1. Base Hover State */
+.choice-hotspot:hover::before {
+  opacity: 0.8; /* Slightly translucent for a softer feel */
+  
+  /* Layered glow: White core + colored haze */
+  filter: 
+    drop-shadow(0 0 5px #fff) 
+    drop-shadow(0 0 15px currentColor) 
+    drop-shadow(0 0 30px currentColor);
+}
 
-  filter:
-    drop-shadow(0 0 12px #fd3b96)
-    drop-shadow(0 0 22px #D011FD)
-    drop-shadow(0 0 32px #11FD5A);
+/* 2. Enhanced Selected State (The Click) */
+.choice-hotspot.selected::before {
+  background: #ffffff !important; /* White heart core looks more "angelic" */
+  opacity: 1;
 
-  opacity:1;
+  /* Massive, multi-layered angelic bloom */
+  filter: 
+    drop-shadow(0 0 10px #fff)
+    drop-shadow(0 0 20px #fd3b96)
+    drop-shadow(0 0 40px #D011FD)
+    drop-shadow(0 0 60px rgba(253, 17, 180, 0.5));
+  
+  animation: angelicPulse 2s infinite ease-in-out;
+}
+
+/* 3. The "Thrumming" Animation for the clicked heart */
+@keyframes angelicPulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: 
+      drop-shadow(0 0 10px #fff)
+      drop-shadow(0 0 20px #fd3b96)
+      drop-shadow(0 0 40px #D011FD);
+  }
+  50% {
+    transform: scale(1.08);
+    filter: 
+      drop-shadow(0 0 15px #fff)
+      drop-shadow(0 0 35px #fd3b96)
+      drop-shadow(0 0 65px #D011FD)
+      drop-shadow(0 0 85px rgba(255, 255, 255, 0.3));
+  }
 }

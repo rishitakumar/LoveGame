@@ -680,18 +680,19 @@ body {
    GLOW ONLY (adds to existing hearts)
    ================================= */
 
-/* hover glow */
+/* hover */
 .choice-hotspot:hover::before{
   filter:
-    drop-shadow(0 0 10px currentColor)
-    drop-shadow(0 0 18px currentColor)
-    drop-shadow(0 0 28px currentColor);
+    drop-shadow(0 0 14px #fff234)
+    drop-shadow(0 0 26px #fff234);
 }
 
-/* click glow (selected) */
+/* click */
 .choice-hotspot.selected::before{
   filter:
-    drop-shadow(0 0 12px #fd11b4)
-    drop-shadow(0 0 22px #fd3b96)
-    drop-shadow(0 0 34px #D011FD);
+    drop-shadow(0 0 16px #fd11b4)
+    drop-shadow(0 0 32px #fd11b4);
+}
+.choice-hotspot{
+  color: inherit;
 }

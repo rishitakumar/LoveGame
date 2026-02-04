@@ -641,7 +641,7 @@ body {
 
 .choice-hotspot[data-letter="a"]::before { background:#fd11b4; }
 .choice-hotspot[data-letter="b"]::before { background:#11FD5A; }
-.choice-hotspot[data-letter="c"]::before { background:#fff234; }
+.choice-hotspot[data-letter="c"]::before { background:#FDD011; }
 .choice-hotspot[data-letter="d"]::before { background:#D011FD; }
 .choice-hotspot[data-letter="e"]::before { background:#fd3b96; }
 

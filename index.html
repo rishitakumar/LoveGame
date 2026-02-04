@@ -1761,6 +1761,12 @@ end.id = "journey-end-overlay";
 
   requestAnimationFrame(() => {
     end.style.opacity = "1";
+
+    // ✅ Add reflection cards AFTER the overlay exists
+    // (This prevents intro / other overlays from getting blocked)
+    setTimeout(() => {
+      attachReflectionCards(end, finalLand);
+    }, 350);
   });
 }
 
@@ -1914,6 +1920,338 @@ const RUNG_COORDS = {
 ]
   
 };
+/* =============================
+   REFLECTION CARDS (DRAW + DOWNLOAD)
+   Appears inside #journey-end-overlay
+============================= */
+
+function attachReflectionCards(endOverlayEl, finalLand) {
+  // Prevent duplicates if replaying
+  if (endOverlayEl.querySelector(".reflection-wrap")) return;
+
+  const wrap = document.createElement("div");
+  wrap.className = "reflection-wrap";
+
+  // --- Left: canvas stage ---
+  const stage = document.createElement("div");
+  stage.className = "reflection-cardstage";
+
+  const topRow = document.createElement("div");
+  topRow.className = "reflection-toprow";
+
+  const title = document.createElement("div");
+  title.className = "reflection-title";
+  title.textContent = "Reflection Cards";
+
+  const tabs = document.createElement("div");
+  tabs.className = "reflection-tabs";
+
+  const btnFront = document.createElement("button");
+  btnFront.type = "button";
+  btnFront.className = "reflection-tabbtn active";
+  btnFront.textContent = "FRONT";
+
+  const btnBack = document.createElement("button");
+  btnBack.type = "button";
+  btnBack.className = "reflection-tabbtn";
+  btnBack.textContent = "BACK";
+
+  tabs.appendChild(btnFront);
+  tabs.appendChild(btnBack);
+
+  topRow.appendChild(title);
+  topRow.appendChild(tabs);
+
+  const canvasFront = document.createElement("canvas");
+  canvasFront.className = "reflection-canvas";
+  canvasFront.width = 1200;
+  canvasFront.height = 1800;
+
+  const canvasBack = document.createElement("canvas");
+  canvasBack.className = "reflection-canvas";
+  canvasBack.width = 1200;
+  canvasBack.height = 1800;
+  canvasBack.style.display = "none";
+
+  stage.appendChild(topRow);
+  stage.appendChild(canvasFront);
+  stage.appendChild(canvasBack);
+
+  // --- Right: controls ---
+  const controls = document.createElement("div");
+  controls.className = "reflection-controls";
+
+  const h = document.createElement("h3");
+  h.textContent = "Draw + Download";
+  controls.appendChild(h);
+
+  const row1 = document.createElement("div");
+  row1.className = "reflection-row";
+
+  const colorLabel = document.createElement("label");
+  colorLabel.textContent = "Color:";
+  const colorInput = document.createElement("input");
+  colorInput.type = "color";
+  colorInput.value = "#fd11b4";
+
+  const sizeLabel = document.createElement("label");
+  sizeLabel.textContent = "Brush:";
+  const sizeInput = document.createElement("input");
+  sizeInput.type = "range";
+  sizeInput.min = "2";
+  sizeInput.max = "40";
+  sizeInput.value = "10";
+
+  row1.appendChild(colorLabel);
+  row1.appendChild(colorInput);
+  row1.appendChild(sizeLabel);
+  row1.appendChild(sizeInput);
+
+  const row2 = document.createElement("div");
+  row2.className = "reflection-row";
+
+  const eraserBtn = document.createElement("button");
+  eraserBtn.type = "button";
+  eraserBtn.className = "reflection-btn secondary";
+  eraserBtn.textContent = "ERASER: OFF";
+
+  const clearBtn = document.createElement("button");
+  clearBtn.type = "button";
+  clearBtn.className = "reflection-btn danger";
+  clearBtn.textContent = "CLEAR SIDE";
+
+  row2.appendChild(eraserBtn);
+  row2.appendChild(clearBtn);
+
+  const row3 = document.createElement("div");
+  row3.className = "reflection-row";
+
+  const dlFront = document.createElement("button");
+  dlFront.type = "button";
+  dlFront.className = "reflection-btn";
+  dlFront.textContent = "DOWNLOAD FRONT";
+
+  const dlBack = document.createElement("button");
+  dlBack.type = "button";
+  dlBack.className = "reflection-btn";
+  dlBack.textContent = "DOWNLOAD BACK";
+
+  const dlBoth = document.createElement("button");
+  dlBoth.type = "button";
+  dlBoth.className = "reflection-btn secondary";
+  dlBoth.textContent = "DOWNLOAD BOTH";
+
+  row3.appendChild(dlFront);
+  row3.appendChild(dlBack);
+  row3.appendChild(dlBoth);
+
+  const row4 = document.createElement("div");
+  row4.className = "reflection-row";
+
+  const hint = document.createElement("div");
+  hint.style.color = "rgba(255,255,255,0.85)";
+  hint.style.fontFamily = "Georgia, 'Times New Roman', serif";
+  hint.style.fontSize = "0.95rem";
+  hint.innerHTML = `Tip: You can download immediately without drawing.`;
+
+  row4.appendChild(hint);
+
+  controls.appendChild(row1);
+  controls.appendChild(row2);
+  controls.appendChild(row3);
+  controls.appendChild(row4);
+
+  wrap.appendChild(stage);
+  wrap.appendChild(controls);
+
+  // Put reflection UI under your message text
+  endOverlayEl.appendChild(wrap);
+
+  // -------------------------
+  // Drawing engine (2 canvases)
+  // -------------------------
+  const templates = {
+    front: "reflection_front.png",
+    back: "reflection_back.png"
+  };
+
+  const state = {
+    active: "front",
+    eraser: false,
+    color: colorInput.value,
+    size: Number(sizeInput.value),
+    templatesLoaded: { front: false, back: false }
+  };
+
+  const ctxF = canvasFront.getContext("2d");
+  const ctxB = canvasBack.getContext("2d");
+
+  function fitCanvasToCSS(canvasEl, ctx) {
+    // Maintain backing resolution but map pointer correctly
+    // (We keep width/height fixed; drawing uses correct coords via getPos)
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+  }
+
+  fitCanvasToCSS(canvasFront, ctxF);
+  fitCanvasToCSS(canvasBack, ctxB);
+
+  function drawTemplate(which) {
+    const canvasEl = which === "front" ? canvasFront : canvasBack;
+    const ctx = which === "front" ? ctxF : ctxB;
+
+    const img = new Image();
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+      // Fill white behind so downloads look “paper” (optional)
+      ctx.save();
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
+      ctx.restore();
+
+      // Contain the template image (so any aspect ratio works)
+      const iw = img.width, ih = img.height;
+      const cw = canvasEl.width, ch = canvasEl.height;
+      const scale = Math.min(cw / iw, ch / ih);
+      const dw = iw * scale, dh = ih * scale;
+      const dx = (cw - dw) / 2;
+      const dy = (ch - dh) / 2;
+      ctx.drawImage(img, dx, dy, dw, dh);
+
+      state.templatesLoaded[which] = true;
+    };
+    img.src = templates[which];
+  }
+
+  // Load both templates once
+  drawTemplate("front");
+  drawTemplate("back");
+
+  function getActiveCanvas() {
+    return state.active === "front" ? canvasFront : canvasBack;
+  }
+  function getActiveCtx() {
+    return state.active === "front" ? ctxF : ctxB;
+  }
+
+  function setActive(which) {
+    state.active = which;
+    btnFront.classList.toggle("active", which === "front");
+    btnBack.classList.toggle("active", which === "back");
+    canvasFront.style.display = which === "front" ? "block" : "none";
+    canvasBack.style.display = which === "back" ? "block" : "none";
+  }
+
+  btnFront.addEventListener("click", () => setActive("front"));
+  btnBack.addEventListener("click", () => setActive("back"));
+
+  colorInput.addEventListener("input", () => {
+    state.color = colorInput.value;
+  });
+  sizeInput.addEventListener("input", () => {
+    state.size = Number(sizeInput.value);
+  });
+
+  eraserBtn.addEventListener("click", () => {
+    state.eraser = !state.eraser;
+    eraserBtn.textContent = state.eraser ? "ERASER: ON" : "ERASER: OFF";
+  });
+
+  clearBtn.addEventListener("click", () => {
+    // Clear THIS side back to template (blank again)
+    drawTemplate(state.active);
+  });
+
+  function downloadCanvas(which) {
+    const canvasEl = which === "front" ? canvasFront : canvasBack;
+
+    // If the template hasn’t loaded yet, still allow download (will just be white if image missing)
+    const a = document.createElement("a");
+    const safeLand = (finalLand || "result").toString().toLowerCase();
+    a.download = `lovegame_reflection_${safeLand}_${which}.png`;
+    a.href = canvasEl.toDataURL("image/png");
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  dlFront.addEventListener("click", () => downloadCanvas("front"));
+  dlBack.addEventListener("click", () => downloadCanvas("back"));
+  dlBoth.addEventListener("click", () => {
+    downloadCanvas("front");
+    // small delay so browsers don’t block the second click
+    setTimeout(() => downloadCanvas("back"), 250);
+  });
+
+  // Pointer drawing (mouse + touch)
+  let drawing = false;
+  let last = null;
+
+  function getPos(canvasEl, evt) {
+    const rect = canvasEl.getBoundingClientRect();
+    const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+    const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+
+    const x = (clientX - rect.left) * (canvasEl.width / rect.width);
+    const y = (clientY - rect.top) * (canvasEl.height / rect.height);
+    return { x, y };
+  }
+
+  function down(evt) {
+    evt.preventDefault();
+    const canvasEl = getActiveCanvas();
+    drawing = true;
+    last = getPos(canvasEl, evt);
+  }
+
+  function move(evt) {
+    if (!drawing) return;
+    evt.preventDefault();
+
+    const canvasEl = getActiveCanvas();
+    const ctx = getActiveCtx();
+    const p = getPos(canvasEl, evt);
+
+    ctx.save();
+    ctx.lineWidth = state.size;
+    ctx.strokeStyle = state.color;
+
+    if (state.eraser) {
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.strokeStyle = "rgba(0,0,0,1)";
+    } else {
+      ctx.globalCompositeOperation = "source-over";
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(last.x, last.y);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    ctx.restore();
+
+    last = p;
+  }
+
+  function up(evt) {
+    if (!drawing) return;
+    evt.preventDefault();
+    drawing = false;
+    last = null;
+  }
+
+  // Attach listeners to BOTH canvases (only one is visible at a time)
+  [canvasFront, canvasBack].forEach((c) => {
+    c.addEventListener("mousedown", down);
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", up);
+
+    c.addEventListener("touchstart", down, { passive: false });
+    c.addEventListener("touchmove", move, { passive: false });
+    c.addEventListener("touchend", up, { passive: false });
+    c.addEventListener("touchcancel", up, { passive: false });
+  });
+}
 
 
 </script>

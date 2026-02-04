@@ -629,39 +629,37 @@ body {
   filter: drop-shadow(0 0 0px transparent);
 }
 
-/* THE HEART SHAPE */
+/* 1. THE HEART SHAPE (Invisible to start) */
 .choice-hotspot::before {
   content: "";
   position: absolute;
   inset: 0;
-  
-  /* SVG Background (This ensures color is controllable) */
   background-color: var(--heart-color, #888); 
   
   -webkit-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 32 29' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M23.6 0c-2.7 0-5.1 1.3-6.6 3.3C15.5 1.3 13.1 0 10.4 0 6.3 0 3 3.3 3 7.4c0 9.2 14 20.3 14 20.3S31 16.6 31 7.4C31 3.3 27.7 0 23.6 0z'/%3E%3C/svg%3E") center/contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 32 29' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M23.6 0c-2.7 0-5.1 1.3-6.6 3.3C15.5 1.3 13.1 0 10.4 0 6.3 0 3 3.3 3 7.4c0 9.2 14 20.3 14 20.3S31 16.6 31 7.4C31 3.3 27.7 0 23.6 0z'/%3E%3C/svg%3E") center/contain no-repeat;
 
-  opacity: 0;
-  transition: all 0.3s ease;
+  /* CHANGE THIS: Set to 0 to hide them initially */
+  opacity: 0; 
+  transition: opacity 0.4s ease, transform 0.3s ease, background-color 0.3s ease;
 }
 
-/* HOVER: Growing Angelic Glow */
+/* 2. HOVER: Make them visible with the glow */
+.choice-hotspot:hover::before {
+  opacity: 1; /* Fades in on hover */
+}
+
 .choice-hotspot:hover {
   transform: translate(-50%, -50%) scale(1.15);
-  /* White core glow + colored outer haze */
   filter: 
-    drop-shadow(0 0 5px white)
+    drop-shadow(0 0 8px white)
     drop-shadow(0 0 15px var(--heart-color));
 }
 
-.choice-hotspot:hover::before {
-  opacity: 1;
-}
-
-/* CLICKED: Solid Pink + Intense Glow */
+/* 3. CLICKED: Stay visible and pink */
 .choice-hotspot.selected::before {
-  background-color: #fd11b4 !important; /* Force Pink */
-  opacity: 1;
+  background-color: #fd11b4 !important;
+  opacity: 1; /* Keeps it visible after click */
 }
 
 .choice-hotspot.selected {

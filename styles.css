@@ -675,9 +675,9 @@ body {
 ============================= */
 .choice-hotspot[data-letter="a"] { --heart-color: #fd11b4; }
 .choice-hotspot[data-letter="b"] { --heart-color: #11FD5A; }
-.choice-hotspot[data-letter="c"] { --heart-color: #FDD011; }
+.choice-hotspot[data-letter="c"] { --heart-color: #fff234; }
 .choice-hotspot[data-letter="d"] { --heart-color: #D011FD; }
-.choice-hotspot[data-letter="e"] { --heart-color: #fd3b96; }
+.choice-hotspot[data-letter="e"] { --heart-color: #fd11b4; }
 
 @keyframes angelicBreath {
   0%, 100% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }

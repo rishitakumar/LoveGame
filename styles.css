@@ -610,94 +610,78 @@ body {
    FIXED HEART HOTSPOTS
 ============================= */
 
+/* =============================
+   HEART HOTSPOTS — REBUILT
+============================= */
+
 .choice-hotspot {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 100px;  /* Adjusted size for better fit */
-  height: 100px;
+  width: 120px;
+  height: 120px;
   border: none;
   background: transparent;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  transition: transform 0.2s ease, filter 0.3s ease;
   outline: none;
-  transition: transform 0.2s ease;
+  
+  /* Standard transition for the glow */
+  filter: drop-shadow(0 0 0px transparent);
 }
 
-/* 1. THE HEART (Inner Shape) */
+/* THE HEART SHAPE */
 .choice-hotspot::before {
   content: "";
   position: absolute;
-  inset: 10%; /* Makes heart slightly smaller than the glow area */
-  background: currentColor; /* Uses the letter colors below */
+  inset: 0;
   
-  /* The Heart Mask */
+  /* SVG Background (This ensures color is controllable) */
+  background-color: var(--heart-color, #888); 
+  
   -webkit-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 32 29' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M23.6 0c-2.7 0-5.1 1.3-6.6 3.3C15.5 1.3 13.1 0 10.4 0 6.3 0 3 3.3 3 7.4c0 9.2 14 20.3 14 20.3S31 16.6 31 7.4C31 3.3 27.7 0 23.6 0z'/%3E%3C/svg%3E") center/contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 32 29' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M23.6 0c-2.7 0-5.1 1.3-6.6 3.3C15.5 1.3 13.1 0 10.4 0 6.3 0 3 3.3 3 7.4c0 9.2 14 20.3 14 20.3S31 16.6 31 7.4C31 3.3 27.7 0 23.6 0z'/%3E%3C/svg%3E") center/contain no-repeat;
 
-  opacity: 0.4; /* Soft start */
+  opacity: 0.5;
   transition: all 0.3s ease;
-  z-index: 2;
 }
 
-/* 2. THE ANGELIC GLOW & BORDER */
-.choice-hotspot::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border: 2px solid white;
-  border-radius: 50%; /* Pure circle halo */
-  opacity: 0;
-  transform: scale(0.6);
-  transition: all 0.4s ease;
-  box-shadow: 0 0 15px white, inset 0 0 10px white;
-  z-index: 1;
-}
-
-/* =============================
-   STATES: HOVER & CLICKED
-============================= */
-
-/* Hover */
+/* HOVER: Growing Angelic Glow */
 .choice-hotspot:hover {
-  transform: translate(-50%, -50%) scale(1.1);
+  transform: translate(-50%, -50%) scale(1.15);
+  /* White core glow + colored outer haze */
+  filter: 
+    drop-shadow(0 0 5px white)
+    drop-shadow(0 0 15px var(--heart-color));
 }
 
 .choice-hotspot:hover::before {
   opacity: 1;
 }
 
-.choice-hotspot:hover::after {
-  opacity: 0.8;
-  transform: scale(1.2);
-}
-
-/* Selected (Clicked) */
+/* CLICKED: Solid Pink + Intense Glow */
 .choice-hotspot.selected::before {
-  background: #fd11b4 !important; /* Force Pink Fill */
+  background-color: #fd11b4 !important; /* Force Pink */
   opacity: 1;
 }
 
-.choice-hotspot.selected::after {
-  opacity: 1;
-  transform: scale(1.4);
-  border-color: #fd11b4;
-  box-shadow: 0 0 20px #fd11b4;
-  animation: haloPulse 2s infinite ease-in-out;
+.choice-hotspot.selected {
+  filter: 
+    drop-shadow(0 0 10px white)
+    drop-shadow(0 0 25px #fd11b4)
+    drop-shadow(0 0 45px #fd3b96);
+  animation: angelicBreath 2s infinite ease-in-out;
 }
 
 /* =============================
-   LETTER COLORS (Crucial for the gray fix)
+   LETTER COLORS (Using CSS Variables)
 ============================= */
+.choice-hotspot[data-letter="a"] { --heart-color: #fd11b4; }
+.choice-hotspot[data-letter="b"] { --heart-color: #11FD5A; }
+.choice-hotspot[data-letter="c"] { --heart-color: #FDD011; }
+.choice-hotspot[data-letter="d"] { --heart-color: #D011FD; }
+.choice-hotspot[data-letter="e"] { --heart-color: #fd3b96; }
 
-.choice-hotspot[data-letter="a"] { color: #fd11b4; }
-.choice-hotspot[data-letter="b"] { color: #11FD5A; }
-.choice-hotspot[data-letter="c"] { color: #FDD011; }
-.choice-hotspot[data-letter="d"] { color: #D011FD; }
-.choice-hotspot[data-letter="e"] { color: #fd3b96; }
-
-@keyframes haloPulse {
-  0%, 100% { transform: scale(1.4); opacity: 0.6; }
-  50% { transform: scale(1.5); opacity: 0.3; }
+@keyframes angelicBreath {
+  0%, 100% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1.25); opacity: 0.8; }
 }

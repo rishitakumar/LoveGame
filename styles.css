@@ -646,7 +646,7 @@ body {
 .choice-hotspot[data-letter="e"]::before { background:#fd3b96; }
 
 /* =============================
-   HOVER GLOW (VISIBLE)
+   HOVER GLOW
 ============================= */
 
 .choice-hotspot:hover{
@@ -656,25 +656,23 @@ body {
 .choice-hotspot:hover::before{
   opacity: 1;
 
-  /* dark edge + multi-color halo so it reads on ANY fill */
   filter:
-    drop-shadow(0 0 2px #000000)
-    drop-shadow(0 0 10px #D011FD)   /* purple */
-    drop-shadow(0 0 18px #fd11b4)   /* pink */
-    drop-shadow(0 0 26px #11FD5A);  /* green */
+    drop-shadow(0 0 8px currentColor)
+    drop-shadow(0 0 16px currentColor)
+    drop-shadow(0 0 26px currentColor);
 }
 
 /* =============================
-   CLICK GLOW (VISIBLE)
+   CLICK — ALL FILL PINK
 ============================= */
 
 .choice-hotspot.selected::before{
   background:#fd11b4 !important;
-  opacity: 1;
 
   filter:
-    drop-shadow(0 0 2px #000000)
-    drop-shadow(0 0 14px #fff234)   /* yellow pop */
-    drop-shadow(0 0 24px #fd3b96)   /* hot pink */
-    drop-shadow(0 0 34px #D011FD);  /* purple */
+    drop-shadow(0 0 12px #fd3b96)
+    drop-shadow(0 0 22px #D011FD)
+    drop-shadow(0 0 32px #11FD5A);
+
+  opacity:1;
 }

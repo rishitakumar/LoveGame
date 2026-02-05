@@ -997,13 +997,46 @@ function moveCharacter(delta) {
     }, 450);
   };
 
+/* =====================
+   DARKLAND → MURKLAND
+   (top rung, correct/up answer)
+===================== */
+if (
+  GameState.land === "darkland" &&
+  GameState.rungIndex === (LADDERS.darkland - 1) &&
+  delta > 0
+) {
+  GameState.land = "murkland";
+  GameState.rungIndex = 0;
+
+  const img = document.getElementById("game-background");
+
+  bigGlowTransition(() => {
+    if (!img) {
+      positionCharacter();
+      setTimeout(() => advanceCard(), 450);
+      return;
+    }
+
+    img.onload = () => {
+      img.onload = null; // ✅ IMPORTANT: prevent old onload from firing later
+      positionCharacter();
+      setTimeout(() => advanceCard(), 450);
+    };
+
+    img.src = "murkland_screen.png";
+  });
+
+  return true;
+}
+
   /* =====================
      MURKLAND → DARKLAND
   ===================== */
   if (GameState.land === "murkland" && GameState.rungIndex === 0 && delta <= 0) {
   GameState.land = "darkland";
   GameState.rungIndex = LADDERS.darkland - 1;
-
+  murkTransitionDone = false; // ✅ ADD THIS
   const img = document.getElementById("game-background");
 
   bigGlowTransition(() => {

@@ -1017,7 +1017,7 @@ if (
   /* =====================
      MURKLAND → DARKLAND
   ===================== */
-  if (GameState.land === "murkland" && GameState.rungIndex === 0 && delta <= 0) {
+  if (GameState.land === "murkland" && GameState.rungIndex === 0 && delta < 0) {
   GameState.land = "darkland";
   GameState.rungIndex = LADDERS.darkland - 1;
   murkTransitionDone = false; // ✅ ADD THIS

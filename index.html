@@ -1037,6 +1037,40 @@ if (
   return true;
 }
 
+/* =====================
+   MURKLAND → LOVELAND
+   (top rung, correct/up answer)
+===================== */
+if (
+  GameState.land === "murkland" &&
+  GameState.rungIndex === (LADDERS.murkland - 1) &&
+  delta > 0
+) {
+  GameState.land = "loveland";
+  GameState.rungIndex = 0;
+
+  const img = document.getElementById("game-background");
+
+  bigGlowTransition(() => {
+    if (!img) {
+      positionCharacter();
+      setTimeout(() => afterTransition?.(), 0);
+      return;
+    }
+
+    img.onload = () => {
+      img.onload = null;
+      positionCharacter();
+      setTimeout(() => afterTransition?.(), 0);
+    };
+
+    img.src = "loveland_screen.png";
+  });
+
+  return true;
+}
+
+  
  /* =====================
    LOVELAND → MURKLAND (visual drop only; KEEP current deck)
 ===================== */
@@ -1146,44 +1180,33 @@ let lovelandUnlocked = false;
 let mentalLastSeenIndex = -1;
 const QUESTIONS_PER_DECK = 8;
 let answeredInThisDeck = 0;
+let renderToken = 0;
 
 
 
 function showQuestionCard(cardData) {
-  if (!cardData) {
-    console.error("showQuestionCard called with:", cardData);
-    return;
-  }
-// ✅ Phase detection by ID range (you removed this in the current file)
-if (cardData.id >= 1 && cardData.id < 100) questionPhase = "physical";
-else if (cardData.id >= 100 && cardData.id < 200) questionPhase = "emotional";
-else if (cardData.id >= 200 && cardData.id < 300) questionPhase = "mental";
-else if (cardData.id >= 300) questionPhase = "ecstasy";
+  if (!cardData) return;
 
-  // ✅ Phase detection by ID range
+  const myToken = ++renderToken; // ✅ unique token for this render
 
   currentCard = cardData;
-
-  // ✅ Track Murk progress
-  const mIdx = MURK_CARDS.findIndex(c => c.id === cardData.id);
-  if (mIdx !== -1) murkLastSeenIndex = mIdx;
-  // ✅ Track Mental progress
-const tIdx = MENTAL_CARDS.findIndex(c => c.id === cardData.id);
-if (tIdx !== -1) mentalLastSeenIndex = tIdx;
-
   cardSide = "front";
   cardMode = "question";
 
-  const layer = document.getElementById("card-layer");
-  const card  = document.getElementById("card");
   const front = document.getElementById("card-front");
   const back  = document.getElementById("card-back");
-  
-back.onload = () => {
-  if (currentCard && cardMode === "question" && cardSide === "back") {
-    renderChoiceHotspots(currentCard);
-  }
-};
+
+  // ✅ kill old handlers
+  front.onload = null;
+  back.onload  = null;
+
+  back.onload = () => {
+    // ✅ ignore late loads from previous cards
+    if (myToken !== renderToken) return;
+    if (currentCard === cardData && cardMode === "question" && cardSide === "back") {
+      renderChoiceHotspots(currentCard);
+    }
+  };
 
   front.src = cardData.questionFront;
   back.src  = cardData.questionBack;

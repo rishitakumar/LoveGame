@@ -526,7 +526,7 @@ function closeAnswerAndContinue() {
     cardMode = "question";
     cardSide = "front";
 
-    // ECSTASY special handling (if you’re using it)
+    // ECSTASY special handling (keep yours)
     if (typeof ECSTASY_CARD !== "undefined" && answeredCardId === ECSTASY_CARD.id) {
       if (delta > 0) {
         transitionToEcstasy();
@@ -538,42 +538,19 @@ function closeAnswerAndContinue() {
       return;
     }
 
-    const wasAtTopMurk =
-      GameState.land === "murkland" &&
-      GameState.rungIndex === (LADDERS.murkland - 1) &&
-      delta > 0;
+    // ✅ COUNT THIS ANSWER FIRST (prevents “8 answers” drifting during land transitions)
+    answeredInThisDeck++;
 
-    const passedDarkFinalD =
-      !murkTransitionDone &&
-      GameState.land === "darkland" &&
-      GameState.rungIndex === (LADDERS.darkland - 1) &&
-      delta > 0;
+    // ✅ Move first; if a land transition happens, it will call goNextAfterAnswer() itself
+    const transitioned = moveCharacter(delta, goNextAfterAnswer);
 
-    const transitioned = moveCharacter(delta);
-    if (transitioned) return;
-
-    // ✅ only “unlock” here, DO NOT transition visuals here
-if (GameState.land === "murkland" && GameState.rungIndex === (LADDERS.murkland - 1)) {
-  lovelandUnlocked = true;
-}
-
-setTimeout(() => advanceCard(), NEXT_CARD_DELAY);
-
-    if (wasAtTopMurk) {
-      lovelandUnlocked = true;
-      setTimeout(() => transitionToLoveland(), 700);
-      return;
+    // Normal movement (no land transition): continue as usual
+    if (!transitioned) {
+      setTimeout(goNextAfterAnswer, NEXT_CARD_DELAY);
     }
-
-    if (passedDarkFinalD) {
-      murkTransitionDone = true;
-      setTimeout(() => transitionToMurkland(), 700);
-      return;
-    }
-
-    setTimeout(() => advanceCard(), NEXT_CARD_DELAY);
   }, 220);
 }
+
 
 // -----------------------------
 // ACTIVE DECK + TRANSITION FLAG
@@ -993,7 +970,7 @@ function bigGlowTransition(doDuringGlow, doAfterGlow = null) {
 }
 
   
-function moveCharacter(delta) {
+function moveCharacter(delta, afterTransition = null) {
 
   const img = document.getElementById("game-background");
 
@@ -1028,7 +1005,7 @@ if (
     img.onload = () => {
       img.onload = null; // ✅ IMPORTANT: prevent old onload from firing later
       positionCharacter();
-      setTimeout(() => advanceCard(), 450);
+      setTimeout(() => afterTransition?.(), 0);
     };
 
     img.src = "murkland_screen.png";
@@ -1051,7 +1028,7 @@ if (
 
     img.onload = () => {
       positionCharacter();
-      setTimeout(() => advanceCard(), 450);
+      setTimeout(() => afterTransition?.(), 0);
     };
 
     img.src = "darkland_screen.png";
@@ -1060,13 +1037,6 @@ if (
   return true;
 }
 
-  /* =====================
-     DARKLAND → MURKLAND
-  ===================== */
-
-  /* =====================
-     LOVELAND → MURKLAND
-  ===================== */
  /* =====================
    LOVELAND → MURKLAND (visual drop only; KEEP current deck)
 ===================== */
@@ -1087,7 +1057,7 @@ if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
 
     img.onload = () => {
       positionCharacter();
-      setTimeout(() => advanceCard(), 450);
+      setTimeout(() => afterTransition?.(), 0);
     };
 
     img.src = "murkland_screen.png";
@@ -1174,6 +1144,8 @@ let murkLastSeenIndex = -1; // -1 means none seen yet
 let questionPhase = "physical"; // physical → emotional → mental
 let lovelandUnlocked = false;
 let mentalLastSeenIndex = -1;
+const QUESTIONS_PER_DECK = 8;
+let answeredInThisDeck = 0;
 
 
 
@@ -1507,62 +1479,55 @@ function showAnswerCard(cardData, delta) {
   layer.style.display = "flex";
 }
 
+function goNextAfterAnswer() {
+  if (answeredInThisDeck >= QUESTIONS_PER_DECK) {
+    switchToNextDeck();
+    return;
+  }
+  advanceCard();
+}
 
+function switchToNextDeck() {
+  answeredInThisDeck = 0;
+
+  if (questionPhase === "physical") {
+    questionPhase = "emotional";
+    activeDeck = MURK_CARDS;
+    cardIndex = 0;
+    setTimeout(() => showQuestionCard(activeDeck[cardIndex]), NEXT_CARD_DELAY);
+    return;
+  }
+
+  if (questionPhase === "emotional") {
+    questionPhase = "mental";
+    activeDeck = MENTAL_CARDS;
+    cardIndex = 0;
+
+    // OPTIONAL: if you want Loveland visuals when mental starts:
+    // transitionToLoveland(); return;
+
+    setTimeout(() => showQuestionCard(activeDeck[cardIndex]), NEXT_CARD_DELAY);
+    return;
+  }
+
+  if (questionPhase === "mental") {
+    // end of game (or ecstasy bonus if you want)
+    setTimeout(() => showJourneyEnd(GameState.land), 700);
+    return;
+  }
+}
 
 function advanceCard() {
   cardIndex++;
-  // ✅ END: after last mental card
-if (questionPhase === "mental" && activeDeck === MENTAL_CARDS && cardIndex >= activeDeck.length) {
-  const onTopLoveland =
-    GameState.land === "loveland" &&
-    GameState.rungIndex === (LADDERS.loveland - 1);
 
-  if (onTopLoveland) {
-    // show ONE bonus ecstasy card
-    questionPhase = "ecstasy";
-    activeDeck = [ECSTASY_CARD];
-    cardIndex = 0;
-
-    setTimeout(() => showQuestionCard(ECSTASY_CARD), 700);
-  } else {
-    // otherwise just show final land
-    setTimeout(() => showJourneyEnd(GameState.land), 700);
-  }
-  return;
-}
-    // ✅ If we are in ecstasy bonus phase, don't auto-advance past the single card
-  if (questionPhase === "ecstasy") return;
-
-  // ✅ PHYSICAL finished -> start EMOTIONAL (Murk) questions (ANYWHERE)
-  if (questionPhase === "physical" && cardIndex >= PHYSICAL_CARDS.length) {
-    questionPhase = "emotional";
-    activeDeck = MURK_CARDS;
-
-    // start from where they left off (if any Murk cards were already seen)
-    cardIndex = Math.max(0, murkLastSeenIndex + 1);
+  if (cardIndex >= activeDeck.length) {
+    console.warn("Past end of deck; forcing deck switch.");
+    answeredInThisDeck = QUESTIONS_PER_DECK;
+    goNextAfterAnswer();
+    return;
   }
 
-  // ✅ EMOTIONAL finished -> start MENTAL questions (ANYWHERE)
- // ✅ EMOTIONAL finished -> start MENTAL questions
-if (questionPhase === "emotional" && cardIndex >= MURK_CARDS.length) {
-  questionPhase = "mental";
-  activeDeck = MENTAL_CARDS;
-
-  const nextMentalIndex = Math.max(0, mentalLastSeenIndex + 1);
-  cardIndex = Math.min(nextMentalIndex, MENTAL_CARDS.length - 1);
-
-  // ✅ only NOW swap to Loveland visuals (if earned)
-  if (lovelandUnlocked) {
-    transitionToLoveland();
-    return; // transitionToLoveland will show the next mental card
-  }
-}
-
-  if (cardIndex < activeDeck.length) {
-    setTimeout(() => {
-      showQuestionCard(activeDeck[cardIndex]);
-    }, NEXT_CARD_DELAY);
-  }
+  setTimeout(() => showQuestionCard(activeDeck[cardIndex]), NEXT_CARD_DELAY);
 }
 
 
@@ -1794,6 +1759,7 @@ function startLoveGame() {
   questionPhase = "physical";
 lovelandUnlocked = false;
 activeDeck = getDeckForPhase();
+  answeredInThisDeck = 0;
 cardIndex = 0;
 murkLastSeenIndex = -1;
 mentalLastSeenIndex = -1;

@@ -1760,14 +1760,22 @@ end.id = "journey-end-overlay";
   document.body.appendChild(end);
 
   requestAnimationFrame(() => {
-    end.style.opacity = "1";
+  end.style.opacity = "1";
 
-    // ✅ Add reflection cards AFTER the overlay exists
-    // (This prevents intro / other overlays from getting blocked)
+  // 1️⃣ wait while message is visible
+  setTimeout(() => {
+
+    // 2️⃣ fade the text out
+    msg.style.transition = "opacity 0.8s ease";
+    msg.style.opacity = "0";
+
+    // 3️⃣ after fade finishes, show reflection cards
     setTimeout(() => {
       attachReflectionCards(end, finalLand);
-    }, 350);
-  });
+    }, 800);
+
+  }, 2000); // ← your 2 second pause
+});
 }
 
 function transitionToEcstasy() {

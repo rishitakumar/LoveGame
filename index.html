@@ -552,6 +552,13 @@ function closeAnswerAndContinue() {
     const transitioned = moveCharacter(delta);
     if (transitioned) return;
 
+    // ✅ only “unlock” here, DO NOT transition visuals here
+if (GameState.land === "murkland" && GameState.rungIndex === (LADDERS.murkland - 1)) {
+  lovelandUnlocked = true;
+}
+
+setTimeout(() => advanceCard(), NEXT_CARD_DELAY);
+
     if (wasAtTopMurk) {
       lovelandUnlocked = true;
       setTimeout(() => transitionToLoveland(), 700);
@@ -1175,6 +1182,11 @@ function showQuestionCard(cardData) {
     console.error("showQuestionCard called with:", cardData);
     return;
   }
+// ✅ Phase detection by ID range (you removed this in the current file)
+if (cardData.id >= 1 && cardData.id < 100) questionPhase = "physical";
+else if (cardData.id >= 100 && cardData.id < 200) questionPhase = "emotional";
+else if (cardData.id >= 200 && cardData.id < 300) questionPhase = "mental";
+else if (cardData.id >= 300) questionPhase = "ecstasy";
 
   // ✅ Phase detection by ID range
 
@@ -1531,23 +1543,20 @@ if (questionPhase === "mental" && activeDeck === MENTAL_CARDS && cardIndex >= ac
   }
 
   // ✅ EMOTIONAL finished -> start MENTAL questions (ANYWHERE)
-  if (questionPhase === "emotional" && cardIndex >= MURK_CARDS.length) {
-    questionPhase = "mental";
-    activeDeck = MENTAL_CARDS;
-// resume from where they left off
-const nextMentalIndex = Math.max(
-  0,
-  Math.min((typeof mentalLastSeenIndex === "number" ? mentalLastSeenIndex : -1) + 1, MENTAL_CARDS.length - 1)
-);
-cardIndex = nextMentalIndex;
+ // ✅ EMOTIONAL finished -> start MENTAL questions
+if (questionPhase === "emotional" && cardIndex >= MURK_CARDS.length) {
+  questionPhase = "mental";
+  activeDeck = MENTAL_CARDS;
 
+  const nextMentalIndex = Math.max(0, mentalLastSeenIndex + 1);
+  cardIndex = Math.min(nextMentalIndex, MENTAL_CARDS.length - 1);
 
-    // ✅ ONLY show Loveland visuals if unlocked
-    if (lovelandUnlocked) {
-      transitionToLoveland();
-      return;
-    }
+  // ✅ only NOW swap to Loveland visuals (if earned)
+  if (lovelandUnlocked) {
+    transitionToLoveland();
+    return; // transitionToLoveland will show the next mental card
   }
+}
 
   if (cardIndex < activeDeck.length) {
     setTimeout(() => {

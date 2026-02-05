@@ -1023,31 +1023,6 @@ function moveCharacter(delta) {
   /* =====================
      DARKLAND → MURKLAND
   ===================== */
-  if (
-  GameState.land === "darkland" &&
-  GameState.rungIndex === LADDERS.darkland - 1 &&
-  questionPhase === "emotional" &&
-  delta > 0
-) {
-  GameState.land = "murkland";
-  GameState.rungIndex = 0;
-
-  const img = document.getElementById("game-background");
-
-  bigGlowTransition(() => {
-    if (!img) return;
-
-    img.onload = () => {
-      positionCharacter();
-      setTimeout(() => advanceCard(), 450);
-    };
-
-    img.src = "murkland_screen.png";
-  });
-
-  return true;
-}
-
 
   /* =====================
      LOVELAND → MURKLAND
@@ -1169,8 +1144,6 @@ function showQuestionCard(cardData) {
   }
 
   // ✅ Phase detection by ID range
-  if (cardData.id >= 100 && cardData.id < 200) questionPhase = "emotional";
-  if (cardData.id >= 200 && cardData.id < 300) questionPhase = "mental";
 
   currentCard = cardData;
 
@@ -1451,71 +1424,11 @@ if (cardMode === "question") {
   }
 
   // ANSWER: click #2 fades + closes + moves
-  if (cardMode === "answer" && cardSide === "back") {
-    layer.classList.add("fade-out");
-
-    setTimeout(() => {
-      layer.classList.remove("fade-out");
-      layer.style.display = "none";
-
-      const delta = Number(layer.dataset.delta || 0);
-      const answeredCardId = Number(layer.dataset.cardId || 0);
-      currentCard = null;
-      cardMode = "question";
-      cardSide = "front";
-      // ✅ ECSTASY bonus resolution
-if (answeredCardId === ECSTASY_CARD.id) {
-  if (delta > 0) {
-    transitionToEcstasy();
-    setTimeout(() => showJourneyEnd("ecstasy"), 2000);
-  } else {
-    // stay Loveland
-    GameState.land = "loveland";
-    setTimeout(() => showJourneyEnd("loveland"), 800);
-  }
+ // ANSWER: click #2 closes + moves + advances (single source of truth)
+if (cardMode === "answer" && cardSide === "back") {
+  closeAnswerAndContinue();
   return;
 }
-
-      // ✅ were we on FINAL D before moving?
-     // ✅ only "pass" final D if you are ON the last D AND the answer moves you UP
-// ✅ only "pass" final d of Murkland if you're on top rung AND the answer moves you UP
-const wasAtTopMurk =
-  GameState.land === "murkland" &&
-  GameState.rungIndex === (LADDERS.murkland - 1) &&
-  delta > 0;
-
-const passedDarkFinalD =
-  !murkTransitionDone &&
-  GameState.land === "darkland" &&
-  GameState.rungIndex === (LADDERS.darkland - 1) &&
-  delta > 0;
-
-// move first
-const transitioned = moveCharacter(delta);
-if (transitioned) return;
-
-// If they just earned a "move up" while already at Murk top,
-// go straight to Loveland now (don’t wait for the deck to end).
-if (wasAtTopMurk) {
-  lovelandUnlocked = true;
-  setTimeout(() => transitionToLoveland(), 1200);
-  return;
-}
-
-// Darkland → Murkland transition (your existing logic)
-if (passedDarkFinalD) {
-  murkTransitionDone = true;
-  setTimeout(() => transitionToMurkland(), 2000);
-  return;
-}
-
-// Normal flow: next card
-setTimeout(() => {
-  advanceCard();
-}, NEXT_CARD_DELAY);
-    }, 350);
-  }
-});
 
   
 function scrollToCards() {
@@ -1553,7 +1466,7 @@ function showAnswerCard(cardData, delta) {
 function advanceCard() {
   cardIndex++;
   // ✅ END: after last mental card
-if (questionPhase === "mental" && cardIndex >= MENTAL_CARDS.length) {
+if (questionPhase === "mental" && activeDeck === MENTAL_CARDS && cardIndex >= activeDeck.length) {
   const onTopLoveland =
     GameState.land === "loveland" &&
     GameState.rungIndex === (LADDERS.loveland - 1);

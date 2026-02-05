@@ -823,3 +823,11 @@ body {
   color: #ff9a9a;
 }
 
+.reflection-wrap{
+  opacity: 0;
+  animation: reflectionFade 0.8s ease forwards;
+}
+
+@keyframes reflectionFade{
+  to { opacity: 1; }
+}

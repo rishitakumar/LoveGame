@@ -1989,17 +1989,17 @@ function attachReflectionCards(endOverlayEl, finalLand) {
   stage.appendChild(canvasFront);
   stage.appendChild(canvasBack);
 
-  function drawTextAt(ctx, x, y, text) {
+ function drawTextAt(ctx, x, y, text, color, textSizePx) {
   if (!text) return;
 
   ctx.save();
   ctx.globalCompositeOperation = "source-over";
-  ctx.fillStyle = state.color;
-  ctx.font = `${state.textSize}px Georgia, 'Times New Roman', serif`;
+  ctx.fillStyle = color;
+  ctx.font = `${textSizePx}px Georgia, 'Times New Roman', serif`;
   ctx.textBaseline = "top";
 
   const lines = String(text).split("\n");
-  const lineH = Math.round(state.textSize * 1.15);
+  const lineH = Math.round(textSizePx * 1.15);
 
   lines.forEach((line, i) => {
     ctx.fillText(line, x, y + i * lineH);
@@ -2007,6 +2007,7 @@ function attachReflectionCards(endOverlayEl, finalLand) {
 
   ctx.restore();
 }
+
 
   // --- Right: controls ---
   const controls = document.createElement("div");
@@ -2122,11 +2123,25 @@ controls.style.fontFamily = "Georgia, 'Times New Roman', serif";
   templatesLoaded: { front: false, back: false }
 };
 
+textInput.addEventListener("input", () => {
+  state.text = textInput.value || "";
+});
 
-  state.tool = "draw"; // "draw" | "text"
-state.text = "";
-state.textSize = Number(textSize.value);
+textSize.addEventListener("input", () => {
+  state.textSize = Number(textSize.value);
+});
 
+textBtn.addEventListener("click", () => {
+  const on = state.tool !== "text";
+  state.tool = on ? "text" : "draw";
+  textBtn.textContent = on ? "TEXT TOOL: ON" : "TEXT TOOL: OFF";
+
+  if (on) {
+    state.eraser = false;
+    eraserBtn.textContent = "ERASER: OFF";
+  }
+});
+  
   
   const ctxF = canvasFront.getContext("2d");
   const ctxB = canvasBack.getContext("2d");
@@ -2235,7 +2250,7 @@ textBtn.addEventListener("click", () => {
 
 
   
-  // --- TEXT TOOL CONTROLS ---
+// --- TEXT TOOL CONTROLS (MUST be created before we add listeners) ---
 const rowText = document.createElement("div");
 rowText.className = "reflection-row";
 
@@ -2261,7 +2276,9 @@ rowText.appendChild(textBtn);
 rowText.appendChild(textInput);
 rowText.appendChild(textSize);
 
+// Put it BEFORE download buttons row if you want (or after row2)
 controls.appendChild(rowText);
+
 
   
   function downloadCanvas(which) {
@@ -2307,10 +2324,10 @@ controls.appendChild(rowText);
   const p = getPos(canvasEl, evt);
 
   // ✅ Text tool: click places text
-  if (state.tool === "text") {
-    drawTextAt(ctx, p.x, p.y, state.text);
-    return;
-  }
+ if (state.tool === "text") {
+  drawTextAt(ctx, p.x, p.y, state.text, state.color, state.textSize);
+  return;
+}
 
   // normal drawing
   drawing = true;

@@ -2417,28 +2417,32 @@ function down(evt) {
   }
 
   function up(evt) {
-    if (dragging) {
-      evt.preventDefault();
-      dragging = null;
-      return;
-    }
-    if (!drawing) return;
-    evt.preventDefault();
-    drawing = false;
-    last = null;
+  if (dragging) {
+    dragging = null;
   }
+  drawing = false;
+  last = null;
+
+  window.removeEventListener("mousemove", move);
+  window.removeEventListener("touchmove", move);
+}
+
 
   [textFront, textBack].forEach((c) => {
-    c.addEventListener("mousedown", down);
-    c.addEventListener("touchstart", down, { passive: false });
-
+  c.addEventListener("mousedown", (e) => {
+    down(e);
     window.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", up);
-
-    window.addEventListener("touchmove", move, { passive: false });
-    window.addEventListener("touchend", up, { passive: false });
-    window.addEventListener("touchcancel", up, { passive: false });
+    window.addEventListener("mouseup", up, { once: true });
   });
+
+  c.addEventListener("touchstart", (e) => {
+    down(e);
+    window.addEventListener("touchmove", move, { passive: false });
+    window.addEventListener("touchend", up, { once: true });
+    window.addEventListener("touchcancel", up, { once: true });
+  }, { passive: false });
+});
+
 
   // Ensure initial view is correct
   setActive("front");

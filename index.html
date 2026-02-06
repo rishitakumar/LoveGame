@@ -1976,18 +1976,37 @@ function attachReflectionCards(endOverlayEl, finalLand) {
 
   const canvasFront = document.createElement("canvas");
   canvasFront.className = "reflection-canvas";
-  canvasFront.width = 1200;
-  canvasFront.height = 1800;
+  canvasFront.width = 1545;
+  canvasFront.height = 2000;
 
   const canvasBack = document.createElement("canvas");
   canvasBack.className = "reflection-canvas";
-  canvasBack.width = 1200;
-  canvasBack.height = 1800;
+  canvasBack.width = 1545;
+  canvasBack.height = 2000;
   canvasBack.style.display = "none";
 
   stage.appendChild(topRow);
   stage.appendChild(canvasFront);
   stage.appendChild(canvasBack);
+
+  function drawTextAt(ctx, x, y, text) {
+  if (!text) return;
+
+  ctx.save();
+  ctx.globalCompositeOperation = "source-over";
+  ctx.fillStyle = state.color;
+  ctx.font = `${state.textSize}px Georgia, 'Times New Roman', serif`;
+  ctx.textBaseline = "top";
+
+  const lines = String(text).split("\n");
+  const lineH = Math.round(state.textSize * 1.15);
+
+  lines.forEach((line, i) => {
+    ctx.fillText(line, x, y + i * lineH);
+  });
+
+  ctx.restore();
+}
 
   // --- Right: controls ---
   const controls = document.createElement("div");
@@ -2079,6 +2098,11 @@ function attachReflectionCards(endOverlayEl, finalLand) {
   // Put reflection UI under your message text
   endOverlayEl.appendChild(wrap);
 
+wrap.style.fontFamily = "Georgia, 'Times New Roman', serif";
+title.style.fontFamily = "Georgia, 'Times New Roman', serif";
+controls.style.fontFamily = "Georgia, 'Times New Roman', serif";
+
+  
   // -------------------------
   // Drawing engine (2 canvases)
   // -------------------------
@@ -2095,6 +2119,11 @@ function attachReflectionCards(endOverlayEl, finalLand) {
     templatesLoaded: { front: false, back: false }
   };
 
+  state.tool = "draw"; // "draw" | "text"
+state.text = "";
+state.textSize = Number(textSize.value);
+
+  
   const ctxF = canvasFront.getContext("2d");
   const ctxB = canvasBack.getContext("2d");
 
@@ -2123,13 +2152,17 @@ function attachReflectionCards(endOverlayEl, finalLand) {
       ctx.restore();
 
       // Contain the template image (so any aspect ratio works)
-      const iw = img.width, ih = img.height;
-      const cw = canvasEl.width, ch = canvasEl.height;
-      const scale = Math.min(cw / iw, ch / ih);
-      const dw = iw * scale, dh = ih * scale;
-      const dx = (cw - dw) / 2;
-      const dy = (ch - dh) / 2;
-      ctx.drawImage(img, dx, dy, dw, dh);
+     // COVER the canvas (no white borders)
+const iw = img.width, ih = img.height;
+const cw = canvasEl.width, ch = canvasEl.height;
+
+const scale = Math.max(cw / iw, ch / ih);
+const dw = iw * scale, dh = ih * scale;
+const dx = (cw - dw) / 2;
+const dy = (ch - dh) / 2;
+
+ctx.drawImage(img, dx, dy, dw, dh);
+
 
       state.templatesLoaded[which] = true;
     };
@@ -2175,6 +2208,58 @@ function attachReflectionCards(endOverlayEl, finalLand) {
     drawTemplate(state.active);
   });
 
+
+textInput.addEventListener("input", () => {
+  state.text = textInput.value || "";
+});
+
+textSize.addEventListener("input", () => {
+  state.textSize = Number(textSize.value);
+});
+
+textBtn.addEventListener("click", () => {
+  const on = state.tool !== "text";
+  state.tool = on ? "text" : "draw";
+  textBtn.textContent = on ? "TEXT TOOL: ON" : "TEXT TOOL: OFF";
+
+  // if text tool is on, turn eraser off (predictable)
+  if (on) {
+    state.eraser = false;
+    eraserBtn.textContent = "ERASER: OFF";
+  }
+});
+
+
+  
+  // --- TEXT TOOL CONTROLS ---
+const rowText = document.createElement("div");
+rowText.className = "reflection-row";
+
+const textBtn = document.createElement("button");
+textBtn.type = "button";
+textBtn.className = "reflection-btn secondary";
+textBtn.textContent = "TEXT TOOL: OFF";
+
+const textInput = document.createElement("input");
+textInput.type = "text";
+textInput.placeholder = "Type text, then click card to place";
+textInput.style.flex = "1";
+textInput.style.padding = "10px";
+textInput.style.borderRadius = "10px";
+
+const textSize = document.createElement("input");
+textSize.type = "range";
+textSize.min = "18";
+textSize.max = "140";
+textSize.value = "60";
+
+rowText.appendChild(textBtn);
+rowText.appendChild(textInput);
+rowText.appendChild(textSize);
+
+controls.appendChild(rowText);
+
+  
   function downloadCanvas(which) {
     const canvasEl = which === "front" ? canvasFront : canvasBack;
 
@@ -2210,12 +2295,24 @@ function attachReflectionCards(endOverlayEl, finalLand) {
     return { x, y };
   }
 
-  function down(evt) {
-    evt.preventDefault();
-    const canvasEl = getActiveCanvas();
-    drawing = true;
-    last = getPos(canvasEl, evt);
+ function down(evt) {
+  evt.preventDefault();
+
+  const canvasEl = getActiveCanvas();
+  const ctx = getActiveCtx();
+  const p = getPos(canvasEl, evt);
+
+  // ✅ Text tool: click places text
+  if (state.tool === "text") {
+    drawTextAt(ctx, p.x, p.y, state.text);
+    return;
   }
+
+  // normal drawing
+  drawing = true;
+  last = p;
+}
+
 
   function move(evt) {
     if (!drawing) return;

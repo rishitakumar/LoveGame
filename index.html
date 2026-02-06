@@ -1997,22 +1997,19 @@ function attachReflectionCards(endOverlayEl, finalLand) {
   textBack.height = canvasBack.height;
   textBack.style.display = "none";
 
- function setupHiDPICanvas(canvas) {
+function setupHiDPICanvas(canvas) {
   const dpr = window.devicePixelRatio || 1;
-
-  // Force layout before measuring
-  canvas.style.display = "block";
-
   const rect = canvas.getBoundingClientRect();
-  if (!rect.width || !rect.height) return canvas.getContext("2d");
 
-  canvas.width  = Math.round(rect.width  * dpr);
+  canvas.width  = Math.round(rect.width * dpr);
   canvas.height = Math.round(rect.height * dpr);
 
   const ctx = canvas.getContext("2d");
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
   return ctx;
 }
+
 
 
   stage.appendChild(topRow);
@@ -2318,13 +2315,12 @@ repaintText(which);
 
 function getPos(canvas, evt) {
   const rect = canvas.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
-
   return {
-    x: (evt.clientX - rect.left) * dpr,
-    y: (evt.clientY - rect.top) * dpr
+    x: evt.clientX - rect.left,
+    y: evt.clientY - rect.top
   };
 }
+
 
 
 

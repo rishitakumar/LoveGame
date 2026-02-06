@@ -1997,9 +1997,14 @@ function attachReflectionCards(endOverlayEl, finalLand) {
   textBack.height = canvasBack.height;
   textBack.style.display = "none";
 
-  function setupHiDPICanvas(canvas) {
+ function setupHiDPICanvas(canvas) {
   const dpr = window.devicePixelRatio || 1;
+
+  // Force layout before measuring
+  canvas.style.display = "block";
+
   const rect = canvas.getBoundingClientRect();
+  if (!rect.width || !rect.height) return canvas.getContext("2d");
 
   canvas.width  = Math.round(rect.width  * dpr);
   canvas.height = Math.round(rect.height * dpr);
@@ -2008,6 +2013,7 @@ function attachReflectionCards(endOverlayEl, finalLand) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   return ctx;
 }
+
 
   stage.appendChild(topRow);
 
@@ -2232,6 +2238,9 @@ const tCtxB = setupHiDPICanvas(textBack);
     textBack.style.display    = which === "back"  ? "block" : "none";
 
     repaintText(which);
+    setupHiDPICanvas(which === "front" ? canvasFront : canvasBack);
+setupHiDPICanvas(which === "front" ? textFront   : textBack);
+
   }
 
   btnFront.addEventListener("click", () => setActive("front"));
@@ -2302,11 +2311,12 @@ const tCtxB = setupHiDPICanvas(textBack);
   const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
   const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
 
-  const x = clientX - rect.left;
-  const y = clientY - rect.top;
-
-  return { x, y };
+  return {
+    x: clientX - rect.left,
+    y: clientY - rect.top
+  };
 }
+
 
 
 function down(evt) {

@@ -4,6 +4,7 @@
   <title>Love Game</title>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="youricon.png">
 </head>
 <body>
 
@@ -2117,9 +2118,9 @@ controls.style.fontFamily = "Georgia, 'Times New Roman', serif";
   eraser: false,
   color: colorInput.value,
   size: Number(sizeInput.value),
-  tool: "draw",      // ✅ move tool here
+  tool: "draw",
   text: "",
-  textSize: 60,      // ✅ DEFAULT VALUE — SAFE
+  textSize: Number(textSize.value),
   templatesLoaded: { front: false, back: false }
 };
 
@@ -2141,6 +2142,8 @@ textBtn.addEventListener("click", () => {
     eraserBtn.textContent = "ERASER: OFF";
   }
 });
+
+
   
   
   const ctxF = canvasFront.getContext("2d");
@@ -2228,29 +2231,10 @@ ctx.drawImage(img, dx, dy, dw, dh);
   });
 
 
-textInput.addEventListener("input", () => {
-  state.text = textInput.value || "";
-});
-
-textSize.addEventListener("input", () => {
-  state.textSize = Number(textSize.value);
-});
-
-textBtn.addEventListener("click", () => {
-  const on = state.tool !== "text";
-  state.tool = on ? "text" : "draw";
-  textBtn.textContent = on ? "TEXT TOOL: ON" : "TEXT TOOL: OFF";
-
-  // if text tool is on, turn eraser off (predictable)
-  if (on) {
-    state.eraser = false;
-    eraserBtn.textContent = "ERASER: OFF";
-  }
-});
 
 
   
-// --- TEXT TOOL CONTROLS (MUST be created before we add listeners) ---
+// --- TEXT TOOL CONTROLS (create first) ---
 const rowText = document.createElement("div");
 rowText.className = "reflection-row";
 
@@ -2275,11 +2259,12 @@ textSize.value = "60";
 rowText.appendChild(textBtn);
 rowText.appendChild(textInput);
 rowText.appendChild(textSize);
-
-// Put it BEFORE download buttons row if you want (or after row2)
 controls.appendChild(rowText);
 
 
+
+
+  
   
   function downloadCanvas(which) {
     const canvasEl = which === "front" ? canvasFront : canvasBack;

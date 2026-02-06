@@ -844,3 +844,10 @@ body {
 #card-back { opacity: 0; }
 .card.flipped #card-front { opacity: 0; }
 .card.flipped #card-back  { opacity: 1; }
+
+.journey-impact {
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+

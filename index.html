@@ -2002,17 +2002,17 @@ const DESIGN_H = 2000;
 function setupHiDPICanvas(canvas) {
   const dpr = window.devicePixelRatio || 1;
 
-  canvas.width  = DESIGN_W * dpr;
-  canvas.height = DESIGN_H * dpr;
+  // internal pixel buffer (hi-res)
+  canvas.width  = Math.round(DESIGN_W * dpr);
+  canvas.height = Math.round(DESIGN_H * dpr);
 
-  canvas.style.width  = "100%";
-  canvas.style.height = "100%";
-
+  // draw using DESIGN coordinates (1545×2000)
   const ctx = canvas.getContext("2d");
-  ctx.setTransform(1, 0, 0, 1, 0, 0); // 🔥 IMPORTANT: RESET
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   return ctx;
 }
+
 
 
 
@@ -2243,6 +2243,10 @@ function setupHiDPICanvas(canvas) {
   tCtxF = setupHiDPICanvas(textFront);
   tCtxB = setupHiDPICanvas(textBack);
 
+tCtxF.setTransform(window.devicePixelRatio || 1, 0, 0, window.devicePixelRatio || 1, 0, 0);
+tCtxB.setTransform(window.devicePixelRatio || 1, 0, 0, window.devicePixelRatio || 1, 0, 0);
+
+    
   ctxF.lineCap = ctxB.lineCap = "round";
   ctxF.lineJoin = ctxB.lineJoin = "round";
 
@@ -2316,13 +2320,12 @@ let activeCanvas = null;
 
 function getPos(canvas, evt) {
   const rect = canvas.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
-
   return {
-    x: (evt.clientX - rect.left) * dpr,
-    y: (evt.clientY - rect.top) * dpr
+    x: evt.clientX - rect.left,
+    y: evt.clientY - rect.top
   };
 }
+
 
 
 

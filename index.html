@@ -1978,13 +1978,11 @@ function attachReflectionCards(endOverlayEl, finalLand) {
   // ---- Base canvases (template + drawing) ----
   const canvasFront = document.createElement("canvas");
   canvasFront.className = "reflection-canvas";
-  canvasFront.width = 1545;
-  canvasFront.height = 2000;
+
 
   const canvasBack = document.createElement("canvas");
   canvasBack.className = "reflection-canvas";
-  canvasBack.width = 1545;
-  canvasBack.height = 2000;
+
   canvasBack.style.display = "none";
 
   // ---- Text overlay canvases (movable text lives here) ----
@@ -2139,10 +2137,8 @@ function attachReflectionCards(endOverlayEl, finalLand) {
     textSize: Number(textSize.value),
   };
 
-  const ctxF  = setupHiDPICanvas(canvasFront);
-const ctxB  = setupHiDPICanvas(canvasBack);
-const tCtxF = setupHiDPICanvas(textFront);
-const tCtxB = setupHiDPICanvas(textBack);
+ let ctxF, ctxB, tCtxF, tCtxB;
+
 
 
   ctxF.lineCap = ctxB.lineCap = "round";
@@ -2229,6 +2225,10 @@ const tCtxB = setupHiDPICanvas(textBack);
   // ---- Tab switching ----
   function setActive(which) {
     state.active = which;
+    ctxF  = setupHiDPICanvas(canvasFront);
+ctxB  = setupHiDPICanvas(canvasBack);
+tCtxF = setupHiDPICanvas(textFront);
+tCtxB = setupHiDPICanvas(textBack);
 
     btnFront.classList.toggle("active", which === "front");
     btnBack.classList.toggle("active", which === "back");
@@ -2239,10 +2239,19 @@ const tCtxB = setupHiDPICanvas(textBack);
     canvasBack.style.display  = which === "back"  ? "block" : "none";
     textBack.style.display    = which === "back"  ? "block" : "none";
 
-    setupHiDPICanvas(canvas);
+    const baseCanvas = which === "front" ? canvasFront : canvasBack;
+const textCanvas = which === "front" ? textFront : textBack;
+
+// resize FIRST (this clears canvases)
+setupHiDPICanvas(baseCanvas);
 setupHiDPICanvas(textCanvas);
-drawTemplate(which);      // 🔑 REDRAW BASE IMAGE
+
+// draw the image AFTER resize
+drawTemplate(which);
+
+// draw text LAST
 repaintText(which);
+
 
 
   }
@@ -2311,16 +2320,15 @@ repaintText(which);
 
 function getPos(canvasEl, evt) {
   const rect = canvasEl.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
-
   const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
   const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
 
   return {
-    x: (clientX - rect.left) * dpr,
-    y: (clientY - rect.top)  * dpr
+    x: clientX - rect.left,
+    y: clientY - rect.top
   };
 }
+
 
 
 
@@ -2387,7 +2395,8 @@ function down(evt) {
     const base = which === "front" ? canvasFront : canvasBack;
     const bctx = which === "front" ? ctxF : ctxB;
 
-    const p = getPos(getTextCanvas(which), evt);
+   const p = getPos(base, evt);
+
 
     bctx.save();
     bctx.lineWidth = state.size;

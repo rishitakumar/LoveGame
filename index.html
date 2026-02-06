@@ -2331,11 +2331,11 @@ function down(evt) {
   evt.preventDefault();
 
   const which = state.active;
-  const tcan = getTextCanvas(which);
-  const tctx = getTextCtx(which);
-  const p = getPos(tcan, evt);
+  const baseCanvas = which === "front" ? canvasFront : canvasBack;
+  const p = getPosFromCanvas(baseCanvas, evt);
 
-  // ✅ ALWAYS: if user clicks existing text, start dragging
+  // text drag check stays the same
+  const tctx = getTextCtx(which);
   for (let i = textItems[which].length - 1; i >= 0; i--) {
     const item = textItems[which][i];
     const b = getTextBounds(tctx, item);
@@ -2343,11 +2343,10 @@ function down(evt) {
       dragging = item;
       dragOff.x = p.x - item.x;
       dragOff.y = p.y - item.y;
-      return; // important: don’t start drawing
+      return;
     }
   }
 
-  // TEXT tool: place new text
   if (state.tool === "text") {
     if (state.text.trim()) {
       textItems[which].push({
@@ -2362,55 +2361,57 @@ function down(evt) {
     return;
   }
 
-  // DRAW tool
   drawing = true;
-  last = p;
+  last = p;          // ✅ SAME canvas space
 }
 
 
-  function move(evt) {
-    if (dragging) {
-      evt.preventDefault();
-      const which = state.active;
-      const tcan = getTextCanvas(which);
-      const p = getPos(tcan, evt);
 
-      dragging.x = p.x - dragOff.x;
-      dragging.y = p.y - dragOff.y;
-      repaintText(which);
-      return;
-    }
-
-    if (!drawing) return;
+ function move(evt) {
+  if (dragging) {
     evt.preventDefault();
-
     const which = state.active;
-    const bctx = which === "front" ? ctxF : ctxB;
-    const base = which === "front" ? canvasFront : canvasBack;
-const p = getPos(base, evt);
+    const tcan = getTextCanvas(which);
+    const p = getPosFromCanvas(tcan, evt);
 
-
-    bctx.save();
-    bctx.lineWidth = state.size;
-
-    if (state.eraser) {
-      bctx.globalCompositeOperation = "destination-out";
-      bctx.strokeStyle = "rgba(0,0,0,1)";
-    } else {
-      bctx.globalCompositeOperation = "source-over";
-      bctx.strokeStyle = state.color;
-    }
-
-    bctx.beginPath();
-    bctx.moveTo(last.x, last.y);
-    bctx.lineTo(p.x, p.y);
-    bctx.stroke();
-    bctx.restore();
-
-    last = p;
+    dragging.x = p.x - dragOff.x;
+    dragging.y = p.y - dragOff.y;
+    repaintText(which);
+    return;
   }
+
+  if (!drawing || !last) return;
+  evt.preventDefault();
+
+  const which = state.active;
+  const ctx = which === "front" ? ctxF : ctxB;
+  const canvas = which === "front" ? canvasFront : canvasBack;
+  const p = getPosFromCanvas(canvas, evt); // ✅ SAME canvas as last
+
+  ctx.save();
+  ctx.lineWidth = state.size;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+
+  if (state.eraser) {
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.strokeStyle = "#000";
+  } else {
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle = state.color;
+  }
+
+  ctx.beginPath();
+  ctx.moveTo(last.x, last.y);
+  ctx.lineTo(p.x, p.y);
+  ctx.stroke();
+  ctx.restore();
+
+  last = p;          // ✅ update in same space
+}
+
   
-function up(evt) {
+function up() {
   dragging = null;
   drawing = false;
   last = null;
@@ -2418,6 +2419,7 @@ function up(evt) {
   window.removeEventListener("mousemove", move);
   window.removeEventListener("touchmove", move);
 }
+
 
 
 

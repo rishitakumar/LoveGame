@@ -753,16 +753,6 @@ body {
   box-shadow: 0 0 16px rgba(245,255,58,0.18);
 }
 
-.reflection-canvas{
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  display:block;
-  border-radius: 12px;
-  background: rgba(0,0,0,0.25);
-  border: 1px solid rgba(255,255,255,0.08);
-  touch-action: none; /* important for drawing on mobile */
-}
-
 .reflection-controls{
   background: rgba(0,0,0,0.35);
   border: 1px solid rgba(245,255,58,0.18);
@@ -857,19 +847,21 @@ body {
   position: relative;
 }
 
+
 .reflection-canvas{
   width: 100%;
-  height: auto;
   aspect-ratio: 1545 / 2000;
-  display: block;
+  height: unset;
+  z-index: 1;
 }
 
 
 .reflection-textlayer{
   position:absolute;
-   cursor: crosshair;
-  left:0; top:0;
   inset: 0;
-  pointer-events: none; /* ✅ we drag on this */
+  cursor: crosshair;
+  pointer-events: auto; /* ✅ MUST be auto */
+   z-index: 2;
 }
+
 

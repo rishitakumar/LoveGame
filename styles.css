@@ -859,4 +859,8 @@ body {
    z-index: 2;
 }
 
+.reflection-toprow{
+  position: relative;
+  z-index: 5;
+}
 

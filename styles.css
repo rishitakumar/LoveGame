@@ -843,17 +843,12 @@ body {
 
 .reflection-cardstage{
   width: 100%;
-  max-width: none;
+  max-width: min(92vw, 560px);
+  margin: 0 auto;
   position: relative;
+  overflow: hidden;
 }
 
-
-.reflection-canvas{
-  width: 100%;
-  aspect-ratio: 1545 / 2000;
-  height: unset;
-  z-index: 1;
-}
 
 
 .reflection-textlayer{

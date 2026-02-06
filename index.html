@@ -2316,18 +2316,16 @@ repaintText(which);
   let drawing = false;
   let last = null;
 
-function getPos(canvasEl, evt) {
-  const rect = canvasEl.getBoundingClientRect();
+function getPos(canvas, evt) {
+  const rect = canvas.getBoundingClientRect();
   const dpr = window.devicePixelRatio || 1;
 
-  const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
-  const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
-
   return {
-    x: (clientX - rect.left),
-    y: (clientY - rect.top)
+    x: (evt.clientX - rect.left) * dpr,
+    y: (evt.clientY - rect.top) * dpr
   };
 }
+
 
 
 
@@ -2415,17 +2413,16 @@ const p = getPos(base, evt);
 
     last = p;
   }
-
-  function up(evt) {
-  if (dragging) {
-    dragging = null;
-  }
+  
+function up(evt) {
+  dragging = null;
   drawing = false;
   last = null;
 
   window.removeEventListener("mousemove", move);
   window.removeEventListener("touchmove", move);
 }
+
 
 
   [textFront, textBack].forEach((c) => {

@@ -2308,23 +2308,27 @@ function setupHiDPICanvas(canvas) {
   // ---- Input handling (attach to TEXT overlay canvases only) ----
   let drawing = false;
   let last = null;
+let activeCanvas = null;
 
 function getPos(canvas, evt) {
   const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+
   return {
-    x: evt.clientX - rect.left,
-    y: evt.clientY - rect.top
+    x: (evt.clientX - rect.left) * dpr,
+    y: (evt.clientY - rect.top) * dpr
   };
 }
 
 
 
+
 function down(evt) {
-  evt.preventDefault();
+ evt.preventDefault();
 
   const which = state.active;
-  const eventCanvas = evt.currentTarget; // ✅ THIS IS THE KEY
-  const p = getPos(eventCanvas, evt);
+  activeCanvas = evt.currentTarget; // ✅ STORE IT
+  const p = getPos(activeCanvas, evt);
 
   // text dragging
   const tctx = getTextCtx(which);
@@ -2362,11 +2366,12 @@ function down(evt) {
 
 
 function move(evt) {
+  if (!activeCanvas) return;
+
   if (dragging) {
     evt.preventDefault();
     const which = state.active;
-    const canvas = evt.currentTarget;
-    const p = getPos(canvas, evt);
+    const p = getPos(activeCanvas, evt);
 
     dragging.x = p.x - dragOff.x;
     dragging.y = p.y - dragOff.y;
@@ -2379,8 +2384,7 @@ function move(evt) {
 
   const which = state.active;
   const ctx = which === "front" ? ctxF : ctxB;
-  const canvas = evt.currentTarget;
-  const p = getPos(canvas, evt);
+  const p = getPos(activeCanvas, evt);
 
   ctx.save();
   ctx.lineWidth = state.size;
@@ -2401,8 +2405,9 @@ function move(evt) {
   ctx.stroke();
   ctx.restore();
 
-  last = p; // ✅ SAME SPACE ALWAYS
+  last = p;
 }
+
 
 
   
@@ -2410,10 +2415,12 @@ function up() {
   dragging = null;
   drawing = false;
   last = null;
+  activeCanvas = null;
 
   window.removeEventListener("mousemove", move);
   window.removeEventListener("touchmove", move);
 }
+
 
 
 

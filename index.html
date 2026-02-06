@@ -2313,8 +2313,8 @@ function getPos(canvasEl, evt) {
   const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
 
   return {
-    x: (clientX - rect.left) * DPR,
-    y: (clientY - rect.top) * DPR
+    x: clientX - rect.left,
+    y: clientY - rect.top
   };
 }
 

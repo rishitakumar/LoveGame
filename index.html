@@ -2113,7 +2113,35 @@ controls.style.fontFamily = "Georgia, 'Times New Roman', serif";
     back: "reflection_back.png"
   };
 
-  const state = {
+  // --- TEXT TOOL CONTROLS (MUST come before state) ---
+const rowText = document.createElement("div");
+rowText.className = "reflection-row";
+
+const textBtn = document.createElement("button");
+textBtn.type = "button";
+textBtn.className = "reflection-btn secondary";
+textBtn.textContent = "TEXT TOOL: OFF";
+
+const textInput = document.createElement("input");
+textInput.type = "text";
+textInput.placeholder = "Type text, then click card to place";
+textInput.style.flex = "1";
+textInput.style.padding = "10px";
+textInput.style.borderRadius = "10px";
+
+const textSize = document.createElement("input");
+textSize.type = "range";
+textSize.min = "18";
+textSize.max = "140";
+textSize.value = "60";
+
+rowText.appendChild(textBtn);
+rowText.appendChild(textInput);
+rowText.appendChild(textSize);
+controls.appendChild(rowText);
+
+// --- state (SAFE: textSize exists now) ---
+const state = {
   active: "front",
   eraser: false,
   color: colorInput.value,
@@ -2124,6 +2152,7 @@ controls.style.fontFamily = "Georgia, 'Times New Roman', serif";
   templatesLoaded: { front: false, back: false }
 };
 
+// --- listeners (SAFE: state + controls exist) ---
 textInput.addEventListener("input", () => {
   state.text = textInput.value || "";
 });
@@ -2141,6 +2170,9 @@ textBtn.addEventListener("click", () => {
     state.eraser = false;
     eraserBtn.textContent = "ERASER: OFF";
   }
+});
+
+ 
 });
 
 
@@ -2234,32 +2266,6 @@ ctx.drawImage(img, dx, dy, dw, dh);
 
 
   
-// --- TEXT TOOL CONTROLS (create first) ---
-const rowText = document.createElement("div");
-rowText.className = "reflection-row";
-
-const textBtn = document.createElement("button");
-textBtn.type = "button";
-textBtn.className = "reflection-btn secondary";
-textBtn.textContent = "TEXT TOOL: OFF";
-
-const textInput = document.createElement("input");
-textInput.type = "text";
-textInput.placeholder = "Type text, then click card to place";
-textInput.style.flex = "1";
-textInput.style.padding = "10px";
-textInput.style.borderRadius = "10px";
-
-const textSize = document.createElement("input");
-textSize.type = "range";
-textSize.min = "18";
-textSize.max = "140";
-textSize.value = "60";
-
-rowText.appendChild(textBtn);
-rowText.appendChild(textInput);
-rowText.appendChild(textSize);
-controls.appendChild(rowText);
 
 
 

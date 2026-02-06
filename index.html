@@ -1939,13 +1939,11 @@ const RUNG_COORDS = {
 ============================= */
 
 function attachReflectionCards(endOverlayEl, finalLand) {
-  // Prevent duplicates if replaying
   if (endOverlayEl.querySelector(".reflection-wrap")) return;
 
   const wrap = document.createElement("div");
   wrap.className = "reflection-wrap";
 
-  // --- Left: canvas stage ---
   const stage = document.createElement("div");
   stage.className = "reflection-cardstage";
 
@@ -1975,6 +1973,7 @@ function attachReflectionCards(endOverlayEl, finalLand) {
   topRow.appendChild(title);
   topRow.appendChild(tabs);
 
+  // ---- Base canvases (template + drawing) ----
   const canvasFront = document.createElement("canvas");
   canvasFront.className = "reflection-canvas";
   canvasFront.width = 1545;
@@ -1986,62 +1985,28 @@ function attachReflectionCards(endOverlayEl, finalLand) {
   canvasBack.height = 2000;
   canvasBack.style.display = "none";
 
+  // ---- Text overlay canvases (movable text lives here) ----
+  const textFront = document.createElement("canvas");
+  textFront.className = "reflection-canvas reflection-textlayer";
+  textFront.width = canvasFront.width;
+  textFront.height = canvasFront.height;
+
+  const textBack = document.createElement("canvas");
+  textBack.className = "reflection-canvas reflection-textlayer";
+  textBack.width = canvasBack.width;
+  textBack.height = canvasBack.height;
+  textBack.style.display = "none";
+
   stage.appendChild(topRow);
+
+  // Important order: base first, then overlay on top
   stage.appendChild(canvasFront);
+  stage.appendChild(textFront);
+
   stage.appendChild(canvasBack);
+  stage.appendChild(textBack);
 
- function drawTextAt(ctx, x, y, text, color, textSizePx) {
-  if (!text) return;
-
-  ctx.save();
-  ctx.globalCompositeOperation = "source-over";
-  ctx.fillStyle = color;
-  ctx.font = `${textSizePx}px Georgia, 'Times New Roman', serif`;
-  ctx.textBaseline = "top";
-
-  const lines = String(text).split("\n");
-  const lineH = Math.round(textSizePx * 1.15);
-
-  lines.forEach((line, i) => {
-    ctx.fillText(line, x, y + i * lineH);
-  });
-
-  ctx.restore();
-}
-
-  // --- Movable text state (per side) ---
-const textItems = { front: [], back: [] };
-let draggingText = null;
-let dragOffset = { x: 0, y: 0 };
-
-function getTextBounds(ctx, item) {
-  ctx.save();
-  ctx.font = `${item.size}px Georgia, 'Times New Roman', serif`;
-  const lines = String(item.text).split("\n");
-  const lineH = Math.round(item.size * 1.15);
-
-  let w = 0;
-  for (const line of lines) w = Math.max(w, ctx.measureText(line).width);
-  const h = lines.length * lineH;
-
-  ctx.restore();
-  return { x: item.x, y: item.y, w, h };
-}
-
-function redrawTexts(which) {
-  const canvasEl = which === "front" ? canvasFront : canvasBack;
-  const ctx = which === "front" ? ctxF : ctxB;
-
-  // IMPORTANT: do NOT clear/redraw template here (you already have it + ink on the canvas).
-  // We will "repaint" text by:
-  // 1) snapshotting the canvas BEFORE text (see note below) OR
-  // 2) easiest: keep text on a separate layer.
-  //
-  // Since you asked for the simplest sure method: create a transparent overlay canvas.
-}
-
-
-  // --- Right: controls ---
+  // ---- Controls ----
   const controls = document.createElement("div");
   controls.className = "reflection-controls";
 
@@ -2070,6 +2035,31 @@ function redrawTexts(which) {
   row1.appendChild(colorInput);
   row1.appendChild(sizeLabel);
   row1.appendChild(sizeInput);
+
+  const rowText = document.createElement("div");
+  rowText.className = "reflection-row";
+
+  const textBtn = document.createElement("button");
+  textBtn.type = "button";
+  textBtn.className = "reflection-btn secondary";
+  textBtn.textContent = "TEXT TOOL: OFF";
+
+  const textInput = document.createElement("input");
+  textInput.type = "text";
+  textInput.placeholder = "Type text, then click card to place / drag";
+  textInput.style.flex = "1";
+  textInput.style.padding = "10px";
+  textInput.style.borderRadius = "10px";
+
+  const textSize = document.createElement("input");
+  textSize.type = "range";
+  textSize.min = "18";
+  textSize.max = "140";
+  textSize.value = "60";
+
+  rowText.appendChild(textBtn);
+  rowText.appendChild(textInput);
+  rowText.appendChild(textSize);
 
   const row2 = document.createElement("div");
   row2.className = "reflection-row";
@@ -2109,115 +2099,35 @@ function redrawTexts(which) {
   row3.appendChild(dlBack);
   row3.appendChild(dlBoth);
 
-  const row4 = document.createElement("div");
-  row4.className = "reflection-row";
-
-  const hint = document.createElement("div");
-  hint.style.color = "rgba(255,255,255,0.85)";
-  hint.style.fontFamily = "Georgia, 'Times New Roman', serif";
-  hint.style.fontSize = "0.95rem";
-  hint.innerHTML = `Tip: You can download immediately without drawing.`;
-
-  row4.appendChild(hint);
-
   controls.appendChild(row1);
+  controls.appendChild(rowText);
   controls.appendChild(row2);
   controls.appendChild(row3);
-  controls.appendChild(row4);
 
   wrap.appendChild(stage);
   wrap.appendChild(controls);
-
-  // Put reflection UI under your message text
   endOverlayEl.appendChild(wrap);
 
-wrap.style.fontFamily = "Georgia, 'Times New Roman', serif";
-title.style.fontFamily = "Georgia, 'Times New Roman', serif";
-controls.style.fontFamily = "Georgia, 'Times New Roman', serif";
-
-  
-  // -------------------------
-  // Drawing engine (2 canvases)
-  // -------------------------
-  const templates = {
-    front: "reflection_front.png",
-    back: "reflection_back.png"
+  // ---- State ----
+  const state = {
+    active: "front",
+    tool: "draw", // "draw" | "text"
+    eraser: false,
+    color: colorInput.value,
+    size: Number(sizeInput.value),
+    text: "",
+    textSize: Number(textSize.value),
   };
 
-  // --- TEXT TOOL CONTROLS (MUST come before state) ---
-const rowText = document.createElement("div");
-rowText.className = "reflection-row";
-
-const textBtn = document.createElement("button");
-textBtn.type = "button";
-textBtn.className = "reflection-btn secondary";
-textBtn.textContent = "TEXT TOOL: OFF";
-
-const textInput = document.createElement("input");
-textInput.type = "text";
-textInput.placeholder = "Type text, then click card to place";
-textInput.style.flex = "1";
-textInput.style.padding = "10px";
-textInput.style.borderRadius = "10px";
-
-const textSize = document.createElement("input");
-textSize.type = "range";
-textSize.min = "18";
-textSize.max = "140";
-textSize.value = "60";
-
-rowText.appendChild(textBtn);
-rowText.appendChild(textInput);
-rowText.appendChild(textSize);
-controls.appendChild(rowText);
-
-// --- state (SAFE: textSize exists now) ---
-const state = {
-  active: "front",
-  eraser: false,
-  color: colorInput.value,
-  size: Number(sizeInput.value),
-  tool: "draw",
-  text: "",
-  textSize: Number(textSize.value),
-  templatesLoaded: { front: false, back: false }
-};
-
-// --- listeners (SAFE: state + controls exist) ---
-textInput.addEventListener("input", () => {
-  state.text = textInput.value || "";
-});
-
-textSize.addEventListener("input", () => {
-  state.textSize = Number(textSize.value);
-});
-
-textBtn.addEventListener("click", () => {
-  const on = state.tool !== "text";
-  state.tool = on ? "text" : "draw";
-  textBtn.textContent = on ? "TEXT TOOL: ON" : "TEXT TOOL: OFF";
-
-  if (on) {
-    state.eraser = false;
-    eraserBtn.textContent = "ERASER: OFF";
-  }
-});
-
-
-  
-  
   const ctxF = canvasFront.getContext("2d");
   const ctxB = canvasBack.getContext("2d");
+  const tCtxF = textFront.getContext("2d");
+  const tCtxB = textBack.getContext("2d");
 
-  function fitCanvasToCSS(canvasEl, ctx) {
-    // Maintain backing resolution but map pointer correctly
-    // (We keep width/height fixed; drawing uses correct coords via getPos)
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-  }
+  ctxF.lineCap = ctxB.lineCap = "round";
+  ctxF.lineJoin = ctxB.lineJoin = "round";
 
-  fitCanvasToCSS(canvasFront, ctxF);
-  fitCanvasToCSS(canvasBack, ctxB);
+  const templates = { front: "reflection_front.png", back: "reflection_back.png" };
 
   function drawTemplate(which) {
     const canvasEl = which === "front" ? canvasFront : canvasBack;
@@ -2226,100 +2136,97 @@ textBtn.addEventListener("click", () => {
     const img = new Image();
     img.onload = () => {
       ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
-      // Fill white behind so downloads look “paper” (optional)
+
+      // White base
       ctx.save();
       ctx.globalCompositeOperation = "source-over";
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
       ctx.restore();
 
-      // Contain the template image (so any aspect ratio works)
-     // COVER the canvas (no white borders)
-const iw = img.width, ih = img.height;
-const cw = canvasEl.width, ch = canvasEl.height;
+      // CONTAIN (no stretch, no crop)
+      const iw = img.width, ih = img.height;
+      const cw = canvasEl.width, ch = canvasEl.height;
+      const scale = Math.min(cw / iw, ch / ih);
+      const dw = iw * scale, dh = ih * scale;
+      const dx = (cw - dw) / 2;
+      const dy = (ch - dh) / 2;
 
-const scale = Math.min(cw / iw, ch / ih); // ✅ contain, no crop
-const dw = iw * scale, dh = ih * scale;
-const dx = (cw - dw) / 2;
-const dy = (ch - dh) / 2;
-
-ctx.drawImage(img, dx, dy, dw, dh);
-
-
-      state.templatesLoaded[which] = true;
+      ctx.drawImage(img, dx, dy, dw, dh);
     };
     img.src = templates[which];
   }
 
-  // Load both templates once
   drawTemplate("front");
   drawTemplate("back");
 
-  function getActiveCanvas() {
-    return state.active === "front" ? canvasFront : canvasBack;
-  }
-  function getActiveCtx() {
-    return state.active === "front" ? ctxF : ctxB;
+  // ---- Text drawing (overlay only) ----
+  function drawTextAt(ctx, x, y, text, color, sizePx) {
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.font = `${sizePx}px Georgia, 'Times New Roman', serif`;
+    ctx.textBaseline = "top";
+
+    const lines = String(text).split("\n");
+    const lineH = Math.round(sizePx * 1.15);
+    lines.forEach((line, i) => ctx.fillText(line, x, y + i * lineH));
+
+    ctx.restore();
   }
 
+  const textItems = { front: [], back: [] };
+  let dragging = null;
+  let dragOff = { x: 0, y: 0 };
+
+  function getTextCtx(which) { return which === "front" ? tCtxF : tCtxB; }
+  function getTextCanvas(which) { return which === "front" ? textFront : textBack; }
+
+  function getTextBounds(ctx, item) {
+    ctx.save();
+    ctx.font = `${item.size}px Georgia, 'Times New Roman', serif`;
+    const lines = item.text.split("\n");
+    const lineH = item.size * 1.15;
+
+    let w = 0;
+    for (const line of lines) w = Math.max(w, ctx.measureText(line).width);
+    const h = lines.length * lineH;
+
+    ctx.restore();
+    return { x: item.x, y: item.y, w, h };
+  }
+
+  function repaintText(which) {
+    const tctx = getTextCtx(which);
+    const tcan = getTextCanvas(which);
+    tctx.clearRect(0, 0, tcan.width, tcan.height);
+
+    for (const item of textItems[which]) {
+      drawTextAt(tctx, item.x, item.y, item.text, item.color, item.size);
+    }
+  }
+
+  // ---- Tab switching ----
   function setActive(which) {
     state.active = which;
-    textFront.style.display = which === "front" ? "block" : "none";
-    textBack.style.display  = which === "back"  ? "block" : "none";
+
     btnFront.classList.toggle("active", which === "front");
     btnBack.classList.toggle("active", which === "back");
+
     canvasFront.style.display = which === "front" ? "block" : "none";
-    canvasBack.style.display = which === "back" ? "block" : "none";
-    function getTextCtx(which){
-  return which === "front" ? tCtxF : tCtxB;
-}
-function getTextCanvas(which){
-  return which === "front" ? textFront : textBack;
-}
+    textFront.style.display   = which === "front" ? "block" : "none";
 
-function repaintText(which){
-  const tctx = getTextCtx(which);
-  const tcan = getTextCanvas(which);
-  tctx.clearRect(0,0,tcan.width,tcan.height);
+    canvasBack.style.display  = which === "back"  ? "block" : "none";
+    textBack.style.display    = which === "back"  ? "block" : "none";
 
-  for (const item of textItems[which]) {
-    drawTextAt(tctx, item.x, item.y, item.text, item.color, item.size);
+    repaintText(which);
   }
-}
-btnFront.addEventListener("click", () => { setActive("front"); repaintText("front"); });
-btnBack.addEventListener("click", () => { setActive("back");  repaintText("back");  });
-
-  }
-
-  // --- Overlay canvases for TEXT (same size, stacked) ---
-const textFront = document.createElement("canvas");
-textFront.width = canvasFront.width;
-textFront.height = canvasFront.height;
-textFront.className = "reflection-canvas reflection-textlayer";
-
-const textBack = document.createElement("canvas");
-textBack.width = canvasBack.width;
-textBack.height = canvasBack.height;
-textBack.className = "reflection-canvas reflection-textlayer";
-textBack.style.display = "none";
-
-// Put overlays right after their base canvases
-stage.appendChild(textFront);
-stage.appendChild(textBack);
-
-const tCtxF = textFront.getContext("2d");
-const tCtxB = textBack.getContext("2d");
-
 
   btnFront.addEventListener("click", () => setActive("front"));
   btnBack.addEventListener("click", () => setActive("back"));
 
-  colorInput.addEventListener("input", () => {
-    state.color = colorInput.value;
-  });
-  sizeInput.addEventListener("input", () => {
-    state.size = Number(sizeInput.value);
-  });
+  // ---- Control listeners ----
+  colorInput.addEventListener("input", () => state.color = colorInput.value);
+  sizeInput.addEventListener("input", () => state.size = Number(sizeInput.value));
 
   eraserBtn.addEventListener("click", () => {
     state.eraser = !state.eraser;
@@ -2327,51 +2234,52 @@ const tCtxB = textBack.getContext("2d");
   });
 
   clearBtn.addEventListener("click", () => {
-    // Clear THIS side back to template (blank again)
     drawTemplate(state.active);
+    textItems[state.active] = [];
+    repaintText(state.active);
   });
 
+  textInput.addEventListener("input", () => state.text = textInput.value || "");
+  textSize.addEventListener("input", () => state.textSize = Number(textSize.value));
 
+  textBtn.addEventListener("click", () => {
+    const on = state.tool !== "text";
+    state.tool = on ? "text" : "draw";
+    textBtn.textContent = on ? "TEXT TOOL: ON" : "TEXT TOOL: OFF";
+    if (on) {
+      state.eraser = false;
+      eraserBtn.textContent = "ERASER: OFF";
+    }
+  });
 
+  // ---- Download (merge base + text overlay) ----
+  function downloadCanvas(which) {
+    const base = which === "front" ? canvasFront : canvasBack;
+    const text = which === "front" ? textFront : textBack;
 
-  
+    const out = document.createElement("canvas");
+    out.width = base.width;
+    out.height = base.height;
 
+    const octx = out.getContext("2d");
+    octx.drawImage(base, 0, 0);
+    octx.drawImage(text, 0, 0);
 
-
-
-  
-  
- function downloadCanvas(which) {
-  const base = which === "front" ? canvasFront : canvasBack;
-  const text = which === "front" ? textFront   : textBack;
-
-  const out = document.createElement("canvas");
-  out.width = base.width;
-  out.height = base.height;
-
-  const octx = out.getContext("2d");
-  octx.drawImage(base, 0, 0);
-  octx.drawImage(text, 0, 0);
-
-  const a = document.createElement("a");
-  const safeLand = (finalLand || "result").toString().toLowerCase();
-  a.download = `lovegame_reflection_${safeLand}_${which}.png`;
-  a.href = out.toDataURL("image/png");
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-}
-
+    const a = document.createElement("a");
+    const safeLand = (finalLand || "result").toString().toLowerCase();
+    a.download = `lovegame_reflection_${safeLand}_${which}.png`;
+    a.href = out.toDataURL("image/png");
+    a.click();
+  }
 
   dlFront.addEventListener("click", () => downloadCanvas("front"));
   dlBack.addEventListener("click", () => downloadCanvas("back"));
   dlBoth.addEventListener("click", () => {
     downloadCanvas("front");
-    // small delay so browsers don’t block the second click
     setTimeout(() => downloadCanvas("back"), 250);
   });
 
-  // Pointer drawing (mouse + touch)
+  // ---- Input handling (attach to TEXT overlay canvases only) ----
   let drawing = false;
   let last = null;
 
@@ -2379,120 +2287,121 @@ const tCtxB = textBack.getContext("2d");
     const rect = canvasEl.getBoundingClientRect();
     const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
     const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
-
-    const x = (clientX - rect.left) * (canvasEl.width / rect.width);
-    const y = (clientY - rect.top) * (canvasEl.height / rect.height);
-    return { x, y };
+    return {
+      x: (clientX - rect.left) * (canvasEl.width / rect.width),
+      y: (clientY - rect.top) * (canvasEl.height / rect.height)
+    };
   }
 
- function down(evt) {
   function down(evt) {
-  evt.preventDefault();
-
-  const which = state.active;
-  const tcan = getTextCanvas(which);
-  const tctx = getTextCtx(which);
-  const p = getPos(tcan, evt);
-
-  if (state.tool === "text") {
-    // 1) Try to grab an existing text item (topmost first)
-    for (let i = textItems[which].length - 1; i >= 0; i--) {
-      const item = textItems[which][i];
-      const b = getTextBounds(tctx, item);
-      if (p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h) {
-        draggingText = item;
-        dragOffset.x = p.x - item.x;
-        dragOffset.y = p.y - item.y;
-        return;
-      }
-    }
-
-    // 2) Otherwise place new text
-    if (state.text.trim()) {
-      textItems[which].push({
-        x: p.x,
-        y: p.y,
-        text: state.text,
-        color: state.color,
-        size: state.textSize
-      });
-      repaintText(which);
-    }
-    return;
-  }
-
-  // normal drawing stays the same (your existing code)...
-  drawing = true;
-  last = getPos(getActiveCanvas(), evt);
-}
-}
-
-
-  function move(evt) {
-    if (draggingText) {
     evt.preventDefault();
+
     const which = state.active;
     const tcan = getTextCanvas(which);
+    const tctx = getTextCtx(which);
     const p = getPos(tcan, evt);
 
-    draggingText.x = p.x - dragOffset.x;
-    draggingText.y = p.y - dragOffset.y;
+    // TEXT tool: drag or place on overlay
+    if (state.tool === "text") {
+      for (let i = textItems[which].length - 1; i >= 0; i--) {
+        const item = textItems[which][i];
+        const b = getTextBounds(tctx, item);
+        if (p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h) {
+          dragging = item;
+          dragOff.x = p.x - item.x;
+          dragOff.y = p.y - item.y;
+          return;
+        }
+      }
 
-    repaintText(which);
-    return;
+      if (state.text.trim()) {
+        textItems[which].push({
+          x: p.x,
+          y: p.y,
+          text: state.text,
+          color: state.color,
+          size: state.textSize
+        });
+        repaintText(which);
+      }
+      return;
+    }
+
+    // DRAW tool: draw on BASE canvas, but coords from overlay (same size)
+    drawing = true;
+    last = p;
   }
-    
+
+  function move(evt) {
+    if (dragging) {
+      evt.preventDefault();
+      const which = state.active;
+      const tcan = getTextCanvas(which);
+      const p = getPos(tcan, evt);
+
+      dragging.x = p.x - dragOff.x;
+      dragging.y = p.y - dragOff.y;
+      repaintText(which);
+      return;
+    }
+
     if (!drawing) return;
     evt.preventDefault();
 
-    const canvasEl = getActiveCanvas();
-    const ctx = getActiveCtx();
-    const p = getPos(canvasEl, evt);
+    const which = state.active;
+    const base = which === "front" ? canvasFront : canvasBack;
+    const bctx = which === "front" ? ctxF : ctxB;
 
-    ctx.save();
-    ctx.lineWidth = state.size;
-    ctx.strokeStyle = state.color;
+    const p = getPos(getTextCanvas(which), evt);
+
+    bctx.save();
+    bctx.lineWidth = state.size;
 
     if (state.eraser) {
-      ctx.globalCompositeOperation = "destination-out";
-      ctx.strokeStyle = "rgba(0,0,0,1)";
+      bctx.globalCompositeOperation = "destination-out";
+      bctx.strokeStyle = "rgba(0,0,0,1)";
     } else {
-      ctx.globalCompositeOperation = "source-over";
+      bctx.globalCompositeOperation = "source-over";
+      bctx.strokeStyle = state.color;
     }
 
-    ctx.beginPath();
-    ctx.moveTo(last.x, last.y);
-    ctx.lineTo(p.x, p.y);
-    ctx.stroke();
-    ctx.restore();
+    bctx.beginPath();
+    bctx.moveTo(last.x, last.y);
+    bctx.lineTo(p.x, p.y);
+    bctx.stroke();
+    bctx.restore();
 
     last = p;
   }
 
   function up(evt) {
-    if (draggingText) {
-    evt.preventDefault();
-    draggingText = null;
-    return;
-  }
+    if (dragging) {
+      evt.preventDefault();
+      dragging = null;
+      return;
+    }
     if (!drawing) return;
     evt.preventDefault();
     drawing = false;
     last = null;
   }
 
-  // Attach listeners to BOTH canvases (only one is visible at a time)
-  [canvasFront, canvasBack].forEach((c) => {
+  [textFront, textBack].forEach((c) => {
     c.addEventListener("mousedown", down);
+    c.addEventListener("touchstart", down, { passive: false });
+
     window.addEventListener("mousemove", move);
     window.addEventListener("mouseup", up);
 
-    c.addEventListener("touchstart", down, { passive: false });
-    c.addEventListener("touchmove", move, { passive: false });
-    c.addEventListener("touchend", up, { passive: false });
-    c.addEventListener("touchcancel", up, { passive: false });
+    window.addEventListener("touchmove", move, { passive: false });
+    window.addEventListener("touchend", up, { passive: false });
+    window.addEventListener("touchcancel", up, { passive: false });
   });
+
+  // Ensure initial view is correct
+  setActive("front");
 }
+
 
 
 </script>

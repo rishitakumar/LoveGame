@@ -1939,6 +1939,8 @@ const RUNG_COORDS = {
 ============================= */
 
 function attachReflectionCards(endOverlayEl, finalLand) {
+  const DESIGN_W = 1545;
+const DESIGN_H = 2000;
   const DPR = window.devicePixelRatio || 1;
 
   if (endOverlayEl.querySelector(".reflection-wrap")) return;
@@ -1999,16 +2001,16 @@ function attachReflectionCards(endOverlayEl, finalLand) {
 
 function setupHiDPICanvas(canvas) {
   const dpr = window.devicePixelRatio || 1;
-  const rect = canvas.getBoundingClientRect();
 
-  canvas.width  = Math.round(rect.width * dpr);
-  canvas.height = Math.round(rect.height * dpr);
+  canvas.width  = DESIGN_W * dpr;
+  canvas.height = DESIGN_H * dpr;
 
   const ctx = canvas.getContext("2d");
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   return ctx;
 }
+
 
 
 
@@ -2139,32 +2141,35 @@ function setupHiDPICanvas(canvas) {
   const templates = { front: "reflection_front.png", back: "reflection_back.png" };
 
   function drawTemplate(which) {
-    const canvasEl = which === "front" ? canvasFront : canvasBack;
-    const ctx = which === "front" ? ctxF : ctxB;
+  const canvasEl = which === "front" ? canvasFront : canvasBack;
+  const ctx = which === "front" ? ctxF : ctxB;
 
-    const img = new Image();
-    img.onload = () => {
-      ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+  const img = new Image();
+  img.onload = () => {
+    // clear DESIGN space
+    ctx.clearRect(0, 0, DESIGN_W, DESIGN_H);
 
-      // White base
-      ctx.save();
-      ctx.globalCompositeOperation = "source-over";
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
-      ctx.restore();
+    // white base
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, DESIGN_W, DESIGN_H);
 
-      // CONTAIN (no stretch, no crop)
-      const iw = img.width, ih = img.height;
-      const cw = canvasEl.width, ch = canvasEl.height;
-      const scale = Math.min(cw / iw, ch / ih);
-      const dw = iw * scale, dh = ih * scale;
-      const dx = (cw - dw) / 2;
-      const dy = (ch - dh) / 2;
+    // CONTAIN inside 1545×2000
+    const scale = Math.min(
+      DESIGN_W / img.width,
+      DESIGN_H / img.height
+    );
 
-      ctx.drawImage(img, dx, dy, dw, dh);
-    };
-    img.src = templates[which];
-  }
+    const dw = img.width * scale;
+    const dh = img.height * scale;
+    const dx = (DESIGN_W - dw) / 2;
+    const dy = (DESIGN_H - dh) / 2;
+
+    ctx.drawImage(img, dx, dy, dw, dh);
+  };
+
+  img.src = templates[which];
+}
+
 
   drawTemplate("front");
   drawTemplate("back");

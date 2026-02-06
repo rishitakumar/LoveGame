@@ -861,4 +861,12 @@ body {
 .reflection-cardstage{
   max-width: 520px; 
    align-self: flex-start;/* adjust to taste */
+  position: relative;
 }
+
+.reflection-textlayer{
+  position:absolute;
+  left:0; top:0;
+  pointer-events: auto; /* ✅ we drag on this */
+}
+

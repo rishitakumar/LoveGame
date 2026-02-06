@@ -2377,14 +2377,17 @@ function down(evt) {
 
 
 
+// --- smoothing helper (put near your other helpers) ---
+function lerp(a, b, t) { return a + (b - a) * t; }
+
 function move(evt) {
   if (!activeCanvas) return;
 
+  // dragging text stays the same...
   if (dragging) {
     evt.preventDefault();
     const which = state.active;
     const p = getPos(activeCanvas, evt);
-
     dragging.x = p.x - dragOff.x;
     dragging.y = p.y - dragOff.y;
     repaintText(which);
@@ -2398,6 +2401,14 @@ function move(evt) {
   const ctx = which === "front" ? ctxF : ctxB;
   const p = getPos(activeCanvas, evt);
 
+  // distance between points
+  const dx = p.x - last.x;
+  const dy = p.y - last.y;
+  const dist = Math.hypot(dx, dy);
+
+  // how many mini-steps to fill (lower = faster, higher = smoother)
+  const steps = Math.max(1, Math.floor(dist / 2)); // 2px spacing
+
   ctx.save();
   ctx.lineWidth = state.size;
   ctx.lineCap = "round";
@@ -2405,7 +2416,7 @@ function move(evt) {
 
   if (state.eraser) {
     ctx.globalCompositeOperation = "destination-out";
-    ctx.strokeStyle = "#000";
+    ctx.strokeStyle = "rgba(0,0,0,1)";
   } else {
     ctx.globalCompositeOperation = "source-over";
     ctx.strokeStyle = state.color;
@@ -2413,12 +2424,18 @@ function move(evt) {
 
   ctx.beginPath();
   ctx.moveTo(last.x, last.y);
-  ctx.lineTo(p.x, p.y);
+
+  for (let i = 1; i <= steps; i++) {
+    const t = i / steps;
+    ctx.lineTo(lerp(last.x, p.x, t), lerp(last.y, p.y, t));
+  }
+
   ctx.stroke();
   ctx.restore();
 
   last = p;
 }
+
 
 
 

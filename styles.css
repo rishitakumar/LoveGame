@@ -851,3 +851,11 @@ body {
   text-transform: uppercase;
 }
 
+.reflection-canvas{
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.reflection-cardstage{
+  max-width: 520px; /* adjust to taste */
+}

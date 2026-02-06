@@ -2137,12 +2137,7 @@ function attachReflectionCards(endOverlayEl, finalLand) {
     textSize: Number(textSize.value),
   };
 
- let ctxF, ctxB, tCtxF, tCtxB;
-
-
-
-  ctxF.lineCap = ctxB.lineCap = "round";
-  ctxF.lineJoin = ctxB.lineJoin = "round";
+ let ctxF, ctxB, tCtxF, tCtxB;   
 
   const templates = { front: "reflection_front.png", back: "reflection_back.png" };
 
@@ -2229,6 +2224,9 @@ function attachReflectionCards(endOverlayEl, finalLand) {
 ctxB  = setupHiDPICanvas(canvasBack);
 tCtxF = setupHiDPICanvas(textFront);
 tCtxB = setupHiDPICanvas(textBack);
+    ctxF.lineCap = ctxB.lineCap = "round";
+ctxF.lineJoin = ctxB.lineJoin = "round";
+
 
     btnFront.classList.toggle("active", which === "front");
     btnBack.classList.toggle("active", which === "back");

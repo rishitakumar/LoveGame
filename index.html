@@ -2239,9 +2239,11 @@ const tCtxB = setupHiDPICanvas(textBack);
     canvasBack.style.display  = which === "back"  ? "block" : "none";
     textBack.style.display    = which === "back"  ? "block" : "none";
 
-    repaintText(which);
-    setupHiDPICanvas(which === "front" ? canvasFront : canvasBack);
-setupHiDPICanvas(which === "front" ? textFront   : textBack);
+    setupHiDPICanvas(canvas);
+setupHiDPICanvas(textCanvas);
+drawTemplate(which);      // 🔑 REDRAW BASE IMAGE
+repaintText(which);
+
 
   }
 
@@ -2309,14 +2311,17 @@ setupHiDPICanvas(which === "front" ? textFront   : textBack);
 
 function getPos(canvasEl, evt) {
   const rect = canvasEl.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+
   const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
   const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
 
   return {
-    x: clientX - rect.left,
-    y: clientY - rect.top
+    x: (clientX - rect.left) * dpr,
+    y: (clientY - rect.top)  * dpr
   };
 }
+
 
 
 

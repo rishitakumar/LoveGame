@@ -2112,12 +2112,16 @@ controls.style.fontFamily = "Georgia, 'Times New Roman', serif";
   };
 
   const state = {
-    active: "front",
-    eraser: false,
-    color: colorInput.value,
-    size: Number(sizeInput.value),
-    templatesLoaded: { front: false, back: false }
-  };
+  active: "front",
+  eraser: false,
+  color: colorInput.value,
+  size: Number(sizeInput.value),
+  tool: "draw",      // ✅ move tool here
+  text: "",
+  textSize: 60,      // ✅ DEFAULT VALUE — SAFE
+  templatesLoaded: { front: false, back: false }
+};
+
 
   state.tool = "draw"; // "draw" | "text"
 state.text = "";

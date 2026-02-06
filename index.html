@@ -2319,18 +2319,14 @@ function getPos(canvas, evt) {
 
 
 
-
-
-
-
 function down(evt) {
   evt.preventDefault();
 
   const which = state.active;
-  const baseCanvas = which === "front" ? canvasFront : canvasBack;
-  const p = getPos(baseCanvas, evt);
+  const eventCanvas = evt.currentTarget; // ✅ THIS IS THE KEY
+  const p = getPos(eventCanvas, evt);
 
-  // text drag check stays the same
+  // text dragging
   const tctx = getTextCtx(which);
   for (let i = textItems[which].length - 1; i >= 0; i--) {
     const item = textItems[which][i];
@@ -2343,6 +2339,7 @@ function down(evt) {
     }
   }
 
+  // text tool
   if (state.tool === "text") {
     if (state.text.trim()) {
       textItems[which].push({
@@ -2358,17 +2355,18 @@ function down(evt) {
   }
 
   drawing = true;
-  last = p;          // ✅ SAME canvas space
+  last = p; // ✅ SAME SPACE
 }
 
 
 
- function move(evt) {
+
+function move(evt) {
   if (dragging) {
     evt.preventDefault();
     const which = state.active;
-    const tcan = getTextCanvas(which);
-    const p = getPos(tcan, evt);
+    const canvas = evt.currentTarget;
+    const p = getPos(canvas, evt);
 
     dragging.x = p.x - dragOff.x;
     dragging.y = p.y - dragOff.y;
@@ -2381,8 +2379,8 @@ function down(evt) {
 
   const which = state.active;
   const ctx = which === "front" ? ctxF : ctxB;
-  const canvas = which === "front" ? canvasFront : canvasBack;
-  const p = getPos(canvas, evt); // ✅ SAME canvas as last
+  const canvas = evt.currentTarget;
+  const p = getPos(canvas, evt);
 
   ctx.save();
   ctx.lineWidth = state.size;
@@ -2403,8 +2401,9 @@ function down(evt) {
   ctx.stroke();
   ctx.restore();
 
-  last = p;          // ✅ update in same space
+  last = p; // ✅ SAME SPACE ALWAYS
 }
+
 
   
 function up() {

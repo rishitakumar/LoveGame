@@ -864,3 +864,9 @@ body {
   z-index: 5;
 }
 
+.reflection-canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+

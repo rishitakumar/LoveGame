@@ -2318,15 +2318,16 @@ repaintText(which);
 
 function getPos(canvasEl, evt) {
   const rect = canvasEl.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+
   const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
   const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
 
   return {
-    x: clientX - rect.left,
-    y: clientY - rect.top
+    x: (clientX - rect.left),
+    y: (clientY - rect.top)
   };
 }
-
 
 
 
@@ -2390,10 +2391,9 @@ function down(evt) {
     evt.preventDefault();
 
     const which = state.active;
-    const base = which === "front" ? canvasFront : canvasBack;
     const bctx = which === "front" ? ctxF : ctxB;
-
-   const p = getPos(base, evt);
+    const base = which === "front" ? canvasFront : canvasBack;
+const p = getPos(base, evt);
 
 
     bctx.save();

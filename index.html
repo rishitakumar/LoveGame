@@ -2320,11 +2320,16 @@ let activeCanvas = null;
 
 function getPos(canvas, evt) {
   const rect = canvas.getBoundingClientRect();
+
+  const scaleX = DESIGN_W / rect.width;
+  const scaleY = DESIGN_H / rect.height;
+
   return {
-    x: evt.clientX - rect.left,
-    y: evt.clientY - rect.top
+    x: (evt.clientX - rect.left) * scaleX,
+    y: (evt.clientY - rect.top)  * scaleY
   };
 }
+
 
 
 

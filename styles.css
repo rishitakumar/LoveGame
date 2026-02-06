@@ -852,10 +852,13 @@ body {
 }
 
 .reflection-canvas{
-  width: 100%;
-  height: auto;
+ width: min(42vw, 420px);
+  height: auto;                /* ✅ prevents stretch */
+  aspect-ratio: 1545 / 2000;   /* ✅ keeps correct shape */
   display: block;
 }
+
 .reflection-cardstage{
-  max-width: 520px; /* adjust to taste */
+  max-width: 520px; 
+   align-self: flex-start;/* adjust to taste */
 }

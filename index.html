@@ -2005,11 +2005,15 @@ function setupHiDPICanvas(canvas) {
   canvas.width  = DESIGN_W * dpr;
   canvas.height = DESIGN_H * dpr;
 
+  canvas.style.width  = "100%";
+  canvas.style.height = "100%";
+
   const ctx = canvas.getContext("2d");
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.setTransform(1, 0, 0, 1, 0, 0); // 🔥 IMPORTANT: RESET
 
   return ctx;
 }
+
 
 
 

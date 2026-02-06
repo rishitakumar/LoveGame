@@ -864,12 +864,16 @@ body {
 
 
 
-.reflection-cardstage{
+.reflection-cardstage {
   position: relative;
 
-  width: 100%;
-  aspect-ratio: 2 / 3;   /* keeps card shape */
-  max-width: 100%;
+  /* responsive size */
+  width: min(33vw, 420px);
+
+  /* EXACT ratio of 1545 × 2000 */
+  aspect-ratio: 1545 / 2000;
+
+  margin: 0 auto;
 
   background: rgba(0,0,0,0.35);
   border: 1px solid rgba(245,255,58,0.22);

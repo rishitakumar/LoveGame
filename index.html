@@ -1997,6 +1997,18 @@ function attachReflectionCards(endOverlayEl, finalLand) {
   textBack.height = canvasBack.height;
   textBack.style.display = "none";
 
+  function setupHiDPICanvas(canvas) {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+
+  canvas.width  = Math.round(rect.width  * dpr);
+  canvas.height = Math.round(rect.height * dpr);
+
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return ctx;
+}
+
   stage.appendChild(topRow);
 
   // Important order: base first, then overlay on top
@@ -2119,10 +2131,11 @@ function attachReflectionCards(endOverlayEl, finalLand) {
     textSize: Number(textSize.value),
   };
 
-  const ctxF = canvasFront.getContext("2d");
-  const ctxB = canvasBack.getContext("2d");
-  const tCtxF = textFront.getContext("2d");
-  const tCtxB = textBack.getContext("2d");
+  const ctxF  = setupHiDPICanvas(canvasFront);
+const ctxB  = setupHiDPICanvas(canvasBack);
+const tCtxF = setupHiDPICanvas(textFront);
+const tCtxB = setupHiDPICanvas(textBack);
+
 
   ctxF.lineCap = ctxB.lineCap = "round";
   ctxF.lineJoin = ctxB.lineJoin = "round";
@@ -2283,54 +2296,59 @@ function attachReflectionCards(endOverlayEl, finalLand) {
   let drawing = false;
   let last = null;
 
-  function getPos(canvasEl, evt) {
-    const rect = canvasEl.getBoundingClientRect();
-    const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
-    const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
-    return {
-      x: (clientX - rect.left) * (canvasEl.width / rect.width),
-      y: (clientY - rect.top) * (canvasEl.height / rect.height)
-    };
-  }
+ function getPos(canvasEl, evt) {
+  const rect = canvasEl.getBoundingClientRect();
 
-  function down(evt) {
-    evt.preventDefault();
+  const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+  const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
 
-    const which = state.active;
-    const tcan = getTextCanvas(which);
-    const tctx = getTextCtx(which);
-    const p = getPos(tcan, evt);
+  const x = clientX - rect.left;
+  const y = clientY - rect.top;
 
-    // TEXT tool: drag or place on overlay
-    if (state.tool === "text") {
-      for (let i = textItems[which].length - 1; i >= 0; i--) {
-        const item = textItems[which][i];
-        const b = getTextBounds(tctx, item);
-        if (p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h) {
-          dragging = item;
-          dragOff.x = p.x - item.x;
-          dragOff.y = p.y - item.y;
-          return;
-        }
-      }
+  return { x, y };
+}
 
-      if (state.text.trim()) {
-        textItems[which].push({
-          x: p.x,
-          y: p.y,
-          text: state.text,
-          color: state.color,
-          size: state.textSize
-        });
-        repaintText(which);
-      }
-      return;
+
+function down(evt) {
+  evt.preventDefault();
+
+  const which = state.active;
+  const tcan = getTextCanvas(which);
+  const tctx = getTextCtx(which);
+  const p = getPos(tcan, evt);
+
+  // ✅ ALWAYS: if user clicks existing text, start dragging
+  for (let i = textItems[which].length - 1; i >= 0; i--) {
+    const item = textItems[which][i];
+    const b = getTextBounds(tctx, item);
+    if (p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h) {
+      dragging = item;
+      dragOff.x = p.x - item.x;
+      dragOff.y = p.y - item.y;
+      return; // important: don’t start drawing
     }
-
-    // DRAW tool: draw on BASE canvas, but coords from overlay (same size)
-    drawing = true;
-    last = p;
   }
+
+  // TEXT tool: place new text
+  if (state.tool === "text") {
+    if (state.text.trim()) {
+      textItems[which].push({
+        x: p.x,
+        y: p.y,
+        text: state.text,
+        color: state.color,
+        size: state.textSize
+      });
+      repaintText(which);
+    }
+    return;
+  }
+
+  // DRAW tool
+  drawing = true;
+  last = p;
+}
+
 
   function move(evt) {
     if (dragging) {

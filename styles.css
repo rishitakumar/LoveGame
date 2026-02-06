@@ -858,15 +858,19 @@ body {
 
 .reflection-cardstage{
   position: relative;
-  width: 100vw;
-  max-width: none;
-  margin: 0;
+
+  /* ONE THIRD OF THE BROWSER — EXACT */
+  width: 33.333vw;
+  max-width: 33.333vw;
+
+  margin: 0 auto;
   padding: 0;
+
   background: rgba(0,0,0,0.35);
   border: 1px solid rgba(245,255,58,0.22);
   border-radius: 14px;
   box-shadow: 0 0 24px rgba(245,255,58,0.12);
+
   overflow: hidden;
 }
-
 

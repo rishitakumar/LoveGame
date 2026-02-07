@@ -2373,8 +2373,6 @@ function rasterizeNotes(which) {
     }
   });
 
-const notes = { front: [], back: [] };
-
 function stageScale() {
   const rect = stage.getBoundingClientRect();
   return { sx: DESIGN_W / rect.width, sy: DESIGN_H / rect.height };

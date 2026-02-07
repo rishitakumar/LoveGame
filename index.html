@@ -1940,12 +1940,11 @@ const RUNG_COORDS = {
 
 function attachReflectionCards(endOverlayEl, finalLand) {
   const DESIGN_W = 1545;
-  const DESIGN_H = 2000;
+const DESIGN_H = 2000;
   const DPR = window.devicePixelRatio || 1;
 
   if (endOverlayEl.querySelector(".reflection-wrap")) return;
 
-  // ---- DOM ----
   const wrap = document.createElement("div");
   wrap.className = "reflection-wrap";
 
@@ -1974,30 +1973,61 @@ function attachReflectionCards(endOverlayEl, finalLand) {
 
   tabs.appendChild(btnFront);
   tabs.appendChild(btnBack);
+
   topRow.appendChild(title);
   topRow.appendChild(tabs);
 
+  // ---- Base canvases (template + drawing) ----
   const canvasFront = document.createElement("canvas");
   canvasFront.className = "reflection-canvas";
 
+
   const canvasBack = document.createElement("canvas");
   canvasBack.className = "reflection-canvas";
+
   canvasBack.style.display = "none";
 
+  // ---- Text overlay canvases (movable text lives here) ----
   const textFront = document.createElement("canvas");
   textFront.className = "reflection-canvas reflection-textlayer";
+  textFront.width = canvasFront.width;
+  textFront.height = canvasFront.height;
 
   const textBack = document.createElement("canvas");
   textBack.className = "reflection-canvas reflection-textlayer";
+  textBack.width = canvasBack.width;
+  textBack.height = canvasBack.height;
   textBack.style.display = "none";
 
+function setupHiDPICanvas(canvas) {
+  const dpr = window.devicePixelRatio || 1;
+
+  // internal pixel buffer (hi-res)
+  canvas.width  = Math.round(DESIGN_W * dpr);
+  canvas.height = Math.round(DESIGN_H * dpr);
+
+  // draw using DESIGN coordinates (1545×2000)
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  return ctx;
+}
+
+
+
+
+
+
   stage.appendChild(topRow);
+
+  // Important order: base first, then overlay on top
   stage.appendChild(canvasFront);
   stage.appendChild(textFront);
+
   stage.appendChild(canvasBack);
   stage.appendChild(textBack);
 
-  // ---- Controls UI (YOU NEED THIS or your listeners will crash) ----
+  // ---- Controls ----
   const controls = document.createElement("div");
   controls.className = "reflection-controls";
 
@@ -2037,7 +2067,7 @@ function attachReflectionCards(endOverlayEl, finalLand) {
 
   const textInput = document.createElement("input");
   textInput.type = "text";
-  textInput.placeholder = "Type text, then click card to place (Alt-drag to move)";
+  textInput.placeholder = "Type text, then click card to place / drag";
   textInput.style.flex = "1";
   textInput.style.padding = "10px";
   textInput.style.borderRadius = "10px";
@@ -2102,161 +2132,135 @@ function attachReflectionCards(endOverlayEl, finalLand) {
   // ---- State ----
   const state = {
     active: "front",
-    tool: "draw",   // draw | text
+    tool: "draw", // "draw" | "text"
     eraser: false,
     color: colorInput.value,
     size: Number(sizeInput.value),
     text: "",
-    textSize: Number(textSize.value)
+    textSize: Number(textSize.value),
   };
 
-  // ---- HiDPI contexts (create ONCE) ----
-  function setupHiDPICanvas(c) {
-    c.width = Math.round(DESIGN_W * DPR);
-    c.height = Math.round(DESIGN_H * DPR);
-    const ctx = c.getContext("2d");
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    ctx.imageSmoothingEnabled = true;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    return ctx;
-  }
-
-  const ctxF  = setupHiDPICanvas(canvasFront);
-  const ctxB  = setupHiDPICanvas(canvasBack);
-  const tCtxF = setupHiDPICanvas(textFront);
-  const tCtxB = setupHiDPICanvas(textBack);
+ let ctxF, ctxB, tCtxF, tCtxB;   
 
   const templates = { front: "reflection_front.png", back: "reflection_back.png" };
 
   function drawTemplate(which) {
-    const ctx = which === "front" ? ctxF : ctxB;
-    const img = new Image();
-    img.onload = () => {
-      ctx.clearRect(0, 0, DESIGN_W, DESIGN_H);
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(0, 0, DESIGN_W, DESIGN_H);
+  const canvasEl = which === "front" ? canvasFront : canvasBack;
+  const ctx = which === "front" ? ctxF : ctxB;
 
-      const scale = Math.min(DESIGN_W / img.width, DESIGN_H / img.height);
-      const dw = img.width * scale;
-      const dh = img.height * scale;
-      const dx = (DESIGN_W - dw) / 2;
-      const dy = (DESIGN_H - dh) / 2;
+  const img = new Image();
+  img.onload = () => {
+    // clear DESIGN space
+    ctx.clearRect(0, 0, DESIGN_W, DESIGN_H);
 
-      ctx.drawImage(img, dx, dy, dw, dh);
-    };
-    img.src = templates[which];
-  }
+    // white base
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, DESIGN_W, DESIGN_H);
+
+    // CONTAIN inside 1545×2000
+    const scale = Math.min(
+      DESIGN_W / img.width,
+      DESIGN_H / img.height
+    );
+
+    const dw = img.width * scale;
+    const dh = img.height * scale;
+    const dx = (DESIGN_W - dw) / 2;
+    const dy = (DESIGN_H - dh) / 2;
+
+    ctx.drawImage(img, dx, dy, dw, dh);
+  };
+
+  img.src = templates[which];
+}
+
 
   drawTemplate("front");
   drawTemplate("back");
 
-  // ---- Text boxes (DOM) ----
-  const notes = { front: [], back: [] };
-
-  function stageScale() {
-    const rect = stage.getBoundingClientRect();
-    return { sx: DESIGN_W / rect.width, sy: DESIGN_H / rect.height };
-  }
-
+  // ---- Text drawing (overlay only) ----
   function drawTextAt(ctx, x, y, text, color, sizePx) {
     ctx.save();
     ctx.fillStyle = color;
     ctx.font = `${sizePx}px Georgia, 'Times New Roman', serif`;
     ctx.textBaseline = "top";
+
     const lines = String(text).split("\n");
     const lineH = Math.round(sizePx * 1.15);
     lines.forEach((line, i) => ctx.fillText(line, x, y + i * lineH));
+
     ctx.restore();
   }
 
-  function rasterizeNotes(which) {
-    const tctx = which === "front" ? tCtxF : tCtxB;
+  const textItems = { front: [], back: [] };
+  let dragging = null;
+  let dragOff = { x: 0, y: 0 };
 
-    // clear text layer in DESIGN space
-    tctx.clearRect(0, 0, DESIGN_W, DESIGN_H);
+  function getTextCtx(which) { return which === "front" ? tCtxF : tCtxB; }
+  function getTextCanvas(which) { return which === "front" ? textFront : textBack; }
 
-    const { sx, sy } = stageScale();
-    const stageRect = stage.getBoundingClientRect();
+  function getTextBounds(ctx, item) {
+    ctx.save();
+    ctx.font = `${item.size}px Georgia, 'Times New Roman', serif`;
+    const lines = item.text.split("\n");
+    const lineH = item.size * 1.15;
 
-    for (const ta of notes[which]) {
-      const r = ta.getBoundingClientRect();
-      const x = (r.left - stageRect.left) * sx;
-      const y = (r.top  - stageRect.top)  * sy;
-      const fontPx = (parseFloat(getComputedStyle(ta).fontSize) || 24) * sy;
+    let w = 0;
+    for (const line of lines) w = Math.max(w, ctx.measureText(line).width);
+    const h = lines.length * lineH;
 
-      drawTextAt(
-        tctx,
-        x,
-        y,
-        ta.value || "",
-        getComputedStyle(ta).color || state.color,
-        fontPx
-      );
+    ctx.restore();
+    return { x: item.x, y: item.y, w, h };
+  }
+
+  function repaintText(which) {
+    const tctx = getTextCtx(which);
+    const tcan = getTextCanvas(which);
+    tctx.clearRect(0, 0, tcan.width, tcan.height);
+
+    for (const item of textItems[which]) {
+      drawTextAt(tctx, item.x, item.y, item.text, item.color, item.size);
     }
   }
 
-  function addNote(which, clientX, clientY) {
-    const rect = stage.getBoundingClientRect();
-    const xCss = clientX - rect.left;
-    const yCss = clientY - rect.top;
-
-    const ta = document.createElement("textarea");
-    ta.className = "reflection-note";
-    ta.placeholder = "Type here...";
-    ta.style.left = `${xCss}px`;
-    ta.style.top  = `${yCss}px`;
-
-    // Alt-drag
-    let drag = false, ox = 0, oy = 0;
-
-    ta.addEventListener("mousedown", (e) => {
-      if (!e.altKey) return;
-      drag = true;
-      ox = e.clientX - ta.getBoundingClientRect().left;
-      oy = e.clientY - ta.getBoundingClientRect().top;
-      e.preventDefault();
-    });
-
-    window.addEventListener("mousemove", (e) => {
-      if (!drag) return;
-      const r = stage.getBoundingClientRect();
-      ta.style.left = `${e.clientX - r.left - ox}px`;
-      ta.style.top  = `${e.clientY - r.top  - oy}px`;
-    });
-
-    window.addEventListener("mouseup", () => (drag = false));
-
-    ta.addEventListener("blur", () => rasterizeNotes(which));
-
-    stage.appendChild(ta);
-    notes[which].push(ta);
-    ta.focus();
-  }
-
-  // ---- Tabs ----
+  // ---- Tab switching ----
   function setActive(which) {
-    state.active = which;
+  state.active = which;
 
-    btnFront.classList.toggle("active", which === "front");
-    btnBack.classList.toggle("active", which === "back");
+  btnFront.classList.toggle("active", which === "front");
+  btnBack.classList.toggle("active", which === "back");
 
-    canvasFront.style.display = which === "front" ? "block" : "none";
-    textFront.style.display   = which === "front" ? "block" : "none";
-    canvasBack.style.display  = which === "back"  ? "block" : "none";
-    textBack.style.display    = which === "back"  ? "block" : "none";
+  canvasFront.style.display = which === "front" ? "block" : "none";
+  textFront.style.display   = which === "front" ? "block" : "none";
+  canvasBack.style.display  = which === "back"  ? "block" : "none";
+  textBack.style.display    = which === "back"  ? "block" : "none";
 
-    // DON’T recreate contexts here — that wipes drawings.
-    // Just refresh the text layer so it matches notes.
-    rasterizeNotes(which);
-  }
+  const baseCanvas = which === "front" ? canvasFront : canvasBack;
+  const textCanvas = which === "front" ? textFront : textBack;
+
+  ctxF  = setupHiDPICanvas(canvasFront);
+  ctxB  = setupHiDPICanvas(canvasBack);
+  tCtxF = setupHiDPICanvas(textFront);
+  tCtxB = setupHiDPICanvas(textBack);
+
+tCtxF.setTransform(window.devicePixelRatio || 1, 0, 0, window.devicePixelRatio || 1, 0, 0);
+tCtxB.setTransform(window.devicePixelRatio || 1, 0, 0, window.devicePixelRatio || 1, 0, 0);
+
+    
+  ctxF.lineCap = ctxB.lineCap = "round";
+  ctxF.lineJoin = ctxB.lineJoin = "round";
+
+  drawTemplate(which);
+  repaintText(which);
+}
+
 
   btnFront.addEventListener("click", () => setActive("front"));
   btnBack.addEventListener("click", () => setActive("back"));
 
-  // ---- Controls ----
-  colorInput.addEventListener("input", () => (state.color = colorInput.value));
-  sizeInput.addEventListener("input", () => (state.size = Number(sizeInput.value)));
+  // ---- Control listeners ----
+  colorInput.addEventListener("input", () => state.color = colorInput.value);
+  sizeInput.addEventListener("input", () => state.size = Number(sizeInput.value));
 
   eraserBtn.addEventListener("click", () => {
     state.eraser = !state.eraser;
@@ -2264,17 +2268,13 @@ function attachReflectionCards(endOverlayEl, finalLand) {
   });
 
   clearBtn.addEventListener("click", () => {
-    // clear the DRAW layer only for this side
     drawTemplate(state.active);
-
-    // remove note elements for this side
-    for (const ta of notes[state.active]) ta.remove();
-    notes[state.active] = [];
-    rasterizeNotes(state.active);
+    textItems[state.active] = [];
+    repaintText(state.active);
   });
 
-  textInput.addEventListener("input", () => (state.text = textInput.value || ""));
-  textSize.addEventListener("input", () => (state.textSize = Number(textSize.value)));
+  textInput.addEventListener("input", () => state.text = textInput.value || "");
+  textSize.addEventListener("input", () => state.textSize = Number(textSize.value));
 
   textBtn.addEventListener("click", () => {
     const on = state.tool !== "text";
@@ -2286,10 +2286,8 @@ function attachReflectionCards(endOverlayEl, finalLand) {
     }
   });
 
-  // ---- Download ----
+  // ---- Download (merge base + text overlay) ----
   function downloadCanvas(which) {
-    rasterizeNotes(which);
-
     const base = which === "front" ? canvasFront : canvasBack;
     const text = which === "front" ? textFront : textBack;
 
@@ -2315,116 +2313,164 @@ function attachReflectionCards(endOverlayEl, finalLand) {
     setTimeout(() => downloadCanvas("back"), 250);
   });
 
-  // ---- Drawing input (on text layer canvases) ----
+  // ---- Input handling (attach to TEXT overlay canvases only) ----
   let drawing = false;
   let last = null;
-  let prev = null;
-  let activeCanvas = null;
+let activeCanvas = null;
 
-  function getPos(canvas, evt) {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = DESIGN_W / rect.width;
-    const scaleY = DESIGN_H / rect.height;
-    return {
-      x: (evt.clientX - rect.left) * scaleX,
-      y: (evt.clientY - rect.top) * scaleY
-    };
-  }
+function getPos(canvas, evt) {
+  const rect = canvas.getBoundingClientRect();
 
-  function down(evt) {
-    evt.preventDefault();
+  const scaleX = DESIGN_W / rect.width;
+  const scaleY = DESIGN_H / rect.height;
 
-    activeCanvas = evt.currentTarget; // ✅ you were missing this
-    const which = state.active;
-    const p = getPos(activeCanvas, evt);
+  return {
+    x: (evt.clientX - rect.left) * scaleX,
+    y: (evt.clientY - rect.top)  * scaleY
+  };
+}
 
-    if (state.tool === "text") {
-      // Place textarea on click. Use input text as initial value.
-      addNote(which, evt.clientX, evt.clientY);
-      const ta = notes[which][notes[which].length - 1];
-      if (ta && state.text.trim()) ta.value = state.text;
+
+
+
+
+
+function down(evt) {
+ evt.preventDefault();
+
+  const which = state.active;
+  activeCanvas = evt.currentTarget; // ✅ STORE IT
+  const p = getPos(activeCanvas, evt);
+
+  // text dragging
+  const tctx = getTextCtx(which);
+  for (let i = textItems[which].length - 1; i >= 0; i--) {
+    const item = textItems[which][i];
+    const b = getTextBounds(tctx, item);
+    if (p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h) {
+      dragging = item;
+      dragOff.x = p.x - item.x;
+      dragOff.y = p.y - item.y;
       return;
     }
-
-    drawing = true;
-    last = p;
-    prev = null;
   }
 
-  function move(evt) {
-    if (!activeCanvas || !drawing) return;
+  // text tool
+  if (state.tool === "text") {
+    if (state.text.trim()) {
+      textItems[which].push({
+        x: p.x,
+        y: p.y,
+        text: state.text,
+        color: state.color,
+        size: state.textSize
+      });
+      repaintText(which);
+    }
+    return;
+  }
+
+  drawing = true;
+  last = p; // ✅ SAME SPACE
+}
+
+
+
+
+// --- smoothing helper (put near your other helpers) ---
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function move(evt) {
+  if (!activeCanvas) return;
+
+  // dragging text stays the same...
+  if (dragging) {
     evt.preventDefault();
-
     const which = state.active;
-    const ctx = which === "front" ? ctxF : ctxB;
     const p = getPos(activeCanvas, evt);
-
-    if (!prev) {
-      prev = p;
-      last = p;
-      return;
-    }
-
-    ctx.save();
-    ctx.lineWidth = state.size;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-
-    if (state.eraser) {
-      ctx.globalCompositeOperation = "destination-out";
-      ctx.strokeStyle = "rgba(0,0,0,1)";
-    } else {
-      ctx.globalCompositeOperation = "source-over";
-      ctx.strokeStyle = state.color;
-    }
-
-    const midX = (last.x + p.x) / 2;
-    const midY = (last.y + p.y) / 2;
-
-    ctx.beginPath();
-    ctx.moveTo(last.x, last.y);
-    ctx.quadraticCurveTo(last.x, last.y, midX, midY);
-    ctx.stroke();
-    ctx.restore();
-
-    prev = last;
-    last = p;
+    dragging.x = p.x - dragOff.x;
+    dragging.y = p.y - dragOff.y;
+    repaintText(which);
+    return;
   }
 
-  function up() {
-    drawing = false;
-    last = null;
-    prev = null;
-    activeCanvas = null;
+  if (!drawing || !last) return;
+  evt.preventDefault();
 
-    window.removeEventListener("mousemove", move);
-    window.removeEventListener("mouseup", up);
+  const which = state.active;
+  const ctx = which === "front" ? ctxF : ctxB;
+  const p = getPos(activeCanvas, evt);
 
-    window.removeEventListener("touchmove", move);
-    window.removeEventListener("touchend", up);
-    window.removeEventListener("touchcancel", up);
+  // distance between points
+  const dx = p.x - last.x;
+  const dy = p.y - last.y;
+  const dist = Math.hypot(dx, dy);
+
+  // how many mini-steps to fill (lower = faster, higher = smoother)
+  const steps = Math.max(1, Math.floor(dist / 2)); // 2px spacing
+
+  ctx.save();
+  ctx.lineWidth = state.size;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+
+  if (state.eraser) {
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.strokeStyle = "rgba(0,0,0,1)";
+  } else {
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle = state.color;
   }
+
+  ctx.beginPath();
+  ctx.moveTo(last.x, last.y);
+
+  for (let i = 1; i <= steps; i++) {
+    const t = i / steps;
+    ctx.lineTo(lerp(last.x, p.x, t), lerp(last.y, p.y, t));
+  }
+
+  ctx.stroke();
+  ctx.restore();
+
+  last = p;
+}
+
+
+
+
+  
+function up() {
+  dragging = null;
+  drawing = false;
+  last = null;
+  activeCanvas = null;
+
+  window.removeEventListener("mousemove", move);
+  window.removeEventListener("touchmove", move);
+}
+
+
+
+
 
   [textFront, textBack].forEach((c) => {
-    c.addEventListener("mousedown", (e) => {
-      down(e);
-      window.addEventListener("mousemove", move);
-      window.addEventListener("mouseup", up, { once: true });
-    });
-
-    c.addEventListener(
-      "touchstart",
-      (e) => {
-        down(e.touches[0]);
-        window.addEventListener("touchmove", (ev) => move(ev.touches[0]), { passive: false });
-        window.addEventListener("touchend", up, { once: true });
-        window.addEventListener("touchcancel", up, { once: true });
-      },
-      { passive: false }
-    );
+  c.addEventListener("mousedown", (e) => {
+    down(e);
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", up, { once: true });
   });
 
-  // initial
+  c.addEventListener("touchstart", (e) => {
+    down(e);
+    window.addEventListener("touchmove", move, { passive: false });
+    window.addEventListener("touchend", up, { once: true });
+    window.addEventListener("touchcancel", up, { once: true });
+  }, { passive: false });
+});
+
+
+  // Ensure initial view is correct
   setActive("front");
 }
 

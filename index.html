@@ -1987,17 +1987,13 @@ const DESIGN_H = 2000;
 
   canvasBack.style.display = "none";
 
-  // ---- Text overlay canvases (movable text lives here) ----
-  const textFront = document.createElement("canvas");
-  textFront.className = "reflection-canvas reflection-textlayer";
-  textFront.width = canvasFront.width;
-  textFront.height = canvasFront.height;
+ const textFront = document.createElement("canvas");
+textFront.className = "reflection-canvas reflection-textlayer";
 
-  const textBack = document.createElement("canvas");
-  textBack.className = "reflection-canvas reflection-textlayer";
-  textBack.width = canvasBack.width;
-  textBack.height = canvasBack.height;
-  textBack.style.display = "none";
+const textBack = document.createElement("canvas");
+textBack.className = "reflection-canvas reflection-textlayer";
+textBack.style.display = "none";
+
 
 function setupHiDPICanvas(canvas) {
   const dpr = window.devicePixelRatio || 1;
@@ -2026,6 +2022,23 @@ function setupHiDPICanvas(canvas) {
 
   stage.appendChild(canvasBack);
   stage.appendChild(textBack);
+
+  // --- HiDPI contexts (SET ONCE) ---
+ctxF  = setupHiDPICanvas(canvasFront);
+ctxB  = setupHiDPICanvas(canvasBack);
+tCtxF = setupHiDPICanvas(textFront);
+tCtxB = setupHiDPICanvas(textBack);
+
+// smoothing (helps strokes)
+[ctxF, ctxB, tCtxF, tCtxB].forEach(c => {
+  c.imageSmoothingEnabled = true;
+  c.lineCap = "round";
+  c.lineJoin = "round";
+});
+
+// draw templates once
+drawTemplate("front");
+drawTemplate("back");
 
   // ---- Controls ----
   const controls = document.createElement("div");
@@ -2213,15 +2226,17 @@ function setupHiDPICanvas(canvas) {
     return { x: item.x, y: item.y, w, h };
   }
 
-  function repaintText(which) {
-    const tctx = getTextCtx(which);
-    const tcan = getTextCanvas(which);
-    tctx.clearRect(0, 0, tcan.width, tcan.height);
+ function repaintText(which) {
+  const tctx = getTextCtx(which);
 
-    for (const item of textItems[which]) {
-      drawTextAt(tctx, item.x, item.y, item.text, item.color, item.size);
-    }
+  // clear in DESIGN space (because ctx is already scaled with setTransform(dpr,...))
+  tctx.clearRect(0, 0, DESIGN_W, DESIGN_H);
+
+  for (const item of textItems[which]) {
+    drawTextAt(tctx, item.x, item.y, item.text, item.color, item.size);
   }
+}
+
 
   // ---- Tab switching ----
   function setActive(which) {
@@ -2242,9 +2257,6 @@ function setupHiDPICanvas(canvas) {
   ctxB  = setupHiDPICanvas(canvasBack);
   tCtxF = setupHiDPICanvas(textFront);
   tCtxB = setupHiDPICanvas(textBack);
-
-tCtxF.setTransform(window.devicePixelRatio || 1, 0, 0, window.devicePixelRatio || 1, 0, 0);
-tCtxB.setTransform(window.devicePixelRatio || 1, 0, 0, window.devicePixelRatio || 1, 0, 0);
 
     
   ctxF.lineCap = ctxB.lineCap = "round";
@@ -2372,6 +2384,7 @@ function down(evt) {
 
   drawing = true;
   last = p; // ✅ SAME SPACE
+  prev = null;
 }
 
 
@@ -2380,10 +2393,12 @@ function down(evt) {
 // --- smoothing helper (put near your other helpers) ---
 function lerp(a, b, t) { return a + (b - a) * t; }
 
+let prev = null;
+
 function move(evt) {
   if (!activeCanvas) return;
 
-  // dragging text stays the same...
+  // dragging text
   if (dragging) {
     evt.preventDefault();
     const which = state.active;
@@ -2394,20 +2409,20 @@ function move(evt) {
     return;
   }
 
-  if (!drawing || !last) return;
+  if (!drawing) return;
   evt.preventDefault();
 
   const which = state.active;
   const ctx = which === "front" ? ctxF : ctxB;
+
   const p = getPos(activeCanvas, evt);
 
-  // distance between points
-  const dx = p.x - last.x;
-  const dy = p.y - last.y;
-  const dist = Math.hypot(dx, dy);
-
-  // how many mini-steps to fill (lower = faster, higher = smoother)
-  const steps = Math.max(1, Math.floor(dist / 2)); // 2px spacing
+  // first point
+  if (!prev) {
+    prev = p;
+    last = p;
+    return;
+  }
 
   ctx.save();
   ctx.lineWidth = state.size;
@@ -2422,19 +2437,20 @@ function move(evt) {
     ctx.strokeStyle = state.color;
   }
 
+  // quadratic smoothing: draw from last -> midpoint (curved)
+  const midX = (last.x + p.x) / 2;
+  const midY = (last.y + p.y) / 2;
+
   ctx.beginPath();
   ctx.moveTo(last.x, last.y);
-
-  for (let i = 1; i <= steps; i++) {
-    const t = i / steps;
-    ctx.lineTo(lerp(last.x, p.x, t), lerp(last.y, p.y, t));
-  }
-
+  ctx.quadraticCurveTo(last.x, last.y, midX, midY);
   ctx.stroke();
   ctx.restore();
 
+  prev = last;
   last = p;
 }
+
 
 
 
@@ -2445,7 +2461,7 @@ function up() {
   drawing = false;
   last = null;
   activeCanvas = null;
-
+prev = null;
   window.removeEventListener("mousemove", move);
   window.removeEventListener("touchmove", move);
 }

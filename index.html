@@ -2153,6 +2153,81 @@ drawTemplate("back");
     textSize: Number(textSize.value),
   };
 
+const notes = { front: [], back: [] };
+
+function stageScale() {
+  const rect = stage.getBoundingClientRect();
+  return { sx: DESIGN_W / rect.width, sy: DESIGN_H / rect.height };
+}
+
+function addNote(which, clientX, clientY) {
+  const rect = stage.getBoundingClientRect();
+  const xCss = clientX - rect.left;
+  const yCss = clientY - rect.top;
+
+  const ta = document.createElement("textarea");
+  ta.className = "reflection-note";
+  ta.placeholder = "Type here...";
+  ta.style.left = `${xCss}px`;
+  ta.style.top = `${yCss}px`;
+
+  // drag handle behavior (simple: drag from inside but only when holding Alt)
+  let drag = false;
+  let ox = 0, oy = 0;
+
+  ta.addEventListener("mousedown", (e) => {
+    if (!e.altKey) return; // Alt-drag so typing still works normally
+    drag = true;
+    ox = e.clientX - ta.getBoundingClientRect().left;
+    oy = e.clientY - ta.getBoundingClientRect().top;
+    e.preventDefault();
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    if (!drag) return;
+    const r = stage.getBoundingClientRect();
+    ta.style.left = `${e.clientX - r.left - ox}px`;
+    ta.style.top  = `${e.clientY - r.top - oy}px`;
+  });
+
+  window.addEventListener("mouseup", () => drag = false);
+
+  stage.appendChild(ta);
+  notes[which].push(ta);
+
+  // focus so user can type immediately
+  ta.focus();
+}
+
+function rasterizeNotes(which) {
+  const tctx = which === "front" ? tCtxF : tCtxB;
+
+  // clear & redraw “stamped” text items (if any)
+  repaintText(which);
+
+  const { sx, sy } = stageScale();
+  const stageRect = stage.getBoundingClientRect();
+
+  for (const ta of notes[which]) {
+    const r = ta.getBoundingClientRect();
+
+    const x = (r.left - stageRect.left) * sx;
+    const y = (r.top - stageRect.top) * sy;
+    const fontPx = parseFloat(getComputedStyle(ta).fontSize) * sy;
+
+    drawTextAt(
+      tctx,
+      x,
+      y,
+      ta.value || "",
+      getComputedStyle(ta).color || state.color,
+      fontPx
+    );
+  }
+}
+
+
+  
  let ctxF, ctxB, tCtxF, tCtxB;   
 
   const templates = { front: "reflection_front.png", back: "reflection_back.png" };
@@ -2298,25 +2373,102 @@ drawTemplate("back");
     }
   });
 
+const notes = { front: [], back: [] };
+
+function stageScale() {
+  const rect = stage.getBoundingClientRect();
+  return { sx: DESIGN_W / rect.width, sy: DESIGN_H / rect.height };
+}
+
+function addNote(which, clientX, clientY) {
+  const rect = stage.getBoundingClientRect();
+  const xCss = clientX - rect.left;
+  const yCss = clientY - rect.top;
+
+  const ta = document.createElement("textarea");
+  ta.className = "reflection-note";
+  ta.placeholder = "Type here...";
+  ta.style.left = `${xCss}px`;
+  ta.style.top = `${yCss}px`;
+
+  // drag handle behavior (simple: drag from inside but only when holding Alt)
+  let drag = false;
+  let ox = 0, oy = 0;
+
+  ta.addEventListener("mousedown", (e) => {
+    if (!e.altKey) return; // Alt-drag so typing still works normally
+    drag = true;
+    ox = e.clientX - ta.getBoundingClientRect().left;
+    oy = e.clientY - ta.getBoundingClientRect().top;
+    e.preventDefault();
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    if (!drag) return;
+    const r = stage.getBoundingClientRect();
+    ta.style.left = `${e.clientX - r.left - ox}px`;
+    ta.style.top  = `${e.clientY - r.top - oy}px`;
+  });
+
+  window.addEventListener("mouseup", () => drag = false);
+
+  stage.appendChild(ta);
+  notes[which].push(ta);
+
+  // focus so user can type immediately
+  ta.focus();
+}
+
+function rasterizeNotes(which) {
+  const tctx = which === "front" ? tCtxF : tCtxB;
+
+  // clear & redraw “stamped” text items (if any)
+  repaintText(which);
+
+  const { sx, sy } = stageScale();
+  const stageRect = stage.getBoundingClientRect();
+
+  for (const ta of notes[which]) {
+    const r = ta.getBoundingClientRect();
+
+    const x = (r.left - stageRect.left) * sx;
+    const y = (r.top - stageRect.top) * sy;
+    const fontPx = parseFloat(getComputedStyle(ta).fontSize) * sy;
+
+    drawTextAt(
+      tctx,
+      x,
+      y,
+      ta.value || "",
+      getComputedStyle(ta).color || state.color,
+      fontPx
+    );
+  }
+}
+
+  
   // ---- Download (merge base + text overlay) ----
   function downloadCanvas(which) {
-    const base = which === "front" ? canvasFront : canvasBack;
-    const text = which === "front" ? textFront : textBack;
+  rasterizeNotes(which);
 
-    const out = document.createElement("canvas");
-    out.width = base.width;
-    out.height = base.height;
+  const base = which === "front" ? canvasFront : canvasBack;
+  const text = which === "front" ? textFront : textBack;
 
-    const octx = out.getContext("2d");
-    octx.drawImage(base, 0, 0);
-    octx.drawImage(text, 0, 0);
+  const out = document.createElement("canvas");
+  out.width = base.width;
+  out.height = base.height;
 
-    const a = document.createElement("a");
-    const safeLand = (finalLand || "result").toString().toLowerCase();
-    a.download = `lovegame_reflection_${safeLand}_${which}.png`;
-    a.href = out.toDataURL("image/png");
-    a.click();
-  }
+  const octx = out.getContext("2d");
+  octx.drawImage(base, 0, 0);
+  octx.drawImage(text, 0, 0);
+
+  const a = document.createElement("a");
+  const safeLand = (finalLand || "result").toString().toLowerCase();
+  a.download = `lovegame_reflection_${safeLand}_${which}.png`;
+  a.href = out.toDataURL("image/png");
+  a.click();
+}
+
 
   dlFront.addEventListener("click", () => downloadCanvas("front"));
   dlBack.addEventListener("click", () => downloadCanvas("back"));

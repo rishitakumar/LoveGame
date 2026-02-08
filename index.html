@@ -2002,26 +2002,30 @@ const DESIGN_H = 2000;
   topRow.appendChild(tabs);
 
   // ---- Base canvases (template + drawing) ----
-  const canvasFront = document.createElement("canvas");
-  canvasFront.className = "reflection-canvas";
+ // ---- TEMPLATE canvases (never edited) ----
+const tplFront = document.createElement("canvas");
+tplFront.className = "reflection-canvas reflection-templatelayer";
 
+const tplBack = document.createElement("canvas");
+tplBack.className = "reflection-canvas reflection-templatelayer";
+tplBack.style.display = "none";
 
-  const canvasBack = document.createElement("canvas");
-  canvasBack.className = "reflection-canvas";
+// ---- INK canvases (drawing + eraser lives here) ----
+const inkFront = document.createElement("canvas");
+inkFront.className = "reflection-canvas reflection-inklayer";
 
-  canvasBack.style.display = "none";
+const inkBack = document.createElement("canvas");
+inkBack.className = "reflection-canvas reflection-inklayer";
+inkBack.style.display = "none";
 
-  // ---- Text overlay canvases (movable text lives here) ----
-  const textFront = document.createElement("canvas");
-  textFront.className = "reflection-canvas reflection-textlayer";
-  textFront.width = canvasFront.width;
-  textFront.height = canvasFront.height;
+// ---- TEXT canvases (text items live here) ----
+const textFront = document.createElement("canvas");
+textFront.className = "reflection-canvas reflection-textlayer";
 
-  const textBack = document.createElement("canvas");
-  textBack.className = "reflection-canvas reflection-textlayer";
-  textBack.width = canvasBack.width;
-  textBack.height = canvasBack.height;
-  textBack.style.display = "none";
+const textBack = document.createElement("canvas");
+textBack.className = "reflection-canvas reflection-textlayer";
+textBack.style.display = "none";
+
 
 function setupHiDPICanvas(canvas) {
   const dpr = window.devicePixelRatio || 1;
@@ -2037,19 +2041,18 @@ function setupHiDPICanvas(canvas) {
   return ctx;
 }
 
+stage.appendChild(topRow);
 
+// FRONT stack: template -> ink -> text
+stage.appendChild(tplFront);
+stage.appendChild(inkFront);
+stage.appendChild(textFront);
 
+// BACK stack: template -> ink -> text
+stage.appendChild(tplBack);
+stage.appendChild(inkBack);
+stage.appendChild(textBack);
 
-
-
-  stage.appendChild(topRow);
-
-  // Important order: base first, then overlay on top
-  stage.appendChild(canvasFront);
-  stage.appendChild(textFront);
-
-  stage.appendChild(canvasBack);
-  stage.appendChild(textBack);
 
   // ---- Controls ----
   const controls = document.createElement("div");
@@ -2164,13 +2167,28 @@ function setupHiDPICanvas(canvas) {
     textSize: Number(textSize.value),
   };
 
- let ctxF, ctxB, tCtxF, tCtxB;   
+  let tplCtxF, tplCtxB, inkCtxF, inkCtxB, tCtxF, tCtxB;
+
+  tplCtxF = setupHiDPICanvas(tplFront);
+tplCtxB = setupHiDPICanvas(tplBack);
+inkCtxF = setupHiDPICanvas(inkFront);
+inkCtxB = setupHiDPICanvas(inkBack);
+tCtxF   = setupHiDPICanvas(textFront);
+tCtxB   = setupHiDPICanvas(textBack);
+
+// Ink line style
+inkCtxF.lineCap = inkCtxB.lineCap = "round";
+inkCtxF.lineJoin = inkCtxB.lineJoin = "round";
+
+// Draw templates once
+drawTemplate("front");
+drawTemplate("back");
+
 
   const templates = { front: "reflection_front.png", back: "reflection_back.png" };
 
-  function drawTemplate(which) {
-  const canvasEl = which === "front" ? canvasFront : canvasBack;
-  const ctx = which === "front" ? ctxF : ctxB;
+function drawTemplate(which) {
+  const ctx = which === "front" ? tplCtxF : tplCtxB;
 
   const img = new Image();
   img.onload = () => {
@@ -2182,11 +2200,7 @@ function setupHiDPICanvas(canvas) {
     ctx.fillRect(0, 0, DESIGN_W, DESIGN_H);
 
     // CONTAIN inside 1545×2000
-    const scale = Math.min(
-      DESIGN_W / img.width,
-      DESIGN_H / img.height
-    );
-
+    const scale = Math.min(DESIGN_W / img.width, DESIGN_H / img.height);
     const dw = img.width * scale;
     const dh = img.height * scale;
     const dx = (DESIGN_W - dw) / 2;
@@ -2198,9 +2212,6 @@ function setupHiDPICanvas(canvas) {
   img.src = templates[which];
 }
 
-
-  drawTemplate("front");
-  drawTemplate("back");
 
   // ---- Text drawing (overlay only) ----
   function drawTextAt(ctx, x, y, text, color, sizePx) {
@@ -2248,35 +2259,25 @@ function setupHiDPICanvas(canvas) {
   }
 
   // ---- Tab switching ----
-  function setActive(which) {
+ function setActive(which) {
   state.active = which;
 
   btnFront.classList.toggle("active", which === "front");
   btnBack.classList.toggle("active", which === "back");
 
-  canvasFront.style.display = which === "front" ? "block" : "none";
-  textFront.style.display   = which === "front" ? "block" : "none";
-  canvasBack.style.display  = which === "back"  ? "block" : "none";
-  textBack.style.display    = which === "back"  ? "block" : "none";
+  // toggle FRONT stack
+  tplFront.style.display  = which === "front" ? "block" : "none";
+  inkFront.style.display  = which === "front" ? "block" : "none";
+  textFront.style.display = which === "front" ? "block" : "none";
 
-  const baseCanvas = which === "front" ? canvasFront : canvasBack;
-  const textCanvas = which === "front" ? textFront : textBack;
+  // toggle BACK stack
+  tplBack.style.display   = which === "back" ? "block" : "none";
+  inkBack.style.display   = which === "back" ? "block" : "none";
+  textBack.style.display  = which === "back" ? "block" : "none";
 
-  ctxF  = setupHiDPICanvas(canvasFront);
-  ctxB  = setupHiDPICanvas(canvasBack);
-  tCtxF = setupHiDPICanvas(textFront);
-  tCtxB = setupHiDPICanvas(textBack);
-
-tCtxF.setTransform(window.devicePixelRatio || 1, 0, 0, window.devicePixelRatio || 1, 0, 0);
-tCtxB.setTransform(window.devicePixelRatio || 1, 0, 0, window.devicePixelRatio || 1, 0, 0);
-
-    
-  ctxF.lineCap = ctxB.lineCap = "round";
-  ctxF.lineJoin = ctxB.lineJoin = "round";
-
-  drawTemplate(which);
   repaintText(which);
 }
+
 
 
   btnFront.addEventListener("click", () => setActive("front"));
@@ -2292,10 +2293,17 @@ tCtxB.setTransform(window.devicePixelRatio || 1, 0, 0, window.devicePixelRatio |
   });
 
   clearBtn.addEventListener("click", () => {
-    drawTemplate(state.active);
-    textItems[state.active] = [];
-    repaintText(state.active);
-  });
+  const which = state.active;
+
+  // clear INK only
+  const ictx = which === "front" ? inkCtxF : inkCtxB;
+  ictx.clearRect(0, 0, DESIGN_W, DESIGN_H);
+
+  // clear TEXT
+  textItems[which] = [];
+  repaintText(which);
+});
+
 
   textInput.addEventListener("input", () => state.text = textInput.value || "");
   textSize.addEventListener("input", () => state.textSize = Number(textSize.value));
@@ -2311,24 +2319,27 @@ tCtxB.setTransform(window.devicePixelRatio || 1, 0, 0, window.devicePixelRatio |
   });
 
   // ---- Download (merge base + text overlay) ----
-  function downloadCanvas(which) {
-    const base = which === "front" ? canvasFront : canvasBack;
-    const text = which === "front" ? textFront : textBack;
+ function downloadCanvas(which) {
+  const base = which === "front" ? tplFront : tplBack;
+  const ink  = which === "front" ? inkFront : inkBack;
+  const text = which === "front" ? textFront : textBack;
 
-    const out = document.createElement("canvas");
-    out.width = base.width;
-    out.height = base.height;
+  const out = document.createElement("canvas");
+  out.width = base.width;
+  out.height = base.height;
 
-    const octx = out.getContext("2d");
-    octx.drawImage(base, 0, 0);
-    octx.drawImage(text, 0, 0);
+  const octx = out.getContext("2d");
+  octx.drawImage(base, 0, 0);
+  octx.drawImage(ink, 0, 0);
+  octx.drawImage(text, 0, 0);
 
-    const a = document.createElement("a");
-    const safeLand = (finalLand || "result").toString().toLowerCase();
-    a.download = `lovegame_reflection_${safeLand}_${which}.png`;
-    a.href = out.toDataURL("image/png");
-    a.click();
-  }
+  const a = document.createElement("a");
+  const safeLand = (finalLand || "result").toString().toLowerCase();
+  a.download = `lovegame_reflection_${safeLand}_${which}.png`;
+  a.href = out.toDataURL("image/png");
+  a.click();
+}
+
 
   dlFront.addEventListener("click", () => downloadCanvas("front"));
   dlBack.addEventListener("click", () => downloadCanvas("back"));
@@ -2422,7 +2433,8 @@ function move(evt) {
   evt.preventDefault();
 
   const which = state.active;
-  const ctx = which === "front" ? ctxF : ctxB;
+ const ctx = which === "front" ? inkCtxF : inkCtxB;
+
   const p = getPos(activeCanvas, evt);
 
   // distance between points

@@ -883,3 +883,34 @@ body {
   overflow: hidden;
 }
 
+/* Reflection cards: force Georgia everywhere */
+.reflection-wrap,
+.reflection-wrap * {
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+/* Make canvases stack properly */
+.reflection-cardstage {
+  position: relative;
+}
+
+/* All canvas layers fill the same space */
+.reflection-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Ink & text layers should be clickable */
+.reflection-inklayer,
+.reflection-textlayer {
+  pointer-events: auto;
+}
+
+/* Template layer should NOT catch clicks */
+.reflection-templatelayer {
+  pointer-events: none;
+}
+

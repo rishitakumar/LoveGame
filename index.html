@@ -2176,41 +2176,9 @@ inkCtxB = setupHiDPICanvas(inkBack);
 tCtxF   = setupHiDPICanvas(textFront);
 tCtxB   = setupHiDPICanvas(textBack);
 
-// Ink line style
-inkCtxF.lineCap = inkCtxB.lineCap = "round";
-inkCtxF.lineJoin = inkCtxB.lineJoin = "round";
-
 // Draw templates once
 drawTemplate("front");
 drawTemplate("back");
-
-
-  const templates = { front: "reflection_front.png", back: "reflection_back.png" };
-
-function drawTemplate(which) {
-  const ctx = which === "front" ? tplCtxF : tplCtxB;
-
-  const img = new Image();
-  img.onload = () => {
-    // clear DESIGN space
-    ctx.clearRect(0, 0, DESIGN_W, DESIGN_H);
-
-    // white base
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, DESIGN_W, DESIGN_H);
-
-    // CONTAIN inside 1545×2000
-    const scale = Math.min(DESIGN_W / img.width, DESIGN_H / img.height);
-    const dw = img.width * scale;
-    const dh = img.height * scale;
-    const dx = (DESIGN_W - dw) / 2;
-    const dy = (DESIGN_H - dh) / 2;
-
-    ctx.drawImage(img, dx, dy, dw, dh);
-  };
-
-  img.src = templates[which];
-}
 
 
   // ---- Text drawing (overlay only) ----

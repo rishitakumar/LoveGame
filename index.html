@@ -137,15 +137,53 @@ if (localStorage.getItem("lovegame-played") === todayKey) {
 }
 
 localStorage.setItem("lovegame-played", todayKey); --- */
+preloadImage("darkland_screen.png");
+preloadImage("murkland_screen.png");
+preloadImage("loveland_screen.png");
+preloadImage("ecstasy_screen.png");
+  
+const IMG_CACHE = new Map();
+
+function preloadImage(src) {
+  if (!src) return Promise.resolve();
+  if (IMG_CACHE.has(src)) return IMG_CACHE.get(src);
+
+  const p = new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve();
+    img.onerror = () => resolve(); // don’t block game on one missing file
+    img.src = src;
+    img.decode?.().then(resolve).catch(resolve);
+  });
+
+  IMG_CACHE.set(src, p);
+  return p;
+}
+
+function preloadCard(card) {
+  return Promise.all([
+    preloadImage(card.questionFront),
+    preloadImage(card.questionBack),
+    preloadImage(card.answerFront),
+    preloadImage(card.answerBack),
+  ]);
+}
+
+// Preload next card whenever you show a card
+function preloadNextCard() {
+  const next = activeDeck[cardIndex + 1];
+  if (next) preloadCard(next);
+}
+
 
 
 let beginShown = false;
 // =============================
 // TIMING TUNES (faster pacing)
 // =============================
-const NEXT_CARD_DELAY = 1000;      // was ~2000 in your code
-const MOVE_TO_CARD_DELAY = 250;    // was ~450
-const LAND_SWAP_DELAY = 80;        // small delay to let the new background appear under glow
+const NEXT_CARD_DELAY = 350;
+const MOVE_TO_CARD_DELAY = 120;
+const LAND_SWAP_DELAY = 0;
 
 // =============================
 // CARD DATA (QUESTIONS + ANSWERS)
@@ -933,42 +971,37 @@ function bigGlowTransition(doDuringGlow, doAfterGlow = null) {
   glow.style.inset = "0";
   glow.style.zIndex = "9999999";
   glow.style.pointerEvents = "none";
-
-  // ✅ Bigger glow: larger radius + stronger spread
   glow.style.background = `
     radial-gradient(circle at center,
       rgba(245,255,58,0.95) 0%,
-      rgba(245,255,58,0.55) 25%,
-      rgba(245,255,58,0.25) 50%,
-      rgba(0,0,0,0) 78%
+      rgba(245,255,58,0.55) 22%,
+      rgba(245,255,58,0.18) 48%,
+      rgba(0,0,0,0) 72%
     )
   `;
   glow.style.opacity = "0";
-  glow.style.transition = "opacity 0.45s ease";
-  glow.style.filter = "blur(1px)"; // subtle “wrap” feel
-
+  glow.style.transition = "opacity 0.22s ease";
   document.body.appendChild(glow);
 
-  // fade IN
-  requestAnimationFrame(() => {
-    glow.style.opacity = "1";
-  });
+  requestAnimationFrame(() => (glow.style.opacity = "1"));
 
-  // run the work while glow is fully visible
+  // ✅ run almost immediately
   setTimeout(() => {
     try { doDuringGlow?.(); } catch (e) { console.error(e); }
 
-    // fade OUT after the new screen is in place
+    // ✅ fade out quickly
     setTimeout(() => {
-      glow.style.transition = "opacity 0.65s ease";
+      glow.style.transition = "opacity 0.25s ease";
       glow.style.opacity = "0";
       setTimeout(() => {
         glow.remove();
         doAfterGlow?.();
-      }, 700);
-    }, 350);
-  }, 250);
+      }, 260);
+    }, 90);
+
+  }, 80);
 }
+
 
   
 function moveCharacter(delta, afterTransition = null) {
@@ -1191,37 +1224,25 @@ async function setCardImages({ frontSrc, backSrc, mode, cardData }) {
   const back  = document.getElementById("card-back");
   const cardEl = document.getElementById("card");
 
-  // Hide layer during swap to prevent flash
+  // Hide only briefly
   layer.style.visibility = "hidden";
-
-  // Cancel old handlers
-  front.onload = null;
-  back.onload = null;
-
-  // Reset flip so we know which side is meant to be shown
+  front.onload = null; back.onload = null;
   cardEl.classList.remove("flipped");
 
-  // Swap sources
+  // Start loads immediately
   front.src = frontSrc;
   back.src  = backSrc;
 
-  // Wait for decode (prevents “one-frame wrong image”)
-  try {
-    await Promise.all([
-      front.decode?.() ?? Promise.resolve(),
-      back.decode?.()  ?? Promise.resolve()
-    ]);
-  } catch {
-    // decode can fail on some browsers for cross-origin/cached oddities; safe to continue
-  }
+  // ✅ show as soon as FRONT is ready
+  try { await (front.decode?.() ?? Promise.resolve()); } catch {}
 
-  // If another card started rendering, abort
   if (myToken !== renderToken) return;
-
-  // Show layer ONLY after images are ready
   layer.style.visibility = "visible";
 
-  // If we're showing question back, render hotspots once the back is ready and visible
+  // Back can decode in background (don’t block UI)
+  (async () => { try { await (back.decode?.() ?? Promise.resolve()); } catch {} })();
+
+  // If question/back: render hotspots once BACK is actually ready + visible
   if (mode === "question" && cardSide === "back" && cardData) {
     requestAnimationFrame(() => {
       if (myToken === renderToken && currentCard === cardData && cardMode === "question" && cardSide === "back") {
@@ -1267,6 +1288,7 @@ function showQuestionCard(cardData) {
   });
 
   scrollToCards();
+  preloadNextCard();
 }
 
 
@@ -1556,6 +1578,7 @@ function showAnswerCard(cardData, delta) {
     mode: "answer",
     cardData: null
   });
+    preloadNextCard();
 }
 
 

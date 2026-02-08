@@ -137,10 +137,6 @@ if (localStorage.getItem("lovegame-played") === todayKey) {
 }
 
 localStorage.setItem("lovegame-played", todayKey); --- */
-preloadImage("darkland_screen.png");
-preloadImage("murkland_screen.png");
-preloadImage("loveland_screen.png");
-preloadImage("ecstasy_screen.png");
   
 const IMG_CACHE = new Map();
 
@@ -160,6 +156,8 @@ function preloadImage(src) {
   return p;
 }
 
+
+
 function preloadCard(card) {
   return Promise.all([
     preloadImage(card.questionFront),
@@ -175,7 +173,10 @@ function preloadNextCard() {
   if (next) preloadCard(next);
 }
 
-
+preloadImage("darkland_screen.png");
+preloadImage("murkland_screen.png");
+preloadImage("loveland_screen.png");
+preloadImage("ecstasy_screen.png");
 
 let beginShown = false;
 // =============================

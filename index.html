@@ -2680,18 +2680,6 @@ console.log("✅ Reflection UI mounted");
     console.error("❌ attachReflectionCards crashed:", err);
   }
 
-window.addEventListener("keydown", (e) => {
-  const mod = e.ctrlKey || e.metaKey;
-  if (!mod) return;
-
-  const k = e.key.toLowerCase();
-  if (k !== "z") return;
-
-  e.preventDefault();
-  if (e.shiftKey) redo(state.active);
-  else undo(state.active);
-});
-
 }
 
 

@@ -2245,6 +2245,8 @@ function attachReflectionCards(endOverlayEl, finalLand) {
     controls.appendChild(rText);
 
     const r2 = row();
+    r2.style.justifyContent = "center";
+r2.style.gap = "16px"; // optional: nicer spacing
     const eraserBtn = document.createElement("button");
     eraserBtn.type = "button";
     eraserBtn.textContent = "ERASER: OFF";

@@ -916,21 +916,21 @@ body {
 /* ===== LOVE GAME CURSORS ===== */
 /* adjust hotspot numbers (12 12) if your cursor feels offset */
 html, body {
-  cursor: url("cursors/neutral.png") 12 12, auto;
+  cursor: url("neutral.png") 12 12, auto;
 }
 
 a, button, .choice-hotspot, .character, #rules-arrow, #start-game, #confirm-character {
-  cursor: url("cursors/hover.png") 12 12, pointer;
+  cursor: url("hover.png") 12 12, pointer;
 }
 
 body.cursor-clicking,
 body.cursor-clicking * {
-  cursor: url("cursors/click.png") 12 12, pointer !important;
+  cursor: url("click.png") 12 12, pointer !important;
 }
 
 body.cursor-loading,
 body.cursor-loading * {
-  cursor: url("cursors/load-circle.png") 12 12, progress !important;
+  cursor: url("load-circle.png") 12 12, progress !important;
 }
 
 /* keep normal text cursor only where typing happens */

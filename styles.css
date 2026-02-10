@@ -961,3 +961,24 @@ body.cursor-loading #cursor-ring{
   to   { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
+/* ===== LOVE GAME CURSORS (FORCE) ===== */
+html, body {
+  cursor: url("./neutral.png") 12 12, auto !important;
+}
+
+a, button, .choice-hotspot, .character, #rules-arrow, #start-game, #confirm-character {
+  cursor: url("./hover.png") 12 12, pointer !important;
+}
+
+body.cursor-clicking,
+body.cursor-clicking * {
+  cursor: url("./click.png") 12 12, pointer !important;
+}
+
+body.cursor-loading,
+body.cursor-loading * {
+  cursor: url("./load-circle.png") 12 12, progress !important;
+}
+
+/* keep normal text cursor only where typing happens */
+input, textarea, [contenteditable="true"] { cursor: text !important; }

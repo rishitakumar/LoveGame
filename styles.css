@@ -913,4 +913,51 @@ body {
 .reflection-templatelayer {
   pointer-events: none;
 }
+/* ===== LOVE GAME CURSORS ===== */
+/* adjust hotspot numbers (12 12) if your cursor feels offset */
+html, body {
+  cursor: url("cursors/neutral.png") 12 12, auto;
+}
+
+a, button, .choice-hotspot, .character, #rules-arrow, #start-game, #confirm-character {
+  cursor: url("cursors/hover.png") 12 12, pointer;
+}
+
+body.cursor-clicking,
+body.cursor-clicking * {
+  cursor: url("cursors/click.png") 12 12, pointer !important;
+}
+
+body.cursor-loading,
+body.cursor-loading * {
+  cursor: url("cursors/load-circle.png") 12 12, progress !important;
+}
+
+/* keep normal text cursor only where typing happens */
+input, textarea, [contenteditable="true"] { cursor: text; }
+
+
+/* ===== SPIN RING THAT FOLLOWS CURSOR (only during loading) ===== */
+#cursor-ring{
+  position: fixed;
+  width: 26px;
+  height: 26px;
+  pointer-events: none;
+  z-index: 10000050;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  opacity: 0;
+}
+
+body.cursor-loading #cursor-ring{
+  opacity: 1;
+  border: 2px solid rgba(255,255,255,0.25);
+  border-top-color: rgba(255,255,255,0.9);
+  animation: cursorSpin 1.3s linear infinite;
+}
+
+@keyframes cursorSpin{
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
 

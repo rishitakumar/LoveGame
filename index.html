@@ -2722,7 +2722,7 @@ console.log("✅ Reflection UI mounted");
   };
 })();
 
-["neutral.png","hover.png","click.png","load-circle.png"].forEach(src=>{
+["star-neutral.png","star-hover.png","star-click.png","star-load-circle.png"].forEach(src=>{
   const i = new Image();
   i.onload = ()=>console.log("✅ cursor loaded:", src, i.width, i.height);
   i.onerror = ()=>console.warn("❌ cursor FAILED:", src);

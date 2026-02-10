@@ -963,21 +963,21 @@ body.cursor-loading #cursor-ring{
 
 /* ===== LOVE GAME CURSORS (FORCE) ===== */
 html, body {
-  cursor: url("./star-neutral-48.png") 24 24, auto !important;
+  cursor: url("star-neutral.png") 24 24, auto !important;
 }
 
 a, button, .choice-hotspot, .character, #rules-arrow, #start-game, #confirm-character {
-  cursor: url("./star-hover-48.png") 24 24, pointer !important;
+  cursor: url("star-hover.png") 24 24, pointer !important;
 }
 
 body.cursor-clicking,
 body.cursor-clicking * {
-  cursor: url("./star-click-48.png") 24 24, pointer !important;
+  cursor: url("star-click.png") 24 24, pointer !important;
 }
 
 body.cursor-loading,
 body.cursor-loading * {
-  cursor: url("./star-load-circle-48.png") 24 24, progress !important;
+  cursor: url("star-load-circle.png") 24 24, progress !important;
 }
 
 input, textarea, [contenteditable="true"] { cursor: text !important; }

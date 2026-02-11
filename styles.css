@@ -1041,3 +1041,5 @@ body.cursor-loading * {
 }
 
 input, textarea, [contenteditable="true"] { cursor: text !important; }
+
+caret-color: #D011FD;

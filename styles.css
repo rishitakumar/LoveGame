@@ -938,27 +938,87 @@ input, textarea, [contenteditable="true"] { cursor: text; }
 
 
 /* ===== SPIN RING THAT FOLLOWS CURSOR (only during loading) ===== */
-#cursor-ring{
+#cursor-ring {
   position: fixed;
-  width: 26px;
-  height: 26px;
+  left: 0;
+  top: 0;
+
+  width: 44px;                 /* ring size */
+  height: 44px;
+  margin-left: -22px;          /* half width */
+  margin-top: -22px;           /* half height */
+
   pointer-events: none;
   z-index: 10000050;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
+
   opacity: 0;
+  transition: opacity 0.12s ease;
+  will-change: transform, left, top, filter;
+
+  /* ring drawn by CSS so we can glow it */
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.18);
+
+  /* make it look like a "loading ring" (one bright arc) */
+  border-top-color: #fff234;
+  border-right-color: rgba(255, 255, 255, 0.08);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  border-left-color: rgba(255, 255, 255, 0.08);
+
+  /* soft base glow */
+  filter: drop-shadow(0 0 8px rgba(253, 17, 180, 0.55))
+          drop-shadow(0 0 16px rgba(255, 242, 52, 0.25));
 }
 
-body.cursor-loading #cursor-ring{
+/* show only in loading mode */
+body.cursor-loading #cursor-ring {
   opacity: 1;
-  border: 2px solid rgba(255,255,255,0.25);
-  border-top-color: rgba(255,255,255,0.9);
-  animation: cursorSpin 1.3s linear infinite;
+  animation: cursorSpin 0.75s linear infinite, cursorGlow 2.4s linear infinite;
 }
 
-@keyframes cursorSpin{
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to   { transform: translate(-50%, -50%) rotate(360deg); }
+/* spin animation */
+@keyframes cursorSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* color + glow cycle */
+@keyframes cursorGlow {
+  0% {
+    border-top-color: #fd11b4;
+    filter: drop-shadow(0 0 8px rgba(253,17,180,.65))
+            drop-shadow(0 0 18px rgba(253,17,180,.35));
+  }
+  16% {
+    border-top-color: #FDD011;
+    filter: drop-shadow(0 0 8px rgba(253,208,17,.65))
+            drop-shadow(0 0 18px rgba(253,208,17,.35));
+  }
+  32% {
+    border-top-color: #fff234;
+    filter: drop-shadow(0 0 8px rgba(255,242,52,.65))
+            drop-shadow(0 0 18px rgba(255,242,52,.35));
+  }
+  48% {
+    border-top-color: #fd3b96;
+    filter: drop-shadow(0 0 8px rgba(253,59,150,.65))
+            drop-shadow(0 0 18px rgba(253,59,150,.35));
+  }
+  64% {
+    border-top-color: #11FD5A;
+    filter: drop-shadow(0 0 8px rgba(17,253,90,.65))
+            drop-shadow(0 0 18px rgba(17,253,90,.35));
+  }
+  80% {
+    border-top-color: #D011FD;
+    filter: drop-shadow(0 0 8px rgba(208,17,253,.65))
+            drop-shadow(0 0 18px rgba(208,17,253,.35));
+  }
+  100% {
+    border-top-color: #fd11b4;
+    filter: drop-shadow(0 0 8px rgba(253,17,180,.65))
+            drop-shadow(0 0 18px rgba(253,17,180,.35));
+  }
 }
 
 /* ===== LOVE GAME CURSORS (FORCE) ===== */

@@ -1042,4 +1042,22 @@ body.cursor-loading * {
 
 input, textarea, [contenteditable="true"] { cursor: text !important; }
 
-caret-color: #D011FD;
+::selection {
+  background: linear-gradient(
+    90deg,
+    #fd11b4,
+    #FDD011,
+    #fff234,
+    #fd3b96,
+    #11FD5A,
+    #D011FD
+  );
+  color: #000;
+}
+
+input,
+textarea,
+[contenteditable="true"] {
+  caret-color: #D011FD;
+}
+

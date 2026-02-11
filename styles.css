@@ -1042,18 +1042,17 @@ body.cursor-loading * {
 
 input, textarea, [contenteditable="true"] { cursor: text !important; }
 
+/* FIX selection: gradients are not supported */
 ::selection {
-  background: linear-gradient(
-    90deg,
-    #fd11b4,
-    #FDD011,
-    #fff234,
-    #fd3b96,
-    #11FD5A,
-    #D011FD
-  );
+  background-color: #fd3b96; /* pick ONE */
   color: #000;
 }
+
+::-moz-selection {
+  background-color: #fd3b96;
+  color: #000;
+}
+
 
 input,
 textarea,

@@ -739,8 +739,17 @@ const shootingInterval = setInterval(() => { if (Math.random() > 0.4) createShoo
 
 /* End Intro Logic */
 function endIntro() {
+  if (INTRO_ENDED) return;          // ✅ prevents double-run
+  INTRO_ENDED = true;
+
+  if (!running) {                   // ✅ if somehow already stopped, ensure cursor isn't stuck
+    CursorFX?.stop?.();
+    return;
+  }
+
   CursorFX?.start?.();
-  if (!running) return;
+  safeStopCursor(1200);             // ✅ failsafe no matter what
+
   running = false;
 
   clearInterval(shootingInterval);
@@ -752,10 +761,11 @@ function endIntro() {
 
   setTimeout(() => {
     if (overlay.parentNode) overlay.remove();
-    CursorFX?.stop?.();
-    enableReminderScreen(); // ✅ THIS is correct
+    CursorFX?.stop?.();             // ✅ normal stop
+    enableReminderScreen();
   }, 600);
 }
+
 
 const timeout = setTimeout(endIntro, 3500);
 /* --- Improved Skip Logic --- */
@@ -2722,6 +2732,14 @@ console.log("✅ Reflection UI mounted");
   };
 })();
 
+et INTRO_ENDED = false;
+
+function safeStopCursor(delay = 1200) {
+  setTimeout(() => document.body.classList.remove("cursor-loading"), delay);
+}
+/* =============================
+   CURSOR LOADING FAILSAFE
+============================= */
 ["star-neutral.png","star-hover.png","star-click.png","star-load-circle.png"].forEach(src=>{
   const i = new Image();
   i.onload = ()=>console.log("✅ cursor loaded:", src, i.width, i.height);

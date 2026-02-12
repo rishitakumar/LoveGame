@@ -744,32 +744,41 @@ const shootingInterval = setInterval(() => { if (Math.random() > 0.4) createShoo
 
 /* End Intro Logic */
 function endIntro() {
-  if (INTRO_ENDED) return;          // ✅ prevents double-run
+  if (INTRO_ENDED) return;
   INTRO_ENDED = true;
 
-  if (!running) {                   // ✅ if somehow already stopped, ensure cursor isn't stuck
-    CursorFX?.stop?.();
-    return;
-  }
-
   CursorFX?.start?.();
-  safeStopCursor(1200);             // ✅ failsafe no matter what
+  safeStopCursor(1200);
 
   running = false;
-
   clearInterval(shootingInterval);
   clearInterval(dotInterval);
 
+  // ✅ 1) show reminders UNDER the intro, instantly (no white gap)
+  const reminderOverlay = document.getElementById("reminder-overlay");
+  if (reminderOverlay) {
+    reminderOverlay.hidden = false;
+    reminderOverlay.style.opacity = "0";
+    reminderOverlay.style.transition = "opacity 0.4s ease";
+    requestAnimationFrame(() => (reminderOverlay.style.opacity = "1"));
+  }
+
+  // ✅ 2) now fade out the intro overlay
   overlay.style.pointerEvents = "none";
   overlay.style.transition = "opacity 0.6s ease";
   overlay.style.opacity = "0";
 
+  // ✅ 3) after fade, remove intro + wire up reminders
   setTimeout(() => {
-    if (overlay.parentNode) overlay.remove();
-    CursorFX?.stop?.();             // ✅ normal stop
+    overlay.remove();
+    CursorFX?.stop?.();
+
+    // IMPORTANT: since we already unhid reminders above,
+    // just set up the click/keys now:
     enableReminderScreen();
   }, 600);
 }
+
 
 
 const timeout = setTimeout(endIntro, 3500);

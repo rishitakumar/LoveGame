@@ -57,7 +57,7 @@ body {
   z-index: 9999;
   overflow: hidden;
   background: radial-gradient(circle at 30% 30%, #0a0f2c, #02010a 70%);
-  animation: cosmicShift 8s ease-in-out infinite;
+  animation: none;
 }
 
 /* Individual Flame Tendrils (Shared Styles) */

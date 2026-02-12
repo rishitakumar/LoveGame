@@ -2701,8 +2701,10 @@ console.log("✅ Reflection UI mounted");
    CURSOR FX (click + loading + spinning ring)
    Place near the END of your <script> block
 ============================= */
+/* =============================
+   CURSOR FX (click + loading + spinning ring)
+============================= */
 (function setupCursorFX() {
-  // 1) clicking cursor state
   window.addEventListener("mousedown", () => {
     document.body.classList.add("cursor-clicking");
   });
@@ -2710,18 +2712,15 @@ console.log("✅ Reflection UI mounted");
     document.body.classList.remove("cursor-clicking");
   });
 
-  // 2) create the spinning ring element once
   const ring = document.createElement("div");
   ring.id = "cursor-ring";
   document.body.appendChild(ring);
 
-  // 3) move ring with mouse
   document.addEventListener("mousemove", (e) => {
     ring.style.left = e.clientX + "px";
     ring.style.top  = e.clientY + "px";
   });
 
-  // 4) helper API so you can toggle loading anywhere
   window.CursorFX = {
     start() {
       document.body.classList.add("cursor-loading");
@@ -2730,22 +2729,16 @@ console.log("✅ Reflection UI mounted");
       document.body.classList.remove("cursor-loading");
     }
   };
-})();
+})(); // <-- THIS MUST BE HERE and closed
+
 
 ;et INTRO_ENDED = false;
 
 function safeStopCursor(delay = 1200) {
   setTimeout(() => document.body.classList.remove("cursor-loading"), delay);
 }
-/* =============================
-   CURSOR LOADING FAILSAFE
-============================= */
-["star-neutral.png","star-hover.png","star-click.png","star-load-circle.png"].forEach(src=>{
-  const i = new Image();
-  i.onload = ()=>console.log("✅ cursor loaded:", src, i.width, i.height);
-  i.onerror = ()=>console.warn("❌ cursor FAILED:", src);
-  i.src = src;
-});
+
+
 
 </script>
 </body>

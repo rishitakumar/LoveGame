@@ -1097,7 +1097,6 @@ textarea,
 /* top/bottom flames */
 .flame-frame::after {
   filter: url(#top-flames);
-  inset: -10px;
   background:
     linear-gradient(to bottom, #ff0000, #ff8c00 4%, #ffff00 6%, transparent 12%),
     linear-gradient(to top,    #ff0000, #ff8c00 4%, #ffff00 6%, transparent 12%);
@@ -1108,4 +1107,7 @@ textarea,
 .flame-frame > * {
   position: relative;
   z-index: 10;
+}
+.reminder-box.flame-frame{
+  padding: 3.2rem 3rem;   /* increase these */
 }

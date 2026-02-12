@@ -611,7 +611,11 @@ function resizeCanvases() {
   mCanvas.width = canvas.width = window.innerWidth;
   mCanvas.height = canvas.height = window.innerHeight;
 }
-window.addEventListener("resize", resizeCanvases);
+window.addEventListener("resize", () => {
+  resizeCanvases();
+  createStars(); // ✅ re-spread stars using the new canvas width/height
+});
+
 
 window.addEventListener("mousemove", (e) => {
   mPoints.push({ x: e.clientX, y: e.clientY, age: 0 });
@@ -643,8 +647,6 @@ function createStars(count = 120) { // Slightly fewer stars for better performan
 });
   }
 }
-createStars();
-
 /* --- THE OPTIMIZED MERGED LOOP --- */
 function animate() {
   // Clear both canvases
@@ -787,6 +789,7 @@ window.addEventListener("keydown", (e) => {
 }, { once: true });
 
 resizeCanvases();
+createStars();   // ✅ now width/height are real
 animate();
   
 const dotsElement = document.getElementById('loading-dots');

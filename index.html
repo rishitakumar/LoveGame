@@ -634,12 +634,13 @@ function createStars(count = 120) { // Slightly fewer stars for better performan
   for (let i = 0; i < count; i++) {
     const color = starColors[Math.floor(Math.random() * starColors.length)];
     stars.push({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      r: Math.random() * 1.4 + 0.3,
-      speed: Math.random() * 0.12 + 0.05,
-      color
-    });
+  x: Math.random() * canvas.width,
+  y: Math.random() * canvas.height,
+  r: Math.random() * 1.4 + 0.3,
+  speed: Math.random() * 0.12 + 0.05,
+  color,
+  alpha: 0.65 + Math.random() * 0.25
+});
   }
 }
 createStars();
@@ -681,7 +682,7 @@ function animate() {
     stars.forEach(star => {
       star.y += star.speed;
       if (star.y > canvas.height) star.y = 0;
-      ctx.fillStyle = `rgba(${star.color[0]}, ${star.color[1]}, ${star.color[2]}, 0.8)`;
+      ctx.fillStyle = `rgba(${star.color[0]}, ${star.color[1]}, ${star.color[2]}, ${star.alpha})`;
       ctx.beginPath();
       ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
       ctx.fill();

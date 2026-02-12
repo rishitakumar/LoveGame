@@ -1108,6 +1108,37 @@ textarea,
   position: relative;
   z-index: 10;
 }
-.reminder-box.flame-frame{
-  padding: 3.2rem 3rem;   /* increase these */
+/* =============================
+   SHORTER FLAMES — TEXT BOX ONLY
+============================= */
+.reminder-box.flame-frame::before {
+  background:
+    linear-gradient(to right,
+      #ff0000,
+      #ff8c00 2%,
+      #ffff00 3%,
+      transparent 6%
+    ),
+    linear-gradient(to left,
+      #ff0000,
+      #ff8c00 2%,
+      #ffff00 3%,
+      transparent 6%
+    );
+}
+
+.reminder-box.flame-frame::after {
+  background:
+    linear-gradient(to bottom,
+      #ff0000,
+      #ff8c00 2%,
+      #ffff00 3%,
+      transparent 6%
+    ),
+    linear-gradient(to top,
+      #ff0000,
+      #ff8c00 2%,
+      #ffff00 3%,
+      transparent 6%
+    );
 }

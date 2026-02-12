@@ -644,11 +644,6 @@ function createStars(count = 120) {
       r: Math.random() * 1.4 + 0.3,
       color,
 
-      // ⭐ twinkle data (STATIC + CHEAP)
-      baseAlpha: 0.55 + Math.random() * 0.25,
-      twinkleAmp: 0.08 + Math.random() * 0.06,   // very subtle
-      twinkleSpeed: 0.0006 + Math.random() * 0.0006,
-      phase: Math.random() * Math.PI * 2
     });
   }
 }
@@ -687,14 +682,9 @@ function animate() {
   // 2. Draw Intro Elements Only If Running
   if (running) {
     /* Background Stars */
-    stars.forEach(star => {
-  // ⭐ ultra-cheap twinkle (1 sin per star)
-  const alpha =
-    star.baseAlpha +
-    Math.sin(performance.now() * star.twinkleSpeed + star.phase) *
-    star.twinkleAmp;
-
-  ctx.fillStyle = `rgba(${star.color[0]}, ${star.color[1]}, ${star.color[2]}, ${alpha})`;
+    /* Background Stars (NO twinkle) */
+stars.forEach(star => {
+  ctx.fillStyle = `rgba(${star.color[0]}, ${star.color[1]}, ${star.color[2]}, 0.8)`;
   ctx.beginPath();
   ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
   ctx.fill();

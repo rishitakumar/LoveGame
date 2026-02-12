@@ -140,7 +140,9 @@ if (localStorage.getItem("lovegame-played") === todayKey) {
 }
 
 localStorage.setItem("lovegame-played", todayKey); --- */
+const IMG_CACHE = new Map();
 
+  
 function preloadCard(card) {
   return Promise.all([
     preloadImage(card.questionFront),
@@ -161,8 +163,6 @@ preloadImage("murkland_screen.png");
 preloadImage("loveland_screen.png");
 preloadImage("ecstasy_screen.png");
   
-const IMG_CACHE = new Map();
-
 function preloadImage(src) {
   if (!src) return Promise.resolve();
   if (IMG_CACHE.has(src)) return IMG_CACHE.get(src);

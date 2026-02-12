@@ -140,26 +140,6 @@ if (localStorage.getItem("lovegame-played") === todayKey) {
 }
 
 localStorage.setItem("lovegame-played", todayKey); --- */
-  
-const IMG_CACHE = new Map();
-
-function preloadImage(src) {
-  if (!src) return Promise.resolve();
-  if (IMG_CACHE.has(src)) return IMG_CACHE.get(src);
-
-  const p = new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve();
-    img.onerror = () => resolve(); // don’t block game on one missing file
-    img.src = src;
-    img.decode?.().then(resolve).catch(resolve);
-  });
-
-  IMG_CACHE.set(src, p);
-  return p;
-}
-
-
 
 function preloadCard(card) {
   return Promise.all([
@@ -180,6 +160,25 @@ preloadImage("darkland_screen.png");
 preloadImage("murkland_screen.png");
 preloadImage("loveland_screen.png");
 preloadImage("ecstasy_screen.png");
+  
+const IMG_CACHE = new Map();
+
+function preloadImage(src) {
+  if (!src) return Promise.resolve();
+  if (IMG_CACHE.has(src)) return IMG_CACHE.get(src);
+
+  const p = new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve();
+    img.onerror = () => resolve(); // don’t block game on one missing file
+    img.src = src;
+    img.decode?.().then(resolve).catch(resolve);
+  });
+
+  IMG_CACHE.set(src, p);
+  return p;
+}
+
 
 let beginShown = false;
 // =============================
@@ -959,8 +958,6 @@ confirmBtn.addEventListener("click", () => {
     overlay.remove();
     startLoveGame();
   }, 800);
-});
-
 });
 
 function collectAllImageSrcs() {

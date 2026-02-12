@@ -150,7 +150,7 @@ body {
   position: fixed;
   inset: 0;
   pointer-events: none; /* Allows clicking links behind the trail */
-  z-index: 100000;      /* Keeps streak above everything else */
+  z-index: 20000000;      /* Keeps streak above everything else */
 }
 
 .cyber-text {

@@ -1079,7 +1079,7 @@ textarea,
 .flame-frame::after {
   content: "";
   position: absolute;
-  inset: -9px; /* adjust thickness of flame border */
+  inset: -2px; /* adjust thickness of flame border */
   pointer-events: none;
   z-index: 5; /* above box background */
   opacity: 0.95;

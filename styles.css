@@ -1079,7 +1079,7 @@ textarea,
 .flame-frame::after {
   content: "";
   position: absolute;
-  inset: -18px; /* adjust thickness of flame border */
+  inset: -9px; /* adjust thickness of flame border */
   pointer-events: none;
   z-index: 5; /* above box background */
   opacity: 0.95;
@@ -1108,37 +1108,5 @@ textarea,
   position: relative;
   z-index: 10;
 }
-/* =============================
-   SHORTER FLAMES — TEXT BOX ONLY
-============================= */
-.reminder-box.flame-frame::before {
-  background:
-    linear-gradient(to right,
-      #ff0000,
-      #ff8c00 2%,
-      #ffff00 3%,
-      transparent 6%
-    ),
-    linear-gradient(to left,
-      #ff0000,
-      #ff8c00 2%,
-      #ffff00 3%,
-      transparent 6%
-    );
-}
 
-.reminder-box.flame-frame::after {
-  background:
-    linear-gradient(to bottom,
-      #ff0000,
-      #ff8c00 2%,
-      #ffff00 3%,
-      transparent 6%
-    ),
-    linear-gradient(to top,
-      #ff0000,
-      #ff8c00 2%,
-      #ffff00 3%,
-      transparent 6%
-    );
-}
+

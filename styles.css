@@ -1063,3 +1063,48 @@ textarea,
   caret-color: #D011FD;
 }
 
+/* =============================
+   FLAME FRAME (reusable)
+   Uses your existing SVG filters:
+   #side-flames and #top-flames
+============================= */
+.flame-frame {
+  position: relative;
+  overflow: hidden; /* hides the solid base so only tendrils show */
+  isolation: isolate; /* keeps pseudo-elements layered correctly */
+}
+
+/* shared tendril layer */
+.flame-frame::before,
+.flame-frame::after {
+  content: "";
+  position: absolute;
+  inset: -18px; /* adjust thickness of flame border */
+  pointer-events: none;
+  z-index: 5; /* above box background */
+  opacity: 0.95;
+}
+
+/* left/right flames */
+.flame-frame::before {
+  filter: url(#side-flames);
+  background:
+    linear-gradient(to right, #ff0000, #ff8c00 4%, #ffff00 6%, transparent 12%),
+    linear-gradient(to left,  #ff0000, #ff8c00 4%, #ffff00 6%, transparent 12%);
+  animation: flameFlicker 0.12s infinite;
+}
+
+/* top/bottom flames */
+.flame-frame::after {
+  filter: url(#top-flames);
+  background:
+    linear-gradient(to bottom, #ff0000, #ff8c00 4%, #ffff00 6%, transparent 12%),
+    linear-gradient(to top,    #ff0000, #ff8c00 4%, #ffff00 6%, transparent 12%);
+  animation: flameFlicker 0.16s infinite;
+}
+
+/* keep your content above the flames */
+.flame-frame > * {
+  position: relative;
+  z-index: 10;
+}

@@ -586,8 +586,8 @@ function closeAnswerAndContinue() {
 
     // Normal movement (no land transition): continue as usual
     if (!transitioned) {
-      setTimeout(goNextAfterAnswer, NEXT_CARD_DELAY);
-    }
+  setTimeout(goNextAfterAnswer, NEXT_CARD_DELAY + 1000);
+}
   }, 220);
 }
 
@@ -1292,7 +1292,7 @@ function showQuestionCard(cardData) {
 
   const layer = document.getElementById("card-layer");
   layer.style.display = "flex";
-
+  fadeInCardLayer();
   // load + decode before showing (prevents flash/jumble)
   setCardImages({
     frontSrc: cardData.questionFront,
@@ -1584,7 +1584,7 @@ function showAnswerCard(cardData, delta) {
 
   cardEl.classList.remove("flipped");
   layer.style.display = "flex";
-
+  fadeInCardLayer();
   // load + decode before showing (prevents flash/jumble)
   setCardImages({
     frontSrc: cardData.answerFront,
@@ -1757,6 +1757,14 @@ function landLabel(land) {
   };
   return map[land] || "Loveland";
 }
+
+function fadeInCardLayer() {
+  const layer = document.getElementById("card-layer");
+  if (!layer) return;
+  layer.classList.add("card-fade-in");
+  requestAnimationFrame(() => layer.classList.remove("card-fade-in"));
+}
+
 
 function showJourneyEnd(finalLand) {
   // hide cards

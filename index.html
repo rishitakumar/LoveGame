@@ -5,6 +5,9 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="youricon.png">
+  <link rel="preload" as="image" href="darkland_screen.png">
+<link rel="preload" as="image" href="cards_physical_q1_front.png">
+<link rel="preload" as="image" href="cards_physical_q1_back.png">
 </head>
 <body>
 
@@ -941,7 +944,6 @@ characters.forEach(char => {
 
 // ✅ CONFIRM BUTTON — THIS WAS MISSING
 const confirmBtn = document.getElementById("confirm-character");
-
 confirmBtn.addEventListener("click", () => {
   if (!selectedCharacter) return;
 
@@ -950,11 +952,56 @@ confirmBtn.addEventListener("click", () => {
   overlay.classList.remove("visible");
   overlay.classList.add("fade-out");
 
-  setTimeout(() => {
+  setTimeout(async () => {
+    // preload everything while overlay is fading out
+    await preloadAllAssets();
+
     overlay.remove();
     startLoveGame();
   }, 800);
 });
+
+});
+
+function collectAllImageSrcs() {
+  const decks = [PHYSICAL_CARDS, MURK_CARDS, MENTAL_CARDS, [ECSTASY_CARD]].flat();
+  const cardImgs = decks.flatMap(c =>
+    [c.questionFront, c.questionBack, c.answerFront, c.answerBack].filter(Boolean)
+  );
+
+  const otherImgs = [
+    "darkland_screen.png",
+    "murkland_screen.png",
+    "loveland_screen.png",
+    "ecstasy_screen.png",
+    "reflection_front.png",
+    "reflection_back.png",
+    // character images too:
+    "1phoenix.png","2kitsune.png","3wata.png","4hydra.png","5girl.png",
+  ];
+
+  return Array.from(new Set([...cardImgs, ...otherImgs]));
+}
+
+async function preloadAllAssets(onProgress) {
+  const srcs = collectAllImageSrcs();
+  let done = 0;
+
+  // small concurrency so you don’t overload the browser/network
+  const CONCURRENCY = 6;
+  const queue = [...srcs];
+
+  async function worker() {
+    while (queue.length) {
+      const src = queue.shift();
+      await preloadImage(src);
+      done++;
+      onProgress?.(done, srcs.length);
+    }
+  }
+
+  await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+}
 
 
   // =============================

@@ -947,16 +947,20 @@ confirmBtn.addEventListener("click", () => {
   if (!selectedCharacter) return;
 
   const overlay = document.getElementById("character-overlay");
-
   overlay.classList.remove("visible");
   overlay.classList.add("fade-out");
 
   setTimeout(async () => {
-    // preload everything while overlay is fading out
-    await preloadAllAssets();
-
+    // 1) Make Darkland show ASAP
+    await preloadImage("darkland_screen.png"); // only the first screen
     overlay.remove();
     startLoveGame();
+
+    // 2) Preload everything else AFTER the game is already visible
+    // (don’t await — run in background)
+    setTimeout(() => {
+      preloadAllAssets().catch(console.warn);
+    }, 150);
   }, 800);
 });
 

@@ -1097,6 +1097,6 @@ textarea,
 /* 🔥 thinner flames ONLY on reminders */
 .reminder-box.flame-frame::before,
 .reminder-box.flame-frame::after{
-  inset: -0.5px !important;   /* was -2px via .flame-frame::before/after */
+  inset: -18px !important;   /* was -2px via .flame-frame::before/after */
 }
 

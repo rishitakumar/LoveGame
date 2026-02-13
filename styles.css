@@ -1094,4 +1094,9 @@ textarea,
   position: relative;
   z-index: 10;
 }
+/* 🔥 thinner flames ONLY on reminders */
+.reminder-box.flame-frame::before,
+.reminder-box.flame-frame::after{
+  inset: -1px !important;   /* was -2px via .flame-frame::before/after */
+}
 

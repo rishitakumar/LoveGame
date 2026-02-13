@@ -1094,7 +1094,22 @@ textarea,
   position: relative;
   z-index: 10;
 }
-/* 🔥 thinner flames ONLY on reminders */
-.reminder-box.flame-frame::before{ filter: url(#side-flames-thin) !important; }
-.reminder-box.flame-frame::after { filter: url(#top-flames-thin)  !important; }
+/* ===== FIX: ensure flames are flames (not straight beams) ===== */
+/* If the SVG filter isn't applied, you only see the raw gradients (straight beams). */
+/* Force the filter IDs you already have in your HTML. */
+
+.flame-frame::before { filter: url(#side-flames) !important; }
+.flame-frame::after  { filter: url(#top-flames)  !important; }
+
+/* Keep your reminder “perfect flames” thinner (your exact stops) */
+.reminder-box.flame-frame::before{
+  background:
+    linear-gradient(to right, #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%),
+    linear-gradient(to left,  #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%) !important;
+}
+.reminder-box.flame-frame::after{
+  background:
+    linear-gradient(to bottom, #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%),
+    linear-gradient(to top,    #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%) !important;
+}
 

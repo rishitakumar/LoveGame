@@ -602,23 +602,35 @@ let activeDeck = PHYSICAL_CARDS;
 let murkTransitionDone = false;
 
   
-/* --- UNIVERSAL MOUSE STREAK SETUP --- */
 const mCanvas = document.getElementById("mouse-canvas");
-const mCtx = mCanvas.getContext("2d");
-let mPoints = [];
-const TRAIL_LIFESPAN = 12; // Shortened slightly to reduce lag
+const mCtx = mCanvas.getContext("2d", { alpha: true });
 
-function resizeCanvases() {
-  mCanvas.width = canvas.width = window.innerWidth;
-  mCanvas.height = canvas.height = window.innerHeight;
+let mPoints = [];
+const TRAIL_LIFESPAN = 12;
+
+function resizeMouseCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+
+  // backing store
+  mCanvas.width  = Math.floor(window.innerWidth * dpr);
+  mCanvas.height = Math.floor(window.innerHeight * dpr);
+
+  // css size
+  mCanvas.style.width  = window.innerWidth + "px";
+  mCanvas.style.height = window.innerHeight + "px";
+
+  // draw in CSS pixels
+  mCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
-window.addEventListener("resize", () => {
-  resizeCanvases();
-});
+
+window.addEventListener("resize", resizeMouseCanvas, { passive: true });
+resizeMouseCanvas();
 
 window.addEventListener("mousemove", (e) => {
   mPoints.push({ x: e.clientX, y: e.clientY, age: 0 });
-});
+  if (mPoints.length > 70) mPoints.shift();
+}, { passive: true });
+
 
 /* --- INTRO STARFIELD SETUP --- */
 const overlay = document.getElementById("intro-overlay");
@@ -631,7 +643,7 @@ let running = true;
 /* --- THE OPTIMIZED MERGED LOOP --- */
 function animate() {
   // Clear both canvases
-  mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
+  mCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
   if (running) ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // 1. Draw Mouse Streak First (Optimization: Only one shadow call)

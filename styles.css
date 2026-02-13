@@ -1039,6 +1039,21 @@ textarea,
    Uses your existing SVG filters:
    #side-flames and #top-flames
 ============================= */
+.reminder-box.flame-frame::before { ...2% 3% 6%... }
+.reminder-box.flame-frame::after  { ...2% 3% 6%... }
+/* Make INTRO flames match REMINDERS flames exactly */
+#intro-overlay.flame-frame::before {
+  background:
+    linear-gradient(to right, #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%),
+    linear-gradient(to left,  #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%) !important;
+}
+
+#intro-overlay.flame-frame::after {
+  background:
+    linear-gradient(to bottom, #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%),
+    linear-gradient(to top,    #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%) !important;
+}
+
 .flame-frame {
   position: relative;
   overflow: hidden; /* hides the solid base so only tendrils show */

@@ -89,6 +89,21 @@
   <button id="confirm-character" disabled>CONFIRM</button>
 </div>
 
+<filter id="side-flames-thin">
+  <feTurbulence type="fractalNoise" baseFrequency="0.03 0.15" numOctaves="3">
+    <animate attributeName="seed" from="1" to="100" dur="10s" repeatCount="indefinite" />
+  </feTurbulence>
+  <feDisplacementMap in="SourceGraphic" scale="18" />
+</filter>
+
+<filter id="top-flames-thin">
+  <feTurbulence type="fractalNoise" baseFrequency="0.15 0.03" numOctaves="3">
+    <animate attributeName="seed" from="1" to="100" dur="10s" repeatCount="indefinite" />
+  </feTurbulence>
+  <feDisplacementMap in="SourceGraphic" scale="18" />
+</filter>
+
+  
 <svg width="0" height="0" style="position: absolute;">
   <defs>
     <filter id="side-flames">

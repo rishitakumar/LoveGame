@@ -610,18 +610,13 @@ const TRAIL_LIFESPAN = 12;
 
 function resizeMouseCanvas() {
   const dpr = window.devicePixelRatio || 1;
-
-  // backing store
   mCanvas.width  = Math.floor(window.innerWidth * dpr);
   mCanvas.height = Math.floor(window.innerHeight * dpr);
-
-  // css size
   mCanvas.style.width  = window.innerWidth + "px";
   mCanvas.style.height = window.innerHeight + "px";
-
-  // draw in CSS pixels
   mCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
+
 
 window.addEventListener("resize", resizeMouseCanvas, { passive: true });
 resizeMouseCanvas();
@@ -705,6 +700,7 @@ function spawnEmbers() {
   fireEmbers.push({ x: ex, y: ey, vx: evx, vy: evy, life: 0 });
 }
 
+let INTRO_ENDED = false;
 
 /* End Intro Logic */
 function endIntro() {
@@ -760,7 +756,7 @@ window.addEventListener("keydown", (e) => {
   endIntro();
 }, { once: true });
 
-resizeCanvases();
+resizeMouseCanvas()
 animate();
   
 const dotsElement = document.getElementById('loading-dots');
@@ -2763,7 +2759,6 @@ console.log("✅ Reflection UI mounted");
   };
 })();
 
-let INTRO_ENDED = false;
 
 function safeStopCursor(delay = 1200) {
   setTimeout(() => document.body.classList.remove("cursor-loading"), delay);

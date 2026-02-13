@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="youricon.png">
+  <link rel="preload" as="image" href="star-background.png">
   <link rel="preload" as="image" href="darkland_screen.png">
 <link rel="preload" as="image" href="cards_physical_q1_front.png">
 <link rel="preload" as="image" href="cards_physical_q1_back.png">
@@ -613,40 +614,19 @@ function resizeCanvases() {
 }
 window.addEventListener("resize", () => {
   resizeCanvases();
-  createStars(); // ✅ re-spread stars using the new canvas width/height
 });
-
 
 window.addEventListener("mousemove", (e) => {
   mPoints.push({ x: e.clientX, y: e.clientY, age: 0 });
 });
 
 /* --- INTRO STARFIELD SETUP --- */
-const starColors = [[255, 255, 255], [200, 220, 255], [220, 200, 255], [255, 230, 180], [180, 255, 240]];
 const overlay = document.getElementById("intro-overlay");
 const canvas = document.getElementById("starfield");
 const ctx = canvas.getContext("2d");
-
-let stars = [];
-let shootingStars = []; 
 let fireEmbers = [];    
 let running = true;
 
-/* Initialize Stars */
-function createStars(count = 120) {
-  stars = [];
-  for (let i = 0; i < count; i++) {
-    const color = starColors[Math.floor(Math.random() * starColors.length)];
-
-    stars.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 1.4 + 0.3,
-      color,
-
-    });
-  }
-}
 
 /* --- THE OPTIMIZED MERGED LOOP --- */
 function animate() {
@@ -683,25 +663,7 @@ function animate() {
   if (running) {
     /* Background Stars */
     /* Background Stars (NO twinkle) */
-stars.forEach(star => {
-  ctx.fillStyle = `rgba(${star.color[0]}, ${star.color[1]}, ${star.color[2]}, 0.8)`;
-  ctx.beginPath();
-  ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
-  ctx.fill();
-});
-
     /* Background Shooting Stars (White) */
-    shootingStars.forEach((s, i) => {
-      s.x += s.vx; s.y += s.vy; s.life++;
-      ctx.strokeStyle = s.color;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(s.x, s.y);
-      ctx.lineTo(s.x - s.vx * 2, s.y - s.vy * 2);
-      ctx.stroke();
-      if (s.life > 25) shootingStars.splice(i, 1);
-    });
-
     /* Border Embers (Orange) */
     fireEmbers.forEach((s, i) => {
       s.x += s.vx; s.y += s.vy; s.life++;
@@ -731,16 +693,6 @@ function spawnEmbers() {
   fireEmbers.push({ x: ex, y: ey, vx: evx, vy: evy, life: 0 });
 }
 
-// Shooting star interval logic
-function createShootingStar() {
-  const c = starColors[Math.floor(Math.random() * starColors.length)];
-  shootingStars.push({
-    x: Math.random() * canvas.width, y: Math.random() * canvas.height * 0.5,
-    vx: Math.random() * 7 + 5, vy: Math.random() * 3 + 2,
-    life: 0, color: `rgba(${c[0]}, ${c[1]}, ${c[2]}, 0.7)`
-  });
-}
-const shootingInterval = setInterval(() => { if (Math.random() > 0.4) createShootingStar(); }, 300);
 
 /* End Intro Logic */
 function endIntro() {
@@ -751,7 +703,6 @@ function endIntro() {
   safeStopCursor(1200);
 
   running = false;
-  clearInterval(shootingInterval);
   clearInterval(dotInterval);
 
   // ✅ 1) show reminders UNDER the intro, instantly (no white gap)
@@ -798,7 +749,6 @@ window.addEventListener("keydown", (e) => {
 }, { once: true });
 
 resizeCanvases();
-createStars();   // ✅ now width/height are real
 animate();
   
 const dotsElement = document.getElementById('loading-dots');

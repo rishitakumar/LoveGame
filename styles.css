@@ -63,32 +63,7 @@ body {
 }
 
 /* Individual Flame Tendrils (Shared Styles) */
-#intro-overlay::before,
-#intro-overlay::after {
-  content: "";
-  position: absolute;
-  inset: -25px; /* Pulls the solid base off-screen to show only the "shredded" tips */
-  pointer-events: none;
-  z-index: 10;
-}
 
-/* Side Flames - Individual tongues pointing left/right */
-#intro-overlay::before {
-  filter: url(#side-flames); /* Connects to the SVG in your HTML */
-  background: 
-    linear-gradient(to right, #ff0000, #ff8c00 4%, #ffff00 6%, transparent 12%),
-    linear-gradient(to left, #ff0000, #ff8c00 4%, #ffff00 6%, transparent 12%);
-  animation: flameFlicker 0.1s infinite;
-}
-
-/* Top/Bottom Flames - Individual tongues pointing up/down */
-#intro-overlay::after {
-  filter: url(#top-flames); /* Connects to the SVG in your HTML */
-  background: 
-    linear-gradient(to bottom, #ff0000, #ff8c00 4%, #ffff00 6%, transparent 12%),
-    linear-gradient(to top, #ff0000, #ff8c00 4%, #ffff00 6%, transparent 12%);
-  animation: flameFlicker 0.15s infinite;
-}
 
 @keyframes flameFlicker {
   0%, 100% { opacity: 0.95; transform: scale(1); }
@@ -1105,14 +1080,3 @@ textarea,
   z-index: 10;
 }
 
-.reminder-box.flame-frame::before {
-  background:
-    linear-gradient(to right, #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%),
-    linear-gradient(to left,  #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%) !important;
-}
-
-.reminder-box.flame-frame::after {
-  background:
-    linear-gradient(to bottom, #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%),
-    linear-gradient(to top,    #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%) !important;
-}

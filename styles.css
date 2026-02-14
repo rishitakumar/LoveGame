@@ -57,13 +57,7 @@ body {
   z-index: 9999;
   overflow: hidden;
 
-  background-image:
-    radial-gradient(
-      circle at 30% 30%,
-      rgba(10, 15, 44, 0.35),
-      rgba(2, 1, 10, 0.85) 70%
-    ),
-    url("star-background.png");
+  background-image: url("star-background.png");
 
   background-position: center, center;
   background-size: cover, cover;
@@ -1127,7 +1121,7 @@ textarea,
     background-position: center center;
   }
   100% {
-    background-size: 115% 115%;
-    background-position: 52% 48%;
+    background-size: 140% 140%;
+    background-position: 54% 46%;
   }
 }

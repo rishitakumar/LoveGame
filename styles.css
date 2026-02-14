@@ -1115,7 +1115,6 @@ textarea,
     linear-gradient(to bottom, #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%),
     linear-gradient(to top,    #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%) !important;
 }
-@keyframes spaceZoom {
   @keyframes spaceZoom {
   0% {
     background-size: 100% 100%;
@@ -1129,5 +1128,4 @@ textarea,
     background-size: 165% 165%;
     background-position: 56% 44%;
   }
-}
 }

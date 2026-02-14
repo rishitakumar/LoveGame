@@ -110,9 +110,6 @@ body {
   .cyber-text {
     animation: none;
   }
-  #intro-overlay {
-    animation: none;
-  }
 }
 /* Add this to your styles.css */
 /* Optimized Canvas Settings */

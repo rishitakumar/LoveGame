@@ -56,10 +56,18 @@ body {
   inset: 0;
   z-index: 9999;
   overflow: hidden;
- background:
-    radial-gradient(circle at 30% 30%, #0a0f2c, #02010a 70%),
-    url("star-background.png") center / cover no-repeat;
-  animation: none;
+
+  background-image:
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(10, 15, 44, 0.35),
+      rgba(2, 1, 10, 0.85) 70%
+    ),
+    url("star-background.png");
+
+  background-position: center, center;
+  background-size: cover, cover;
+  background-repeat: no-repeat, no-repeat;
 }
 
 /* Individual Flame Tendrils (Shared Styles) */

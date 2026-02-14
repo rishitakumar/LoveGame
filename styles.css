@@ -68,6 +68,7 @@ body {
   background-position: center, center;
   background-size: cover, cover;
   background-repeat: no-repeat, no-repeat;
+   animation: spaceZoom 18s linear forwards;
 }
 
 /* Individual Flame Tendrils (Shared Styles) */
@@ -1120,4 +1121,13 @@ textarea,
     linear-gradient(to bottom, #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%),
     linear-gradient(to top,    #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%) !important;
 }
-
+@keyframes spaceZoom {
+  0% {
+    background-size: 100% 100%;
+    background-position: center center;
+  }
+  100% {
+    background-size: 115% 115%;
+    background-position: 52% 48%;
+  }
+}

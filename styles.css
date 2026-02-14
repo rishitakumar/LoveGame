@@ -68,7 +68,7 @@ body {
   background-position: center, center;
   background-size: cover, cover;
   background-repeat: no-repeat, no-repeat;
-   animation: spaceZoom 10s linear forwards;
+    animation: spaceZoom 8s cubic-bezier(.2,.6,.2,1) forwards;
 }
 
 /* Individual Flame Tendrils (Shared Styles) */

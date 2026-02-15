@@ -1122,3 +1122,10 @@ textarea,
     background-position: 54% 46%;
   }
 }
+#reminder-overlay {
+  pointer-events: auto;
+}
+
+#reminder-overlay * {
+  pointer-events: auto;
+}

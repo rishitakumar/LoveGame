@@ -203,6 +203,7 @@ let beginShown = false;
 const NEXT_CARD_DELAY = 350;
 const MOVE_TO_CARD_DELAY = 120;
 const LAND_SWAP_DELAY = 0;
+const LAND_ENTRY_DELAY = 1000; // 1 second pause
 
 // =============================
 // CARD DATA (QUESTIONS + ANSWERS)
@@ -1044,10 +1045,11 @@ if (
     }
 
     img.onload = () => {
-      img.onload = null; // ✅ IMPORTANT: prevent old onload from firing later
-      positionCharacter();
-      setTimeout(() => afterTransition?.(), 0);
-    };
+  img.onload = null;
+  positionCharacter();
+  setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
+};
+
 
     img.src = "murkland_screen.png";
   });
@@ -1069,7 +1071,7 @@ if (
 
     img.onload = () => {
       positionCharacter();
-      setTimeout(() => afterTransition?.(), 0);
+      setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
     };
 
     img.src = "darkland_screen.png";
@@ -1095,14 +1097,14 @@ if (
   bigGlowTransition(() => {
     if (!img) {
       positionCharacter();
-      setTimeout(() => afterTransition?.(), 0);
+      setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
       return;
     }
 
     img.onload = () => {
       img.onload = null;
       positionCharacter();
-      setTimeout(() => afterTransition?.(), 0);
+      setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
     };
 
     img.src = "loveland_screen.png";
@@ -1132,7 +1134,7 @@ if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
 
     img.onload = () => {
       positionCharacter();
-      setTimeout(() => afterTransition?.(), 0);
+      setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
     };
 
     img.src = "murkland_screen.png";

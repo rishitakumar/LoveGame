@@ -786,8 +786,6 @@ function enableReminderScreen() {
     enableRulesClose();
   }
 
-  reminderOverlay.addEventListener("click", showRules);
-  window.addEventListener("keydown", showRules);
 
   // Keep arrow clickable as alternative
   arrow.addEventListener("click", (e) => {
@@ -816,16 +814,12 @@ function closeRules() {
 }
 
 function enableRulesClose() {
-  const overlay = document.getElementById("reminder-overlay");
-  if (!overlay) return;
+  const startBtn = document.getElementById("start-game");
+  if (!startBtn) return;
 
-  // Click anywhere OR any key closes the rules overlay
-  overlay.addEventListener("click", closeRules);
-  window.addEventListener("keydown", closeRules);
-
-  // Also allow button to close
-  document.getElementById("start-game")?.addEventListener("click", closeRules);
+  startBtn.addEventListener("click", closeRules);
 }
+
 
 /* ------------------------
    STEP 3: Call this after intro ends

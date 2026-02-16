@@ -72,13 +72,24 @@
 </div>
 
 <!-- CHARACTER SELECT SCREEN -->
-<div id="character-overlay" class="hidden">
-  <div id="character-caption" class="hidden"></div>
-  <h2 class="character-title shock-title" id="choose-title">
-  <span class="word w1">CHOOSE</span>
-  <span class="word w2">YOUR</span>
-  <span class="word w3">CHARACTER</span>
-  </h2>
+<div class="swirl-title" aria-label="Choose your character">
+  <svg viewBox="0 0 1200 220" role="img" aria-hidden="true">
+    <!-- wavy path (not a full circle) -->
+    <path id="wavePath"
+      d="M60,140
+         C200,40 340,40 480,140
+         S760,240 900,140
+         S1060,40 1140,140"
+      fill="none" />
+
+    <text class="swirl-text">
+      <textPath href="#wavePath" startOffset="50%" text-anchor="middle">
+        CHOOSE YOUR CHARACTER
+      </textPath>
+    </text>
+  </svg>
+</div>
+
 
   <div class="character-grid">
     <img src="1phoenix.png" class="character" data-character="phoenix">
@@ -864,6 +875,17 @@ function showCharacterSelect() {
   overlay.classList.add("visible");
 
   const title = overlay.querySelector(".shock-title");
+  const swirl = document.querySelector(".swirl-title");
+if (swirl) {
+  swirl.classList.remove("play","settled");
+  void swirl.offsetWidth;       // restart
+  swirl.classList.add("play");
+  setTimeout(() => {
+    swirl.classList.remove("play");
+    swirl.classList.add("settled");
+  }, 1300);
+}
+
   if (title) {
     title.classList.remove("play");
     void title.offsetWidth; // force reflow

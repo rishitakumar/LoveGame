@@ -72,24 +72,39 @@
 </div>
 
 <!-- CHARACTER SELECT SCREEN -->
-<div class="swirl-title" aria-label="Choose your character">
-  <svg viewBox="0 0 1200 220" role="img" aria-hidden="true">
-    <!-- wavy path (not a full circle) -->
-    <path id="wavePath"
-      d="M60,140
-         C200,40 340,40 480,140
-         S760,240 900,140
-         S1060,40 1140,140"
-      fill="none" />
+<div id="character-overlay" class="hidden" aria-label="Choose your character">
+  <div class="swirl-title">
+    <svg viewBox="0 0 1200 220" role="img" aria-hidden="true">
+      <defs>
+        <!-- a soft neon blur filter that hugs letters -->
+        <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="6" result="b"/>
+          <feMerge>
+            <feMergeNode in="b"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
 
-    <text class="swirl-text">
-      <textPath href="#wavePath" startOffset="50%" text-anchor="middle">
-        CHOOSE YOUR CHARACTER
-      </textPath>
-    </text>
-  </svg>
-</div>
+      <path id="wavePath"
+        d="M60,140
+           C200,40 340,40 480,140
+           S760,240 900,140
+           S1060,40 1140,140"
+        fill="none" />
 
+      <text class="swirl-text" filter="url(#neonGlow)">
+        <textPath id="swirlTP" href="#wavePath" startOffset="50%" text-anchor="middle">
+          CHOOSE YOUR CHARACTER
+          <!-- ✅ real animation: SMIL animates startOffset -->
+          <animate attributeName="startOffset" dur="1.25s" values="35%;50%" fill="freeze"
+                   keySplines=".18 1.35 .32 1" calcMode="spline"/>
+        </textPath>
+      </text>
+    </svg>
+  </div>
+
+  <div id="character-caption"></div>
 
   <div class="character-grid">
     <img src="1phoenix.png" class="character" data-character="phoenix">
@@ -97,11 +112,11 @@
     <img src="3wata.png" class="character" data-character="mamiwata">
     <img src="4hydra.png" class="character" data-character="hydra">
     <img src="5girl.png" class="character" data-character="human">
-
   </div>
 
   <button id="confirm-character" disabled>CONFIRM</button>
 </div>
+
 
 <filter id="side-flames-thin">
   <feTurbulence type="fractalNoise" baseFrequency="0.03 0.15" numOctaves="3">
@@ -869,31 +884,34 @@ const LADDERS = {
 
 function showCharacterSelect() {
   const overlay = document.getElementById("character-overlay");
+  if (!overlay) {
+    console.warn("Missing #character-overlay in HTML");
+    return;
+  }
 
   overlay.classList.remove("hidden");
-  overlay.classList.remove("fade-out");
   overlay.classList.add("visible");
 
-  const title = overlay.querySelector(".shock-title");
-  const swirl = document.querySelector(".swirl-title");
-if (swirl) {
-  swirl.classList.remove("play","settled");
-  void swirl.offsetWidth;       // restart
-  swirl.classList.add("play");
-  setTimeout(() => {
-    swirl.classList.remove("play");
-    swirl.classList.add("settled");
-  }, 1300);
-}
+  // restart “play” entrance
+  const swirl = overlay.querySelector(".swirl-title");
+  if (swirl) {
+    swirl.classList.remove("play", "settled");
+    void swirl.offsetWidth;
+    swirl.classList.add("play");
+    setTimeout(() => {
+      swirl.classList.remove("play");
+      swirl.classList.add("settled");
+    }, 1300);
+  }
 
-  if (title) {
-    title.classList.remove("play");
-    void title.offsetWidth; // force reflow
-    title.classList.add("play");
+  // restart the SMIL animation each time by cloning the textPath
+  const tp = overlay.querySelector("#swirlTP");
+  if (tp) {
+    const parent = tp.parentNode;
+    const clone = tp.cloneNode(true);
+    parent.replaceChild(clone, tp);
   }
 }
-
-
 
 
 const characters = document.querySelectorAll(".character");

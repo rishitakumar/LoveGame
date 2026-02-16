@@ -859,17 +859,18 @@ const LADDERS = {
 function showCharacterSelect() {
   const overlay = document.getElementById("character-overlay");
 
+  overlay.classList.remove("hidden");
   overlay.classList.remove("fade-out");
   overlay.classList.add("visible");
 
-  // 🔥 restart title shock animation
-  const title = document.getElementById("choose-title");
+  const title = overlay.querySelector(".shock-title");
   if (title) {
     title.classList.remove("play");
-    void title.offsetWidth; // force reflow so animation can restart
+    void title.offsetWidth; // force reflow
     title.classList.add("play");
   }
 }
+
 
 
 

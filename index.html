@@ -861,10 +861,18 @@ const LADDERS = {
 function showCharacterSelect() {
   const overlay = document.getElementById("character-overlay");
 
-  // force initial state
   overlay.classList.remove("fade-out");
   overlay.classList.add("visible");
+
+  // 🔥 restart title shock animation
+  const title = document.getElementById("choose-title");
+  if (title) {
+    title.classList.remove("play");
+    void title.offsetWidth; // force reflow so animation can restart
+    title.classList.add("play");
+  }
 }
+
 
 
 const characters = document.querySelectorAll(".character");

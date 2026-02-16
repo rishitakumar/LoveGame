@@ -377,22 +377,24 @@ body {
   opacity: 0;
   pointer-events: none;
 }
-#character-caption {
+.character-caption{
+  position: absolute;
+  left: 50%;
+  top: -72px;                 /* <- raise/lower this */
+  transform: translateX(-50%);
+  width: 220px;               /* <- controls wrapping */
   text-align: center;
-  margin-bottom: 18px;
-  font-family: 'Georgia', serif; /* or your existing font */
-  font-size: 1.5rem;
-  letter-spacing: 0.12em;
-  font-style: italic;
 
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  font-style: italic;
+  line-height: 1.15;
   color: #fff234;
+
   text-shadow:
     0 0 6px rgba(190, 140, 255, 0.5),
     0 0 14px rgba(130, 80, 220, 0.35);
-
-  opacity: 0;
-  transform: translateY(-8px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
 #character-caption.visible {

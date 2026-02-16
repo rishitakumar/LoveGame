@@ -1228,3 +1228,9 @@ textarea,
   opacity: 1;
   transform: none;
 }
+.swirl-title svg{
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;   /* ✅ prevents “CH” getting cut off */
+}

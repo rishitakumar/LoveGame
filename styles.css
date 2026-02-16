@@ -1134,6 +1134,8 @@ textarea,
     drop-shadow(0 0 10px rgba(245,255,58,0.55))
     drop-shadow(0 0 28px rgba(245,255,58,0.25));
   transform-origin: 50% 60%;
+  display: flex;
+  justify-content: center;
 }
 
 /* the letters */
@@ -1230,7 +1232,7 @@ textarea,
 }
 .swirl-title svg{
   display: block;
-  width: 100%;
+  width: min(1100px, 94vw);
   height: auto;
   overflow: visible;   /* ✅ prevents “CH” getting cut off */
 }

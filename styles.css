@@ -352,28 +352,26 @@ body {
 #character-overlay.selection-made .character.selected {
   opacity: 1;
 }
-#character-overlay {
+#character-overlay{
   position: fixed;
   inset: 0;
   z-index: 8500;
-  background: rgba(0,0,0,0.9);
-
-  display: flex;
+  background: #000;          /* ✅ solid black */
+  display: none;             /* hidden by default */
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   opacity: 0;
   pointer-events: none;
-
   transition: opacity 0.8s ease;
-  will-change: opacity;
 }
 
-#character-overlay.visible {
+#character-overlay.visible{
+  display: flex;
   opacity: 1;
   pointer-events: auto;
 }
+
 
 #character-overlay.fade-out {
   opacity: 0;

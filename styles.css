@@ -280,13 +280,16 @@ body {
   display: flex;
   gap: 2rem;
   margin-bottom: 2rem;
+  margin-top: 32px;   /* ✅ pushes characters DOWN */
 }
+
 
 /* Characters */
 .character {
   width: 250px;
   cursor: pointer;
   position: relative;
+  z-index: 1;
   transition: transform 0.3s ease, filter 0.3s ease;
   filter: grayscale(30%) brightness(0.9);
 }
@@ -378,25 +381,27 @@ body {
   opacity: 0;
   pointer-events: none;
 }
-.character-caption{
-  position: absolute;
-  left: 50%;
-  top: -72px;                 /* <- raise/lower this */
-  transform: translateX(-50%);
-  width: 220px;               /* <- controls wrapping */
+#character-caption {
   text-align: center;
-
+  margin-bottom: 18px;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 1rem;
-  letter-spacing: 0.08em;
+  font-size: 1.5rem;
+  letter-spacing: 0.12em;
   font-style: italic;
-  line-height: 1.15;
-  color: #fff234;
 
+  color: #fff234;
   text-shadow:
     0 0 6px rgba(190, 140, 255, 0.5),
     0 0 14px rgba(130, 80, 220, 0.35);
+
+  opacity: 0;
+  transform: translateY(-28px);   /* 🔼 was -8px → move UP */
+  transition: opacity 0.6s ease, transform 0.6s ease;
+
+  position: relative;
+  z-index: 10;                    /* 🔥 ABOVE characters */
 }
+
 
 #character-caption.visible {
   opacity: 1;

@@ -1143,14 +1143,13 @@ textarea,
   opacity: 0;
   transform: scale(0.3);
   filter: blur(8px);
-  text-shadow:
-    0 0 0 rgba(245,255,58,0);
+  text-shadow: 0 0 0 rgba(245,255,58,0);
 }
 
-/* staggered shock timing */
-.shock-title .w1{ animation: shockIn 0.55s cubic-bezier(.2,1.6,.3,1) forwards; }
-.shock-title .w2{ animation: shockIn 0.55s cubic-bezier(.2,1.6,.3,1) forwards; animation-delay: 0.25s; }
-.shock-title .w3{ animation: shockIn 0.65s cubic-bezier(.2,1.6,.3,1) forwards; animation-delay: 0.5s; }
+/* animation runs only when we add .play */
+.shock-title.play .w1{ animation: shockIn 0.55s cubic-bezier(.2,1.6,.3,1) forwards; }
+.shock-title.play .w2{ animation: shockIn 0.55s cubic-bezier(.2,1.6,.3,1) forwards; animation-delay: 0.22s; }
+.shock-title.play .w3{ animation: shockIn 0.65s cubic-bezier(.2,1.6,.3,1) forwards; animation-delay: 0.44s; }
 
 @keyframes shockIn{
   0%{
@@ -1159,13 +1158,13 @@ textarea,
     filter: blur(8px);
     text-shadow: 0 0 0 rgba(245,255,58,0);
   }
-  60%{
+  65%{
     opacity: 1;
-    transform: scale(1.35);
+    transform: scale(1.4);
     filter: blur(0);
     text-shadow:
-      0 0 18px rgba(245,255,58,0.9),
-      0 0 60px rgba(245,255,58,0.6);
+      0 0 18px rgba(245,255,58,0.95),
+      0 0 60px rgba(245,255,58,0.55);
   }
   100%{
     opacity: 1;
@@ -1175,4 +1174,10 @@ textarea,
       0 0 12px rgba(245,255,58,0.6),
       0 0 36px rgba(245,255,58,0.25);
   }
+}
+
+
+.shock-title{
+  font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
+  text-transform: uppercase;
 }

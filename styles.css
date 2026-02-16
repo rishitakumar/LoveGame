@@ -1129,109 +1129,81 @@ textarea,
 #reminder-overlay * {
   pointer-events: auto;
 }
-.shock-title{
-  display: flex;
-  position: relative;
-  justify-content: center;
-  gap: 18px;
-  letter-spacing: 3px;
-  font-size: clamp(26px, 4vw, 46px);
-  color: #f5ff3a;
+.swirl-title{
+  width: min(1100px, 94vw);
+  margin: 0 auto 24px;
+  filter:
+    drop-shadow(0 0 10px rgba(245,255,58,0.55))
+    drop-shadow(0 0 28px rgba(245,255,58,0.25));
+  transform-origin: 50% 60%;
+}
+
+/* the letters */
+.swirl-text{
   font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
+  font-size: 82px;
+  letter-spacing: 10px;
   text-transform: uppercase;
+  fill: #f5ff3a;
+
+  /* letter-hugging glow */
+  paint-order: stroke;
+  stroke: rgba(245,255,58,0.22);
+  stroke-width: 6px;
 }
 
-/* DEFAULT: visible (so you never “lose” the title) */
-.shock-title .word{
-  display: inline-block;
-  opacity: 1;
-  transform: none;
-  filter: none;
-  text-shadow:
-    0 0 12px rgba(245,255,58,0.6),
-    0 0 36px rgba(245,255,58,0.25);
+/* animate the whole title in */
+.swirl-title.play{
+  animation: swirlIn 1.25s cubic-bezier(.18,1.35,.32,1) both;
 }
 
-/* ONLY while animating: start hidden/small */
-.shock-title.play .word{
-  opacity: 0;
-  transform: scale(0.3);
-  filter: blur(8px);
-  text-shadow: 0 0 0 rgba(245,255,58,0);
+/* subtle “wave travel” along the path */
+.swirl-title.play textPath{
+  animation: waveSlide 1.25s cubic-bezier(.18,1.35,.32,1) both;
 }
 
-.shock-title.play .w1 {
-  animation: shockIn 0.85s cubic-bezier(.18,1.4,.3,1) forwards;
+/* optional tiny shimmer after it lands */
+.swirl-title.settled{
+  animation: neonThrum 2.2s ease-in-out infinite;
 }
 
-.shock-title.play .w2 {
-  animation: shockIn 0.85s cubic-bezier(.18,1.4,.3,1) forwards;
-  animation-delay: 0.45s;
-}
-
-.shock-title.play .w3 {
-  animation: shockIn 1.05s cubic-bezier(.18,1.5,.3,1) forwards;
-  animation-delay: 0.90s;
-}
-
-@keyframes shockIn {
-  0% {
+@keyframes swirlIn{
+  0%{
     opacity: 0;
-    transform: scale(0.15);
-    filter: blur(14px);
-    text-shadow:
-      0 0 0 rgba(245,255,58,0);
+    transform: translateY(-18px) rotate(-10deg) scale(0.65);
+    filter: blur(6px);
   }
-
-  /* slow build */
-  40% {
+  55%{
     opacity: 1;
-    transform: scale(0.85);
-    filter: blur(4px);
-  }
-
-  /* 💥 IMPACT — HOLD THIS FRAME */
-  65% {
-    transform: scale(1.6);
+    transform: translateY(0) rotate(7deg) scale(1.12);
     filter: blur(0);
-    text-shadow:
-      0 0 30px rgba(245,255,58,1),
-      0 0 80px rgba(245,255,58,0.85),
-      0 0 140px rgba(245,255,58,0.55);
   }
-
-  /* recoil */
-  82% {
-    transform: scale(0.94);
+  75%{
+    transform: rotate(-2deg) scale(0.98);
   }
-
-  /* settle */
-  100% {
+  100%{
     opacity: 1;
-    transform: scale(1);
+    transform: rotate(0deg) scale(1);
     filter: blur(0);
-    text-shadow:
-      0 0 18px rgba(245,255,58,0.8),
-      0 0 60px rgba(245,255,58,0.45),
-      0 0 110px rgba(245,255,58,0.25);
   }
 }
-.shock-title {
-  position: relative;
+
+@keyframes waveSlide{
+  0%   { startOffset: 35%; }
+  100% { startOffset: 50%; }
 }
 
-.shock-title .word::after {
-  content: "";
-  position: absolute;
-  inset: -40%;
-  z-index: -1;
-  background: radial-gradient(
-    circle,
-    rgba(245,255,58,0.35) 0%,
-    rgba(245,255,58,0.15) 35%,
-    transparent 65%
-  );
-  filter: blur(28px);
-  opacity: 0.9;
+@keyframes neonThrum{
+  0%,100%{
+    filter:
+      drop-shadow(0 0 10px rgba(245,255,58,0.55))
+      drop-shadow(0 0 28px rgba(245,255,58,0.25));
+  }
+  50%{
+    filter:
+      drop-shadow(0 0 14px rgba(245,255,58,0.75))
+      drop-shadow(0 0 44px rgba(245,255,58,0.32));
+  }
 }
+
 

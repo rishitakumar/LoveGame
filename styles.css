@@ -1239,3 +1239,27 @@ textarea,
   height: auto;
   overflow: visible;   /* ✅ prevents “CH” getting cut off */
 }
+.character img{
+  position: relative;
+  z-index: 1;           /* image sits behind caption */
+  display: block;
+}
+.character .caption{
+  position: absolute;
+  left: 50%;
+  top: -34px;                 /* ✅ higher: make more negative */
+  transform: translateX(-50%);
+  z-index: 5;                 /* ✅ above the image */
+  pointer-events: none;       /* doesn’t block clicking character */
+
+  /* keep your original caption vibe */
+  text-align: center;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.15rem;
+  letter-spacing: 0.12em;
+  font-style: italic;
+  color: #fff234;
+  text-shadow:
+    0 0 6px rgba(190, 140, 255, 0.5),
+    0 0 14px rgba(130, 80, 220, 0.35);
+}

@@ -1160,17 +1160,17 @@ textarea,
 }
 
 .shock-title.play .w1 {
-  animation: shockIn 0.52s cubic-bezier(.15,1.8,.3,1) forwards;
+  animation: shockIn 0.65s cubic-bezier(.2,1.6,.3,1) forwards;
 }
 
 .shock-title.play .w2 {
-  animation: shockIn 0.52s cubic-bezier(.15,1.8,.3,1) forwards;
-  animation-delay: 0.24s;
+  animation: shockIn 0.65s cubic-bezier(.2,1.6,.3,1) forwards;
+  animation-delay: 0.30s;
 }
 
 .shock-title.play .w3 {
-  animation: shockIn 0.60s cubic-bezier(.15,1.9,.3,1) forwards;
-  animation-delay: 0.48s;
+  animation: shockIn 0.75s cubic-bezier(.2,1.7,.3,1) forwards;
+  animation-delay: 0.60s;
 }
 @keyframes shockIn {
   0% { opacity: 0; transform: scale(0.2); filter: blur(10px); }

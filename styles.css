@@ -1,8 +1,8 @@
 body {
   font-family: Georgia, "Times New Roman", sans-serif;
   margin: 0;
-  background-color: #ffffff; /* This ensures the page isn't black after the intro */
-  color: #333333; /* Standard dark text for readability */
+ background: #000;
+  color: #eee;
 }
 
 .header {
@@ -1155,10 +1155,6 @@ textarea,
   animation: swirlIn 1.25s cubic-bezier(.18,1.35,.32,1) both;
 }
 
-/* subtle “wave travel” along the path */
-.swirl-title.play textPath{
-  animation: waveSlide 1.25s cubic-bezier(.18,1.35,.32,1) both;
-}
 
 /* optional tiny shimmer after it lands */
 .swirl-title.settled{

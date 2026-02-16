@@ -1200,4 +1200,27 @@ textarea,
   }
 }
 
+/* each word is its own “pop” */
+.swirl-word{
+  opacity: 0;
+  transform-box: fill-box;      /* important for SVG transform */
+  transform-origin: center;
+}
+
+/* only pop when you add .play (your JS already does that) */
+.swirl-title.play .swirl-word{
+  animation: wordPop 0.55s cubic-bezier(.18,1.35,.32,1) both;
+}
+
+/* stagger timing */
+.swirl-title.play .w1{ animation-delay: 0.05s; }
+.swirl-title.play .w2{ animation-delay: 0.18s; }
+.swirl-title.play .w3{ animation-delay: 0.33s; }
+
+@keyframes wordPop{
+  0%   { opacity: 0; transform: translateY(-10px) scale(0.65); }
+  60%  { opacity: 1; transform: translateY(0)     scale(1.15); }
+  100% { opacity: 1; transform: translateY(0)     scale(1); }
+}
+
 

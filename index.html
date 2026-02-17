@@ -772,7 +772,7 @@ window.CursorFX?.start?.();
   const reminderOverlay = document.getElementById("reminder-overlay");
   if (reminderOverlay) {
     reminderOverlay.hidden = false;
-    reminderOverlay.style.opacity = "0";
+    reminderOverlay.style.opacity = "1";
     reminderOverlay.style.transition = "opacity 0.4s ease";
     requestAnimationFrame(() => (reminderOverlay.style.opacity = "1"));
   }
@@ -843,6 +843,9 @@ function enableReminderScreen() {
     e.stopPropagation();
     showRules();
   });
+  reminderOverlay.addEventListener("click", showRules);
+window.addEventListener("keydown", showRules);
+
 }
 
 /* ------------------------

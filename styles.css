@@ -167,7 +167,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 9000;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.85);
@@ -1271,6 +1271,7 @@ textarea,
 #reminder-overlay[hidden] { 
   display: none !important; 
 }
+#reminder-overlay.visible { display: flex; }
 #character-overlay[hidden] { 
   display: none !important; 
 }

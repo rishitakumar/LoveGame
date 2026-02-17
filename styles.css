@@ -56,7 +56,7 @@ body {
   inset: 0;
   z-index: 9999;
   overflow: hidden;
-
+  background-color: #000;
   background-image: url("star-background.png");
 
   background-position: center, center;
@@ -1267,4 +1267,16 @@ textarea,
   text-shadow:
     0 0 6px rgba(190, 140, 255, 0.5),
     0 0 14px rgba(130, 80, 220, 0.35);
+}
+#reminder-overlay[hidden] { 
+  display: none !important; 
+}
+#character-overlay[hidden] { 
+  display: none !important; 
+}
+#card-layer[hidden] { 
+  display: none !important; 
+}
+#intro-overlay[hidden] { 
+  display: none !important; 
 }

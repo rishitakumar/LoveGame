@@ -678,8 +678,51 @@ window.addEventListener("mousemove", (e) => {
 
 /* --- INTRO STARFIELD SETUP --- */
 const overlay = document.getElementById("intro-overlay");
+async function startIntroWhenReady() {
+  // hide intro until bg is ready
+  overlay.style.opacity = "0";
+  overlay.style.visibility = "hidden";
+  overlay.style.backgroundColor = "#000";
+
+  // preload + decode background
+  await preloadImage("star-background.png");
+
+  // show intro now
+  overlay.style.visibility = "visible";
+  overlay.style.transition = "opacity 0.25s ease";
+  requestAnimationFrame(() => (overlay.style.opacity = "1"));
+
+  // start your normal intro timer/listeners
+  runIntroFlow();
+}
 
 
+function runIntroFlow() {
+  const timeout = setTimeout(endIntro, 3500);
+
+  overlay.addEventListener("click", () => {
+    clearTimeout(timeout);
+    endIntro();
+  }, { once: true });
+
+  window.addEventListener("keydown", () => {
+    clearTimeout(timeout);
+    endIntro();
+  }, { once: true });
+
+  resizeMouseCanvas();
+  animate();
+
+  const dotsElement = document.getElementById("loading-dots");
+  let dotCount = 0;
+
+  window.dotInterval = setInterval(() => {
+    dotCount = (dotCount + 1) % 4;
+    if (dotsElement) dotsElement.textContent = ". ".repeat(dotCount);
+  }, 400);
+}
+
+  
 /* --- THE OPTIMIZED MERGED LOOP --- */
 function animate() {
   // only clear/draw mouse canvas
@@ -723,7 +766,7 @@ function endIntro() {
 
 window.CursorFX?.start?.();
   safeStopCursor(1200);
-  clearInterval(dotInterval);
+  clearInterval(window.dotInterval);
 
   // ✅ 1) show reminders UNDER the intro, instantly (no white gap)
   const reminderOverlay = document.getElementById("reminder-overlay");
@@ -751,34 +794,10 @@ window.CursorFX?.start?.();
 }
 
 
-
-const timeout = setTimeout(endIntro, 3500);
 /* --- Improved Skip Logic --- */
 
-// 1. Click to Skip
-overlay.addEventListener("click", () => {
-  clearTimeout(timeout);
-  endIntro();
-}, { once: true });
 
-// 2. Keypress to Skip (Now targeting the whole window)
-window.addEventListener("keydown", (e) => {
-  // This ensures the intro ends regardless of which key is pressed
-  clearTimeout(timeout);
-  endIntro();
-}, { once: true });
-
-resizeMouseCanvas()
-animate();
-  
-const dotsElement = document.getElementById('loading-dots');
-let dotCount = 0;
-
-const dotInterval = setInterval(() => {
-  dotCount = (dotCount + 1) % 4; 
-  // Adding a space after the dot inside the repeat function
-  if(dotsElement) dotsElement.textContent = ". ".repeat(dotCount);
-}, 400);
+startIntroWhenReady();
 
 /* Update your endIntro function to stop the dots too */
 /* =============================

@@ -1296,9 +1296,17 @@ textarea,
 #card-layer { display: none; }              /* JS controls this */
 
 /* FIX: mouse canvas must never be above UI */
-#mouse-canvas {
-  z-index: 1 !important;
+/* ===== Mouse trail MUST be above all screens (click-through) ===== */
+#mouse-canvas{
+  z-index: 2147483000 !important; /* above every overlay */
+  pointer-events: none !important; /* never blocks clicks */
 }
+
+/* If you use the ring, keep it above the trail */
+#cursor-ring{
+  z-index: 2147483640 !important;
+}
+
 #intro-overlay { z-index: 9999; }
 #reminder-overlay { z-index: 9000; }
 #character-overlay { z-index: 8500; }

@@ -167,7 +167,6 @@ body {
   position: fixed;
   inset: 0;
   z-index: 9000;
-  display: none;
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.85);
@@ -361,7 +360,6 @@ body {
   inset: 0;
   z-index: 8500;
   background: #000;          /* ✅ solid black */
-  display: none;             /* hidden by default */
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -1271,7 +1269,6 @@ textarea,
 #reminder-overlay[hidden] { 
   display: none !important; 
 }
-#reminder-overlay.visible { display: flex; }
 #character-overlay[hidden] { 
   display: none !important; 
 }
@@ -1281,3 +1278,29 @@ textarea,
 #intro-overlay[hidden] { 
   display: none !important; 
 }
+/* ===== VISIBILITY SYSTEM (OVERRIDES EVERYTHING ABOVE) ===== */
+
+/* hidden attribute should be the ONLY thing that hides screens */
+#intro-overlay[hidden],
+#reminder-overlay[hidden],
+#character-overlay[hidden],
+#game-screen[hidden],
+#card-layer[hidden] {
+  display: none !important;
+}
+
+/* defaults when NOT hidden */
+#reminder-overlay { display: flex !important; }
+#character-overlay { display: flex !important; }
+#game-screen { display: block !important; } /* your game uses flex inside, fine */
+#card-layer { display: none; }              /* JS controls this */
+
+/* FIX: mouse canvas must never be above UI */
+#mouse-canvas {
+  z-index: 1 !important;
+}
+#intro-overlay { z-index: 9999; }
+#reminder-overlay { z-index: 9000; }
+#character-overlay { z-index: 8500; }
+#card-layer { z-index: 20000; }
+

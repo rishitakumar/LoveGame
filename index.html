@@ -1929,29 +1929,10 @@ if (screen) {
 
     // 3️⃣ after fade finishes, show reflection cards
     // 3️⃣ after fade finishes, show reflection cards
-setTimeout(async () => {
-  // ✅ If ECSTASY: show ecstasy screen behind the overlay for 3 seconds
-  if ((finalLand || "").toLowerCase() === "ecstasy") {
-    // make overlay use the ecstasy image as background
-    end.style.backgroundImage = 'url("ecstasy_screen.png")';
-    end.style.backgroundSize = "cover";
-    end.style.backgroundPosition = "center";
-    end.style.backgroundRepeat = "no-repeat";
-
-    // optional: slightly darken for readability
-    end.style.boxShadow = "inset 0 0 0 9999px rgba(0,0,0,0.25)";
-
-    // ensure it’s loaded (so you don’t see a black flash)
-    try { await preloadImage("ecstasy_screen.png"); } catch {}
-
-    // wait 3 seconds before reflections
-    setTimeout(() => attachReflectionCards(end, finalLand), 3000);
-    return;
-  }
-
-  // normal behavior for other lands
+setTimeout(() => {
   attachReflectionCards(end, finalLand);
 }, 800);
+
 
   }, 2000); // ← your 2 second pause
 });
@@ -2199,7 +2180,10 @@ function attachReflectionCards(endOverlayEl, finalLand) {
     endOverlayEl.style.display = "flex";
     endOverlayEl.style.alignItems = "center";
     endOverlayEl.style.justifyContent = "center";
-    endOverlayEl.style.background = "rgba(0,0,0,0.88)";
+    endOverlayEl.style.background = "rgba(0,0,0,1)";  // ✅ fully opaque
+endOverlayEl.style.backgroundImage = "none";      // ✅ kill any overlay bg image
+endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it exists
+
 
     // ---------- Layout (NO CSS REQUIRED) ----------
     const wrap = document.createElement("div");

@@ -1644,6 +1644,17 @@ if (cardMode === "answer" && cardSide === "back") {
 }
 }); // ✅ closes cardEl.addEventListener("click", ...)
 
+function centerGameScroll() {
+  const screen = document.getElementById("game-screen");
+  if (!screen) return;
+
+  // scroll so the middle of the scroll area is centered in the viewport
+  const maxScroll = screen.scrollHeight - screen.clientHeight;
+  if (maxScroll <= 0) return;
+
+  screen.scrollTop = Math.floor(maxScroll / 2);
+}
+
   
 function scrollToCards() {
   const screen = document.getElementById("game-screen");
@@ -1915,9 +1926,30 @@ end.id = "journey-end-overlay";
     msg.style.opacity = "0";
 
     // 3️⃣ after fade finishes, show reflection cards
-    setTimeout(() => {
-      attachReflectionCards(end, finalLand);
-    }, 800);
+    // 3️⃣ after fade finishes, show reflection cards
+setTimeout(async () => {
+  // ✅ If ECSTASY: show ecstasy screen behind the overlay for 3 seconds
+  if ((finalLand || "").toLowerCase() === "ecstasy") {
+    // make overlay use the ecstasy image as background
+    end.style.backgroundImage = 'url("ecstasy_screen.png")';
+    end.style.backgroundSize = "cover";
+    end.style.backgroundPosition = "center";
+    end.style.backgroundRepeat = "no-repeat";
+
+    // optional: slightly darken for readability
+    end.style.boxShadow = "inset 0 0 0 9999px rgba(0,0,0,0.25)";
+
+    // ensure it’s loaded (so you don’t see a black flash)
+    try { await preloadImage("ecstasy_screen.png"); } catch {}
+
+    // wait 3 seconds before reflections
+    setTimeout(() => attachReflectionCards(end, finalLand), 3000);
+    return;
+  }
+
+  // normal behavior for other lands
+  attachReflectionCards(end, finalLand);
+}, 800);
 
   }, 2000); // ← your 2 second pause
 });
@@ -1949,8 +1981,14 @@ function transitionToEcstasy() {
 
   const img = document.getElementById("game-background");
   if (!img) return;
-  img.onload = () => {};
-  img.src = "ecstasy_screen.png"; // <-- your file
+  img.onload = () => {
+  // give layout a beat, then center the view
+  requestAnimationFrame(() => {
+    centerGameScroll();
+  });
+};
+img.src = "ecstasy_screen.png";
+
 }
 
 

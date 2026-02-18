@@ -660,6 +660,11 @@ let murkTransitionDone = false;
 
   
 const mCanvas = document.getElementById("mouse-canvas");
+mCanvas.style.position = "fixed";
+mCanvas.style.inset = "0";
+mCanvas.style.zIndex = "99999";      // can be high, but…
+mCanvas.style.pointerEvents = "none"; // ✅ critical
+
 const mCtx = mCanvas.getContext("2d", { alpha: true });
 
 let mPoints = [];
@@ -2910,6 +2915,7 @@ console.log("✅ Reflection UI mounted");
   const ring = document.createElement("div");
   ring.id = "cursor-ring";
   document.body.appendChild(ring);
+  ring.style.pointerEvents = "none"; // ✅ critical
 
   // 3) move ring with mouse
   document.addEventListener("mousemove", (e) => {

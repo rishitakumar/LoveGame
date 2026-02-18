@@ -2734,6 +2734,7 @@ function redo(which) {
     // ---------- Drawing ----------
     let drawing = false;
     let last = null;
+    let activePointerId = null;   // tracks the pointer that started on the card stage
 
     function getActiveInkCtx() {
       return state.active === "front" ? inkCtxF : inkCtxB;
@@ -2750,6 +2751,8 @@ function redo(which) {
 
     function pointerDown(e) {
   e.preventDefault();
+      activePointerId = e.pointerId;
+stage.setPointerCapture?.(e.pointerId);
   const p = getPos(e);
   const which = state.active;
 
@@ -2805,6 +2808,7 @@ function redo(which) {
 
 
   function pointerMove(e) {
+    if (e.pointerId !== activePointerId) return; // ✅ sliders + everything else unaffected
   if (dragging) {
     e.preventDefault();
     const p = getPos(e);
@@ -2858,16 +2862,21 @@ function redo(which) {
 }
 
 
-    function pointerUp() {
-      dragging = null;
-      drawing = false;
-      last = null;
-    }
+    function pointerUp(e) {
+  if (e.pointerId !== activePointerId) return;
+  stage.releasePointerCapture?.(e.pointerId);
+  activePointerId = null;
+  dragging = null;
+  drawing = false;
+  last = null;
+}
 
     // Use pointer events (works for mouse + touch)
     stage.addEventListener("pointerdown", pointerDown);
     window.addEventListener("pointermove", pointerMove, { passive: false });
     window.addEventListener("pointerup", pointerUp, { passive: true });
+    window.addEventListener("pointercancel", pointerUp, { passive: true });
+
 
     // Initial view
    // Initial view

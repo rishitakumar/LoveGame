@@ -618,17 +618,19 @@ function closeAnswerAndContinue() {
     cardMode = "question";
     cardSide = "front";
 
-    // ECSTASY special handling (keep yours)
-    if (typeof ECSTASY_CARD !== "undefined" && answeredCardId === ECSTASY_CARD.id) {
-      if (delta > 0) {
-        transitionToEcstasy();
-        setTimeout(() => showJourneyEnd("ecstasy"), 2000);
-      } else {
-        GameState.land = "loveland";
-        setTimeout(() => showJourneyEnd("loveland"), 800);
-      }
-      return;
-    }
+    /if (typeof ECSTASY_CARD !== "undefined" && answeredCardId === ECSTASY_CARD.id) {
+  if (delta > 0) {
+    transitionToEcstasy();
+
+    // ✅ Let Ecstasy land sit on screen for 3 seconds BEFORE the journey text
+    setTimeout(() => showJourneyEnd("ecstasy"), 3000);
+  } else {
+    GameState.land = "loveland";
+    setTimeout(() => showJourneyEnd("loveland"), 800);
+  }
+  return;
+}
+
     // ✅ Track "perfect run" BEFORE transitions/deck swaps
 totalAnswered++;
 if (delta > 0) {
@@ -1644,17 +1646,6 @@ if (cardMode === "answer" && cardSide === "back") {
 }
 }); // ✅ closes cardEl.addEventListener("click", ...)
 
-function centerGameScroll() {
-  const screen = document.getElementById("game-screen");
-  if (!screen) return;
-
-  // scroll so the middle of the scroll area is centered in the viewport
-  const maxScroll = screen.scrollHeight - screen.clientHeight;
-  if (maxScroll <= 0) return;
-
-  screen.scrollTop = Math.floor(maxScroll / 2);
-}
-
   
 function scrollToCards() {
   const screen = document.getElementById("game-screen");
@@ -1894,7 +1885,8 @@ end.id = "journey-end-overlay";
   end.style.display = "flex";
   end.style.alignItems = "center";
   end.style.justifyContent = "center";
-  end.style.background = "rgba(0,0,0,0.78)";
+  // ✅ OPAQUE so the land behind is NOT visible during/after the message
+end.style.background = "rgba(0,0,0,1)";
   end.style.opacity = "0";
   end.style.transition = "opacity 1.0s ease";
 
@@ -1914,7 +1906,11 @@ end.id = "journey-end-overlay";
 
   end.appendChild(msg);
   document.body.appendChild(end);
-
+  // ✅ Once we’re showing the end overlay, hide the game screen so the land never shows “after”
+if (screen) {
+  screen.hidden = true;
+  screen.style.display = "none";
+}
   requestAnimationFrame(() => {
   end.style.opacity = "1";
 
@@ -1954,6 +1950,14 @@ setTimeout(async () => {
   }, 2000); // ← your 2 second pause
 });
 }
+function scrollGameToMiddle() {
+  const screen = document.getElementById("game-screen");
+  if (!screen) return;
+
+  // middle of the scrollable area
+  const mid = (screen.scrollHeight - screen.clientHeight) / 2;
+  screen.scrollTop = Math.max(0, mid);
+}
 
 function transitionToEcstasy() {
   // glow flash
@@ -1981,13 +1985,12 @@ function transitionToEcstasy() {
 
   const img = document.getElementById("game-background");
   if (!img) return;
-  img.onload = () => {
-  // give layout a beat, then center the view
-  requestAnimationFrame(() => {
-    centerGameScroll();
-  });
+ img.onload = () => {
+  // ✅ wait one frame so layout/scrollHeight is correct
+  requestAnimationFrame(() => scrollGameToMiddle());
 };
 img.src = "ecstasy_screen.png";
+
 
 }
 

@@ -629,6 +629,13 @@ function closeAnswerAndContinue() {
       }
       return;
     }
+    // ✅ Track "perfect run" BEFORE transitions/deck swaps
+totalAnswered++;
+if (delta > 0) {
+  totalCorrect++;
+} else {
+  bonusEligible = false;
+}
 
     // ✅ COUNT THIS ANSWER FIRST (prevents “8 answers” drifting during land transitions)
     answeredInThisDeck++;
@@ -1300,6 +1307,12 @@ let mentalLastSeenIndex = -1;
 const QUESTIONS_PER_DECK = 8;
 let answeredInThisDeck = 0;
 let renderToken = 0;
+// ===== BONUS TRACKING =====
+let totalAnswered = 0;
+let totalCorrect  = 0;
+let bonusEligible = true;     // stays true only if every answer is "correct"
+let bonusTriggered = false;
+
 
 async function setCardImages({ frontSrc, backSrc, mode, cardData }) {
   const myToken = ++renderToken;
@@ -1699,10 +1712,22 @@ function switchToNextDeck() {
   }
 
   if (questionPhase === "mental") {
-    // end of game (or ecstasy bonus if you want)
-    setTimeout(() => showJourneyEnd(GameState.land), 700);
+  // ✅ If PERFECT run AND you finished while in Loveland, show bonus card
+  if (!bonusTriggered && bonusEligible && GameState.land === "loveland") {
+    bonusTriggered = true;
+    questionPhase = "ecstasy";
+    activeDeck = [ECSTASY_CARD];
+    cardIndex = 0;
+    answeredInThisDeck = 0;
+
+    setTimeout(() => showQuestionCard(ECSTASY_CARD), NEXT_CARD_DELAY);
     return;
   }
+
+  // otherwise end normally
+  setTimeout(() => showJourneyEnd(GameState.land), 700);
+  return;
+}
 }
 
 function advanceCard() {
@@ -1960,6 +1985,10 @@ lovelandUnlocked = false;
 activeDeck = getDeckForPhase();
   answeredInThisDeck = 0;
 cardIndex = 0;
+  totalAnswered = 0;
+totalCorrect = 0;
+bonusEligible = true;
+bonusTriggered = false;
 murkLastSeenIndex = -1;
 mentalLastSeenIndex = -1;
 murkTransitionDone = false;

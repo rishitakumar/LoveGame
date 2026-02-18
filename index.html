@@ -621,15 +621,14 @@ function closeAnswerAndContinue() {
     if (typeof ECSTASY_CARD !== "undefined" && answeredCardId === ECSTASY_CARD.id) {
   if (delta > 0) {
     transitionToEcstasy();
-
-    // ✅ Let Ecstasy land sit on screen for 3 seconds BEFORE the journey text
-    setTimeout(() => showJourneyEnd("ecstasy"), 3000);
+    enterEcstasyHold(); // ✅ waits for click/key, then shows “Your journey…”
   } else {
     GameState.land = "loveland";
     setTimeout(() => showJourneyEnd("loveland"), 800);
   }
   return;
 }
+
 
     // ✅ Track "perfect run" BEFORE transitions/deck swaps
 totalAnswered++;
@@ -1906,6 +1905,13 @@ end.style.background = "rgba(0,0,0,1)";
 
   end.appendChild(msg);
   document.body.appendChild(end);
+  // ✅ HARD HIDE the game screen so land can NEVER show behind end/reflections
+const screen2 = document.getElementById("game-screen");
+if (screen2) {
+  screen2.hidden = true;
+  screen2.style.display = "none";
+}
+
   // ✅ Once we’re showing the end overlay, hide the game screen so the land never shows “after”
 if (screen) {
   screen.hidden = true;
@@ -1957,6 +1963,54 @@ function scrollGameToMiddle() {
   // middle of the scrollable area
   const mid = (screen.scrollHeight - screen.clientHeight) / 2;
   screen.scrollTop = Math.max(0, mid);
+}
+function enterEcstasyHold() {
+  // ✅ close any open card UI (just in case)
+  const layer = document.getElementById("card-layer");
+  if (layer) layer.style.display = "none";
+
+  // ✅ ensure game screen is visible so they can stare at Ecstasy indefinitely
+  const screen = document.getElementById("game-screen");
+  if (screen) {
+    screen.hidden = false;
+    screen.style.display = "block";
+    screen.style.opacity = "1";
+  }
+
+  // ✅ center the scrollbar once, so it doesn't start at bottom
+  requestAnimationFrame(() => scrollGameToMiddle());
+
+  // Prevent double-binding
+  if (window.__ecstasyHoldActive) return;
+  window.__ecstasyHoldActive = true;
+
+  const finish = () => {
+    if (!window.__ecstasyHoldActive) return;
+    window.__ecstasyHoldActive = false;
+
+    window.removeEventListener("keydown", onKey);
+    document.removeEventListener("click", onClick, true);
+
+    showJourneyEnd("ecstasy");
+  };
+
+  const onKey = (e) => {
+    // ignore modifier keys; otherwise any key should continue
+    if (e.key === "Shift" || e.key === "Alt" || e.key === "Control" || e.key === "Meta") return;
+    finish();
+  };
+
+  const onClick = (e) => {
+    // ✅ Only proceed if they click the Ecstasy image area (or anything in the game screen)
+    // If you want “click anywhere”, remove the if block and just call finish().
+    const bg = document.getElementById("game-background");
+    const screen = document.getElementById("game-screen");
+    if (bg && (e.target === bg || bg.contains(e.target))) return finish();
+    if (screen && (e.target === screen || screen.contains(e.target))) return finish();
+  };
+
+  window.addEventListener("keydown", onKey, { once: true });
+  document.addEventListener("click", onClick, { capture: true, once: true });
 }
 
 function transitionToEcstasy() {

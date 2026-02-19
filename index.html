@@ -2409,6 +2409,12 @@ endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it
     sizeInput.min = "2";
     sizeInput.max = "40";
     sizeInput.value = String(state.size);
+    sizeInput.style.flex = "1";
+sizeInput.style.minWidth = "140px";
+sizeInput.style.cursor = "ew-resize";
+sizeInput.style.pointerEvents = "auto";
+sizeInput.style.touchAction = "pan-x";
+
 
     r1.appendChild(document.createTextNode("Color:"));
     r1.appendChild(colorInput);
@@ -2443,6 +2449,16 @@ endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it
     textSize.min = "18";
     textSize.max = "140";
     textSize.value = String(state.textSize);
+    textSize.style.flex = "1";
+textSize.style.minWidth = "140px";
+textSize.style.cursor = "ew-resize";
+textSize.style.pointerEvents = "auto";
+textSize.style.touchAction = "pan-x";
+[sizeInput, textSize].forEach(el => {
+  el.addEventListener("pointerdown", e => e.stopPropagation());
+  el.addEventListener("mousedown",  e => e.stopPropagation());
+  el.addEventListener("touchstart", e => e.stopPropagation(), { passive: true });
+});
 
     rText.appendChild(textBtn);
     rText.appendChild(textInput);

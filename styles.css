@@ -1312,3 +1312,24 @@ textarea,
 #character-overlay { z-index: 8500; }
 #card-layer { z-index: 20000; }
 
+/* =============================
+   FIX SLIDER CURSOR
+============================= */
+
+/* Only show text cursor where actual typing happens */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="number"],
+textarea,
+[contenteditable="true"] {
+  cursor: text !important;
+}
+
+/* Make sure sliders are draggable */
+input[type="range"] {
+  cursor: ew-resize !important;
+  pointer-events: auto !important;
+}
+

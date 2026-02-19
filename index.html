@@ -1864,81 +1864,108 @@ function fadeInCardLayer() {
   requestAnimationFrame(() => layer.classList.remove("card-fade-in"));
 }
 
-
 function showJourneyEnd(finalLand) {
   // hide cards
   const layer = document.getElementById("card-layer");
   if (layer) layer.style.display = "none";
 
-  // fade the game screen
+  // hard-hide game screen so land never peeks through
   const screen = document.getElementById("game-screen");
   if (screen) {
-    screen.style.transition = "opacity 0.9s ease";
-    screen.style.opacity = "0";
+    screen.hidden = true;
+    screen.style.display = "none";
   }
 
-  // glow overlay
+  // overlay container (opaque black)
   const end = document.createElement("div");
-end.id = "journey-end-overlay";
+  end.id = "journey-end-overlay";
   end.style.position = "fixed";
   end.style.inset = "0";
   end.style.zIndex = "9999999";
   end.style.display = "flex";
   end.style.alignItems = "center";
   end.style.justifyContent = "center";
-  // ✅ OPAQUE so the land behind is NOT visible during/after the message
-end.style.background = "rgba(0,0,0,1)";
+  end.style.background = "rgba(0,0,0,1)";
   end.style.opacity = "0";
-  end.style.transition = "opacity 1.0s ease";
+  end.style.transition = "opacity 0.8s ease";
+  document.body.appendChild(end);
 
+  // message box
   const msg = document.createElement("div");
   msg.classList.add("journey-impact");
-  msg.style.letterSpacing = "3px";
-  msg.style.textShadow =
-  "0 0 18px rgba(245,255,58,0.95), 0 0 60px rgba(245,255,58,0.45)";
   msg.style.textTransform = "uppercase";
   msg.style.letterSpacing = "2px";
   msg.style.fontSize = "clamp(20px, 3vw, 44px)";
   msg.style.textAlign = "center";
   msg.style.color = "#f5ff3a";
-  msg.style.textShadow = "0 0 16px rgba(245,255,58,0.95), 0 0 44px rgba(245,255,58,0.35)";
   msg.style.padding = "24px";
-  msg.textContent = `Your journey has brought you to . . . ${landLabel(finalLand)}.`;
-
+  msg.style.textShadow =
+    "0 0 18px rgba(245,255,58,0.95), 0 0 60px rgba(245,255,58,0.25)";
+  msg.style.transition = "opacity 0.7s ease";
+  msg.style.opacity = "1";
   end.appendChild(msg);
-  document.body.appendChild(end);
-  // ✅ HARD HIDE the game screen so land can NEVER show behind end/reflections
-const screen2 = document.getElementById("game-screen");
-if (screen2) {
-  screen2.hidden = true;
-  screen2.style.display = "none";
-}
 
-  // ✅ Once we’re showing the end overlay, hide the game screen so the land never shows “after”
-if (screen) {
-  screen.hidden = true;
-  screen.style.display = "none";
-}
-  requestAnimationFrame(() => {
-  end.style.opacity = "1";
+  // helper: blinking dots like intro
+  let dotsInterval = null;
+  function startDots(el) {
+    let dotCount = 0;
+    dotsInterval = setInterval(() => {
+      dotCount = (dotCount + 1) % 4;
+      el.textContent = ". ".repeat(dotCount);
+    }, 400);
+  }
+  function stopDots() {
+    if (dotsInterval) clearInterval(dotsInterval);
+    dotsInterval = null;
+  }
 
-  // 1️⃣ wait while message is visible
+  // build line 1: "Your journey has brought you to" + dots span
+  const line1 = document.createElement("span");
+  line1.textContent = "Your journey has brought you to";
+
+  const dots = document.createElement("span");
+  dots.style.display = "inline-block";
+  dots.style.minWidth = "4ch";
+  dots.style.marginLeft = "10px";
+  dots.textContent = "";
+
+  // show overlay
+  requestAnimationFrame(() => (end.style.opacity = "1"));
+
+  // ---- Beat 1 (2s): sentence + blinking dots
+  msg.innerHTML = "";
+  msg.appendChild(line1);
+  msg.appendChild(dots);
+  startDots(dots);
+
   setTimeout(() => {
-
-    // 2️⃣ fade the text out
-    msg.style.transition = "opacity 0.8s ease";
+    // fade Beat 1 out
+    stopDots();
     msg.style.opacity = "0";
 
-    // 3️⃣ after fade finishes, show reflection cards
-    // 3️⃣ after fade finishes, show reflection cards
-setTimeout(() => {
-  attachReflectionCards(end, finalLand);
-}, 800);
+    setTimeout(() => {
+      // ---- Beat 2 (2s): show final land
+      msg.style.transition = "opacity 0.7s ease";
+      msg.textContent = landLabel(finalLand);
+      msg.style.opacity = "1";
 
+      setTimeout(() => {
+        // fade Beat 2 out
+        msg.style.opacity = "0";
 
-  }, 2000); // ← your 2 second pause
-});
+        setTimeout(() => {
+          // ---- Beat 3: reflection cards
+          attachReflectionCards(end, finalLand);
+        }, 800);
+
+      }, 2000);
+
+    }, 800);
+
+  }, 2000);
 }
+
+
 function scrollGameToMiddle() {
   const screen = document.getElementById("game-screen");
   if (!screen) return;

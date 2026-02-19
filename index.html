@@ -2372,6 +2372,12 @@ endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it
     controls.style.fontFamily = "Georgia, 'Times New Roman', serif";
     controls.style.boxShadow = "0 0 30px rgba(0,0,0,0.35)";
     controls.style.backdropFilter = "blur(6px)";
+// --- FORCE controls above the stage so sliders can be dragged ---
+stageShell.style.position = "relative";
+stageShell.style.zIndex = "1";
+
+controls.style.position = "relative";
+controls.style.zIndex = "999";
 
     const h = document.createElement("div");
     h.textContent = "Draw + Download";

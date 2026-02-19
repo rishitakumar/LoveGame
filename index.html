@@ -850,14 +850,11 @@ function enableReminderScreen() {
     enableRulesClose();
   }
 
+ arrow.addEventListener("click", (e) => {
+  e.stopPropagation();
+  showRules();
+});
 
-  // Keep arrow clickable as alternative
-  arrow.addEventListener("click", (e) => {
-    e.stopPropagation();
-    showRules();
-  });
-  reminderOverlay.addEventListener("click", showRules);
-window.addEventListener("keydown", showRules);
 
 }
 

@@ -1354,3 +1354,18 @@ input[type="range"]::-webkit-slider-thumb:active{
   min-width: auto;           /* remove intro fixed width constraint */
   animation: none;           /* no float animation here */
 }
+/* Glow ONLY on journey screen cyber text */
+#journey-end-overlay .cyber-text{
+  position: relative;
+  text-align: center;
+
+  /* main glow */
+  text-shadow:
+    0 0 6px rgba(245,255,58,0.95),
+    0 0 18px rgba(245,255,58,0.7),
+    0 0 40px rgba(245,255,58,0.4);
+
+  filter:
+    drop-shadow(0 0 25px rgba(245,255,58,0.45))
+    drop-shadow(0 0 60px rgba(245,255,58,0.25));
+}

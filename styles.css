@@ -51,38 +51,18 @@ body {
 /* The Main Star Screen */
 /* Update the existing #intro-overlay */
 /* Update the main overlay */
-#intro-overlay{
+#intro-overlay {
   position: fixed;
   inset: 0;
   z-index: 9999;
   overflow: hidden;
-  background: #000;          /* solid fallback */
-  transform: translateZ(0);  /* compositing hint */
-}
+  background-color: #000;
+  background-image: url("star-background.png");
 
-/* background layer */
-#intro-overlay::before{
-  content:"";
-  position:absolute;
-  inset:-40px; /* extra bleed so edges never show during zoom */
-  background: url("star-background.png") center / cover no-repeat;
-  transform: scale(1);
-  will-change: transform;
-  z-index: 0;
-
-  /* ✅ animate transform instead of background-size */
-  animation: spaceZoomXform 8s cubic-bezier(.2,.6,.2,1) forwards;
-}
-
-/* keep your text above */
-#intro-overlay > *{
-  position: relative;
-  z-index: 10;
-}
-
-@keyframes spaceZoomXform{
-  0%   { transform: scale(1) translate3d(0,0,0); }
-  100% { transform: scale(1.4) translate3d(2%, -2%, 0); }
+  background-position: center, center;
+  background-size: cover, cover;
+  background-repeat: no-repeat, no-repeat;
+    animation: spaceZoom 8s cubic-bezier(.2,.6,.2,1) forwards;
 }
 
 /* Individual Flame Tendrils (Shared Styles) */

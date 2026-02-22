@@ -1354,18 +1354,20 @@ input[type="range"]::-webkit-slider-thumb:active{
   min-width: auto;           /* remove intro fixed width constraint */
   animation: none;           /* no float animation here */
 }
-/* ===== Journey text: subtle glow that won't mess spacing ===== */
 #journey-end-overlay .cyber-text{
-  /* do NOT change position/display/letter-spacing/transform here */
-  text-shadow:
-    0 0 4px rgba(245,255,58,0.55),
-    0 0 10px rgba(245,255,58,0.25);
+  position: relative;
 }
 
-/* Optional: slightly stronger for the land name only
-   (add class "journey-land" to the land line in JS if you want) */
-#journey-end-overlay .cyber-text.journey-land{
-  text-shadow:
-    0 0 5px rgba(245,255,58,0.65),
-    0 0 14px rgba(245,255,58,0.30);
+#journey-end-overlay .cyber-text::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width: 140%;
+  height: 140%;
+  background: radial-gradient(circle, rgba(245,255,58,0.18), rgba(0,0,0,0) 70%);
+  filter: blur(10px);
+  z-index:-1;
+  pointer-events:none;
 }

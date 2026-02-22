@@ -1348,4 +1348,9 @@ input[type="range"]::-webkit-slider-thumb{
 input[type="range"]::-webkit-slider-thumb:active{
   cursor: url("star-click.png") 24 24, pointer !important;
 }
-
+/* Bigger cyber text ONLY on journey screen */
+#journey-end-overlay .cyber-text{
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  min-width: auto;           /* remove intro fixed width constraint */
+  animation: none;           /* no float animation here */
+}

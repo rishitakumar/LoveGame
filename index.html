@@ -1892,15 +1892,9 @@ function showJourneyEnd(finalLand) {
 
   // message box
   const msg = document.createElement("div");
-  msg.classList.add("journey-impact");
-  msg.style.textTransform = "uppercase";
-  msg.style.letterSpacing = "2px";
-  msg.style.fontSize = "clamp(20px, 3vw, 44px)";
-  msg.style.textAlign = "center";
+  msg.classList.add("cyber-text");
   msg.style.color = "#f5ff3a";
   msg.style.padding = "24px";
-  msg.style.textShadow =
-    "0 0 18px rgba(245,255,58,0.95), 0 0 60px rgba(245,255,58,0.25)";
   msg.style.transition = "opacity 0.7s ease";
   msg.style.opacity = "1";
   end.appendChild(msg);

@@ -1096,7 +1096,11 @@ function bigGlowTransition(doDuringGlow, doAfterGlow = null) {
   }, 80);
 }
 
-
+function setDarklandFlames(on){
+  const w = document.getElementById("ladder-wrapper");
+  if (!w) return;
+  w.classList.toggle("darkland-flames", !!on);
+}
   
 function moveCharacter(delta, afterTransition = null) {
 
@@ -1119,6 +1123,7 @@ if (
   delta > 0
 ) {
   GameState.land = "murkland";
+  setDarklandFlames(false);
   GameState.rungIndex = 0;
 
   const img = document.getElementById("game-background");
@@ -1148,6 +1153,7 @@ if (
   ===================== */
   if (GameState.land === "murkland" && GameState.rungIndex === 0 && delta < 0) {
   GameState.land = "darkland";
+  setDarklandFlames(true);
   GameState.rungIndex = LADDERS.darkland - 1;
   murkTransitionDone = false; // ✅ ADD THIS
   const img = document.getElementById("game-background");
@@ -1176,6 +1182,7 @@ if (
   delta > 0
 ) {
   GameState.land = "loveland";
+  setDarklandFlames(false);
   GameState.rungIndex = 0;
 
   const img = document.getElementById("game-background");
@@ -1205,6 +1212,7 @@ if (
 ===================== */
 if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
   GameState.land = "murkland";
+  setDarklandFlames(false);
   GameState.rungIndex = LADDERS.murkland - 1;
 
   // ✅ DO NOT change questionPhase / activeDeck here.
@@ -2100,6 +2108,7 @@ murkTransitionDone = false;
     const char = document.getElementById("player-character");
     char.src = characterImages[selectedCharacter];
     positionCharacter();
+    setDarklandFlames(true);
     showBeginText();
     cardIndex = 0;
   };

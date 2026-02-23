@@ -1354,3 +1354,44 @@ input[type="range"]::-webkit-slider-thumb:active{
   min-width: auto;           /* remove intro fixed width constraint */
   animation: none;           /* no float animation here */
 /* ===== Journey text: subtle glow that won't mess spacing ===== */
+/* =============================
+   REFLECTION BUTTON HOVER SYSTEM
+============================= */
+
+/* Target ONLY reflection page buttons */
+#journey-end-overlay button {
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s ease;
+}
+
+/* Hover */
+#journey-end-overlay button:hover {
+  background: linear-gradient(
+    135deg,
+    #fd11b4 0%,
+    #fd3b96 25%,
+    #D011FD 50%,
+    #11FD5A 75%,
+    #fff234 100%
+  );
+
+  color: #000000;
+
+  box-shadow:
+    0 0 10px #fd11b4,
+    0 0 18px #D011FD,
+    0 0 28px #fff234;
+
+  transform: translateY(-3px) scale(1.03);
+}
+
+/* Clicked state */
+#journey-end-overlay button:active {
+  transform: scale(0.98);
+  box-shadow:
+    0 0 6px #fd11b4,
+    0 0 12px #fff234;
+}

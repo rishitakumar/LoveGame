@@ -1119,37 +1119,56 @@ textarea,
    DARKLAND SIDE FLAMES
 ============================= */
 
-#ladder-wrapper.darkland-flames::before{
+/* make wrapper clip flames */
+#ladder-wrapper{
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* ensure board stays visible under flames */
+#game-background{
+  position: relative;
+  z-index: 1;
+}
+
+/* LEFT STRIP */
+#ladder-wrapper.darkland-flames::before,
+#ladder-wrapper.darkland-flames::after{
   content:"";
   position:absolute;
-  inset:-2px;
+  top:-2px;
+  bottom:-2px;
+  width: 140px;              /* adjust thickness */
   pointer-events:none;
-  z-index: 6;
-
-  /* flame distortion */
+  z-index: 2;                /* above board */
+  opacity: 0.92;
   filter: url(#side-flames);
-
-  /* IMPORTANT: only edges are dark; center is transparent */
-  background:
-    linear-gradient(
-      to right,
-      rgba(0,0,0,0.95) 0%,
-      rgba(0,0,0,0.55) 6%,
-      rgba(0,0,0,0.20) 12%,
-      rgba(0,0,0,0.00) 20%,
-      rgba(0,0,0,0.00) 100%
-    ),
-    linear-gradient(
-      to left,
-      rgba(0,0,0,0.95) 0%,
-      rgba(0,0,0,0.55) 6%,
-      rgba(0,0,0,0.20) 12%,
-      rgba(0,0,0,0.00) 20%,
-      rgba(0,0,0,0.00) 100%
-    );
-
-  opacity: 0.9;
   animation: flameFlicker 0.14s infinite;
+}
+
+/* left side */
+#ladder-wrapper.darkland-flames::before{
+  left:-2px;
+  background: linear-gradient(
+    to right,
+    rgba(0,0,0,0.98) 0%,
+    rgba(0,0,0,0.70) 20%,
+    rgba(0,0,0,0.25) 55%,
+    rgba(0,0,0,0.00) 100%
+  );
+}
+
+/* right side */
+#ladder-wrapper.darkland-flames::after{
+  right:-2px;
+  background: linear-gradient(
+    to left,
+    rgba(0,0,0,0.98) 0%,
+    rgba(0,0,0,0.70) 20%,
+    rgba(0,0,0,0.25) 55%,
+    rgba(0,0,0,0.00) 100%
+  );
 }
   @keyframes spaceZoom {
    0% {

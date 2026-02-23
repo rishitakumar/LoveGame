@@ -1358,40 +1358,28 @@ input[type="range"]::-webkit-slider-thumb:active{
    REFLECTION BUTTON HOVER SYSTEM
 ============================= */
 
-/* Target ONLY reflection page buttons */
-#journey-end-overlay button {
-  transition:
-    background 0.25s ease,
-    color 0.25s ease,
-    box-shadow 0.25s ease,
-    transform 0.2s ease;
-}
-
-/* Hover */
+/* FORCE reflection button hover */
 #journey-end-overlay button:hover {
   background: linear-gradient(
     135deg,
-    #fd11b4 0%,
-    #fd3b96 25%,
-    #D011FD 50%,
-    #11FD5A 75%,
-    #fff234 100%
-  );
+    #fd11b4,
+    #fd3b96,
+    #D011FD,
+    #11FD5A,
+    #fff234
+  ) !important;
 
-  color: #000000;
+  color: #000 !important;
 
   box-shadow:
-    0 0 10px #fd11b4,
-    0 0 18px #D011FD,
-    0 0 28px #fff234;
+    0 0 12px #fd11b4,
+    0 0 22px #D011FD,
+    0 0 35px #fff234 !important;
 
-  transform: translateY(-3px) scale(1.03);
+  transform: translateY(-3px) scale(1.04) !important;
 }
 
-/* Clicked state */
+/* click effect */
 #journey-end-overlay button:active {
-  transform: scale(0.98);
-  box-shadow:
-    0 0 6px #fd11b4,
-    0 0 12px #fff234;
+  transform: scale(0.96) !important;
 }

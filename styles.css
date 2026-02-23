@@ -1115,6 +1115,46 @@ textarea,
     linear-gradient(to bottom, #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%),
     linear-gradient(to top,    #ff0000, #ff8c00 2%, #ffff00 3%, transparent 6%) !important;
 }
+/* =============================
+   DARKLAND SIDE FLAMES
+============================= */
+
+#ladder-wrapper.darkland-flames{
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+}
+
+#ladder-wrapper.darkland-flames::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  pointer-events:none;
+  z-index: 6;
+  opacity: 0.95;
+
+  /* SAME distortion filter you already use */
+  filter: url(#side-flames);
+
+  /* BLACK flame gradient */
+  background:
+    linear-gradient(
+      to right,
+      #000000,
+      #111111 40%,
+      #000000 60%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to left,
+      #000000,
+      #111111 40%,
+      #000000 60%,
+      transparent 100%
+    );
+
+  animation: flameFlicker 0.14s infinite;
+}
   @keyframes spaceZoom {
    0% {
     background-size: 100% 100%;

@@ -1076,7 +1076,6 @@ textarea,
 
 /* left/right flames */
 .flame-frame::before {
-  filter: url(#side-flames);
   background:
     linear-gradient(to right, #ff0000, #ff8c00 4%, #ffff00 6%, transparent 12%),
     linear-gradient(to left,  #ff0000, #ff8c00 4%, #ffff00 6%, transparent 12%);
@@ -1118,72 +1117,54 @@ textarea,
 /* =============================
    DARKLAND SIDE FLAMES
 ============================= */
-
-/* wrapper safety */
 #ladder-wrapper{
   position: relative;
   overflow: hidden;
-  isolation: isolate;
 }
 
-/* board stays visible */
-#game-background{
-  position: relative;
-  z-index: 1;
-}
-
-/* shared strip rules */
+/* shared flame strips */
 #ladder-wrapper.darkland-flames::before,
 #ladder-wrapper.darkland-flames::after{
   content:"";
   position:absolute;
-  top:-2px;
-  bottom:-2px;
-  width: 170px;          /* thickness */
+  top:0;
+  bottom:0;
+  width:160px;
   pointer-events:none;
-  z-index: 2;
-
-  /* VERY IMPORTANT: high contrast gradient */
-  opacity: 1;
-
-  filter:
-    url(#side-flames)
-    drop-shadow(0 0 6px rgba(255,255,255,0.4))
-    drop-shadow(0 0 16px rgba(200,200,200,0.25));
-
-  animation: flameFlicker 0.14s infinite;
-}
-
-/* LEFT SIDE */
-#ladder-wrapper.darkland-flames::before{
-  left:-2px;
+  z-index:2;
 
   background: linear-gradient(
     to right,
     #000000 0%,
-    #000000 25%,
-    #4d4d4d 40%,
-    #bfbfbf 55%,
-    #ffffff 65%,
-    rgba(255,255,255,0.3) 75%,
+    #000000 30%,
+    #4a4a4a 45%,
+    #bfbfbf 60%,
+    #ffffff 70%,
+    rgba(255,255,255,0.25) 80%,
     transparent 100%
   );
+
+  background-size: 100% 200%;
+  animation: silverFlameMove 2s linear infinite;
+  opacity: 0.95;
 }
 
-/* RIGHT SIDE */
+/* mirror right side */
 #ladder-wrapper.darkland-flames::after{
-  right:-2px;
+  right:0;
+  left:auto;
+  transform: scaleX(-1);
+}
 
-  background: linear-gradient(
-    to left,
-    #000000 0%,
-    #000000 25%,
-    #4d4d4d 40%,
-    #bfbfbf 55%,
-    #ffffff 65%,
-    rgba(255,255,255,0.3) 75%,
-    transparent 100%
-  );
+/* left side */
+#ladder-wrapper.darkland-flames::before{
+  left:0;
+}
+
+/* vertical flame motion */
+@keyframes silverFlameMove {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 0% 100%; }
 }
   @keyframes spaceZoom {
    0% {

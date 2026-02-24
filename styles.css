@@ -1129,31 +1129,26 @@ textarea,
   position:absolute;
   top:0;
   bottom:0;
-  width:160px;
+  width:180px;
   pointer-events:none;
   z-index:2;
+  opacity:0.95;
 
-  background: linear-gradient(
-    to right,
-    #000000 0%,
-    #000000 30%,
-    #4a4a4a 45%,
-    #bfbfbf 60%,
-    #ffffff 70%,
-    rgba(255,255,255,0.25) 80%,
-    transparent 100%
-  );
+  /* layered jagged flame shapes */
+  background:
+    radial-gradient(circle at 40% 10%, #ffffff 0%, #bfbfbf 20%, transparent 40%),
+    radial-gradient(circle at 60% 30%, #d9d9d9 0%, #888888 25%, transparent 45%),
+    radial-gradient(circle at 30% 60%, #ffffff 0%, #aaaaaa 20%, transparent 45%),
+    linear-gradient(
+      to right,
+      #000000 0%,
+      #000000 40%,
+      rgba(0,0,0,0.6) 60%,
+      transparent 100%
+    );
 
-  background-size: 100% 200%;
-  animation: silverFlameMove 2s linear infinite;
-  opacity: 0.95;
-}
-
-/* mirror right side */
-#ladder-wrapper.darkland-flames::after{
-  right:0;
-  left:auto;
-  transform: scaleX(-1);
+  background-repeat:no-repeat;
+  animation: darkFlameFlicker 0.8s infinite ease-in-out alternate;
 }
 
 /* left side */
@@ -1161,10 +1156,21 @@ textarea,
   left:0;
 }
 
-/* vertical flame motion */
-@keyframes silverFlameMove {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 0% 100%; }
+/* right side (mirror it) */
+#ladder-wrapper.darkland-flames::after{
+  right:0;
+  transform: scaleX(-1);
+}
+
+@keyframes darkFlameFlicker{
+  0%{
+    transform: translateY(0px) scale(1);
+    opacity:0.9;
+  }
+  100%{
+    transform: translateY(-8px) scale(1.05);
+    opacity:1;
+  }
 }
   @keyframes spaceZoom {
    0% {

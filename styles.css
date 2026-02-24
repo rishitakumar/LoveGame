@@ -1120,27 +1120,26 @@ textarea,
 /* wrapper safety */
 /* Target the image container only */
 /* Container for Darkland image with neon background */
-#darkland-container {
+/* Ladder wrapper gets neon background */
+#ladder-wrapper {
   position: relative;
-  display: inline-block; /* fits the image size */
-  width: auto;           /* matches your image width */
-  height: auto;          /* matches your image height */
+  overflow: hidden;
 
-  /* Neon cycling background */
-  background-color: #000; 
+  /* Neon background cycling */
+  background-color: #000; /* starting color */
   animation: neonPulse 3s infinite alternate;
 
-  /* Optional subtle neon glow around the image */
+  /* Optional: subtle glow around the image */
   box-shadow: 0 0 20px #fff234, 0 0 40px #11FD5A, 0 0 60px #fff234;
 }
 
-/* Darkland image itself */
-#darkland-container img {
+/* Darkland image on top of background */
+#game-background {
   display: block;
-  width: 100%;
+  width: 100%;  /* scale to ladder-wrapper */
   height: auto;
-  z-index: 1;
   position: relative;
+  z-index: 1;
 }
 
 /* Neon background keyframes */
@@ -1148,13 +1147,6 @@ textarea,
   0%   { background-color: #fff234; } /* yellow */
   33%  { background-color: #000000; } /* black */
   66%  { background-color: #11FD5A; } /* green */
-  100% { background-color: #fff234; } /* back to yellow */
-}
-/* Keyframes to cycle the three colors */
-@keyframes neonPulse {
-  0%   { background-color: #fff234; }
-  33%  { background-color: #000000; }
-  66%  { background-color: #11FD5A; }
   100% { background-color: #fff234; }
 }
   @keyframes spaceZoom {

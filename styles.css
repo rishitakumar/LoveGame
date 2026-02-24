@@ -1117,36 +1117,28 @@ textarea,
 /* =============================
    DARKLAND SIDE FLAMES
 ============================= */
-/* wrapper safety */
-/* Target the image container only */
-/* Container for Darkland image with neon background */
-/* Ladder wrapper gets neon background */
-#ladder-wrapper {
+#ladder-wrapper.darkland-screen {
   position: relative;
   overflow: hidden;
-
-  /* Neon background cycling */
-  background-color: #000; /* starting color */
+  background-color: #000;
   animation: neonPulse 3s infinite alternate;
-
-  /* Optional: subtle glow around the image */
   box-shadow: 0 0 20px #fff234, 0 0 40px #11FD5A, 0 0 60px #fff234;
 }
 
-/* Darkland image on top of background */
-#game-background {
+#ladder-wrapper.darkland-screen #game-background {
   display: block;
-  width: 100%;  /* scale to ladder-wrapper */
+  width: 100%;
   height: auto;
   position: relative;
   z-index: 1;
+  opacity: 0.85; /* optional glow through edges */
+  mix-blend-mode: screen; /* optional */
 }
 
-/* Neon background keyframes */
 @keyframes neonPulse {
-  0%   { background-color: #fff234; } /* yellow */
-  33%  { background-color: #000000; } /* black */
-  66%  { background-color: #11FD5A; } /* green */
+  0%   { background-color: #fff234; }
+  33%  { background-color: #000000; }
+  66%  { background-color: #11FD5A; }
   100% { background-color: #fff234; }
 }
   @keyframes spaceZoom {

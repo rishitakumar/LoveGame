@@ -1119,19 +1119,37 @@ textarea,
 ============================= */
 /* wrapper safety */
 /* Target the image container only */
-#game-background.darkland-image {
+/* Container for Darkland image with neon background */
+#darkland-container {
   position: relative;
-  width: 100%;       /* match the image size */
-  height: auto;      /* or fixed height if needed */
-  
+  display: inline-block; /* fits the image size */
+  width: auto;           /* matches your image width */
+  height: auto;          /* matches your image height */
+
   /* Neon cycling background */
-  background-color: #000;
+  background-color: #000; 
   animation: neonPulse 3s infinite alternate;
 
-  /* Optional neon glow around image */
+  /* Optional subtle neon glow around the image */
   box-shadow: 0 0 20px #fff234, 0 0 40px #11FD5A, 0 0 60px #fff234;
 }
 
+/* Darkland image itself */
+#darkland-container img {
+  display: block;
+  width: 100%;
+  height: auto;
+  z-index: 1;
+  position: relative;
+}
+
+/* Neon background keyframes */
+@keyframes neonPulse {
+  0%   { background-color: #fff234; } /* yellow */
+  33%  { background-color: #000000; } /* black */
+  66%  { background-color: #11FD5A; } /* green */
+  100% { background-color: #fff234; } /* back to yellow */
+}
 /* Keyframes to cycle the three colors */
 @keyframes neonPulse {
   0%   { background-color: #fff234; }

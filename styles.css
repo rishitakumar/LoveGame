@@ -1144,6 +1144,11 @@ textarea,
   /* VERY IMPORTANT: high contrast gradient */
   opacity: 1;
 
+  filter:
+    url(#side-flames)
+    drop-shadow(0 0 6px rgba(255,255,255,0.4))
+    drop-shadow(0 0 16px rgba(200,200,200,0.25));
+
   animation: flameFlicker 0.14s infinite;
 }
 

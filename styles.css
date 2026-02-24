@@ -1120,19 +1120,26 @@ textarea,
 #ladder-wrapper.darkland-screen {
   position: relative;
   overflow: hidden;
+}
+
+#ladder-wrapper.darkland-screen::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0; /* behind the image */
   background-color: #000;
   animation: neonPulse 3s infinite alternate;
   box-shadow: 0 0 20px #fff234, 0 0 40px #11FD5A, 0 0 60px #fff234;
 }
 
 #ladder-wrapper.darkland-screen #game-background {
-  display: block;
+  position: relative;
+  z-index: 1; /* sits on top of neon background */
   width: 100%;
   height: auto;
-  position: relative;
-  z-index: 1;
-  opacity: 0.85; /* optional glow through edges */
-  mix-blend-mode: screen; /* optional */
+  display: block;
+  opacity: 0.85;          /* optional for neon to show through */
+  mix-blend-mode: screen;  /* optional */
 }
 
 @keyframes neonPulse {

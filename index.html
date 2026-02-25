@@ -1,73 +1,3019 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>About – Love Game</title>
+  <title>Love Game</title>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="youricon.png">
+  <link rel="preload" as="image" href="star-background.png">
+  <link rel="preload" as="image" href="darkland_screen.png">
+<link rel="preload" as="image" href="cards_physical_q1_front.png">
+<link rel="preload" as="image" href="cards_physical_q1_back.png">
 </head>
 <body>
+
 <canvas id="mouse-canvas"></canvas>
+
 <div class="header">
-  <h1>About Love Game</h1>
-  <p>Why should you love to live? Why should you live to love? </p>
+  <h1>Love Game</h1>
+  <p>~ A Quest to Assess your Mental, Physical, and Emotional Health ~</p>
 </div>
 
 <div class="navbar">
   <a href="index.html">Play</a>
   <a href="about.html">About</a>
   <a href="#">Community</a>
-  <a href="#" class="right">Log In</a>
+<!-- <a href="#" class="right">Log In</a> -->
+</div>
+  
+<div id="intro-overlay" class="flame-frame">
+  <div id="intro-text" class="cyber-text">ENTERING CYBERSPACE <span id="loading-dots"></span></div>
 </div>
 
-<div style="padding:40px;">
-  <h2 style="text-align: center;">1) If you do not love to live, you'll just be a speck of dirt.</h2>
-  <h2 style="text-align: center;">2) If you balance your Self and External love, you'll understand the reason for your existence.</h2>
-  <h2 style="text-align: center;"> <i> The process to balance your Self and External love requires caring for both your own and others' mental, physical, and emotional health. Just as Yin and Yang, embrace the balance of opposite yet complementary forces — dark & light energy, brain & soul knowing, Self and Universal love, etc . . . </i> </h2>
+<!-- SECOND SCREEN: REMINDERS -->
+<div id="reminder-overlay" hidden>
+  <div class="reminder-box flame-frame">
+
+  <!-- REMINDERS (visible first) -->
+  <div id="reminders-content">
+    <h2>REMINDERS</h2>
+    <ol class="reminder-list">
+      <li>Be as truthful as possible (to ensure that your final result truly reflects your current health!)</li>
+      <li>Play whenever you wish to reassess your wellbeing status . . .</li>
+      <li>Should you land in a territory that concerns you, apply balanced Self and External love — and return later.</li>
+      <li>Societal factors, including racial bias, socioeconomic barriers, and gender identity, may influence outcomes.</li>
+      <li><strong>Ecstasy</strong> — The highest realm where energy and love abound.</li>
+      <li><strong>Loveland</strong> — Balance exists, though some Murktivities linger.</li>
+      <li><strong>Murkland</strong> — Clouded energy causes fluctuating health.</li>
+      <li><strong>Darkland</strong> — A pit where murk compounds into darkness.</li>
+    </ol>
+  </div>
+
+  <!-- Arrow -->
+  <div id="rules-arrow" aria-label="Show rules">➜</div>
+
+  <!-- RULES (hidden initially) -->
+  <div id="rules-content" hidden>
+    <h2>RULES</h2>
+    <ol class="reminder-list">
+      <li>Click the card presented and answer its question.</li>
+      <li>If you answer in a way that shows balanced Self and External love, your character will move up.</li>
+      <li>If you answer in a way that shows an imbalance of Self and External love, your character will move down.</li>
+      <li>Enough balanced answers will move your character into <strong>Loveland</strong>, and eventually, <strong>Ecstasy</strong> (without narcotics!).</li>
+      <li>Enough imbalanced answers will move your character into <strong>Murkland</strong>, and eventually, <strong>Darkland</strong>.</li>
+    </ol>
+  </div>
+
+  <!-- BUTTON (hidden initially) -->
+  <button id="start-game" hidden>FOR SURE :)</button>
+
 </div>
+
+</div>
+
+
+<!-- CHARACTER SELECT SCREEN -->
+<div id="character-overlay" class="hidden" aria-label="Choose your character">
+  <div class="swirl-title">
+    <svg viewBox="0 0 1200 220" role="img" aria-hidden="true">
+      <defs>
+        <!-- a soft neon blur filter that hugs letters -->
+        <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="6" result="b"/>
+          <feMerge>
+            <feMergeNode in="b"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+     <path id="wavePath"
+  d="M0,120
+     C200,20 400,20 600,120
+     S1000,220 1200,120"
+  fill="none"
+   />
+
+     <text class="swirl-text">
+  <textPath href="#wavePath"
+            startOffset="50%"
+            text-anchor="middle"
+            textLength="1100"
+            lengthAdjust="spacingAndGlyphs">
+    <tspan class="swirl-word w1">CHOOSE</tspan>
+    <tspan class="swirl-word w2" dx="30">YOUR</tspan>
+    <tspan class="swirl-word w3" dx="30">CHARACTER!</tspan>
+  </textPath>
+</text>
+    </svg>
+  </div>
+
+  <div id="character-caption"></div>
+
+  <div class="character-grid">
+    <img src="1phoenix.png" class="character" data-character="phoenix">
+    <img src="2kitsune.png" class="character" data-character="kitsune">
+    <img src="3wata.png" class="character" data-character="mamiwata">
+    <img src="4hydra.png" class="character" data-character="hydra">
+    <img src="5girl.png" class="character" data-character="human">
+  </div>
+
+  <button id="confirm-character" disabled>CONFIRM</button>
+</div>
+
+
+<filter id="side-flames-thin">
+  <feTurbulence type="fractalNoise" baseFrequency="0.03 0.15" numOctaves="3">
+    <animate attributeName="seed" from="1" to="100" dur="10s" repeatCount="indefinite" />
+  </feTurbulence>
+  <feDisplacementMap in="SourceGraphic" scale="18" />
+</filter>
+
+<filter id="top-flames-thin">
+  <feTurbulence type="fractalNoise" baseFrequency="0.15 0.03" numOctaves="3">
+    <animate attributeName="seed" from="1" to="100" dur="10s" repeatCount="indefinite" />
+  </feTurbulence>
+  <feDisplacementMap in="SourceGraphic" scale="18" />
+</filter>
+
+  
+<svg width="0" height="0" style="position: absolute;">
+  <defs>
+    <filter id="side-flames">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03 0.15" numOctaves="3">
+        <animate attributeName="seed" from="1" to="100" dur="10s" repeatCount="indefinite" />
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" scale="40" />
+    </filter>
+    <filter id="top-flames">
+      <feTurbulence type="fractalNoise" baseFrequency="0.15 0.03" numOctaves="3">
+        <animate attributeName="seed" from="1" to="100" dur="10s" repeatCount="indefinite" />
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" scale="40" />
+    </filter>
+  </defs>
+</svg>
+
+ <div id="game-screen" hidden>
+    <div id="card-layer">
+  <div id="card" class="card">
+    <img id="card-front">
+    <img id="card-back">
+    <div id="choice-layer" aria-hidden="true"></div>
+  </div>
+</div>
+
+  <div id="board">
+    <div id="ladder-wrapper">
+      <img id="game-background" />
+      <img id="player-character" />
+      <div id="begin-text" class="begin-text"></div>
+    </div>
+  </div>
+
+  <div id="card-container"></div>
+</div>
+
 <script>
-/* --- UNIVERSAL MOUSE STREAK --- */
+// =============================
+// DAILY PLAY LIMIT
+// =============================
+ /* const todayKey = new Date().toDateString();
+
+if (localStorage.getItem("lovegame-played") === todayKey) {
+  document.body.innerHTML = `
+    <div class="cyber-text" style="text-align:center; margin-top:40vh;">
+      Come back tomorrow, fellow traveler . . .
+    </div>
+  `;
+  throw new Error("Daily limit reached");
+}
+
+localStorage.setItem("lovegame-played", todayKey); --- */
+const IMG_CACHE = new Map();
+
+  
+function preloadCard(card) {
+  return Promise.all([
+    preloadImage(card.questionFront),
+    preloadImage(card.questionBack),
+    preloadImage(card.answerFront),
+    preloadImage(card.answerBack),
+  ]);
+}
+
+// Preload next card whenever you show a card
+function preloadNextCard() {
+  const next = activeDeck[cardIndex + 1];
+  if (next) preloadCard(next);
+}
+
+preloadImage("darkland_screen.png");
+preloadImage("murkland_screen.png");
+preloadImage("loveland_screen.png");
+preloadImage("ecstasy_screen.png");
+  
+function preloadImage(src) {
+  if (!src) return Promise.resolve();
+  if (IMG_CACHE.has(src)) return IMG_CACHE.get(src);
+
+  const p = new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve();
+    img.onerror = () => resolve(); // don’t block game on one missing file
+    img.src = src;
+    img.decode?.().then(resolve).catch(resolve);
+  });
+
+  IMG_CACHE.set(src, p);
+  return p;
+}
+
+
+let beginShown = false;
+// =============================
+// TIMING TUNES (faster pacing)
+// =============================
+const NEXT_CARD_DELAY = 350;
+const MOVE_TO_CARD_DELAY = 120;
+const LAND_SWAP_DELAY = 0;
+const LAND_ENTRY_DELAY = 1500; // 1 second pause
+
+// =============================
+// CARD DATA (QUESTIONS + ANSWERS)
+// =============================
+
+const PHYSICAL_CARDS = [
+  {
+    id: 1,
+    questionFront: "cards_physical_q1_front.png",
+    questionBack:  "cards_physical_q1_back.png",
+    answerFront:   "cards_physical_a1_front.png",
+    answerBack:    "cards_physical_a1_back.png",
+
+    outcomes: {
+      a: -1,
+      b: -1,
+      c:  0,
+      d: +1,
+      e: +1
+    },
+  // original-image pixel coords (CENTER of the letter)
+  backSize: { w: 1545, h: 2000 },
+  centers: {
+    a: { cx: 461, cy: 1288 },
+    b: { cx: 461, cy: 1404 },
+    c: { cx: 461, cy: 1528 },
+    d: { cx: 461, cy: 1644 },
+    e: { cx: 461, cy: 1775 }
+  }
+  },
+
+  {
+    id: 2,
+    questionFront: "cards_physical_q1_front.png",
+    questionBack:  "cards_physical_q2_back.png",
+    answerFront:   "cards_physical_a1_front.png",
+    answerBack:    "cards_physical_a2_back.png",
+
+    outcomes: {
+      a: -1,
+      b: -1,
+      c: -1,
+      d: +1,
+      e: +1
+    },
+    
+    backSize: { w: 1545, h: 2000 }, 
+    centers: {
+    a: { cx: 503, cy: 1287 },
+    b: { cx: 503, cy: 1400 },
+    c: { cx: 503, cy: 1529 },
+    d: { cx: 503, cy: 1639 },
+    e: { cx: 503, cy: 1767 }
+  }
+  },
+  
+{
+    id: 3,
+    questionFront: "cards_physical_q1_front.png",
+    questionBack:  "cards_physical_q3_back.png",
+    answerFront:   "cards_physical_a1_front.png",
+    answerBack:    "cards_physical_a3_back.png",
+
+    outcomes: {
+      a: 0,
+      b: -1,
+      c: +1,
+      d: +1
+    }, 
+  
+    backSize: { w: 1545, h: 2000 }, 
+    centers: {
+    a: { cx: 424, cy: 1285 },
+    b: { cx: 424, cy: 1398 },
+    c: { cx: 424, cy: 1528 },
+    d: { cx: 424, cy: 1636 },
+  }
+  },
+
+{
+    id: 4,
+    questionFront: "cards_physical_q1_front.png",
+    questionBack:  "cards_physical_q4_back.png",
+    answerFront:   "cards_physical_a1_front.png",
+    answerBack:    "cards_physical_a4_back.png",
+
+    outcomes: {
+      a: +1,
+      b: +1,
+      c: -1,
+      d: 0
+    }
+  },
+  
+  {
+    id: 5,
+    questionFront: "cards_physical_q1_front.png",
+    questionBack:  "cards_physical_q5_back.png",
+    answerFront:   "cards_physical_a1_front.png",
+    answerBack:    "cards_physical_a5_back.png",
+
+    outcomes: {
+      a: +1,
+      b: -1,
+      c: 0,
+      d: +1
+    }
+  },
+
+  {
+    id: 6,
+    questionFront: "cards_physical_q1_front.png",
+    questionBack:  "cards_physical_q6_back.png",
+    answerFront:   "cards_physical_a1_front.png",
+    answerBack:    "cards_physical_a6_back.png",
+
+    outcomes: {
+      a: +1,
+      b: 0,
+      c: -1,
+      d: +1
+    }
+  },
+
+  {
+    id: 7,
+    questionFront: "cards_physical_q1_front.png",
+    questionBack:  "cards_physical_q7_back.png",
+    answerFront:   "cards_physical_a1_front.png",
+    answerBack:    "cards_physical_a7_back.png",
+
+    outcomes: {
+      a: 0,
+      b: +1,
+      c: -1,
+      d: -1
+    }
+  },
+
+  {
+    id: 8,
+    questionFront: "cards_physical_q1_front.png",
+    questionBack:  "cards_physical_q8_back.png",
+    answerFront:   "cards_physical_a1_front.png",
+    answerBack:    "cards_physical_a8_back.png",
+
+    outcomes: {
+      a: +1,
+      b: -1,
+      c: 0,
+      d: -1
+    }
+  }
+  // add up to 8
+];
+
+// -----------------------------
+// MURKLAND CARDS (make your own)
+// -----------------------------
+const MURK_CARDS = [
+  {
+    id: 101,
+    questionFront: "murk_q1_front.png",
+    questionBack:  "murk_q1_back.png",
+    answerFront:   "murk_a1_front.png",
+    answerBack:    "murk_a1_back.png",
+    outcomes: { 
+      a:-1, b:0, c:+1
+    }
+  },
+  
+{
+    id: 102,
+    questionFront: "murk_q1_front.png",
+    questionBack:  "murk_q2_back.png",
+    answerFront:   "murk_a1_front.png",
+    answerBack:    "murk_a2_back.png",
+    outcomes: { 
+      a:+1, b:0, c:+1, d:-1, e:-1
+    }
+  },
+
+{
+    id: 103,
+    questionFront: "murk_q1_front.png",
+    questionBack:  "murk_q3_back.png",
+    answerFront:   "murk_a1_front.png",
+    answerBack:    "murk_a3_back.png",
+    outcomes: { 
+      a:-1, b:-1, c:+1, d:0, e:+1
+    }
+  },
+
+  {
+    id: 104,
+    questionFront: "murk_q1_front.png",
+    questionBack:  "murk_q4_back.png",
+    answerFront:   "murk_a1_front.png",
+    answerBack:    "murk_a4_back.png",
+    outcomes: { 
+      a:+1, b:+1, c:+1, d:-1
+    }
+  },
+
+    {
+    id: 105,
+    questionFront: "murk_q1_front.png",
+    questionBack:  "murk_q5_back.png",
+    answerFront:   "murk_a1_front.png",
+    answerBack:    "murk_a5_back.png",
+    outcomes: { 
+      a:-1, b:0, c:0, d:+1
+    }
+  },
+
+  {
+    id: 106,
+    questionFront: "murk_q1_front.png",
+    questionBack:  "murk_q6_back.png",
+    answerFront:   "murk_a1_front.png",
+    answerBack:    "murk_a6_back.png",
+    outcomes: { 
+      a:+1, b:+1, c:0, d:-1
+    }
+  },
+
+  {
+    id: 107,
+    questionFront: "murk_q1_front.png",
+    questionBack:  "murk_q7_back.png",
+    answerFront:   "murk_a1_front.png",
+    answerBack:    "murk_a7_back.png",
+    outcomes: { 
+      a:0, b:+1, c:-1, d:+1, e:-1
+    }
+  },
+  
+{
+    id: 108,
+    questionFront: "murk_q1_front.png",
+    questionBack:  "murk_q8_back.png",
+    answerFront:   "murk_a1_front.png",
+    answerBack:    "murk_a8_back.png",
+    outcomes: { 
+      a:+1, b:0, c:-1, d:+1
+    }
+  },
+  
+  // add more...
+];
+
+// -----------------------------
+// LOVELAND CARDS (MENTAL)
+// -----------------------------
+const MENTAL_CARDS = [
+  {
+  id: 201,
+  questionFront: "mental_q1_front.png",
+  questionBack:  "mental_q1_back.png",
+  answerFront:   "mental_a1_front.png",
+  answerBack:    "mental_a1_back.png",
+  outcomes: { a:-1, b:+1, c:0, d:-1 },
+},
+  
+  {
+    id: 202,
+    questionFront: "mental_q1_front.png",
+    questionBack:  "mental_q2_back.png",
+    answerFront:   "mental_a1_front.png",
+    answerBack:    "mental_a2_back.png",
+    outcomes: { a:-1, b:0, c:+1, d:-1 }
+  },
+
+  {
+    id: 203,
+    questionFront: "mental_q1_front.png",
+    questionBack:  "mental_q3_back.png",
+    answerFront:   "mental_a1_front.png",
+    answerBack:    "mental_a3_back.png",
+    outcomes: { a:0, b:+1, c:0, d:-1 }
+  },
+
+  {
+    id: 204,
+    questionFront: "mental_q1_front.png",
+    questionBack:  "mental_q4_back.png",
+    answerFront:   "mental_a1_front.png",
+    answerBack:    "mental_a4_back.png",
+    outcomes: { a:-1, b:0, c:0, d:+1, e:+1 }
+  },
+
+  {
+    id: 205,
+    questionFront: "mental_q1_front.png",
+    questionBack:  "mental_q5_back.png",
+    answerFront:   "mental_a1_front.png",
+    answerBack:    "mental_a5_back.png",
+    outcomes: { a:-1, b:-1, c:0, d:+1, e:-1}
+  },
+
+  {
+    id: 206,
+    questionFront: "mental_q1_front.png",
+    questionBack:  "mental_q6_back.png",
+    answerFront:   "mental_a1_front.png",
+    answerBack:    "mental_a6_back.png",
+    outcomes: { a:-1, b:-1, c:+1, d:+1, e:0}
+  },
+
+  {
+    id: 207,
+    questionFront: "mental_q1_front.png",
+    questionBack:  "mental_q7_back.png",
+    answerFront:   "mental_a1_front.png",
+    answerBack:    "mental_a7_back.png",
+    outcomes: { a:+1, b:0, c:+1, d:-1}
+  },
+
+  {
+    id: 208,
+    questionFront: "mental_q1_front.png",
+    questionBack:  "mental_q8_back.png",
+    answerFront:   "mental_a1_front.png",
+    answerBack:    "mental_a8_back.png",
+    outcomes: { a:-1, b:-1, c:+1, d:0, e:0}
+  },
+
+
+  // add more...
+];
+
+// -----------------------------
+// ECSTASY BONUS CARD (SPECIAL)
+// -----------------------------
+const ECSTASY_CARD = {
+  id: 301,
+  questionFront: "ecstasy_q_front.png",
+  questionBack:  "ecstasy_q_back.png",
+  answerFront:   "ecstasy_a_front.png",
+  answerBack:    "ecstasy_a_back.png",
+  outcomes: { a: 0, b: -1, c: +1, d: +1 } // edit letters/outcomes to match your design
+};
+
+  
+function getDeckForPhase() {
+  if (questionPhase === "physical") return PHYSICAL_CARDS;
+  if (questionPhase === "emotional") return MURK_CARDS;
+  if (questionPhase === "mental") return MENTAL_CARDS;
+  return PHYSICAL_CARDS;
+}
+
+
+  
+function getActiveDeck() {
+  // Murkland screen uses Murk-only
+  if (GameState.land === "murkland") return MURK_CARDS;
+
+  // Darkland screen can still ask emotional (Murk) questions,
+  // BUT we do NOT show Murkland visuals yet.
+  if (GameState.land === "darkland") return [...PHYSICAL_CARDS, ...MURK_CARDS];
+
+  return PHYSICAL_CARDS; // fallback
+}
+
+function closeAnswerAndContinue() {
+  const layer = document.getElementById("card-layer");
+  if (!layer || layer.style.display === "none") return;
+
+  layer.classList.add("fade-out");
+
+  setTimeout(() => {
+    layer.classList.remove("fade-out");
+    layer.style.display = "none";
+
+    const delta = Number(layer.dataset.delta || 0);
+    const answeredCardId = Number(layer.dataset.cardId || 0);
+
+    currentCard = null;
+    cardMode = "question";
+    cardSide = "front";
+
+    if (typeof ECSTASY_CARD !== "undefined" && answeredCardId === ECSTASY_CARD.id) {
+  if (delta > 0) {
+    transitionToEcstasy();
+    enterEcstasyHold(); // ✅ waits for click/key, then shows “Your journey…”
+  } else {
+    GameState.land = "loveland";
+    setTimeout(() => showJourneyEnd("loveland"), 800);
+  }
+  return;
+}
+
+
+    // ✅ Track "perfect run" BEFORE transitions/deck swaps
+totalAnswered++;
+if (delta > 0) {
+  totalCorrect++;
+} else {
+  bonusEligible = false;
+}
+
+    // ✅ COUNT THIS ANSWER FIRST (prevents “8 answers” drifting during land transitions)
+    answeredInThisDeck++;
+
+    // ✅ Move first; if a land transition happens, it will call goNextAfterAnswer() itself
+    const transitioned = moveCharacter(delta, goNextAfterAnswer);
+
+    // Normal movement (no land transition): continue as usual
+    if (!transitioned) {
+  setTimeout(goNextAfterAnswer, NEXT_CARD_DELAY + 1000);
+}
+  }, 220);
+}
+
+
+// -----------------------------
+// ACTIVE DECK + TRANSITION FLAG
+// -----------------------------
+let activeDeck = PHYSICAL_CARDS;
+let murkTransitionDone = false;
+
+  
 const mCanvas = document.getElementById("mouse-canvas");
-const mCtx = mCanvas.getContext("2d");
+mCanvas.style.position = "fixed";
+mCanvas.style.inset = "0";
+mCanvas.style.zIndex = "99999";      // can be high, but…
+mCanvas.style.pointerEvents = "none"; // ✅ critical
+
+const mCtx = mCanvas.getContext("2d", { alpha: true });
+
 let mPoints = [];
-const TRAIL_LIFESPAN = 15; 
+const TRAIL_LIFESPAN = 12;
 
 function resizeMouseCanvas() {
-  mCanvas.width = window.innerWidth;
-  mCanvas.height = window.innerHeight;
+  const dpr = window.devicePixelRatio || 1;
+  mCanvas.width  = Math.floor(window.innerWidth * dpr);
+  mCanvas.height = Math.floor(window.innerHeight * dpr);
+  mCanvas.style.width  = window.innerWidth + "px";
+  mCanvas.style.height = window.innerHeight + "px";
+  mCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
-window.addEventListener("resize", resizeMouseCanvas);
+
+
+window.addEventListener("resize", resizeMouseCanvas, { passive: true });
 resizeMouseCanvas();
 
-// Use 'window' to track the mouse even over the overlay
 window.addEventListener("mousemove", (e) => {
   mPoints.push({ x: e.clientX, y: e.clientY, age: 0 });
-});
+  if (mPoints.length > 70) mPoints.shift();
+}, { passive: true });
 
-function drawMouseStreak() {
-  mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
+
+/* --- INTRO STARFIELD SETUP --- */
+const overlay = document.getElementById("intro-overlay");
+async function startIntroWhenReady() {
+  // hide intro until bg is ready
+  overlay.style.opacity = "0";
+  overlay.style.visibility = "hidden";
+  overlay.style.backgroundColor = "#000";
+
+  // preload + decode background
+  await preloadImage("star-background.png");
+
+  // show intro now
+  overlay.style.visibility = "visible";
+  overlay.style.transition = "opacity 0.25s ease";
+  requestAnimationFrame(() => (overlay.style.opacity = "1"));
+
+  // start your normal intro timer/listeners
+  runIntroFlow();
+}
+
+
+function runIntroFlow() {
+  const timeout = setTimeout(endIntro, 3500);
+
+  overlay.addEventListener("click", () => {
+    clearTimeout(timeout);
+    endIntro();
+  }, { once: true });
+
+  window.addEventListener("keydown", () => {
+    clearTimeout(timeout);
+    endIntro();
+  }, { once: true });
+
+  resizeMouseCanvas();
+  animate();
+
+  const dotsElement = document.getElementById("loading-dots");
+  let dotCount = 0;
+
+  window.dotInterval = setInterval(() => {
+    dotCount = (dotCount + 1) % 4;
+    if (dotsElement) dotsElement.textContent = ". ".repeat(dotCount);
+  }, 400);
+}
+
+  
+/* --- THE OPTIMIZED MERGED LOOP --- */
+function animate() {
+  // only clear/draw mouse canvas
+  mCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
   if (mPoints.length > 1) {
+    mCtx.shadowBlur = 8;
+    mCtx.shadowColor = "#f5ff3a";
+    mCtx.lineCap = "round";
+    mCtx.lineJoin = "round";
+
     for (let i = 1; i < mPoints.length; i++) {
       const p1 = mPoints[i - 1];
       const p2 = mPoints[i];
       const opacity = 1 - (p1.age / TRAIL_LIFESPAN);
-      
-      mCtx.strokeStyle = `rgba(245, 255, 58, ${opacity})`; 
-      mCtx.lineWidth = opacity * 5; // Slightly thicker for better visibility
-      mCtx.lineCap = "round";
-      mCtx.shadowBlur = 10 * opacity;
-      mCtx.shadowColor = "#f5ff3a";
-      
+
+      mCtx.strokeStyle = `rgba(245, 255, 58, ${opacity})`;
+      mCtx.lineWidth = opacity * 5;
+
       mCtx.beginPath();
       mCtx.moveTo(p1.x, p1.y);
       mCtx.lineTo(p2.x, p2.y);
       mCtx.stroke();
       p1.age++;
     }
+    mCtx.shadowBlur = 0;
   }
+
   mPoints = mPoints.filter(p => p.age < TRAIL_LIFESPAN);
-  requestAnimationFrame(drawMouseStreak); // Self-calling loop
+
+  requestAnimationFrame(animate);
 }
-drawMouseStreak(); // Start it!
+
+
+let INTRO_ENDED = false;
+
+/* End Intro Logic */
+function endIntro() {
+  if (INTRO_ENDED) return;
+  INTRO_ENDED = true;
+
+window.CursorFX?.start?.();
+  safeStopCursor(1200);
+  clearInterval(window.dotInterval);
+
+  // ✅ 1) show reminders UNDER the intro, instantly (no white gap)
+  const reminderOverlay = document.getElementById("reminder-overlay");
+  if (reminderOverlay) {
+    reminderOverlay.hidden = false;
+    reminderOverlay.style.opacity = "1";
+    reminderOverlay.style.transition = "opacity 0.4s ease";
+    requestAnimationFrame(() => (reminderOverlay.style.opacity = "1"));
+  }
+
+  // ✅ 2) now fade out the intro overlay
+  overlay.style.pointerEvents = "none";
+  overlay.style.transition = "opacity 0.6s ease";
+  overlay.style.opacity = "0";
+
+  // ✅ 3) after fade, remove intro + wire up reminders
+  setTimeout(() => {
+    overlay.remove();
+   window.CursorFX?.stop?.();
+
+    // IMPORTANT: since we already unhid reminders above,
+    // just set up the click/keys now:
+    enableReminderScreen();
+  }, 600);
+}
+
+
+/* --- Improved Skip Logic --- */
+
+
+startIntroWhenReady();
+
+/* Update your endIntro function to stop the dots too */
+/* =============================
+   REMINDERS → RULES → START FLOW
+============================= */
+
+function enableReminderScreen() {
+  const reminderOverlay = document.getElementById("reminder-overlay");
+  const reminders = document.getElementById("reminders-content");
+  const rules = document.getElementById("rules-content");
+  const arrow = document.getElementById("rules-arrow");
+  const startBtn = document.getElementById("start-game");
+
+  if (!reminderOverlay || !reminders || !rules || !arrow || !startBtn) return;
+
+  // Show reminders
+  reminderOverlay.hidden = false;
+  reminderOverlay.style.opacity = "0";
+  requestAnimationFrame(() => {
+    reminderOverlay.style.transition = "opacity 0.4s ease";
+    reminderOverlay.style.opacity = "1";
+  });
+
+  // ------------------------
+  // STEP 1: Click or key on reminders → show rules
+  function showRules() {
+    reminders.style.display = "none";
+    rules.hidden = false;
+    startBtn.hidden = false;
+    arrow.style.display = "none";
+
+    // Remove listeners for showing rules
+    reminderOverlay.removeEventListener("click", showRules);
+    window.removeEventListener("keydown", showRules);
+
+    // Enable closing the rules screen
+    enableRulesClose();
+  }
+
+ arrow.addEventListener("click", (e) => {
+  e.stopPropagation();
+  showRules();
+});
+
+
+}
+
+/* ------------------------
+   STEP 2: Close overlay from rules
+------------------------ */
+function closeRules() {
+  const overlay = document.getElementById("reminder-overlay");
+  if (!overlay) return;
+
+  overlay.style.transition = "opacity 0.5s ease";
+  overlay.style.opacity = "0";
+
+  // Remove listeners immediately to prevent double triggers
+  window.removeEventListener("keydown", closeRules);
+  overlay.removeEventListener("click", closeRules);
+
+  setTimeout(() => {
+    if (overlay.parentNode) overlay.remove(); showCharacterSelect();
+  }, 500);
+}
+
+function enableRulesClose() {
+  const startBtn = document.getElementById("start-game");
+  if (!startBtn) return;
+
+  startBtn.addEventListener("click", closeRules);
+}
+
+
+/* ------------------------
+   STEP 3: Call this after intro ends
+------------------------ */
+
+/* =============================
+   CHARACTER SELECT LOGIC
+============================= */
+/* =============================
+   CHARACTER SELECT LOGIC
+============================= */
+
+let selectedCharacter = null;
+
+  // =============================
+// LOVE GAME STATE
+// =============================
+const GameState = {
+  land: "darkland",
+  category: "physical",
+  rungIndex: 0,
+  questionIndex: 0,
+  correctCount: 0
+};
+
+// Each land has ALL letters (not just murk / love)
+const LADDERS = {
+  darkland: 8,   // D n A L K R A D
+  murkland: 8,   // m u r k l a n d
+  loveland: 8    // l o v e l a n d
+};
+
+
+function showCharacterSelect() {
+  const overlay = document.getElementById("character-overlay");
+  if (!overlay) {
+    console.warn("Missing #character-overlay in HTML");
+    return;
+  }
+
+  overlay.classList.remove("hidden");
+  overlay.classList.add("visible");
+
+  // restart “play” entrance
+  const swirl = overlay.querySelector(".swirl-title");
+  if (swirl) {
+    swirl.classList.remove("play", "settled");
+    void swirl.offsetWidth;
+    swirl.classList.add("play");
+    setTimeout(() => {
+      swirl.classList.remove("play");
+      swirl.classList.add("settled");
+    }, 1300);
+  }
+
+  // restart the SMIL animation each time by cloning the textPath
+  const tp = overlay.querySelector("#swirlTP");
+  if (tp) {
+    const parent = tp.parentNode;
+    const clone = tp.cloneNode(true);
+    parent.replaceChild(clone, tp);
+  }
+}
+
+
+const characters = document.querySelectorAll(".character");
+
+characters.forEach(char => {
+  char.addEventListener("click", () => {
+    const overlay = document.getElementById("character-overlay");
+
+    // Clear previous state
+    characters.forEach(c => c.classList.remove("selected", "dimmed"));
+
+    // Select current
+    char.classList.add("selected");
+    selectedCharacter = char.dataset.character;
+    confirmBtn.disabled = false;
+
+    // Dim others
+    characters.forEach(c => {
+      if (c !== char) c.classList.add("dimmed");
+    });
+
+    // Soft fade of screen
+    overlay.classList.add("selection-made");
+  });
+});
+
+// ✅ CONFIRM BUTTON — THIS WAS MISSING
+const confirmBtn = document.getElementById("confirm-character");
+confirmBtn.addEventListener("click", () => {
+  if (!selectedCharacter) return;
+
+  const overlay = document.getElementById("character-overlay");
+  overlay.classList.remove("visible");
+  overlay.classList.add("fade-out");
+
+  setTimeout(async () => {
+    // 1) Make Darkland show ASAP
+    await preloadImage("darkland_screen.png"); // only the first screen
+    overlay.remove();
+    startLoveGame();
+
+    // 2) Preload everything else AFTER the game is already visible
+    // (don’t await — run in background)
+    setTimeout(() => {
+      preloadAllAssets().catch(console.warn);
+    }, 150);
+  }, 800);
+});
+
+function collectAllImageSrcs() {
+  const decks = [PHYSICAL_CARDS, MURK_CARDS, MENTAL_CARDS, [ECSTASY_CARD]].flat();
+  const cardImgs = decks.flatMap(c =>
+    [c.questionFront, c.questionBack, c.answerFront, c.answerBack].filter(Boolean)
+  );
+
+  const otherImgs = [
+    "darkland_screen.png",
+    "murkland_screen.png",
+    "loveland_screen.png",
+    "ecstasy_screen.png",
+    "reflection_front.png",
+    "reflection_back.png",
+    // character images too:
+    "1phoenix.png","2kitsune.png","3wata.png","4hydra.png","5girl.png",
+  ];
+
+  return Array.from(new Set([...cardImgs, ...otherImgs]));
+}
+
+async function preloadAllAssets(onProgress) {
+  const srcs = collectAllImageSrcs();
+  let done = 0;
+
+  // small concurrency so you don’t overload the browser/network
+  const CONCURRENCY = 6;
+  const queue = [...srcs];
+
+  async function worker() {
+    while (queue.length) {
+      const src = queue.shift();
+      await preloadImage(src);
+      done++;
+      onProgress?.(done, srcs.length);
+    }
+  }
+
+  await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+}
+
+
+  // =============================
+// CHARACTER MOVEMENT
+// =============================
+function positionCharacter() {
+  const char   = document.getElementById("player-character");
+  const img    = document.getElementById("game-background");
+  const screen = document.getElementById("game-screen");
+
+  const coords = RUNG_COORDS[GameState.land]; // ✅ land-aware
+  const rung = RUNG_COORDS[GameState.land][GameState.rungIndex];
+
+  const x = (rung.x / 1545) * img.clientWidth;
+  const y = (rung.y / 2000) * img.clientHeight;
+
+  char.style.left = `${x}px`;
+  char.style.top  = `${y}px`;
+
+  const targetTop = char.offsetTop - screen.clientHeight * 0.65;
+  screen.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
+}
+
+function bigGlowTransition(doDuringGlow, doAfterGlow = null) {
+  const glow = document.createElement("div");
+  glow.style.position = "fixed";
+  glow.style.inset = "0";
+  glow.style.zIndex = "9999999";
+  glow.style.pointerEvents = "none";
+  glow.style.background = `
+    radial-gradient(circle at center,
+      rgba(245,255,58,0.95) 0%,
+      rgba(245,255,58,0.55) 22%,
+      rgba(245,255,58,0.18) 48%,
+      rgba(0,0,0,0) 72%
+    )
+  `;
+  glow.style.opacity = "0";
+  glow.style.transition = "opacity 0.22s ease";
+  document.body.appendChild(glow);
+
+  requestAnimationFrame(() => (glow.style.opacity = "1"));
+
+  // ✅ run almost immediately
+  setTimeout(() => {
+    try { doDuringGlow?.(); } catch (e) { console.error(e); }
+
+    // ✅ fade out quickly
+    setTimeout(() => {
+      glow.style.transition = "opacity 0.25s ease";
+      glow.style.opacity = "0";
+      setTimeout(() => {
+        glow.remove();
+        CursorFX?.stop?.();
+        doAfterGlow?.();
+      }, 260);
+    }, 90);
+
+  }, 80);
+}
+
+function setDarklandFlames(on){
+  const w = document.getElementById("ladder-wrapper");
+  if (!w) return;
+  w.classList.toggle("darkland-flames", !!on);
+}
+  
+function moveCharacter(delta, afterTransition = null) {
+
+  const img = document.getElementById("game-background");
+
+  const continueWithNextCard = () => {
+    positionCharacter();
+    setTimeout(() => {
+      advanceCard();
+    }, 450);
+  };
+
+/* =====================
+   DARKLAND → MURKLAND
+   (top rung, correct/up answer)
+===================== */
+if (
+  GameState.land === "darkland" &&
+  GameState.rungIndex === (LADDERS.darkland - 1) &&
+  delta > 0
+) {
+  GameState.land = "murkland";
+  setDarklandFlames(false);
+  GameState.rungIndex = 0;
+
+  const img = document.getElementById("game-background");
+
+  bigGlowTransition(() => {
+    if (!img) {
+      positionCharacter();
+      setTimeout(() => advanceCard(), 450);
+      return;
+    }
+
+    img.onload = () => {
+  img.onload = null;
+  positionCharacter();
+  setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
+};
+
+
+    img.src = "murkland_screen.png";
+  });
+
+  return true;
+}
+
+  /* =====================
+     MURKLAND → DARKLAND
+  ===================== */
+  if (GameState.land === "murkland" && GameState.rungIndex === 0 && delta < 0) {
+  GameState.land = "darkland";
+  setDarklandFlames(true);
+  GameState.rungIndex = LADDERS.darkland - 1;
+  murkTransitionDone = false; // ✅ ADD THIS
+  const img = document.getElementById("game-background");
+
+  bigGlowTransition(() => {
+    if (!img) return;
+
+    img.onload = () => {
+      positionCharacter();
+      setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
+    };
+
+    img.src = "darkland_screen.png";
+  });
+
+  return true;
+}
+
+/* =====================
+   MURKLAND → LOVELAND
+   (top rung, correct/up answer)
+===================== */
+if (
+  GameState.land === "murkland" &&
+  GameState.rungIndex === (LADDERS.murkland - 1) &&
+  delta > 0
+) {
+  GameState.land = "loveland";
+  setDarklandFlames(false);
+  GameState.rungIndex = 0;
+
+  const img = document.getElementById("game-background");
+
+  bigGlowTransition(() => {
+    if (!img) {
+      positionCharacter();
+      setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
+      return;
+    }
+
+    img.onload = () => {
+      img.onload = null;
+      positionCharacter();
+      setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
+    };
+
+    img.src = "loveland_screen.png";
+  });
+
+  return true;
+}
+
+  
+ /* =====================
+   LOVELAND → MURKLAND (visual drop only; KEEP current deck)
+===================== */
+if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
+  GameState.land = "murkland";
+  setDarklandFlames(false);
+  GameState.rungIndex = LADDERS.murkland - 1;
+
+  // ✅ DO NOT change questionPhase / activeDeck here.
+
+  const img = document.getElementById("game-background");
+
+  bigGlowTransition(() => {
+    if (!img) {
+      positionCharacter();
+      setTimeout(() => advanceCard(), 450);
+      return;
+    }
+
+    img.onload = () => {
+      positionCharacter();
+      setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
+    };
+
+    img.src = "murkland_screen.png";
+  });
+
+  return true;
+}
+
+
+
+  /* =====================
+     NORMAL MOVEMENT
+  ===================== */
+  const max = LADDERS[GameState.land] - 1;
+  GameState.rungIndex = Math.max(0, Math.min(max, GameState.rungIndex + delta));
+  positionCharacter();
+  return false;
+}
+  
+
+
+
+
+const subtitles = {
+  phoenix: "The Fiery Phoenix . . .",
+  kitsune: "The Cunning Kitsune . . .",
+  mamiwata: "The Alluring Mami Wata . . .",
+  hydra: "The Immortal Hydra . . .",
+  human: "The Ruthless Human . . ."
+};
+
+const characterImages = {
+  phoenix: "1phoenix.png",
+  kitsune: "2kitsune.png",
+  mamiwata: "3wata.png",
+  hydra: "4hydra.png",
+  human: "5girl.png"
+};
+
+const caption = document.getElementById("character-caption");
+
+// Typewriter function
+let typingInterval = null;
+function typeWriter(element, text, speed = 50) {
+  if (typingInterval) {
+    clearInterval(typingInterval);
+    typingInterval = null;
+  }
+
+  element.textContent = "";
+  let i = 0;
+
+  typingInterval = setInterval(() => {
+    element.textContent += text.charAt(i);
+    i++;
+
+    if (i >= text.length) {
+      clearInterval(typingInterval);
+      typingInterval = null;
+    }
+  }, speed);
+}
+
+
+// Character click logic
+document.querySelectorAll(".character").forEach(char => {
+  char.addEventListener("click", () => {
+    const key = char.dataset.character;
+    if (!subtitles[key]) return;
+
+    caption.classList.add("visible");
+    typeWriter(caption, subtitles[key], 50);
+  });
+});
+ 
+// =============================
+// CARD ENGINE
+// =============================
+
+let currentCard = null;
+let cardSide = "front";
+let cardIndex = 0;
+let murkLastSeenIndex = -1; // -1 means none seen yet
+let questionPhase = "physical"; // physical → emotional → mental
+let lovelandUnlocked = false;
+let mentalLastSeenIndex = -1;
+const QUESTIONS_PER_DECK = 8;
+let answeredInThisDeck = 0;
+let renderToken = 0;
+// ===== BONUS TRACKING =====
+let totalAnswered = 0;
+let totalCorrect  = 0;
+let bonusEligible = true;     // stays true only if every answer is "correct"
+let bonusTriggered = false;
+
+
+async function setCardImages({ frontSrc, backSrc, mode, cardData }) {
+  const myToken = ++renderToken;
+
+  const layer = document.getElementById("card-layer");
+  const front = document.getElementById("card-front");
+  const back  = document.getElementById("card-back");
+  const cardEl = document.getElementById("card");
+
+  // Hide only briefly
+  layer.style.visibility = "hidden";
+  front.onload = null; back.onload = null;
+  cardEl.classList.remove("flipped");
+
+  // Start loads immediately
+  front.src = frontSrc;
+  back.src  = backSrc;
+
+  // ✅ show as soon as FRONT is ready
+  try { await (front.decode?.() ?? Promise.resolve()); } catch {}
+
+  if (myToken !== renderToken) return;
+  layer.style.visibility = "visible";
+
+  // Back can decode in background (don’t block UI)
+  (async () => { try { await (back.decode?.() ?? Promise.resolve()); } catch {} })();
+
+  // If question/back: render hotspots once BACK is actually ready + visible
+  if (mode === "question" && cardSide === "back" && cardData) {
+    requestAnimationFrame(() => {
+      if (myToken === renderToken && currentCard === cardData && cardMode === "question" && cardSide === "back") {
+        renderChoiceHotspots(cardData);
+      }
+    });
+  }
+}
+
+
+function showQuestionCard(cardData) {
+  if (!cardData) return;
+
+  // Phase detection (keep this — you NEED it)
+  if (cardData.id >= 1 && cardData.id < 100) questionPhase = "physical";
+  else if (cardData.id >= 100 && cardData.id < 200) questionPhase = "emotional";
+  else if (cardData.id >= 200 && cardData.id < 300) questionPhase = "mental";
+  else if (cardData.id >= 300) questionPhase = "ecstasy";
+
+  currentCard = cardData;
+
+  // Track progress indexes (keep yours)
+  const mIdx = MURK_CARDS.findIndex(c => c.id === cardData.id);
+  if (mIdx !== -1) murkLastSeenIndex = mIdx;
+
+  const tIdx = MENTAL_CARDS.findIndex(c => c.id === cardData.id);
+  if (tIdx !== -1) mentalLastSeenIndex = tIdx;
+
+  cardSide = "front";
+  cardMode = "question";
+
+  clearChoiceHotspots();
+
+  const layer = document.getElementById("card-layer");
+  layer.style.display = "flex";
+  fadeInCardLayer();
+  // load + decode before showing (prevents flash/jumble)
+  setCardImages({
+    frontSrc: cardData.questionFront,
+    backSrc:  cardData.questionBack,
+    mode: "question",
+    cardData
+  });
+
+  scrollToCards();
+  preloadNextCard();
+}
+
+
+function flashHotspot(letter) {
+  const choiceLayer = document.getElementById("choice-layer");
+  if (!choiceLayer) return;
+
+  const el = choiceLayer.querySelector(`.choice-hotspot[data-letter="${letter}"]`);
+  if (!el) return;
+
+  el.classList.add("flash");
+  setTimeout(() => el.classList.remove("flash"), 180);
+}
+
+
+  
+function selectHotspot(letter) {
+  const choiceLayer = document.getElementById("choice-layer");
+  if (!choiceLayer) return;
+
+  // clear previous selection
+  choiceLayer.querySelectorAll(".choice-hotspot.selected")
+    .forEach(el => el.classList.remove("selected"));
+
+  const el = choiceLayer.querySelector(`.choice-hotspot[data-letter="${letter}"]`);
+  if (!el) return;
+  el.classList.add("selected");
+}
+
+function clearChoiceHotspots() {
+  const choiceLayer = document.getElementById("choice-layer");
+  if (!choiceLayer) return;
+  choiceLayer.innerHTML = "";
+  choiceLayer.style.pointerEvents = "none";
+}
+
+function getContainedImageRect(imgEl, refSize) {
+  // host box (the on-screen img element inside the card)
+  const host = imgEl.getBoundingClientRect();
+
+  // ✅ Use your measured design size when provided
+  const refW = refSize?.w || imgEl.naturalWidth || host.width;
+  const refH = refSize?.h || imgEl.naturalHeight || host.height;
+
+  const scale = Math.min(host.width / refW, host.height / refH);
+
+  const drawW = refW * scale;
+  const drawH = refH * scale;
+
+  const offsetX = (host.width - drawW) / 2;
+  const offsetY = (host.height - drawH) / 2;
+
+  return {
+    left: offsetX,
+    top: offsetY,
+    width: drawW,
+    height: drawH,
+    scaleX: scale,
+    scaleY: scale
+  };
+}
+
+
+  
+const LETTER_BOX = { w: 100, h: 100 }; // same for all A–E
+
+function renderChoiceHotspots(cardData) {
+  clearChoiceHotspots();
+
+  if (!cardData || cardMode !== "question" || cardSide !== "back") return;
+  if (!cardData.outcomes) return;
+
+  const choiceLayer = document.getElementById("choice-layer");
+  const backImg = document.getElementById("card-back");
+  if (!choiceLayer || !backImg) return;
+
+  // Wait for the back image to be loaded
+  if (!backImg.complete || !backImg.naturalWidth) {
+    backImg.addEventListener(
+      "load",
+      () => {
+        // Only render if we're STILL on this card and still on the back
+        if (currentCard === cardData && cardMode === "question" && cardSide === "back") {
+          renderChoiceHotspots(cardData);
+        }
+      },
+      { once: true }
+    );
+    return;
+  }
+
+  const fit = getContainedImageRect(backImg, cardData.backSize);
+  choiceLayer.style.pointerEvents = "auto";
+
+  // -------- Option A: "centers" (A–E centers + fixed box)
+  // -------- Option A: "centers" (A–E centers + fixed box)
+if (cardData.centers) {
+  const boxW = (cardData.letterBox?.w ?? LETTER_BOX.w);
+  const boxH = (cardData.letterBox?.h ?? LETTER_BOX.h);
+
+  Object.entries(cardData.centers).forEach(([letter, p]) => {
+    if (!(letter in cardData.outcomes)) return;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "choice-hotspot letter";
+    btn.dataset.letter = letter;
+    btn.textContent = "";
+    btn.setAttribute("aria-label", `Answer ${letter.toUpperCase()}`);
+
+    // ✅ left/top are CENTER coords again
+    btn.style.left = `${fit.left + p.cx * fit.scaleX}px`;
+    btn.style.top  = `${fit.top  + p.cy * fit.scaleY}px`;
+    btn.style.width  = `${boxW * fit.scaleX}px`;
+    btn.style.height = `${boxH * fit.scaleY}px`;
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      selectHotspot(letter);
+      flashHotspot(letter);
+      setTimeout(() => resolveAnswer(letter), 100);
+    });
+
+    choiceLayer.appendChild(btn);
+  });
+
+  return;
+}
+
+
+
+  // -------- Option B: "zones" (rectangles)
+// -------- Option B: "zones" (rectangles)
+if (cardData.zones) {
+  Object.entries(cardData.zones).forEach(([letter, z]) => {
+    if (!(letter in cardData.outcomes)) return;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "choice-hotspot letter";
+    btn.dataset.letter = letter;
+    btn.textContent = "";
+    btn.setAttribute("aria-label", `Answer ${letter.toUpperCase()}`);
+
+    // ✅ convert TOP-LEFT zone to CENTER coords (because CSS is centered)
+    const cx = z.x + z.w / 2;
+    const cy = z.y + z.h / 2;
+
+    btn.style.left   = `${fit.left + cx * fit.scaleX}px`;
+    btn.style.top    = `${fit.top  + cy * fit.scaleY}px`;
+    btn.style.width  = `${z.w * fit.scaleX}px`;
+    btn.style.height = `${z.h * fit.scaleY}px`;
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      selectHotspot(letter);
+      flashHotspot(letter);
+      setTimeout(() => resolveAnswer(letter), 100);
+    });
+
+    choiceLayer.appendChild(btn);
+  });
+
+  return;
+}
+
+
+  // If neither exists, nothing to draw
+}
+
+
+
+window.addEventListener("keydown", (e) => {
+  if (!currentCard) return;
+
+  const key = e.key.toLowerCase();
+
+  // ANSWER MODE: any key flips/advances
+  if (cardMode === "answer") {
+    if (cardSide === "front") {
+      cardEl.classList.add("flipped");
+      cardSide = "back";
+      return;
+    }
+    if (cardSide === "back") {
+      closeAnswerAndContinue();
+      return;
+    }
+  }
+
+  // QUESTION MODE:
+  if (cardMode === "question") {
+    // Any key flips FRONT -> BACK
+    if (cardSide === "front") {
+      cardEl.classList.add("flipped");
+      cardSide = "back";
+
+      // show hotspots now that back is visible
+      requestAnimationFrame(() => renderChoiceHotspots(currentCard));
+      return;
+    }
+
+    // BACK: only A–E answers. Other keys do nothing.
+    if (cardSide === "back") {
+      if (currentCard.outcomes && (key in currentCard.outcomes)) {
+        selectHotspot(key);
+flashHotspot(key);
+setTimeout(() => resolveAnswer(key), 140);
+      }
+      return;
+    }
+  }
+});
+
+
+
+function resolveAnswer(letter) {
+  const delta = currentCard.outcomes[letter];
+  showAnswerCard(currentCard, delta);
+}
+
+let cardMode = "question"; // "question" | "answer"
+
+const cardEl = document.getElementById("card");
+const layer  = document.getElementById("card-layer");
+
+cardEl.addEventListener("click", () => {
+  if (!currentCard) return;
+
+  // QUESTION: click flips front -> back only
+  // QUESTION: click flips front -> back only
+if (cardMode === "question") {
+  if (cardSide === "front") {
+    cardEl.classList.add("flipped");
+    cardSide = "back";
+
+    // ✅ IMPORTANT: enable + build hotspots on click flip too
+    requestAnimationFrame(() => renderChoiceHotspots(currentCard));
+  }
+  return;
+}
+
+  // ANSWER: click #1 flips front -> back
+  if (cardMode === "answer" && cardSide === "front") {
+    cardEl.classList.add("flipped");
+    cardSide = "back";
+    return;
+  }
+
+  // ANSWER: click #2 fades + closes + moves
+ // ANSWER: click #2 closes + moves + advances (single source of truth)
+if (cardMode === "answer" && cardSide === "back") {
+  closeAnswerAndContinue();
+  return;
+}
+}); // ✅ closes cardEl.addEventListener("click", ...)
+
+  
+function scrollToCards() {
+  const screen = document.getElementById("game-screen");
+  if (!screen) return;
+
+  // make sure the GAME SCREEN is visible in the page
+  screen.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function showAnswerCard(cardData, delta) {
+  clearChoiceHotspots();
+
+  const layer = document.getElementById("card-layer");
+  const cardEl = document.getElementById("card");
+
+  layer.dataset.delta  = String(delta);
+  layer.dataset.cardId = String(cardData.id);
+
+  currentCard = cardData;
+  cardMode = "answer";
+  cardSide = "front";
+
+  cardEl.classList.remove("flipped");
+  layer.style.display = "flex";
+  fadeInCardLayer();
+  // load + decode before showing (prevents flash/jumble)
+  setCardImages({
+    frontSrc: cardData.answerFront,
+    backSrc:  cardData.answerBack,
+    mode: "answer",
+    cardData: null
+  });
+    preloadNextCard();
+}
+
+
+function goNextAfterAnswer() {
+  if (answeredInThisDeck >= QUESTIONS_PER_DECK) {
+    switchToNextDeck();
+    return;
+  }
+  advanceCard();
+}
+
+function switchToNextDeck() {
+  answeredInThisDeck = 0;
+
+  if (questionPhase === "physical") {
+    questionPhase = "emotional";
+    activeDeck = MURK_CARDS;
+    cardIndex = 0;
+    setTimeout(() => showQuestionCard(activeDeck[cardIndex]), NEXT_CARD_DELAY);
+    return;
+  }
+
+  if (questionPhase === "emotional") {
+    questionPhase = "mental";
+    activeDeck = MENTAL_CARDS;
+    cardIndex = 0;
+
+    // OPTIONAL: if you want Loveland visuals when mental starts:
+    // transitionToLoveland(); return;
+
+    setTimeout(() => showQuestionCard(activeDeck[cardIndex]), NEXT_CARD_DELAY);
+    return;
+  }
+
+  if (questionPhase === "mental") {
+  // ✅ If PERFECT run AND you finished while in Loveland, show bonus card
+  if (!bonusTriggered && bonusEligible && GameState.land === "loveland") {
+    bonusTriggered = true;
+    questionPhase = "ecstasy";
+    activeDeck = [ECSTASY_CARD];
+    cardIndex = 0;
+    answeredInThisDeck = 0;
+
+    setTimeout(() => showQuestionCard(ECSTASY_CARD), NEXT_CARD_DELAY);
+    return;
+  }
+
+  // otherwise end normally
+  setTimeout(() => showJourneyEnd(GameState.land), 700);
+  return;
+}
+}
+
+function advanceCard() {
+  cardIndex++;
+
+  if (cardIndex >= activeDeck.length) {
+    console.warn("Past end of deck; forcing deck switch.");
+    answeredInThisDeck = QUESTIONS_PER_DECK;
+    goNextAfterAnswer();
+    return;
+  }
+
+  setTimeout(() => showQuestionCard(activeDeck[cardIndex]), NEXT_CARD_DELAY);
+}
+
+
+
+function transitionToMurkland() {
+  // dramatic glow flash
+  const flash = document.createElement("div");
+  flash.style.position = "fixed";
+  flash.style.inset = "0";
+  flash.style.zIndex = "999999";
+  flash.style.pointerEvents = "none";
+  flash.style.background =
+    "radial-gradient(circle at center, rgba(245,255,58,0.85), rgba(0,0,0,0) 60%)";
+  flash.style.opacity = "0";
+  flash.style.transition = "opacity 0.35s ease";
+  document.body.appendChild(flash);
+
+  requestAnimationFrame(() => (flash.style.opacity = "1"));
+  setTimeout(() => {
+    flash.style.opacity = "0";
+    setTimeout(() => flash.remove(), 450);
+  }, 450);
+
+  // swap land + reset position
+  GameState.land = "murkland";
+  GameState.rungIndex = 0;
+
+  // ✅ Murk deck
+  activeDeck = MURK_CARDS;
+  questionPhase = "emotional";
+  // ✅ start Murkland where they left off on emotional questions
+  const nextMurkIndex = Math.max(
+    0,
+    Math.min((typeof murkLastSeenIndex === "number" ? murkLastSeenIndex : -1) + 1, MURK_CARDS.length - 1)
+  );
+  cardIndex = nextMurkIndex;
+
+  const img = document.getElementById("game-background");
+  if (!img) return;
+
+  img.onload = () => {
+    positionCharacter();
+
+    setTimeout(() => {
+      const nextCard = activeDeck[cardIndex];
+      if (!nextCard) {
+        console.error("No Murk card at index:", cardIndex, "Deck:", activeDeck);
+        return;
+      }
+      showQuestionCard(nextCard);
+    }, 1200);
+  };
+
+  img.src = "murkland_screen.png";
+}
+  
+function transitionToLoveland() {
+  // glow flash (same effect)
+  const flash = document.createElement("div");
+  flash.style.position = "fixed";
+  flash.style.inset = "0";
+  flash.style.zIndex = "999999";
+  flash.style.pointerEvents = "none";
+  flash.style.background =
+    "radial-gradient(circle at center, rgba(245,255,58,0.85), rgba(0,0,0,0) 60%)";
+  flash.style.opacity = "0";
+  flash.style.transition = "opacity 0.35s ease";
+  document.body.appendChild(flash);
+
+  requestAnimationFrame(() => (flash.style.opacity = "1"));
+  setTimeout(() => {
+    flash.style.opacity = "0";
+    setTimeout(() => flash.remove(), 450);
+  }, 450);
+
+  // swap land + reset position
+  GameState.land = "loveland";
+  GameState.rungIndex = 0;
+
+  // ✅ switch to mental deck (Loveland questions)
+  // ✅ switch to mental deck (Loveland questions) — RESUME
+activeDeck = MENTAL_CARDS;
+
+const nextMentalIndex = Math.max(
+  0,
+  Math.min((typeof mentalLastSeenIndex === "number" ? mentalLastSeenIndex : -1) + 1, MENTAL_CARDS.length - 1)
+);
+cardIndex = nextMentalIndex;
+
+
+  const img = document.getElementById("game-background");
+  if (!img) return;
+
+  img.onload = () => {
+    positionCharacter();
+    setTimeout(() => {
+      showQuestionCard(activeDeck[cardIndex]);
+    }, 1200);
+  };
+
+  img.src = "loveland_screen.png";
+}
+
+function landLabel(land) {
+  const map = {
+    darkland: "Darkland",
+    murkland: "Murkland",
+    loveland: "Loveland",
+    ecstasy: "Ecstasy"
+  };
+  return map[land] || "Loveland";
+}
+
+function fadeInCardLayer() {
+  const layer = document.getElementById("card-layer");
+  if (!layer) return;
+  layer.classList.add("card-fade-in");
+  requestAnimationFrame(() => layer.classList.remove("card-fade-in"));
+}
+
+function showJourneyEnd(finalLand) {
+  // hide cards
+  const layer = document.getElementById("card-layer");
+  if (layer) layer.style.display = "none";
+
+  // hard-hide game screen so land never peeks through
+  const screen = document.getElementById("game-screen");
+  if (screen) {
+    screen.hidden = true;
+    screen.style.display = "none";
+  }
+
+  // overlay container (opaque black)
+  const end = document.createElement("div");
+  end.id = "journey-end-overlay";
+  end.style.position = "fixed";
+  end.style.inset = "0";
+  end.style.zIndex = "9999999";
+  end.style.display = "flex";
+  end.style.alignItems = "center";
+  end.style.justifyContent = "center";
+  end.style.background = "rgba(0,0,0,1)";
+  end.style.opacity = "0";
+  end.style.transition = "opacity 0.8s ease";
+  document.body.appendChild(end);
+
+  // message box
+  const msg = document.createElement("div");
+  msg.classList.add("cyber-text");
+  msg.style.color = "#f5ff3a";
+  msg.style.padding = "24px";
+  msg.style.transition = "opacity 0.7s ease";
+  msg.style.opacity = "1";
+  end.appendChild(msg);
+
+  // helper: blinking dots like intro
+  let dotsInterval = null;
+  function startDots(el) {
+    let dotCount = 0;
+    dotsInterval = setInterval(() => {
+      dotCount = (dotCount + 1) % 4;
+      el.textContent = ". ".repeat(dotCount);
+    }, 400);
+  }
+  function stopDots() {
+    if (dotsInterval) clearInterval(dotsInterval);
+    dotsInterval = null;
+  }
+
+  // build line 1: "Your journey has brought you to" + dots span
+  const line1 = document.createElement("span");
+  line1.textContent = "Your journey has brought you to";
+
+  const dots = document.createElement("span");
+  dots.style.display = "inline-block";
+  dots.style.minWidth = "4ch";
+  dots.style.marginLeft = "10px";
+  dots.textContent = "";
+
+  // show overlay
+  requestAnimationFrame(() => (end.style.opacity = "1"));
+
+  // ---- Beat 1 (2s): sentence + blinking dots
+  msg.innerHTML = "";
+  msg.appendChild(line1);
+  msg.appendChild(dots);
+  startDots(dots);
+
+  setTimeout(() => {
+    // fade Beat 1 out
+    stopDots();
+    msg.style.opacity = "0";
+
+    setTimeout(() => {
+      // ---- Beat 2 (2s): show final land
+      msg.style.transition = "opacity 0.7s ease";
+      msg.textContent = landLabel(finalLand);
+      msg.style.opacity = "1";
+
+      setTimeout(() => {
+        // fade Beat 2 out
+        msg.style.opacity = "0";
+
+        setTimeout(() => {
+          // ---- Beat 3: reflection cards
+          attachReflectionCards(end, finalLand);
+        }, 800);
+
+      }, 2500);
+
+    }, 800);
+
+  }, 2500);
+}
+
+
+function scrollGameToMiddle() {
+  const screen = document.getElementById("game-screen");
+  if (!screen) return;
+
+  // middle of the scrollable area
+  const mid = (screen.scrollHeight - screen.clientHeight) / 2;
+  screen.scrollTop = Math.max(0, mid);
+}
+function enterEcstasyHold() {
+  // ✅ close any open card UI (just in case)
+  const layer = document.getElementById("card-layer");
+  if (layer) layer.style.display = "none";
+
+  // ✅ ensure game screen is visible so they can stare at Ecstasy indefinitely
+  const screen = document.getElementById("game-screen");
+  if (screen) {
+    screen.hidden = false;
+    screen.style.display = "block";
+    screen.style.opacity = "1";
+  }
+
+  // ✅ center the scrollbar once, so it doesn't start at bottom
+  requestAnimationFrame(() => scrollGameToMiddle());
+
+  // Prevent double-binding
+  if (window.__ecstasyHoldActive) return;
+  window.__ecstasyHoldActive = true;
+
+  const finish = () => {
+    if (!window.__ecstasyHoldActive) return;
+    window.__ecstasyHoldActive = false;
+
+    window.removeEventListener("keydown", onKey);
+    document.removeEventListener("click", onClick, true);
+
+    showJourneyEnd("ecstasy");
+  };
+
+  const onKey = (e) => {
+    // ignore modifier keys; otherwise any key should continue
+    if (e.key === "Shift" || e.key === "Alt" || e.key === "Control" || e.key === "Meta") return;
+    finish();
+  };
+
+  const onClick = (e) => {
+    // ✅ Only proceed if they click the Ecstasy image area (or anything in the game screen)
+    // If you want “click anywhere”, remove the if block and just call finish().
+    const bg = document.getElementById("game-background");
+    const screen = document.getElementById("game-screen");
+    if (bg && (e.target === bg || bg.contains(e.target))) return finish();
+    if (screen && (e.target === screen || screen.contains(e.target))) return finish();
+  };
+
+  window.addEventListener("keydown", onKey, { once: true });
+  document.addEventListener("click", onClick, { capture: true, once: true });
+}
+
+function transitionToEcstasy() {
+  // glow flash
+  const flash = document.createElement("div");
+  flash.style.position = "fixed";
+  flash.style.inset = "0";
+  flash.style.zIndex = "999999";
+  flash.style.pointerEvents = "none";
+  flash.style.background =
+    "radial-gradient(circle at center, rgba(245,255,58,0.85), rgba(0,0,0,0) 60%)";
+  flash.style.opacity = "0";
+  flash.style.transition = "opacity 0.35s ease";
+  document.body.appendChild(flash);
+
+  requestAnimationFrame(() => (flash.style.opacity = "1"));
+  setTimeout(() => {
+    flash.style.opacity = "0";
+    setTimeout(() => flash.remove(), 450);
+  }, 450);
+
+  GameState.land = "ecstasy";
+
+  const char = document.getElementById("player-character");
+  if (char) char.style.display = "none";
+
+  const img = document.getElementById("game-background");
+  if (!img) return;
+ img.onload = () => {
+  // ✅ wait one frame so layout/scrollHeight is correct
+  requestAnimationFrame(() => scrollGameToMiddle());
+};
+img.src = "ecstasy_screen.png";
+
+
+}
+
+
+// =============================
+// START LOVE GAME
+// =============================
+// =============================
+// START LOVE GAME
+// =============================
+function startLoveGame() {
+  const screen = document.getElementById("game-screen");
+  screen.hidden = false;
+  screen.style.display = "block";
+  // ✅ reset from end-screen fade
+  screen.style.opacity = "1";
+  screen.style.transition = "none";
+  requestAnimationFrame(() => {
+    screen.style.transition = ""; // restore normal transitions later if you want
+  });
+
+  // ✅ remove any previous journey overlay if it exists
+  document.getElementById("journey-end-overlay")?.remove();
+
+  // ✅ make sure character is visible again (ecstasy hides it)
+  const char = document.getElementById("player-character");
+  if (char) char.style.display = "block";
+
+  GameState.land = "darkland";
+  GameState.rungIndex = 0;
+  questionPhase = "physical";
+lovelandUnlocked = false;
+activeDeck = getDeckForPhase();
+  answeredInThisDeck = 0;
+cardIndex = 0;
+  totalAnswered = 0;
+totalCorrect = 0;
+bonusEligible = true;
+bonusTriggered = false;
+murkLastSeenIndex = -1;
+mentalLastSeenIndex = -1;
+murkTransitionDone = false;
+  const img = document.getElementById("game-background");
+
+  // important: clear previous onload (prevents weirdness on replays)
+  img.onload = null;
+  beginShown = false;
+  img.onload = () => {
+    const char = document.getElementById("player-character");
+    char.src = characterImages[selectedCharacter];
+    positionCharacter();
+    setDarklandFlames(true);
+    showBeginText();
+    cardIndex = 0;
+  };
+
+  img.src = "darkland_screen.png";
+}
+
+function showBeginText() {
+  if (beginShown) return;
+  beginShown = true;
+
+  const begin = document.getElementById("begin-text");
+  const img   = document.getElementById("game-background");
+
+  const rung = RUNG_COORDS.darkland[0]; // bottom D
+
+  const x = (rung.x / 1545) * img.clientWidth;
+  const y = (rung.y / 2000) * img.clientHeight;
+
+  begin.style.left = `${x}px`;
+  begin.style.top  = `${y - 180}px`;
+  begin.style.opacity = 1;
+  begin.textContent = "";
+
+  typeWriter(begin, "BEGIN", 120);
+
+  // BEGIN stays visible, then fades
+  setTimeout(() => {
+    begin.style.transition = "opacity 0.8s ease";
+    begin.style.opacity = 0;
+
+    // ✅ AFTER fade finishes, show first card
+    setTimeout(() => {
+      cardIndex = 0;
+showQuestionCard(activeDeck[0]);
+    }, 850);
+
+  }, 2800);
+}
+
+// Your coordinates
+const RUNG_COORDS = {
+  darkland: [
+    { x: 904,  y: 1934 },
+    { x: 1057, y: 1654 },
+    { x: 969,  y: 1380 },
+    { x: 1108, y: 1177 },
+    { x: 731,  y: 907  },
+    { x: 884,  y: 609  },
+    { x: 583,  y: 434  },
+    { x: 735,  y: 173  }
+  ],
+
+  // TODO: replace these with your real murkland rung positions
+  murkland: [
+    { x: 904,  y: 1934 },
+    { x: 1057, y: 1654 },
+    { x: 969,  y: 1380 },
+    { x: 1108, y: 1177 },
+    { x: 731,  y: 907  },
+    { x: 884,  y: 609  },
+    { x: 583,  y: 434  },
+    { x: 735,  y: 173  }
+  ],
+
+  loveland: [
+  { x: 904,  y: 1934 },
+  { x: 1057, y: 1654 },
+  { x: 969,  y: 1380 },
+  { x: 1108, y: 1177 },
+  { x: 731,  y: 907  },
+  { x: 884,  y: 609  },
+  { x: 583,  y: 434  },
+  { x: 735,  y: 173  }
+]
+  
+};
+/* =============================
+   REFLECTION CARDS (DRAW + DOWNLOAD)
+   Appears inside #journey-end-overlay
+============================= */
+
+function attachReflectionCards(endOverlayEl, finalLand) {
+  try {
+    console.log("✅ attachReflectionCards fired", { finalLand });
+
+    const DESIGN_W = 1545;
+    const DESIGN_H = 2000;
+    const dpr = window.devicePixelRatio || 1;
+
+    // Prevent duplicates
+    if (endOverlayEl.querySelector(".reflection-wrap")) {
+      console.log("ℹ️ reflection-wrap already exists; skipping");
+      return;
+    }
+
+    // Make sure the overlay is actually on top
+    endOverlayEl.style.position = "fixed";
+    endOverlayEl.style.inset = "0";
+    endOverlayEl.style.zIndex = "9999999";
+    endOverlayEl.style.display = "flex";
+    endOverlayEl.style.alignItems = "center";
+    endOverlayEl.style.justifyContent = "center";
+    endOverlayEl.style.background = "rgba(0,0,0,1)";  // ✅ fully opaque
+endOverlayEl.style.backgroundImage = "none";      // ✅ kill any overlay bg image
+endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it exists
+
+
+    // ---------- Layout (NO CSS REQUIRED) ----------
+    const wrap = document.createElement("div");
+    wrap.className = "reflection-wrap";
+    wrap.style.position = "fixed";
+    wrap.style.inset = "0";
+    wrap.style.zIndex = "10000000";
+    wrap.style.display = "grid";
+    wrap.style.gridTemplateColumns = "minmax(320px, 1fr) minmax(280px, 420px)";
+    wrap.style.gap = "18px";
+    wrap.style.padding = "22px";
+    wrap.style.alignItems = "center";
+    wrap.style.justifyItems = "center";
+    wrap.style.pointerEvents = "auto";
+
+    const stageShell = document.createElement("div");
+    stageShell.style.width = "min(560px, 92vw)";
+    stageShell.style.display = "flex";
+    stageShell.style.flexDirection = "column";
+    stageShell.style.gap = "10px";
+    stageShell.style.alignItems = "stretch";
+
+    const topRow = document.createElement("div");
+    topRow.style.display = "flex";
+    topRow.style.alignItems = "center";
+    topRow.style.justifyContent = "space-between";
+    topRow.style.gap = "10px";
+    topRow.style.color = "#f5ff3a";
+    topRow.style.fontFamily = "Georgia, 'Times New Roman', serif";
+    topRow.style.textShadow = "0 0 12px rgba(245,255,58,0.45)";
+
+    const title = document.createElement("div");
+    title.textContent = "Reflection Cards";
+    title.style.fontSize = "20px";
+    title.style.letterSpacing = "2px";
+
+    const tabs = document.createElement("div");
+    tabs.style.display = "flex";
+    tabs.style.gap = "8px";
+
+    function makeTab(text) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = text;
+      b.style.padding = "10px 14px";
+      b.style.borderRadius = "999px";
+      b.style.border = "1px solid rgba(245,255,58,0.35)";
+      b.style.background = "rgba(0,0,0,0.35)";
+      b.style.color = "#f5ff3a";
+      b.style.cursor = "pointer";
+      b.style.fontFamily = "Georgia, 'Times New Roman', serif";
+      return b;
+    }
+
+    const btnFront = makeTab("FRONT");
+    const btnBack  = makeTab("BACK");
+    tabs.appendChild(btnFront);
+    tabs.appendChild(btnBack);
+
+    topRow.appendChild(title);
+    topRow.appendChild(tabs);
+
+    const stage = document.createElement("div");
+    stage.className = "reflection-cardstage";
+    stage.style.position = "relative";
+    stage.style.width = "100%";
+    stage.style.aspectRatio = "1545 / 2000";
+    stage.style.borderRadius = "18px";
+    stage.style.overflow = "hidden";
+    stage.style.background = "#ffffff";
+    stage.style.boxShadow = "0 0 46px rgba(245,255,58,0.25)";
+    stage.style.touchAction = "none";
+
+    stageShell.appendChild(topRow);
+    stageShell.appendChild(stage);
+
+    // ---------- Canvases (stacked) ----------
+    function mkCanvas(label) {
+      const c = document.createElement("canvas");
+      c.dataset.layer = label;
+      c.style.position = "absolute";
+      c.style.inset = "0";
+      c.style.width = "100%";
+      c.style.height = "100%";
+      c.style.display = "block";
+      return c;
+    }
+
+    // template never edited
+    const tplFront = mkCanvas("tplFront");
+    const tplBack  = mkCanvas("tplBack");
+    // ink for drawing/eraser
+    const inkFront = mkCanvas("inkFront");
+    const inkBack  = mkCanvas("inkBack");
+    // text overlay
+    const textFront = mkCanvas("textFront");
+    const textBack  = mkCanvas("textBack");
+
+    // default: show front
+    tplBack.style.display = "none";
+    inkBack.style.display = "none";
+    textBack.style.display = "none";
+
+    stage.appendChild(tplFront);
+    stage.appendChild(inkFront);
+    stage.appendChild(textFront);
+    stage.appendChild(tplBack);
+    stage.appendChild(inkBack);
+    stage.appendChild(textBack);
+
+    function setupHiDPI(c) {
+      c.width  = Math.round(DESIGN_W * dpr);
+      c.height = Math.round(DESIGN_H * dpr);
+      const ctx = c.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // draw in DESIGN coords
+      return ctx;
+    }
+
+    const tplCtxF = setupHiDPI(tplFront);
+    const tplCtxB = setupHiDPI(tplBack);
+    const inkCtxF = setupHiDPI(inkFront);
+    const inkCtxB = setupHiDPI(inkBack);
+    const tCtxF   = setupHiDPI(textFront);
+    const tCtxB   = setupHiDPI(textBack);
+
+    inkCtxF.lineCap = inkCtxB.lineCap = "round";
+    inkCtxF.lineJoin = inkCtxB.lineJoin = "round";
+
+    // ✅ DEFINE templates BEFORE drawing (prevents TDZ forever)
+    const templates = {
+      front: "reflection_front.png",
+      back:  "reflection_back.png"
+    };
+
+    function drawTemplate(which) {
+      const ctx = which === "front" ? tplCtxF : tplCtxB;
+
+      // Always paint a visible base even if image fails
+      ctx.clearRect(0, 0, DESIGN_W, DESIGN_H);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, DESIGN_W, DESIGN_H);
+
+      // debug watermark (you can delete later)
+      ctx.fillStyle = "#111";
+      ctx.font = "48px Georgia, 'Times New Roman', serif";
+      ctx.fillText(which.toUpperCase() + " TEMPLATE", 90, 110);
+
+      const img = new Image();
+      img.onload = () => {
+        ctx.clearRect(0, 0, DESIGN_W, DESIGN_H);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, DESIGN_W, DESIGN_H);
+
+        const scale = Math.min(DESIGN_W / img.width, DESIGN_H / img.height);
+        const dw = img.width * scale;
+        const dh = img.height * scale;
+        const dx = (DESIGN_W - dw) / 2;
+        const dy = (DESIGN_H - dh) / 2;
+        ctx.drawImage(img, dx, dy, dw, dh);
+
+        console.log("✅ template loaded:", which, templates[which], { imgW: img.width, imgH: img.height });
+      };
+      img.onerror = () => {
+        console.warn("❌ template failed to load:", which, templates[which]);
+      };
+      img.src = templates[which];
+    }
+
+    // Draw both once
+    drawTemplate("front");
+    drawTemplate("back");
+
+    // ---------- Controls ----------
+    const controls = document.createElement("div");
+    controls.style.width = "min(420px, 92vw)";
+    controls.style.background = "rgba(0,0,0,0.35)";
+    controls.style.border = "1px solid rgba(245,255,58,0.25)";
+    controls.style.borderRadius = "18px";
+    controls.style.padding = "16px";
+    controls.style.color = "#f5ff3a";
+    controls.style.fontFamily = "Georgia, 'Times New Roman', serif";
+    controls.style.boxShadow = "0 0 30px rgba(0,0,0,0.35)";
+    controls.style.backdropFilter = "blur(6px)";
+// --- FORCE controls above the stage so sliders can be dragged ---
+stageShell.style.position = "relative";
+stageShell.style.zIndex = "1";
+
+controls.style.position = "relative";
+controls.style.zIndex = "999";
+
+    const h = document.createElement("div");
+    h.textContent = "Draw + Download";
+    h.style.fontSize = "18px";
+    h.style.letterSpacing = "1px";
+    h.style.marginBottom = "12px";
+    controls.appendChild(h);
+
+    function row() {
+      const r = document.createElement("div");
+      r.style.display = "flex";
+      r.style.gap = "10px";
+      r.style.alignItems = "center";
+      r.style.marginBottom = "10px";
+      return r;
+    }
+
+    const state = {
+      active: "front",
+      tool: "draw",
+      eraser: false,
+      color: "#fd11b4",
+      size: 10,
+      text: "",
+      textSize: 60
+    };
+
+    const r1 = row();
+    const colorInput = document.createElement("input");
+    colorInput.type = "color";
+    colorInput.value = state.color;
+
+    const sizeInput = document.createElement("input");
+    sizeInput.type = "range";
+    sizeInput.min = "2";
+    sizeInput.max = "40";
+    sizeInput.value = String(state.size);
+    sizeInput.style.flex = "1";
+sizeInput.style.minWidth = "140px";
+sizeInput.style.cursor = "ew-resize";
+sizeInput.style.pointerEvents = "auto";
+sizeInput.style.touchAction = "pan-x";
+
+
+    r1.appendChild(document.createTextNode("Color:"));
+    r1.appendChild(colorInput);
+    r1.appendChild(document.createTextNode("Brush:"));
+    r1.appendChild(sizeInput);
+    controls.appendChild(r1);
+
+    const rText = row();
+    const textBtn = document.createElement("button");
+    textBtn.type = "button";
+    textBtn.textContent = "TEXT TOOL: OFF";
+    textBtn.style.padding = "10px 12px";
+    textBtn.style.borderRadius = "12px";
+    textBtn.style.border = "1px solid rgba(245,255,58,0.25)";
+    textBtn.style.background = "rgba(0,0,0,0.35)";
+    textBtn.style.color = "#f5ff3a";
+    textBtn.style.cursor = "pointer";
+
+    const textInput = document.createElement("input");
+    textInput.type = "text";
+    textInput.placeholder = "Type text, then click card to place / drag";
+    textInput.style.flex = "1";
+    textInput.style.padding = "10px";
+    textInput.style.borderRadius = "10px";
+    textInput.style.border = "1px solid rgba(245,255,58,0.15)";
+    textInput.style.background = "rgba(0,0,0,0.25)";
+    textInput.style.color = "#f5ff3a";
+    textInput.style.outline = "none";
+
+    const textSize = document.createElement("input");
+    textSize.type = "range";
+    textSize.min = "18";
+    textSize.max = "140";
+    textSize.value = String(state.textSize);
+    textSize.style.flex = "1";
+textSize.style.minWidth = "140px";
+textSize.style.cursor = "ew-resize";
+textSize.style.pointerEvents = "auto";
+textSize.style.touchAction = "pan-x";
+[sizeInput, textSize].forEach(el => {
+  el.addEventListener("pointerdown", e => e.stopPropagation());
+  el.addEventListener("mousedown",  e => e.stopPropagation());
+  el.addEventListener("touchstart", e => e.stopPropagation(), { passive: true });
+});
+
+    rText.appendChild(textBtn);
+    rText.appendChild(textInput);
+    rText.appendChild(textSize);
+    controls.appendChild(rText);
+
+    const r2 = row();
+    r2.style.justifyContent = "center";
+r2.style.gap = "16px"; // optional: nicer spacing
+    const eraserBtn = document.createElement("button");
+    eraserBtn.type = "button";
+    eraserBtn.textContent = "ERASER: OFF";
+    eraserBtn.style.padding = "10px 12px";
+    eraserBtn.style.borderRadius = "12px";
+    eraserBtn.style.border = "1px solid rgba(245,255,58,0.25)";
+    eraserBtn.style.background = "rgba(0,0,0,0.35)";
+    eraserBtn.style.color = "#f5ff3a";
+    eraserBtn.style.cursor = "pointer";
+
+    const clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.textContent = "CLEAR SIDE";
+    clearBtn.style.padding = "10px 12px";
+    clearBtn.style.borderRadius = "12px";
+    clearBtn.style.border = "1px solid rgba(255,90,90,0.35)";
+    clearBtn.style.background = "rgba(0,0,0,0.35)";
+    clearBtn.style.color = "#ff8a8a";
+    clearBtn.style.cursor = "pointer";
+
+    r2.appendChild(eraserBtn);
+    r2.appendChild(clearBtn);
+    controls.appendChild(r2);
+    const rNav = row();
+const undoBtn = document.createElement("button");
+undoBtn.type = "button";
+undoBtn.textContent = "<- Undo";
+
+const redoBtn = document.createElement("button");
+redoBtn.type = "button";
+redoBtn.textContent = "Redo ->";
+
+[undoBtn, redoBtn].forEach(b => {
+  b.style.padding = "10px 12px";
+  b.style.borderRadius = "12px";
+  b.style.border = "1px solid rgba(245,255,58,0.25)";
+  b.style.background = "rgba(0,0,0,0.35)";
+  b.style.color = "#f5ff3a";
+  b.style.cursor = "pointer";
+  b.style.flex = "1";
+});
+
+undoBtn.onclick = () => undo(state.active);
+redoBtn.onclick = () => redo(state.active);
+
+rNav.appendChild(undoBtn);
+rNav.appendChild(redoBtn);
+controls.appendChild(rNav);
+
+    const r3 = row();
+    const dlFront = document.createElement("button");
+    dlFront.type = "button";
+    dlFront.textContent = "DOWNLOAD FRONT";
+    const dlBack = document.createElement("button");
+    dlBack.type = "button";
+    dlBack.textContent = "DOWNLOAD BACK";
+    const dlBoth = document.createElement("button");
+    dlBoth.type = "button";
+    dlBoth.textContent = "DOWNLOAD BOTH";
+
+    [dlFront, dlBack, dlBoth].forEach(b => {
+      b.style.padding = "10px 12px";
+      b.style.borderRadius = "12px";
+      b.style.border = "1px solid rgba(245,255,58,0.25)";
+      b.style.background = "rgba(245,255,58,0.12)";
+      b.style.color = "#f5ff3a";
+      b.style.cursor = "pointer";
+      b.style.flex = "1";
+    });
+    dlBoth.style.background = "rgba(0,0,0,0.35)";
+
+    r3.appendChild(dlFront);
+    r3.appendChild(dlBack);
+    r3.appendChild(dlBoth);
+    controls.appendChild(r3);
+
+    wrap.appendChild(stageShell);
+    wrap.appendChild(controls);
+    endOverlayEl.appendChild(wrap);
+
+    // ---------- State wiring ----------
+    function setActive(which) {
+      state.active = which;
+
+      // button highlight
+      btnFront.style.background = which === "front" ? "rgba(245,255,58,0.18)" : "rgba(0,0,0,0.35)";
+      btnBack.style.background  = which === "back"  ? "rgba(245,255,58,0.18)" : "rgba(0,0,0,0.35)";
+
+      tplFront.style.display  = which === "front" ? "block" : "none";
+      inkFront.style.display  = which === "front" ? "block" : "none";
+      textFront.style.display = which === "front" ? "block" : "none";
+
+      tplBack.style.display   = which === "back" ? "block" : "none";
+      inkBack.style.display   = which === "back" ? "block" : "none";
+      textBack.style.display  = which === "back" ? "block" : "none";
+
+      repaintText(which);
+    }
+
+    btnFront.addEventListener("click", () => setActive("front"));
+    btnBack.addEventListener("click", () => setActive("back"));
+
+    colorInput.addEventListener("input", () => state.color = colorInput.value);
+    sizeInput.addEventListener("input", () => state.size = Number(sizeInput.value));
+
+    eraserBtn.addEventListener("click", () => {
+      state.eraser = !state.eraser;
+      eraserBtn.textContent = state.eraser ? "ERASER: ON" : "ERASER: OFF";
+    });
+
+    textInput.addEventListener("input", () => state.text = textInput.value || "");
+let resizeTimer = null;
+
+textSize.addEventListener("input", () => {
+  const v = Number(textSize.value);
+
+  // if a text is selected, resize that text
+  if (selectedText) {
+    selectedText.size = v;
+    repaintText(state.active);
+
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => snapshot(state.active), 160);
+  } else {
+    // otherwise, this sets the size used for NEW text placements
+    state.textSize = v;
+  }
+});
+
+    textBtn.addEventListener("click", () => {
+      const on = state.tool !== "text";
+      state.tool = on ? "text" : "draw";
+      textBtn.textContent = on ? "TEXT TOOL: ON" : "TEXT TOOL: OFF";
+      if (on) {
+        state.eraser = false;
+        eraserBtn.textContent = "ERASER: OFF";
+      }
+    });
+
+   clearBtn.addEventListener("click", () => {
+  const which = state.active;
+  snapshot(which);
+  const ictx = which === "front" ? inkCtxF : inkCtxB;
+  ictx.clearRect(0, 0, DESIGN_W, DESIGN_H);
+  textItems[which] = [];
+  selectedText = null;
+  repaintText(which);
+});
+
+    function downloadCanvas(which) {
+      const base = which === "front" ? tplFront : tplBack;
+      const ink  = which === "front" ? inkFront : inkBack;
+      const text = which === "front" ? textFront : textBack;
+
+      const out = document.createElement("canvas");
+      out.width = base.width;
+      out.height = base.height;
+
+      const octx = out.getContext("2d");
+      octx.drawImage(base, 0, 0);
+      octx.drawImage(ink, 0, 0);
+      octx.drawImage(text, 0, 0);
+
+      const a = document.createElement("a");
+      const safeLand = (finalLand || "result").toString().toLowerCase();
+      a.download = `lovegame_reflection_${safeLand}_${which}.png`;
+      a.href = out.toDataURL("image/png");
+      a.click();
+    }
+
+    dlFront.addEventListener("click", () => downloadCanvas("front"));
+    dlBack.addEventListener("click", () => downloadCanvas("back"));
+    dlBoth.addEventListener("click", () => {
+      downloadCanvas("front");
+      setTimeout(() => downloadCanvas("back"), 250);
+    });
+
+    // ---------- Text items ----------
+   // ---------- Text items ----------
+const textItems = { front: [], back: [] };
+let dragging = null;
+let dragOff = { x: 0, y: 0 };
+let selectedText = null;
+
+// ---------- History (Undo/Redo) ----------
+const MAX_HISTORY = 40;
+const history = { front: [], back: [] };
+const historyIndex = { front: -1, back: -1 };
+
+function snapshot(which) {
+  const inkCanvas = which === "front" ? inkFront : inkBack;
+
+  const snap = {
+    ink: inkCanvas.toDataURL("image/png"),
+    texts: textItems[which].map(t => ({ ...t }))
+  };
+
+  // truncate redo future
+  history[which].splice(historyIndex[which] + 1);
+  history[which].push(snap);
+
+  if (history[which].length > MAX_HISTORY) {
+    history[which].shift();
+  } else {
+    historyIndex[which]++;
+  }
+}
+
+function restore(which, index) {
+  const snap = history[which][index];
+  if (!snap) return;
+
+  // restore ink
+  const ctx = which === "front" ? inkCtxF : inkCtxB;
+  ctx.clearRect(0, 0, DESIGN_W, DESIGN_H);
+
+  const img = new Image();
+  img.onload = () => ctx.drawImage(img, 0, 0, DESIGN_W, DESIGN_H);
+  img.src = snap.ink;
+
+  // restore text
+  textItems[which] = snap.texts.map(t => ({ ...t }));
+  selectedText = null;
+  repaintText(which);
+}
+
+function undo(which) {
+  if (historyIndex[which] <= 0) return;
+  historyIndex[which]--;
+  restore(which, historyIndex[which]);
+}
+
+function redo(which) {
+  if (historyIndex[which] >= history[which].length - 1) return;
+  historyIndex[which]++;
+  restore(which, historyIndex[which]);
+}
+
+
+    function drawTextAt(ctx, x, y, text, color, sizePx) {
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.font = `${sizePx}px Georgia, 'Times New Roman', serif`;
+
+  // ✅ center on cursor
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  const lines = String(text).split("\n");
+  const lineH = Math.round(sizePx * 1.15);
+
+  // ✅ if multiple lines, center the whole block around y
+  const totalH = (lines.length - 1) * lineH;
+  const startY = y - totalH / 2;
+
+  lines.forEach((line, i) => ctx.fillText(line, x, startY + i * lineH));
+  ctx.restore();
+}
+
+    function getTextCtx(which) { return which === "front" ? tCtxF : tCtxB; }
+
+    function getTextBounds(ctx, item) {
+  ctx.save();
+  ctx.font = `${item.size}px Georgia, 'Times New Roman', serif`;
+
+  const lines = item.text.split("\n");
+  const lineH = item.size * 1.15;
+
+  let w = 0;
+  for (const line of lines) w = Math.max(w, ctx.measureText(line).width);
+
+  const h = lines.length * lineH;
+
+  // ✅ centered anchor → bounds are centered on (x,y)
+  const x = item.x - w / 2;
+  const y = item.y - h / 2;
+
+  ctx.restore();
+  return { x, y, w, h };
+}
+
+    function hitText(which, p) {
+  const ctx = getTextCtx(which);
+  for (let i = textItems[which].length - 1; i >= 0; i--) {
+    const t = textItems[which][i];
+    const b = getTextBounds(ctx, t);
+    if (p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h) return i;
+  }
+  return -1;
+}
+
+
+    function repaintText(which) {
+      const tctx = getTextCtx(which);
+      // IMPORTANT: clear in DESIGN coords (not device pixels)
+      tctx.clearRect(0, 0, DESIGN_W, DESIGN_H);
+      for (const item of textItems[which]) {
+        drawTextAt(tctx, item.x, item.y, item.text, item.color, item.size);
+      }
+    }
+
+    // ---------- Drawing ----------
+    let drawing = false;
+    let last = null;
+    let activePointerId = null;   // tracks the pointer that started on the card stage
+
+    function getActiveInkCtx() {
+      return state.active === "front" ? inkCtxF : inkCtxB;
+    }
+
+    function getPos(evt) {
+      const rect = stage.getBoundingClientRect();
+      const x = ((evt.clientX - rect.left) / rect.width) * DESIGN_W;
+      const y = ((evt.clientY - rect.top) / rect.height) * DESIGN_H;
+      return { x, y };
+    }
+
+    const lerp = (a, b, t) => a + (b - a) * t;
+
+    function pointerDown(e) {
+  e.preventDefault();
+      activePointerId = e.pointerId;
+stage.setPointerCapture?.(e.pointerId);
+  const p = getPos(e);
+  const which = state.active;
+
+  // ✅ ERASER DELETES TEXT (tap on text deletes it)
+  if (state.eraser) {
+    const idx = hitText(which, p);
+    if (idx !== -1) {
+      snapshot(which);
+      textItems[which].splice(idx, 1);
+      selectedText = null;
+      repaintText(which);
+      return;
+    }
+  }
+
+  // If clicking on existing text, select + drag it
+  const idx = hitText(which, p);
+  if (idx !== -1 && state.tool !== "text" && !state.eraser) {
+    selectedText = textItems[which][idx];
+    textSize.value = String(selectedText.size);
+
+    snapshot(which); // ✅ drag can be undone
+    dragging = selectedText;
+    dragOff.x = p.x - selectedText.x;
+    dragOff.y = p.y - selectedText.y;
+    return;
+  }
+
+  // clicked empty area => deselect
+  selectedText = null;
+
+  // Text tool places text
+  if (state.tool === "text") {
+    if (state.text.trim()) {
+      snapshot(which); // ✅ place text undoable
+      textItems[which].push({
+        x: p.x,
+        y: p.y,
+        text: state.text,
+        color: state.color,
+        size: state.textSize
+      });
+      repaintText(which);
+    }
+    return;
+  }
+
+  // Draw/Eraser stroke begins
+  snapshot(which); // ✅ stroke undoable
+  drawing = true;
+  last = p;
+}
+
+
+  function pointerMove(e) {
+    if (e.pointerId !== activePointerId) return; // ✅ sliders + everything else unaffected
+  if (dragging) {
+    e.preventDefault();
+    const p = getPos(e);
+    dragging.x = p.x - dragOff.x;
+    dragging.y = p.y - dragOff.y;
+    repaintText(state.active);
+    return;
+  }
+
+  if (!drawing || !last) return;
+  e.preventDefault();
+
+  const ctx = getActiveInkCtx();
+  const p = getPos(e);
+
+  const dx = p.x - last.x;
+  const dy = p.y - last.y;
+  const dist = Math.hypot(dx, dy);
+  const steps = Math.max(1, Math.floor(dist / 2));
+
+  ctx.save();
+
+  // ✅ HARD RESET (prevents gray / shadows / alpha leaks)
+  ctx.globalAlpha = 1;
+  ctx.filter = "none";
+  ctx.shadowBlur = 0;
+  ctx.shadowColor = "transparent";
+
+  ctx.lineWidth = state.size;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+
+  if (state.eraser) {
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.strokeStyle = "rgba(0,0,0,1)";
+  } else {
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle = state.color;
+  }
+
+  ctx.beginPath();
+  ctx.moveTo(last.x, last.y);
+  for (let i = 1; i <= steps; i++) {
+    const t = i / steps;
+    ctx.lineTo(lerp(last.x, p.x, t), lerp(last.y, p.y, t));
+  }
+  ctx.stroke();
+  ctx.restore();
+
+  last = p;
+}
+
+
+    function pointerUp(e) {
+  if (e.pointerId !== activePointerId) return;
+  stage.releasePointerCapture?.(e.pointerId);
+  activePointerId = null;
+  dragging = null;
+  drawing = false;
+  last = null;
+}
+
+    // Use pointer events (works for mouse + touch)
+    stage.addEventListener("pointerdown", pointerDown);
+    window.addEventListener("pointermove", pointerMove, { passive: false });
+    window.addEventListener("pointerup", pointerUp, { passive: true });
+    window.addEventListener("pointercancel", pointerUp, { passive: true });
+
+
+    // Initial view
+   // Initial view
+setActive("front");
+
+// baseline snapshots so first undo works
+snapshot("front");
+snapshot("back");
+
+console.log("✅ Reflection UI mounted");
+  } catch (err) {
+    console.error("❌ attachReflectionCards crashed:", err);
+  }
+
+}
+
+/* =============================
+   CURSOR FX (click + loading + spinning ring)
+   Place near the END of your <script> block
+============================= */
+(function setupCursorFX() {
+  // 1) clicking cursor state
+  window.addEventListener("mousedown", () => {
+    document.body.classList.add("cursor-clicking");
+  });
+  window.addEventListener("mouseup", () => {
+    document.body.classList.remove("cursor-clicking");
+  });
+
+  // 2) create the spinning ring element once
+  const ring = document.createElement("div");
+  ring.id = "cursor-ring";
+  document.body.appendChild(ring);
+  ring.style.pointerEvents = "none"; // ✅ critical
+
+  // 3) move ring with mouse
+  document.addEventListener("mousemove", (e) => {
+    ring.style.left = e.clientX + "px";
+    ring.style.top  = e.clientY + "px";
+  });
+
+  // 4) helper API so you can toggle loading anywhere
+  window.CursorFX = {
+    start() {
+      document.body.classList.add("cursor-loading");
+    },
+    stop() {
+      document.body.classList.remove("cursor-loading");
+    }
+  };
+})();
+
+
+function safeStopCursor(delay = 1200) {
+  setTimeout(() => document.body.classList.remove("cursor-loading"), delay);
+}
+/* =============================
+   CURSOR LOADING FAILSAFE
+============================= */
+["star-neutral.png","star-hover.png","star-click.png","star-load-circle.png"].forEach(src=>{
+  const i = new Image();
+  i.onload = ()=>console.log("✅ cursor loaded:", src, i.width, i.height);
+  i.onerror = ()=>console.warn("❌ cursor FAILED:", src);
+  i.src = src;
+});
 
 </script>
 </body>

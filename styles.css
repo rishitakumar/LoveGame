@@ -436,7 +436,6 @@ body {
   display: block;
   width: min(900px, 95vw);
   height: auto;
-  z-index: 5;   /* higher than the DNA layer */
 }
 
 
@@ -1123,9 +1122,10 @@ textarea,
 #ladder-wrapper {
   position: relative;
   display: inline-block;
+  z-index: 0; /* create stacking context */
 }
 
-/* outer glowing ring (white-ish) */
+/* DNA layer */
 #ladder-wrapper::before,
 #ladder-wrapper::after {
   content: "";
@@ -1134,10 +1134,9 @@ textarea,
   bottom: -40px;
   left: -50px;
   right: -50px;
-  z-index: -1;
+  z-index: 0;              /* NOT -1 */
   pointer-events: none;
 
-  /* tighter, smaller dots */
   background:
     repeating-radial-gradient(
       circle at center,
@@ -1145,7 +1144,6 @@ textarea,
       transparent 3px 16px
     );
 
-  /* soft cyber glow */
   filter:
     drop-shadow(0 0 6px rgba(255,255,255,0.6))
     drop-shadow(0 0 18px rgba(255,255,255,0.25));
@@ -1154,16 +1152,13 @@ textarea,
   opacity: 0.85;
 }
 
-/* second “strand”: neon green + rungs */
 #ladder-wrapper::after {
   background:
-    /* green dots */
     repeating-radial-gradient(
       circle at center,
       rgba(17, 253, 90, 1) 0 3px,
       transparent 3px 16px
     ),
-    /* faint horizontal rungs */
     repeating-linear-gradient(
       to bottom,
       transparent 0 10px,
@@ -1177,6 +1172,12 @@ textarea,
 
   animation: dnaSpin 7s linear infinite reverse;
   mix-blend-mode: screen;
+}
+
+/* Make sure board is ABOVE DNA */
+#game-background {
+  position: relative;
+  z-index: 5;
 }
 
 /* slight wobble so it feels alive */

@@ -427,6 +427,11 @@ body {
   padding: 30px 0;
 }
 
+#ladder-wrapper{
+  position: relative;
+  display: inline-block;     /* wrapper becomes exact image size */
+}
+
 #game-background{
   display: block;
   width: min(900px, 95vw);
@@ -1114,104 +1119,55 @@ textarea,
 ============================= */
 /* Darkland screen wrapper */
 /* Only for Darkland */
-/* Wrapper stays as-is */
-#board {
-  position: relative;
-}
-
 #ladder-wrapper {
-  position: absolute;          /* overlay on board */
-  top: 50%;
-  left: 0;                     /* stick to left side */
-  transform: translateY(-50%);
-  width: 80px;                 /* slim border */
-  height: 80%;                 /* scale with board */
-  pointer-events: none;
+  position: relative;
+  padding: 30px; /* breathing room for glow */
   overflow: visible;
 }
-.dna {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
 
-/* shared strand styles */
-.strand {
+/* block beam layer */
+#ladder-wrapper::before {
+  content: "";
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
+  z-index: 0;
+  pointer-events: none;
+
+  /* repeating block pattern */
+  background:
+  repeating-linear-gradient(
+    90deg,
+    #cfcfcf 0 40px,
+    #11FD5A 40px 80px,
+    #fff234 80px 120px
+  ),
+  repeating-linear-gradient(
+    0deg,
+    #cfcfcf 0 40px,
+    #11FD5A 40px 80px,
+    #fff234 80px 120px
+  );
+
+  filter: blur(35px);
+  opacity: 0.9;
+
+  animation: blockShift 3s linear infinite;
 }
 
-/* dots */
-.strand span {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #11FD5A;
-  box-shadow: 0 0 6px rgba(17, 253, 90, 0.6);
+/* keep board above */
+#game-background {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(900px, 95vw);
+  height: auto;
 }
 
-/* second strand offset horizontally */
-.strand-b {
-  transform: translateX(16px);
+/* animate block sliding */
+@keyframes blockShift {
+  from { background-position: 0 0; }
+  to   { background-position: 180px 0; }
 }
-
-.strand-b span {
-  background: #cfcfcf;
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
-}
-/* main motion: side-to-side + scale + opacity */
-@keyframes helixDot {
-  0% {
-    transform: translateX(-10px) scale(0.4);
-    opacity: 0.3;
-  }
-  25% {
-    transform: translateX(0) scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: translateX(10px) scale(0.4);
-    opacity: 0.3;
-  }
-  75% {
-    transform: translateX(0) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(-10px) scale(0.4);
-    opacity: 0.3;
-  }
-}
-
-/* apply animation to all dots */
-.strand span,
-.strand-b span {
-  animation: helixDot 1.8s linear infinite;
-}
-
-/* staggered delays to create wave */
-.strand span:nth-child(1)  { animation-delay: 0s; }
-.strand span:nth-child(2)  { animation-delay: 0.1s; }
-.strand span:nth-child(3)  { animation-delay: 0.2s; }
-.strand span:nth-child(4)  { animation-delay: 0.3s; }
-.strand span:nth-child(5)  { animation-delay: 0.4s; }
-.strand span:nth-child(6)  { animation-delay: 0.5s; }
-.strand span:nth-child(7)  { animation-delay: 0.6s; }
-.strand span:nth-child(8)  { animation-delay: 0.7s; }
-.strand span:nth-child(9)  { animation-delay: 0.8s; }
-.strand span:nth-child(10) { animation-delay: 0.9s; }
-.strand span:nth-child(11) { animation-delay: 1.0s; }
-.strand span:nth-child(12) { animation-delay: 1.1s; }
-
-/* second strand: half-cycle offset so it appears opposite side of helix */
-.strand-b span {
-  animation-delay: calc(var(--i, 0s) + 0.9s); /* fallback if you want to get fancy with CSS vars */
-}
-
   @keyframes spaceZoom {
    0% {
     background-size: 100% 100%;

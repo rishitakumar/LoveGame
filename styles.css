@@ -1120,41 +1120,34 @@ textarea,
 /* Darkland screen wrapper */
 #ladder-wrapper.darkland-screen {
   position: relative;
-  overflow: visible; /* allow glow to extend outside */
+  overflow: hidden;
 }
 
-/* Neon glow pseudo-element around the image */
 #ladder-wrapper.darkland-screen::before {
   content: "";
   position: absolute;
-  top: -20px;      /* extend glow above */
-  left: -20px;     /* extend glow left */
-  right: -20px;    /* extend glow right */
-  bottom: -20px;   /* extend glow below */
-  z-index: 0;      /* behind image */
-  background-color: transparent; /* only glow via box-shadow */
-  
-  /* Neon pulse effect with glow */
-  box-shadow: 0 0 20px #fff234, 0 0 40px #11FD5A, 0 0 60px #fff234;
-  border-radius: 4px; /* match your image edges if needed */
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0; /* behind the image */
+  background-color: #000;
   animation: neonPulse 3s infinite alternate;
+  box-shadow: 0 0 20px #fff234, 0 0 40px #11FD5A, 0 0 60px #fff234;
 }
 
-/* Keep the Darkland image on top */
 #ladder-wrapper.darkland-screen #game-background {
   position: relative;
-  z-index: 1;
+  z-index: 1; /* sits on top of neon background */
   width: 100%;
   height: auto;
   display: block;
+  opacity: 0.85;          /* optional for neon to show through */
+  mix-blend-mode: screen;  /* optional */
 }
 
-/* Neon pulse animation */
 @keyframes neonPulse {
-  0%   { box-shadow: 0 0 20px #fff234, 0 0 40px #11FD5A, 0 0 60px #fff234; }
-  33%  { box-shadow: 0 0 25px #fff234, 0 0 50px #11FD5A, 0 0 75px #fff234; }
-  66%  { box-shadow: 0 0 20px #11FD5A, 0 0 40px #fff234, 0 0 60px #11FD5A; }
-  100% { box-shadow: 0 0 25px #fff234, 0 0 50px #11FD5A, 0 0 75px #fff234; }
+  0%   { background-color: #fff234; }
+  33%  { background-color: #000000; }
+  66%  { background-color: #11FD5A; }
+  100% { background-color: #fff234; }
 }
   @keyframes spaceZoom {
    0% {

@@ -1121,10 +1121,11 @@ textarea,
 /* Only for Darkland */
 #ladder-wrapper {
   position: relative;
-  padding: 30px;   /* breathing room */
+  padding: 30px; /* breathing room for glow */
+  overflow: visible;
 }
 
-/* cyber beam layer */
+/* block beam layer */
 #ladder-wrapper::before {
   content: "";
   position: absolute;
@@ -1132,22 +1133,24 @@ textarea,
   z-index: 0;
   pointer-events: none;
 
-  background: linear-gradient(
+  /* repeating block pattern */
+  background: repeating-linear-gradient(
     90deg,
-    #cfcfcf,
-    #11FD5A,
-    #fff234,
-    #cfcfcf
+    #cfcfcf 0px,
+    #cfcfcf 60px,
+    #11FD5A 60px,
+    #11FD5A 120px,
+    #fff234 120px,
+    #fff234 180px
   );
 
-  background-size: 300% 300%;
-  filter: blur(40px);
-  opacity: 0.8;
+  filter: blur(35px);
+  opacity: 0.9;
 
-  animation: cyberShift 4s linear infinite;
+  animation: blockShift 3s linear infinite;
 }
 
-/* keep image above glow */
+/* keep board above */
 #game-background {
   position: relative;
   z-index: 1;
@@ -1156,10 +1159,10 @@ textarea,
   height: auto;
 }
 
-/* animated gradient movement */
-@keyframes cyberShift {
-  0%   { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
+/* animate block sliding */
+@keyframes blockShift {
+  from { background-position: 0 0; }
+  to   { background-position: 180px 0; }
 }
   @keyframes spaceZoom {
    0% {

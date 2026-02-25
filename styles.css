@@ -1120,33 +1120,46 @@ textarea,
 /* Darkland screen wrapper */
 /* Only for Darkland */
 #ladder-wrapper {
-  padding: 20px;          /* gives glow space */
-  background: black;      /* keep inside black */
+  position: relative;
+  padding: 30px;   /* breathing room */
 }
 
+/* cyber beam layer */
+#ladder-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+
+  background: linear-gradient(
+    90deg,
+    #cfcfcf,
+    #11FD5A,
+    #fff234,
+    #cfcfcf
+  );
+
+  background-size: 300% 300%;
+  filter: blur(40px);
+  opacity: 0.8;
+
+  animation: cyberShift 4s linear infinite;
+}
+
+/* keep image above glow */
 #game-background {
+  position: relative;
+  z-index: 1;
   display: block;
   width: min(900px, 95vw);
   height: auto;
-  animation: neonPulse 2s infinite alternate;
 }
 
-@keyframes neonPulse {
-  0% {
-    box-shadow: 
-      0 0 40px #fff234,
-      0 0 80px #fff234;
-  }
-  50% {
-    box-shadow: 
-      0 0 40px #11FD5A,
-      0 0 80px #11FD5A;
-  }
-  100% {
-    box-shadow: 
-      0 0 40px #000000,
-      0 0 80px #000000;
-  }
+/* animated gradient movement */
+@keyframes cyberShift {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
 }
   @keyframes spaceZoom {
    0% {

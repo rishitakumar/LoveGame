@@ -1121,37 +1121,38 @@ textarea,
 /* Only for Darkland */
 #ladder-wrapper {
   position: relative;
-  padding: 30px; /* breathing room for glow */
-  overflow: visible;
+  display: inline-block;
 }
 
-/* block beam layer */
-#ladder-wrapper::before {
+#ladder-wrapper::before,
+#ladder-wrapper::after {
   content: "";
   position: absolute;
-  inset: 0;
+  top: -50px;
+  bottom: -50px;
+  left: -60px;
+  right: -60px;
   z-index: 0;
   pointer-events: none;
 
-  /* repeating block pattern */
-  background:
-  repeating-linear-gradient(
-    90deg,
-    #cfcfcf 0 40px,
-    #11FD5A 40px 80px,
-    #fff234 80px 120px
-  ),
-  repeating-linear-gradient(
-    0deg,
-    #cfcfcf 0 40px,
-    #11FD5A 40px 80px,
-    #fff234 80px 120px
+  background: repeating-radial-gradient(
+    circle at center,
+    #cfcfcf 0 6px,
+    transparent 6px 30px
   );
 
-  filter: blur(35px);
-  opacity: 0.9;
+  animation: dnaSpin 6s linear infinite;
+  opacity: 0.7;
+}
 
-  animation: blockShift 3s linear infinite;
+/* second strand */
+#ladder-wrapper::after {
+  background: repeating-radial-gradient(
+    circle at center,
+    #11FD5A 0 6px,
+    transparent 6px 30px
+  );
+  animation-direction: reverse;
 }
 
 /* keep board above */
@@ -1159,14 +1160,11 @@ textarea,
   position: relative;
   z-index: 1;
   display: block;
-  width: min(900px, 95vw);
-  height: auto;
 }
 
-/* animate block sliding */
-@keyframes blockShift {
-  from { background-position: 0 0; }
-  to   { background-position: 180px 0; }
+@keyframes dnaSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
   @keyframes spaceZoom {
    0% {

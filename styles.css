@@ -1119,13 +1119,13 @@ textarea,
 ============================= */
 /* Darkland screen wrapper */
 /* Only for Darkland */
+/* Wrapper stays as-is */
 #ladder-wrapper {
   position: relative;
-  display: inline-block;
-  width: 200px;   /* adjust as needed */
+  display: block;  /* make sure inline-block doesn’t shift content */
+  width: 200px;    /* adjust as needed */
   height: 400px;
   overflow: visible;
-  z-index: 0;      /* keep below player/board elements */
 }
 
 /* DNA strands */
@@ -1135,12 +1135,13 @@ textarea,
   bottom: 0;
   width: 6px;
   left: 50%;
-  transform-origin: center;
+  transform-origin: center center;
   animation: dnaTwist 3s linear infinite;
   opacity: 0.8;
+  z-index: 0;   /* below game images */
+  pointer-events: none; /* won’t block clicks */
 }
 
-/* Strand dots */
 .dna-strand span {
   display: block;
   width: 6px;
@@ -1153,13 +1154,13 @@ textarea,
 /* Second strand */
 .dna-strand.second {
   animation-direction: reverse;
-  left: calc(50% - 10px); /* slight horizontal offset for double helix */
+  left: calc(50% - 10px);
 }
 .dna-strand.second span {
   background: #cfcfcf;
 }
 
-/* “Rungs” between strands to form ladder look */
+/* Rungs */
 #ladder-wrapper::before {
   content: "";
   position: absolute;
@@ -1173,12 +1174,12 @@ textarea,
     rgba(255,255,255,0.3) 10px 12px
   );
   transform: translateX(-50%);
-  pointer-events: none;
   opacity: 0.5;
   z-index: 0;
+  pointer-events: none;
 }
 
-/* DNA twist animation */
+/* Twist animation */
 @keyframes dnaTwist {
   0%   { transform: translateX(-50%) rotate(0deg); }
   50%  { transform: translateX(-50%) rotate(180deg); }

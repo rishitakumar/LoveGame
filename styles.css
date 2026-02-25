@@ -1134,14 +1134,18 @@ textarea,
   pointer-events: none;
 
   /* repeating block pattern */
-  background: repeating-linear-gradient(
+  background:
+  repeating-linear-gradient(
     90deg,
-    #cfcfcf 0px,
-    #cfcfcf 60px,
-    #11FD5A 60px,
-    #11FD5A 120px,
-    #fff234 120px,
-    #fff234 180px
+    #cfcfcf 0 40px,
+    #11FD5A 40px 80px,
+    #fff234 80px 120px
+  ),
+  repeating-linear-gradient(
+    0deg,
+    #cfcfcf 0 40px,
+    #11FD5A 40px 80px,
+    #fff234 80px 120px
   );
 
   filter: blur(35px);

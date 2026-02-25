@@ -1119,12 +1119,6 @@ textarea,
 ============================= */
 /* Darkland screen wrapper */
 /* Only for Darkland */
-#ladder-wrapper {
-  position: relative;
-  display: inline-block;
-}
-
-/* outer glowing ring (white-ish) */
 #ladder-wrapper::before,
 #ladder-wrapper::after {
   content: "";
@@ -1133,10 +1127,10 @@ textarea,
   bottom: -40px;
   left: -50px;
   right: -50px;
-  z-index: 0;
   pointer-events: none;
+  z-index: 0;  /* behind the images inside ladder-wrapper */
 
-  /* tighter, smaller dots */
+  /* tighter, more “data” dots */
   background:
     repeating-radial-gradient(
       circle at center,
@@ -1144,7 +1138,6 @@ textarea,
       transparent 3px 16px
     );
 
-  /* soft cyber glow */
   filter:
     drop-shadow(0 0 6px rgba(255,255,255,0.6))
     drop-shadow(0 0 18px rgba(255,255,255,0.25));
@@ -1153,7 +1146,7 @@ textarea,
   opacity: 0.85;
 }
 
-/* second “strand”: neon green + rungs */
+/* second strand: neon green + ladder rungs */
 #ladder-wrapper::after {
   background:
     /* green dots */
@@ -1162,7 +1155,7 @@ textarea,
       rgba(17, 253, 90, 1) 0 3px,
       transparent 3px 16px
     ),
-    /* faint horizontal rungs */
+    /* horizontal rungs */
     repeating-linear-gradient(
       to bottom,
       transparent 0 10px,
@@ -1178,24 +1171,15 @@ textarea,
   mix-blend-mode: screen;
 }
 
-/* slight wobble so it feels alive */
+/* subtle wobble so it doesn’t feel flat */
 @keyframes dnaSpin {
-  0% {
-    transform: rotate(0deg) scale(1);
-  }
-  25% {
-    transform: rotate(90deg) scale(1.02);
-  }
-  50% {
-    transform: rotate(180deg) scale(1.04);
-  }
-  75% {
-    transform: rotate(270deg) scale(1.02);
-  }
-  100% {
-    transform: rotate(360deg) scale(1);
-  }
+  0%   { transform: rotate(0deg) scale(1); }
+  25%  { transform: rotate(90deg) scale(1.02); }
+  50%  { transform: rotate(180deg) scale(1.04); }
+  75%  { transform: rotate(270deg) scale(1.02); }
+  100% { transform: rotate(360deg) scale(1); }
 }
+
 
   @keyframes spaceZoom {
    0% {

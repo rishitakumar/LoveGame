@@ -1122,49 +1122,67 @@ textarea,
 #ladder-wrapper {
   position: relative;
   display: inline-block;
+  width: 200px;   /* adjust as needed */
+  height: 400px;
+  overflow: visible;
+  z-index: 0;      /* keep below player/board elements */
 }
 
-#ladder-wrapper::before,
-#ladder-wrapper::after {
+/* DNA strands */
+.dna-strand {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  left: 50%;
+  transform-origin: center;
+  animation: dnaTwist 3s linear infinite;
+  opacity: 0.8;
+}
+
+/* Strand dots */
+.dna-strand span {
+  display: block;
+  width: 6px;
+  height: 6px;
+  margin: 10px 0;
+  border-radius: 50%;
+  background: #11FD5A;
+}
+
+/* Second strand */
+.dna-strand.second {
+  animation-direction: reverse;
+  left: calc(50% - 10px); /* slight horizontal offset for double helix */
+}
+.dna-strand.second span {
+  background: #cfcfcf;
+}
+
+/* “Rungs” between strands to form ladder look */
+#ladder-wrapper::before {
   content: "";
   position: absolute;
-  top: -50px;
-  bottom: -50px;
-  left: -60px;
-  right: -60px;
-  z-index: 0;
+  top: 0;
+  left: 50%;
+  width: 20px;
+  height: 100%;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 10px,
+    rgba(255,255,255,0.3) 10px 12px
+  );
+  transform: translateX(-50%);
   pointer-events: none;
-
-  background: repeating-radial-gradient(
-    circle at center,
-    #cfcfcf 0 6px,
-    transparent 6px 30px
-  );
-
-  animation: dnaSpin 6s linear infinite;
-  opacity: 0.7;
+  opacity: 0.5;
+  z-index: 0;
 }
 
-/* second strand */
-#ladder-wrapper::after {
-  background: repeating-radial-gradient(
-    circle at center,
-    #11FD5A 0 6px,
-    transparent 6px 30px
-  );
-  animation-direction: reverse;
-}
-
-/* keep board above */
-#game-background {
-  position: relative;
-  z-index: 1;
-  display: block;
-}
-
-@keyframes dnaSpin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+/* DNA twist animation */
+@keyframes dnaTwist {
+  0%   { transform: translateX(-50%) rotate(0deg); }
+  50%  { transform: translateX(-50%) rotate(180deg); }
+  100% { transform: translateX(-50%) rotate(360deg); }
 }
   @keyframes spaceZoom {
    0% {

@@ -1119,40 +1119,33 @@ textarea,
 ============================= */
 /* Darkland screen wrapper */
 /* Only for Darkland */
-#ladder-wrapper.darkland-screen #game-background {
-  display: block;
-  width: 100%;
-  height: auto;
-  position: relative;
-
-  /* Neon glow directly on image */
-  animation: neonPulse 3s infinite alternate;
+#ladder-wrapper {
+  padding: 20px;          /* gives glow space */
+  background: black;      /* keep inside black */
 }
 
-/* Animate the glow */
+#game-background {
+  display: block;
+  width: min(900px, 95vw);
+  height: auto;
+  animation: neonPulse 2s infinite alternate;
+}
+
 @keyframes neonPulse {
   0% {
-    box-shadow:
-      0 0 15px #fff234,
-      0 0 30px #fff234;
+    box-shadow: 
+      0 0 40px #fff234,
+      0 0 80px #fff234;
   }
-
-  33% {
-    box-shadow:
-      0 0 15px #000000,
-      0 0 30px #000000;
+  50% {
+    box-shadow: 
+      0 0 40px #11FD5A,
+      0 0 80px #11FD5A;
   }
-
-  66% {
-    box-shadow:
-      0 0 15px #11FD5A,
-      0 0 30px #11FD5A;
-  }
-
   100% {
-    box-shadow:
-      0 0 20px #fff234,
-      0 0 40px #11FD5A;
+    box-shadow: 
+      0 0 40px #000000,
+      0 0 80px #000000;
   }
 }
   @keyframes spaceZoom {

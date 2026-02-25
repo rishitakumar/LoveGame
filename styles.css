@@ -427,11 +427,6 @@ body {
   padding: 30px 0;
 }
 
-#ladder-wrapper{
-  position: relative;
-  display: inline-block;     /* wrapper becomes exact image size */
-}
-
 #game-background{
   display: block;
   width: min(900px, 95vw);

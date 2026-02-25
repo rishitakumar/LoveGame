@@ -436,6 +436,7 @@ body {
   display: block;
   width: min(900px, 95vw);
   height: auto;
+  z-index: 5;   /* higher than the DNA layer */
 }
 
 

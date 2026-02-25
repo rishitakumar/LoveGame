@@ -1120,71 +1120,103 @@ textarea,
 /* Darkland screen wrapper */
 /* Only for Darkland */
 /* Wrapper stays as-is */
-#ladder-wrapper {
+#board {
   position: relative;
-  display: block;  /* make sure inline-block doesn’t shift content */
-  width: 200px;    /* adjust as needed */
-  height: 400px;
+}
+
+#ladder-wrapper {
+  position: absolute;          /* overlay on board */
+  top: 50%;
+  left: 0;                     /* stick to left side */
+  transform: translateY(-50%);
+  width: 80px;                 /* slim border */
+  height: 80%;                 /* scale with board */
+  pointer-events: none;
   overflow: visible;
 }
-
-/* DNA strands */
-.dna-strand {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 6px;
-  left: 50%;
-  transform-origin: center center;
-  animation: dnaTwist 3s linear infinite;
-  opacity: 0.8;
-  z-index: 0;   /* below game images */
-  pointer-events: none; /* won’t block clicks */
+.dna {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
-.dna-strand span {
-  display: block;
-  width: 6px;
-  height: 6px;
-  margin: 10px 0;
+/* shared strand styles */
+.strand {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* dots */
+.strand span {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: #11FD5A;
+  box-shadow: 0 0 6px rgba(17, 253, 90, 0.6);
 }
 
-/* Second strand */
-.dna-strand.second {
-  animation-direction: reverse;
-  left: calc(50% - 10px);
+/* second strand offset horizontally */
+.strand-b {
+  transform: translateX(16px);
 }
-.dna-strand.second span {
+
+.strand-b span {
   background: #cfcfcf;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+}
+/* main motion: side-to-side + scale + opacity */
+@keyframes helixDot {
+  0% {
+    transform: translateX(-10px) scale(0.4);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(10px) scale(0.4);
+    opacity: 0.3;
+  }
+  75% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-10px) scale(0.4);
+    opacity: 0.3;
+  }
 }
 
-/* Rungs */
-#ladder-wrapper::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 20px;
-  height: 100%;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0 10px,
-    rgba(255,255,255,0.3) 10px 12px
-  );
-  transform: translateX(-50%);
-  opacity: 0.5;
-  z-index: 0;
-  pointer-events: none;
+/* apply animation to all dots */
+.strand span,
+.strand-b span {
+  animation: helixDot 1.8s linear infinite;
 }
 
-/* Twist animation */
-@keyframes dnaTwist {
-  0%   { transform: translateX(-50%) rotate(0deg); }
-  50%  { transform: translateX(-50%) rotate(180deg); }
-  100% { transform: translateX(-50%) rotate(360deg); }
+/* staggered delays to create wave */
+.strand span:nth-child(1)  { animation-delay: 0s; }
+.strand span:nth-child(2)  { animation-delay: 0.1s; }
+.strand span:nth-child(3)  { animation-delay: 0.2s; }
+.strand span:nth-child(4)  { animation-delay: 0.3s; }
+.strand span:nth-child(5)  { animation-delay: 0.4s; }
+.strand span:nth-child(6)  { animation-delay: 0.5s; }
+.strand span:nth-child(7)  { animation-delay: 0.6s; }
+.strand span:nth-child(8)  { animation-delay: 0.7s; }
+.strand span:nth-child(9)  { animation-delay: 0.8s; }
+.strand span:nth-child(10) { animation-delay: 0.9s; }
+.strand span:nth-child(11) { animation-delay: 1.0s; }
+.strand span:nth-child(12) { animation-delay: 1.1s; }
+
+/* second strand: half-cycle offset so it appears opposite side of helix */
+.strand-b span {
+  animation-delay: calc(var(--i, 0s) + 0.9s); /* fallback if you want to get fancy with CSS vars */
 }
+
   @keyframes spaceZoom {
    0% {
     background-size: 100% 100%;

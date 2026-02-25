@@ -1134,7 +1134,7 @@ textarea,
   bottom: -40px;
   left: -50px;
   right: -50px;
-  z-index: 0;
+  z-index: -1;
   pointer-events: none;
 
   /* tighter, smaller dots */

@@ -1160,6 +1160,7 @@ textarea,
 
   filter: drop-shadow(0 0 10px #11FD5A);
   animation: dnaWave 6s ease-in-out infinite reverse;
+}
 
 .dna-yellow {
   position: absolute;

@@ -1121,84 +1121,52 @@ textarea,
    CELESTIAL CYBER BRICKS - REAL BRICKS
 =========================== */
 
-#ladder-wrapper {
-  position: relative;
-  isolation: isolate;
-  z-index: 1;
-}
-
 /* Brick layer behind board */
 #ladder-wrapper::before {
   content: "";
   position: absolute;
   inset: -40px;
   border-radius: 20px;
-  z-index: -2; /* behind board */
+  z-index: -2;
   pointer-events: none;
 
-  background-image:
-    linear-gradient(90deg, #11FD5A 20px, transparent 20px),
-    linear-gradient(0deg, #fff234 20px, transparent 20px),
-    linear-gradient(90deg, #ffffff 40px, transparent 40px),
-    linear-gradient(0deg, #11FD5A 40px, transparent 40px);
+  /* base dark background so gaps read as mortar */
+  background-color: #02030a;
 
-  background-size: 40px 40px;
+  /* horizontal brick rows */
+  background-image:
+    /* row 1: full bricks */
+    repeating-linear-gradient(
+      0deg,
+      #11FD5A 0,
+      #11FD5A 18px,
+      #02030a 18px,
+      #02030a 20px
+    ),
+    /* row 2: offset bricks */
+    repeating-linear-gradient(
+      0deg,
+      #fff234 0,
+      #fff234 18px,
+      #02030a 18px,
+      #02030a 20px
+    );
+
+  /* row height and offset to fake staggered brickwork */
+  background-size:
+    40px 40px,   /* row 1 bricks */
+    40px 40px;   /* row 2 bricks */
+  background-position:
+    0 0,
+    20px 20px;   /* shift second row half a brick */
+
   background-blend-mode: screen;
-  filter: blur(15px);
-  opacity: 0.85;
+  filter: blur(6px);      /* lower blur so bricks stay readable */
+  opacity: 0.9;
 
   animation: brickFlow 12s linear infinite;
 }
 
-/* Neon plasma brick border */
-#ladder-wrapper::after {
-  content: "";
-  position: absolute;
-  inset: -12px;
-  border-radius: 16px;
-  z-index: -1; /* behind board but above bricks */
-  pointer-events: none;
-
-  border: 2px solid #11FD5A;
-  box-shadow:
-    0 0 15px #11FD5A,
-    0 0 35px #fff234,
-    0 0 60px #ffffff,
-    inset 0 0 25px rgba(255,255,255,0.15);
-
-  animation: plasmaPulse 3s ease-in-out infinite;
-}
-
-/* Keep board content above */
-#game-background {
-  position: relative;
-  z-index: 5;
-}
-
-/* =============================
-       Animations
-============================= */
-@keyframes brickFlow {
-  0% { transform: translate(0,0) scale(1); }
-  100% { transform: translate(40px,40px) scale(1); } /* bricks drift diagonally */
-}
-
-@keyframes plasmaPulse {
-  0%, 100% {
-    box-shadow:
-      0 0 15px #11FD5A,
-      0 0 30px #fff234,
-      0 0 50px #ffffff,
-      inset 0 0 20px rgba(255,255,255,0.12);
-  }
-  50% {
-    box-shadow:
-      0 0 25px #11FD5A,
-      0 0 50px #fff234,
-      0 0 80px #ffffff,
-      inset 0 0 35px rgba(255,255,255,0.25);
-  }
-}
   @keyframes spaceZoom {
    0% {
     background-size: 100% 100%;

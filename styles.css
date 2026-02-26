@@ -1119,89 +1119,72 @@ textarea,
 ============================= */
 /* Darkland screen wrapper */
 /* Only for Darkland */
+/* ==========================
+   DARKLAND STAR-DNA EDGES
+=========================== */
 #ladder-wrapper {
   position: relative;
   display: inline-block;
-  z-index: 0; /* create stacking context */
+  z-index: 0; /* stacking context */
 }
 
-/* DNA layer */
-#ladder-wrapper::before {
+/* DNA star layers */
+#ladder-wrapper::before,
+#ladder-wrapper::after,
+.dna-yellow {
   content: "";
   position: absolute;
-  inset: -40px -50px;
-  z-index: 0;
+  inset: -50px; /* expand outside wrapper */
   pointer-events: none;
-
+  z-index: 0;
+  border-radius: 50%; /* curved edges */
   background:
-    repeating-radial-gradient(
-      circle at center,
-      #ffffff 0 3px,
-      transparent 3px 14px
-    );
-
+    radial-gradient(circle at 20% 30%, #ffffff 0 2px, transparent 3px),
+    radial-gradient(circle at 80% 25%, #ffffff 0 2px, transparent 3px),
+    radial-gradient(circle at 50% 50%, #ffffff 0 2px, transparent 3px),
+    radial-gradient(circle at 30% 70%, #ffffff 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 80%, #ffffff 0 2px, transparent 3px);
   filter: drop-shadow(0 0 8px #ffffff);
   animation: dnaSpin 7s linear infinite;
 }
 
+/* Green variant */
 #ladder-wrapper::after {
-  content: "";
-  position: absolute;
-  inset: -40px -50px;
-  z-index: 0;
-  pointer-events: none;
-
   background:
-    repeating-radial-gradient(
-      circle at center,
-      #11FD5A 0 3px,
-      transparent 3px 14px
-    );
-
+    radial-gradient(circle at 20% 30%, #11FD5A 0 2px, transparent 3px),
+    radial-gradient(circle at 80% 25%, #11FD5A 0 2px, transparent 3px),
+    radial-gradient(circle at 50% 50%, #11FD5A 0 2px, transparent 3px),
+    radial-gradient(circle at 30% 70%, #11FD5A 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 80%, #11FD5A 0 2px, transparent 3px);
   filter: drop-shadow(0 0 10px #11FD5A);
   animation: dnaSpin 7s linear infinite reverse;
 }
 
+/* Yellow accent layer */
 .dna-yellow {
-  position: absolute;
-  inset: -40px -50px;
-  z-index: 0;
-  pointer-events: none;
-
   background:
-    repeating-radial-gradient(
-      circle at center,
-      #fff234 0 3px,
-      transparent 3px 14px
-    );
-
+    radial-gradient(circle at 25% 35%, #fff234 0 2px, transparent 3px),
+    radial-gradient(circle at 75% 30%, #fff234 0 2px, transparent 3px),
+    radial-gradient(circle at 55% 60%, #fff234 0 2px, transparent 3px),
+    radial-gradient(circle at 35% 75%, #fff234 0 2px, transparent 3px),
+    radial-gradient(circle at 65% 85%, #fff234 0 2px, transparent 3px);
   filter: drop-shadow(0 0 10px #fff234);
   animation: dnaSpin 5s linear infinite;
 }
 
-/* Make sure board is ABOVE DNA */
+/* Board stays on top */
 #game-background {
   position: relative;
   z-index: 5;
 }
 
-/* slight wobble so it feels alive */
+/* Wobble / rotation */
 @keyframes dnaSpin {
-  0% {
-    transform: rotate(0deg) scale(1);
-  }
-  25% {
-    transform: rotate(90deg) scale(1.02);
-  }
-  50% {
-    transform: rotate(180deg) scale(1.04);
-  }
-  75% {
-    transform: rotate(270deg) scale(1.02);
-  }
-  100% {
-    transform: rotate(360deg) scale(1);
-  }
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.02); }
+  50% { transform: rotate(180deg) scale(1.04); }
+  75% { transform: rotate(270deg) scale(1.02); }
+  100% { transform: rotate(360deg) scale(1); }
 }
 
   @keyframes spaceZoom {

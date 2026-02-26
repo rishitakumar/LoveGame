@@ -1126,69 +1126,35 @@ textarea,
 #ladder-wrapper {
   position: relative;
   display: inline-block;
-  z-index: 0; /* stacking context */
+  z-index: 0;
+  overflow: hidden; /* keep bricks inside */
 }
 
-/* DNA layer – white */
+/* Glowing brick background */
 #ladder-wrapper::before {
   content: "";
   position: absolute;
-  inset: -30px -40px; /* slightly smaller */
+  inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: repeating-radial-gradient(
-    circle at center,
-    #ffffff 0 2px,       /* smaller core */
-    transparent 2px 10px  /* bigger protrusion spacing */
-  );
-  filter: drop-shadow(0 0 12px #ffffff);
-  animation: dnaSpin 7s linear infinite alternate;
+
+  /* grid of “bricks” */
+  background-image: 
+    linear-gradient(0deg, transparent 19px, rgba(255,255,255,0.1) 20px),
+    linear-gradient(90deg, transparent 19px, rgba(255,255,255,0.1) 20px);
+  background-size: 20px 20px;
+
+  /* colors will be animated */
+  mix-blend-mode: screen;
+  animation: brickPulse 3s linear infinite;
 }
 
-/* DNA layer – green */
-#ladder-wrapper::after {
-  content: "";
-  position: absolute;
-  inset: -30px -40px;
-  z-index: 0;
-  pointer-events: none;
-  background: repeating-radial-gradient(
-    circle at center,
-    #11FD5A 0 2px,
-    transparent 2px 10px
-  );
-  filter: drop-shadow(0 0 15px #11FD5A);
-  animation: dnaSpin 7s linear infinite reverse alternate;
-}
-
-/* DNA layer – yellow accent */
-.dna-yellow {
-  position: absolute;
-  inset: -30px -40px;
-  z-index: 0;
-  pointer-events: none;
-  background: repeating-radial-gradient(
-    circle at center,
-    #fff234 0 2px,
-    transparent 2px 10px
-  );
-  filter: drop-shadow(0 0 12px #fff234);
-  animation: dnaSpin 5s linear infinite alternate;
-}
-
-/* Board stays on top */
-#game-background {
-  position: relative;
-  z-index: 5;
-}
-
-/* disco wobble / spin */
-@keyframes dnaSpin {
-  0%   { transform: rotate(0deg) scale(1); }
-  25%  { transform: rotate(90deg) scale(1.03); }
-  50%  { transform: rotate(180deg) scale(1.06); }
-  75%  { transform: rotate(270deg) scale(1.03); }
-  100% { transform: rotate(360deg) scale(1); }
+/* Thrumming colors: green → yellow → white */
+@keyframes brickPulse {
+  0%   { background-color: #11FD5A; }
+  33%  { background-color: #fff234; }
+  66%  { background-color: #ffffff; }
+  100% { background-color: #11FD5A; }
 }
   @keyframes spaceZoom {
    0% {

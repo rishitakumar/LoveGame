@@ -1117,18 +1117,8 @@ textarea,
 /* =============================
    DARKLAND SIDE FLAMES
 ============================= */
-/* Darkland screen wrapper */
-/* Only for Darkland */
-/* ==========================
-   DARKLAND STAR-DNA EDGES
-/* Darkland screen wrapper */
-/* Darkland screen wrapper */
 /* ===========================
-   CELESTIAL CYBER FIELD
-=========================== */
-
-/* ===========================
-   CELESTIAL CYBER BRICKS
+   CELESTIAL CYBER BRICKS - REAL BRICKS
 =========================== */
 
 #ladder-wrapper {
@@ -1137,7 +1127,7 @@ textarea,
   z-index: 1;
 }
 
-/* Brick glow layer behind board */
+/* Brick layer behind board */
 #ladder-wrapper::before {
   content: "";
   position: absolute;
@@ -1147,23 +1137,17 @@ textarea,
   pointer-events: none;
 
   background-image:
-    repeating-linear-gradient(
-      0deg,
-      #11FD5A 0 10px,
-      #fff234 10px 20px,
-      #ffffff 20px 30px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      #11FD5A 0 10px,
-      #fff234 10px 20px,
-      #ffffff 20px 30px
-    );
-  background-size: 30px 30px;
-  filter: blur(25px);
-  opacity: 0.8;
+    linear-gradient(90deg, #11FD5A 20px, transparent 20px),
+    linear-gradient(0deg, #fff234 20px, transparent 20px),
+    linear-gradient(90deg, #ffffff 40px, transparent 40px),
+    linear-gradient(0deg, #11FD5A 40px, transparent 40px);
 
-  animation: brickFlow 15s linear infinite;
+  background-size: 40px 40px;
+  background-blend-mode: screen;
+  filter: blur(15px);
+  opacity: 0.85;
+
+  animation: brickFlow 12s linear infinite;
 }
 
 /* Neon plasma brick border */
@@ -1172,7 +1156,7 @@ textarea,
   position: absolute;
   inset: -12px;
   border-radius: 16px;
-  z-index: -1; /* behind board but above brick glow */
+  z-index: -1; /* behind board but above bricks */
   pointer-events: none;
 
   border: 2px solid #11FD5A;
@@ -1185,7 +1169,7 @@ textarea,
   animation: plasmaPulse 3s ease-in-out infinite;
 }
 
-/* Keep game board content above */
+/* Keep board content above */
 #game-background {
   position: relative;
   z-index: 5;
@@ -1196,7 +1180,7 @@ textarea,
 ============================= */
 @keyframes brickFlow {
   0% { transform: translate(0,0) scale(1); }
-  100% { transform: translate(30px,30px) scale(1); } /* bricks drift diagonally */
+  100% { transform: translate(40px,40px) scale(1); } /* bricks drift diagonally */
 }
 
 @keyframes plasmaPulse {

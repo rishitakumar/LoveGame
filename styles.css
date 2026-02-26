@@ -1127,46 +1127,39 @@ textarea,
   position: absolute;
   inset: -40px;
   border-radius: 20px;
-  z-index: -2;
+  z-index: -1; /* behind game board */
   pointer-events: none;
 
-  /* base dark background so gaps read as mortar */
-  background-color: #02030a;
+  background-color: #02030a; /* dark mortar */
 
-  /* horizontal brick rows */
+  /* stacked bricks */
   background-image:
-    /* row 1: full bricks */
     repeating-linear-gradient(
       0deg,
-      #11FD5A 0,
-      #11FD5A 18px,
-      #02030a 18px,
-      #02030a 20px
-    ),
-    /* row 2: offset bricks */
-    repeating-linear-gradient(
-      0deg,
-      #fff234 0,
-      #fff234 18px,
-      #02030a 18px,
-      #02030a 20px
+      #11FD5A 0 20px,   /* green brick */
+      #fff234 20px 40px, /* yellow brick */
+      #ffffff 40px 60px  /* white brick */
     );
+  background-size: 100% 60px;
+  background-repeat: repeat;
 
-  /* row height and offset to fake staggered brickwork */
-  background-size:
-    40px 40px,   /* row 1 bricks */
-    40px 40px;   /* row 2 bricks */
-  background-position:
-    0 0,
-    20px 20px;   /* shift second row half a brick */
+  /* glow effect */
+  box-shadow: 0 0 20px rgba(17,253,90,0.6),
+              0 0 30px rgba(255,242,52,0.5),
+              0 0 40px rgba(255,255,255,0.4);
 
-  background-blend-mode: screen;
-  filter: blur(6px);      /* lower blur so bricks stay readable */
-  opacity: 0.9;
-
-  animation: brickFlow 12s linear infinite;
+  /* animate colors */
+  animation: brickGlow 4s linear infinite;
+  opacity: 0.95;
 }
 
+@keyframes brickGlow {
+  0% { filter: hue-rotate(0deg); }
+  25% { filter: hue-rotate(60deg); }
+  50% { filter: hue-rotate(120deg); }
+  75% { filter: hue-rotate(180deg); }
+  100% { filter: hue-rotate(360deg); }
+}
   @keyframes spaceZoom {
    0% {
     background-size: 100% 100%;

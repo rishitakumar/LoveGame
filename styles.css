@@ -1127,62 +1127,76 @@ textarea,
    CELESTIAL CYBER FIELD
 =========================== */
 
+/* ===========================
+   CELESTIAL CYBER BRICKS
+=========================== */
+
 #ladder-wrapper {
   position: relative;
   isolation: isolate;
+  z-index: 1;
 }
 
-/* Cosmic glow layer */
+/* Brick glow layer behind board */
 #ladder-wrapper::before {
   content: "";
   position: absolute;
   inset: -40px;
-  border-radius: 28px;
-  z-index: 0;
+  border-radius: 20px;
+  z-index: -2; /* behind board */
   pointer-events: none;
 
-  background:
-    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.6), transparent 40%),
-    radial-gradient(circle at 70% 80%, rgba(255,242,52,0.5), transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(17,253,90,0.35), transparent 70%);
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      #11FD5A 0 10px,
+      #fff234 10px 20px,
+      #ffffff 20px 30px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      #11FD5A 0 10px,
+      #fff234 10px 20px,
+      #ffffff 20px 30px
+    );
+  background-size: 30px 30px;
+  filter: blur(25px);
+  opacity: 0.8;
 
-  filter: blur(35px);
-  animation: cosmicDrift 12s ease-in-out infinite alternate;
-  opacity: 0.85;
+  animation: brickFlow 15s linear infinite;
 }
 
-/* Neon plasma edge */
+/* Neon plasma brick border */
 #ladder-wrapper::after {
   content: "";
   position: absolute;
-  inset: -10px;
-  border-radius: 20px;
-  z-index: 1;
+  inset: -12px;
+  border-radius: 16px;
+  z-index: -1; /* behind board but above brick glow */
   pointer-events: none;
 
-  border: 2px solid rgba(17,253,90,0.9);
-
+  border: 2px solid #11FD5A;
   box-shadow:
     0 0 15px #11FD5A,
     0 0 35px #fff234,
-    0 0 60px rgba(255,255,255,0.6),
+    0 0 60px #ffffff,
     inset 0 0 25px rgba(255,255,255,0.15);
 
   animation: plasmaPulse 3s ease-in-out infinite;
 }
 
-/* Keep board content above */
+/* Keep game board content above */
 #game-background {
   position: relative;
   z-index: 5;
 }
-@keyframes cosmicDrift {
-  0% {
-    transform: translateY(-10px) scale(1.02);
-  }
-  100% {
-    transform: translateY(10px) scale(1.05);
-  }
+
+/* =============================
+       Animations
+============================= */
+@keyframes brickFlow {
+  0% { transform: translate(0,0) scale(1); }
+  100% { transform: translate(30px,30px) scale(1); } /* bricks drift diagonally */
 }
 
 @keyframes plasmaPulse {
@@ -1190,7 +1204,7 @@ textarea,
     box-shadow:
       0 0 15px #11FD5A,
       0 0 30px #fff234,
-      0 0 50px rgba(255,255,255,0.6),
+      0 0 50px #ffffff,
       inset 0 0 20px rgba(255,255,255,0.12);
   }
   50% {

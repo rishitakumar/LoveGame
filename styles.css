@@ -1129,10 +1129,7 @@ textarea,
 #ladder-wrapper::before {
   content: "";
   position: absolute;
-  top: -40px;
-  bottom: -40px;
-  left: -50px;
-  right: -50px;
+  inset: -40px -50px;
   z-index: 0;
   pointer-events: none;
 
@@ -1140,29 +1137,17 @@ textarea,
     repeating-radial-gradient(
       circle at center,
       #ffffff 0 3px,
-      transparent 3px 12px
-    ),
-    repeating-linear-gradient(
-      to bottom,
-      #fff234 0 8px,
-      transparent 8px 20px
+      transparent 3px 14px
     );
 
-  filter:
-    drop-shadow(0 0 6px #ffffff)
-    drop-shadow(0 0 16px #fff234);
-
+  filter: drop-shadow(0 0 8px #ffffff);
   animation: dnaSpin 7s linear infinite;
-  opacity: 0.9;
 }
 
 #ladder-wrapper::after {
   content: "";
   position: absolute;
-  top: -40px;
-  bottom: -40px;
-  left: -50px;
-  right: -50px;
+  inset: -40px -50px;
   z-index: 0;
   pointer-events: none;
 
@@ -1173,12 +1158,25 @@ textarea,
       transparent 3px 14px
     );
 
-  filter:
-    drop-shadow(0 0 8px #11FD5A)
-    drop-shadow(0 0 20px #11FD5A);
-
+  filter: drop-shadow(0 0 10px #11FD5A);
   animation: dnaSpin 7s linear infinite reverse;
-  opacity: 0.85;
+}
+
+.dna-yellow {
+  position: absolute;
+  inset: -40px -50px;
+  z-index: 0;
+  pointer-events: none;
+
+  background:
+    repeating-radial-gradient(
+      circle at center,
+      #fff234 0 3px,
+      transparent 3px 14px
+    );
+
+  filter: drop-shadow(0 0 10px #fff234);
+  animation: dnaSpin 5s linear infinite;
 }
 
 /* Make sure board is ABOVE DNA */

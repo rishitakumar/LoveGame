@@ -1119,81 +1119,85 @@ textarea,
 ============================= */
 /* Darkland screen wrapper */
 /* Only for Darkland */
+/* =============================
+   CYBERPUNK ENERGY FRAME
+============================= */
+
 #ladder-wrapper {
   position: relative;
-  display: inline-block;
-  z-index: 0; /* create stacking context */
+  isolation: isolate;
 }
 
-/* DNA layer */
+/* Outer animated energy ring */
 #ladder-wrapper::before {
   content: "";
   position: absolute;
-  inset: -40px -50px;
+  inset: -25px;
+  border-radius: 20px;
   z-index: 0;
   pointer-events: none;
-  
-  background:
-    repeating-radial-gradient(
-      circle at center,
-      #ffffff 0 3px,
-      transparent 3px 14px
-    );
 
-  filter: drop-shadow(0 0 8px #ffffff);
-  animation: dnaWave 6s ease-in-out infinite;
+  background: conic-gradient(
+    from 0deg,
+    #11FD5A,
+    #fff234,
+    #ffffff,
+    #11FD5A
+  );
+
+  animation: cyberRotate 6s linear infinite;
+  filter:
+    blur(12px)
+    brightness(1.4);
+  opacity: 0.7;
 }
 
+/* Inner sharp neon border */
 #ladder-wrapper::after {
   content: "";
   position: absolute;
-  inset: -40px -50px;
-  z-index: 0;
+  inset: -8px;
+  border-radius: 14px;
+  z-index: 1;
   pointer-events: none;
 
-  background:
-    repeating-radial-gradient(
-      circle at center,
-      #11FD5A 0 3px,
-      transparent 3px 14px
-    );
+  border: 2px solid #11FD5A;
 
-  filter: drop-shadow(0 0 10px #11FD5A);
-  animation: dnaWave 6s ease-in-out infinite reverse;
+  box-shadow:
+    0 0 10px #11FD5A,
+    0 0 20px #11FD5A,
+    0 0 30px #fff234,
+    inset 0 0 20px rgba(255,255,255,0.15);
+
+  animation: cyberPulse 2.5s ease-in-out infinite;
 }
 
-.dna-yellow {
-  position: absolute;
-  inset: -40px -50px;
-  z-index: 0;
-  pointer-events: none;
-
-  background:
-    repeating-radial-gradient(
-      circle at center,
-      #fff234 0 3px,
-      transparent 3px 14px
-    );
-
-  filter: drop-shadow(0 0 10px #fff234);
-  animation: dnaWave 4s ease-in-out infinite;
-}
-
-/* Make sure board is ABOVE DNA */
+/* Make board content sit above */
 #game-background {
   position: relative;
   z-index: 5;
 }
-
-/* slight wobble so it feels alive */
-@keyframes dnaWave {
-  0%   { transform: translateX(-8px) translateY(0px); }
-  25%  { transform: translateX(8px)  translateY(-10px); }
-  50%  { transform: translateX(-8px) translateY(0px); }
-  75%  { transform: translateX(8px)  translateY(10px); }
-  100% { transform: translateX(-8px) translateY(0px); }
+@keyframes cyberRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
+@keyframes cyberPulse {
+  0%,100% {
+    box-shadow:
+      0 0 8px #11FD5A,
+      0 0 18px #11FD5A,
+      0 0 28px #fff234,
+      inset 0 0 15px rgba(255,255,255,0.12);
+  }
+  50% {
+    box-shadow:
+      0 0 16px #11FD5A,
+      0 0 30px #fff234,
+      0 0 50px #ffffff,
+      inset 0 0 25px rgba(255,255,255,0.25);
+  }
+}
   @keyframes spaceZoom {
    0% {
     background-size: 100% 100%;

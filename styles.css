@@ -1132,7 +1132,7 @@ textarea,
   inset: -40px -50px;
   z-index: 0;
   pointer-events: none;
-
+  
   background:
     repeating-radial-gradient(
       circle at center,
@@ -1141,7 +1141,7 @@ textarea,
     );
 
   filter: drop-shadow(0 0 8px #ffffff);
-  animation: dnaSpin 7s linear infinite;
+  animation: dnaWave 6s ease-in-out infinite;
 }
 
 #ladder-wrapper::after {
@@ -1159,8 +1159,7 @@ textarea,
     );
 
   filter: drop-shadow(0 0 10px #11FD5A);
-  animation: dnaSpin 7s linear infinite reverse;
-}
+  animation: dnaWave 6s ease-in-out infinite reverse;
 
 .dna-yellow {
   position: absolute;
@@ -1176,7 +1175,7 @@ textarea,
     );
 
   filter: drop-shadow(0 0 10px #fff234);
-  animation: dnaSpin 5s linear infinite;
+  animation: dnaWave 4s ease-in-out infinite;
 }
 
 /* Make sure board is ABOVE DNA */
@@ -1186,22 +1185,12 @@ textarea,
 }
 
 /* slight wobble so it feels alive */
-@keyframes dnaSpin {
-  0% {
-    transform: rotate(0deg) scale(1);
-  }
-  25% {
-    transform: rotate(90deg) scale(1.02);
-  }
-  50% {
-    transform: rotate(180deg) scale(1.04);
-  }
-  75% {
-    transform: rotate(270deg) scale(1.02);
-  }
-  100% {
-    transform: rotate(360deg) scale(1);
-  }
+@keyframes dnaWave {
+  0%   { transform: translateX(-8px) translateY(0px); }
+  25%  { transform: translateX(8px)  translateY(-10px); }
+  50%  { transform: translateX(-8px) translateY(0px); }
+  75%  { transform: translateX(8px)  translateY(10px); }
+  100% { transform: translateX(-8px) translateY(0px); }
 }
 
   @keyframes spaceZoom {

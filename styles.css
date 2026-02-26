@@ -1122,6 +1122,7 @@ textarea,
 /* ==========================
    DARKLAND STAR-DNA EDGES
 /* Darkland screen wrapper */
+/* Darkland screen wrapper */
 #ladder-wrapper {
   position: relative;
   display: inline-block;
@@ -1185,7 +1186,6 @@ textarea,
   75% { transform: rotate(270deg) scale(1.02); }
   100% { transform: rotate(360deg) scale(1); }
 }
-
   @keyframes spaceZoom {
    0% {
     background-size: 100% 100%;

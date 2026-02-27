@@ -1127,7 +1127,7 @@ textarea,
   left: -40px;
   width: calc(100% + 80px);
   height: calc(100% + 80px);
-  z-index: -1;
+  z-index: 999;        /* ← bump this way up temporarily */
   pointer-events: none;
   border-radius: 20px;
 }

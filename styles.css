@@ -1117,52 +1117,59 @@ textarea,
 /* =============================
    DARKLAND SIDE FLAMES
 ============================= */
-/* Ladder Wrapper */
 #ladder-wrapper {
   position: relative;
-  width: 600px;   /* adjust to your game size */
-  height: 400px;  /* adjust to your game size */
-  overflow: hidden;
+  z-index: 0;
+  isolation: isolate;
 }
 
-/* Brick Wall */
-.brick-wall {
+/* stacked bricks with independent blinking */
+#ladder-wrapper::before {
+  content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  z-index: -1; /* behind everything */
+  inset: -40px;
+  border-radius: 20px;
+  z-index: -1;
+  pointer-events: none;
+
+  background-color: #02030a; /* dark mortar */
+
+  /* stacked bricks (each 20px high) */
+  background-image: repeating-linear-gradient(
+    0deg,
+    #11FD5A 0 20px,
+    #fff234 20px 40px,
+    #ffffff 40px 60px
+  );
+  background-size: 100% 60px;
+  background-repeat: repeat;
+
+  /* glow */
+  box-shadow:
+    0 0 15px #11FD5A,
+    0 0 25px #fff234,
+    0 0 35px #ffffff,
+    inset 0 0 10px rgba(255,255,255,0.1);
+
+  /* animate blinking */
+  animation: brickBlink 3s infinite;
 }
 
-/* Each Brick */
-.brick {
-  width: 100%;
-  height: 20px;
-  background: #11FD5A;
-  animation: brickFlash 2s infinite;
-  box-shadow: 0 0 10px #11FD5A, 0 0 20px #fff234, 0 0 30px #ffffff;
+/* sporadic blink effect */
+@keyframes brickBlink {
+  0%, 20%, 100% { opacity: 1; }
+  10% { opacity: 0.2; }
+  15% { opacity: 0.5; }
+  25% { opacity: 0.8; }
+  30% { opacity: 0.3; }
+  40% { opacity: 1; }
+  50% { opacity: 0.4; }
+  60% { opacity: 0.9; }
+  70% { opacity: 0.2; }
+  80% { opacity: 0.7; }
+  90% { opacity: 0.5; }
 }
 
-/* Different animation delays */
-.brick:nth-child(2) { animation-delay: .3s; }
-.brick:nth-child(3) { animation-delay: .8s; }
-.brick:nth-child(4) { animation-delay: 1.2s; }
-.brick:nth-child(5) { animation-delay: .5s; }
-.brick:nth-child(6) { animation-delay: 1.6s; }
-.brick:nth-child(7) { animation-delay: .9s; }
-.brick:nth-child(8) { animation-delay: 1.4s; }
-
-/* Brick Animation */
-@keyframes brickFlash {
-  0%   { background: #11FD5A; }
-  33%  { background: #fff234; }
-  66%  { background: #ffffff; }
-  100% { background: #11FD5A; }
-}
   @keyframes spaceZoom {
    0% {
     background-size: 100% 100%;

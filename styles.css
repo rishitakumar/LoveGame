@@ -1123,7 +1123,7 @@ textarea,
   isolation: isolate;
 }
 
-/* stacked bricks with independent blinking */
+/* bricks with alternating color animation */
 #ladder-wrapper::before {
   content: "";
   position: absolute;
@@ -1132,9 +1132,10 @@ textarea,
   z-index: -1;
   pointer-events: none;
 
-  background-color: #02030a; /* dark mortar */
+  /* dark mortar */
+  background-color: #02030a;
 
-  /* stacked bricks (each 20px high) */
+  /* stacked bricks (20px height each) */
   background-image: repeating-linear-gradient(
     0deg,
     #11FD5A 0 20px,
@@ -1151,25 +1152,18 @@ textarea,
     0 0 35px #ffffff,
     inset 0 0 10px rgba(255,255,255,0.1);
 
-  /* animate blinking */
-  animation: brickBlink 3s infinite;
+  /* animate colors */
+  animation: brickColorSwitch 3s infinite linear;
 }
 
-/* sporadic blink effect */
-@keyframes brickBlink {
-  0%, 20%, 100% { opacity: 1; }
-  10% { opacity: 0.2; }
-  15% { opacity: 0.5; }
-  25% { opacity: 0.8; }
-  30% { opacity: 0.3; }
-  40% { opacity: 1; }
-  50% { opacity: 0.4; }
-  60% { opacity: 0.9; }
-  70% { opacity: 0.2; }
-  80% { opacity: 0.7; }
-  90% { opacity: 0.5; }
+/* alternating brick colors */
+@keyframes brickColorSwitch {
+  0%   { background-image: repeating-linear-gradient(0deg, #11FD5A 0 20px, #fff234 20px 40px, #ffffff 40px 60px); }
+  25%  { background-image: repeating-linear-gradient(0deg, #fff234 0 20px, #ffffff 20px 40px, #11FD5A 40px 60px); }
+  50%  { background-image: repeating-linear-gradient(0deg, #ffffff 0 20px, #11FD5A 20px 40px, #fff234 40px 60px); }
+  75%  { background-image: repeating-linear-gradient(0deg, #11FD5A 0 20px, #ffffff 20px 40px, #fff234 40px 60px); }
+  100% { background-image: repeating-linear-gradient(0deg, #11FD5A 0 20px, #fff234 20px 40px, #ffffff 40px 60px); }
 }
-
   @keyframes spaceZoom {
    0% {
     background-size: 100% 100%;

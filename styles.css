@@ -1123,7 +1123,6 @@ textarea,
   isolation: isolate;
 }
 
-/* bricks with alternating color animation */
 #ladder-wrapper::before {
   content: "";
   position: absolute;
@@ -1132,37 +1131,55 @@ textarea,
   z-index: -1;
   pointer-events: none;
 
-  /* dark mortar */
-  background-color: #02030a;
+  background-color: #02030a; /* mortar */
 
-  /* stacked bricks (20px height each) */
-  background-image: repeating-linear-gradient(
-    0deg,
-    #11FD5A 0 20px,
-    #fff234 20px 40px,
-    #ffffff 40px 60px
-  );
+  /* Three stacked brick layers */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      #11FD5A 0 20px,
+      transparent 20px 60px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 20px,
+      #fff234 20px 40px,
+      transparent 40px 60px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 40px,
+      #ffffff 40px 60px
+    );
+
   background-size: 100% 60px;
   background-repeat: repeat;
 
-  /* glow */
+  animation: brickSwap 2.5s steps(1) infinite;
+
   box-shadow:
     0 0 15px #11FD5A,
     0 0 25px #fff234,
-    0 0 35px #ffffff,
-    inset 0 0 10px rgba(255,255,255,0.1);
-
-  /* animate colors */
-  animation: brickColorSwitch 3s infinite linear;
+    0 0 35px #ffffff;
 }
 
-/* alternating brick colors */
-@keyframes brickColorSwitch {
-  0%   { background-image: repeating-linear-gradient(0deg, #11FD5A 0 20px, #fff234 20px 40px, #ffffff 40px 60px); }
-  25%  { background-image: repeating-linear-gradient(0deg, #fff234 0 20px, #ffffff 20px 40px, #11FD5A 40px 60px); }
-  50%  { background-image: repeating-linear-gradient(0deg, #ffffff 0 20px, #11FD5A 20px 40px, #fff234 40px 60px); }
-  75%  { background-image: repeating-linear-gradient(0deg, #11FD5A 0 20px, #ffffff 20px 40px, #fff234 40px 60px); }
-  100% { background-image: repeating-linear-gradient(0deg, #11FD5A 0 20px, #fff234 20px 40px, #ffffff 40px 60px); }
+/* TRUE alternating (no sliding) */
+@keyframes brickSwap {
+  0% {
+    filter: brightness(1);
+  }
+
+  33% {
+    filter: brightness(1.4) hue-rotate(90deg);
+  }
+
+  66% {
+    filter: brightness(1.2) hue-rotate(180deg);
+  }
+
+  100% {
+    filter: brightness(1);
+  }
 }
   @keyframes spaceZoom {
    0% {

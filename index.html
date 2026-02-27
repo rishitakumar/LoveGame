@@ -3164,7 +3164,7 @@ function safeStopCursor(delay = 1200) {
   }
 
   function loop() {
-    if (!perimeter) { requestAnimationFrame(loop); return; }
+    if (!perimeter || TOTAL === 0) { requestAnimationFrame(loop); return; }
     ctx.clearRect(0, 0, W, H);
     updateAndDrawDust();
     drawTrail();
@@ -3175,6 +3175,22 @@ function safeStopCursor(delay = 1200) {
 
     requestAnimationFrame(loop);
   }
+
+  // Resize when game screen becomes visible
+  const gameScreen = document.getElementById('game-screen');
+  const observer = new MutationObserver(() => {
+    if (!gameScreen.hidden) {
+      setTimeout(resize, 50); // small delay so layout is fully painted
+    }
+  });
+  observer.observe(gameScreen, { attributes: true, attributeFilter: ['hidden'] });
+
+  window.addEventListener('resize', resize, { passive: true });
+
+  // Don't call resize() yet — canvas is 0x0 while game-screen is hidden
+  // It'll fire correctly once the screen is shown
+  loop();
+})();
 
   // Resize when game screen becomes visible (since canvas has no size when hidden)
   const gameScreen = document.getElementById('game-screen');

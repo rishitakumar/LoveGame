@@ -1126,6 +1126,7 @@ if (
   delta > 0
 ) {
   GameState.land = "murkland";
+  window.__starBorderTheme('murkland');
   setDarklandFlames(false);
   GameState.rungIndex = 0;
 
@@ -1156,6 +1157,7 @@ if (
   ===================== */
   if (GameState.land === "murkland" && GameState.rungIndex === 0 && delta < 0) {
   GameState.land = "darkland";
+  window.__starBorderTheme('darkland');
   setDarklandFlames(true);
   GameState.rungIndex = LADDERS.darkland - 1;
   murkTransitionDone = false; // ✅ ADD THIS
@@ -1215,6 +1217,7 @@ if (
 ===================== */
 if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
   GameState.land = "murkland";
+  window.__starBorderTheme('murkland');
   setDarklandFlames(false);
   GameState.rungIndex = LADDERS.murkland - 1;
 
@@ -3038,8 +3041,15 @@ function safeStopCursor(delay = 1200) {
   const BORDER = 18;
   const STAR_SPEED = 3.33;
   const TRAIL_LENGTH = 220;
-  const STAR_COLORS = ['#FFE94D', '#7FFF6E', '#FFFFFF'];
-  const DUST_COLORS = ['#FFE94D', '#7FFF6E', '#FFFFFF', '#FFB3DE', '#B3CFFF'];
+ const STAR_COLORS_DARKLAND = ['#FFE94D', '#7FFF6E', '#FFFFFF'];
+  const DUST_COLORS_DARKLAND = ['#FFE94D', '#7FFF6E', '#FFFFFF', '#FFB3DE', '#B3CFFF'];
+
+  const STAR_COLORS_MURKLAND = ['#3cd14c', '#fff234', '#fd3b96'];
+  const DUST_COLORS_MURKLAND = ['#3cd14c', '#fff234', '#fd3b96', '#ff9de2', '#ffe57a'];
+
+  let STAR_COLORS = STAR_COLORS_DARKLAND;
+  let DUST_COLORS = DUST_COLORS_DARKLAND;
+  let MURKLAND_MODE = false;
 
   let W, H, perimeter, TOTAL;
   let pos = 0, colorIdx = 0;
@@ -3069,6 +3079,18 @@ function safeStopCursor(delay = 1200) {
     TOTAL = perimeter.length;
   }
 window.__starBorderResize = resize;
+window.__starBorderTheme = function(land) {
+    if (land === 'murkland') {
+      STAR_COLORS = STAR_COLORS_MURKLAND;
+      DUST_COLORS = DUST_COLORS_MURKLAND;
+      MURKLAND_MODE = true;
+    } else {
+      STAR_COLORS = STAR_COLORS_DARKLAND;
+      DUST_COLORS = DUST_COLORS_DARKLAND;
+      MURKLAND_MODE = false;
+    }
+    colorIdx = 0; // reset color cycle on theme switch
+  };
   function hexToRgba(hex, alpha) {
     const r = parseInt(hex.slice(1,3),16);
     const g = parseInt(hex.slice(3,5),16);
@@ -3128,9 +3150,17 @@ window.__starBorderResize = resize;
     ctx.bezierCurveTo(0,-10,3,-14,7,-10);
     ctx.bezierCurveTo(14,-6,10,2,0,10);
     ctx.closePath();
-    ctx.fillStyle = '#000000';
-    ctx.fill();
-    ctx.strokeStyle = '#E8E8E8';
+
+    if (MURKLAND_MODE) {
+      ctx.fillStyle = '#C0C0C0';   // silver fill
+      ctx.fill();
+      ctx.strokeStyle = '#FFD700'; // gold outline
+    } else {
+      ctx.fillStyle = '#000000';   // black fill
+      ctx.fill();
+      ctx.strokeStyle = '#E8E8E8'; // silver outline
+    }
+
     ctx.lineWidth = 2.5;
     ctx.lineJoin = 'round';
     ctx.stroke();

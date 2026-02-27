@@ -1187,6 +1187,7 @@ if (
   delta > 0
 ) {
   GameState.land = "loveland";
+  window.__starBorderTheme('loveland');
   setDarklandFlames(false);
   GameState.rungIndex = 0;
 
@@ -3047,10 +3048,12 @@ function safeStopCursor(delay = 1200) {
   const STAR_COLORS_MURKLAND = ['#3cd14c', '#fff234', '#fd3b96'];
   const DUST_COLORS_MURKLAND = ['#3cd14c', '#fff234', '#fd3b96', '#ff9de2', '#ffe57a'];
 
+  const STAR_COLORS_LOVELAND = ['#fd11b4', '#fff234', '#D011FD'];
+  const DUST_COLORS_LOVELAND = ['#fd11b4', '#fff234', '#D011FD', '#ff9de2', '#f5b8ff'];
   let STAR_COLORS = STAR_COLORS_DARKLAND;
   let DUST_COLORS = DUST_COLORS_DARKLAND;
   let MURKLAND_MODE = false;
-
+  let LOVELAND_MODE = false;
   let W, H, perimeter, TOTAL;
   let pos = 0, colorIdx = 0;
   const dust = [];
@@ -3084,12 +3087,19 @@ window.__starBorderTheme = function(land) {
       STAR_COLORS = STAR_COLORS_MURKLAND;
       DUST_COLORS = DUST_COLORS_MURKLAND;
       MURKLAND_MODE = true;
+      LOVELAND_MODE = false;
+    } else if (land === 'loveland') {
+      STAR_COLORS = STAR_COLORS_LOVELAND;
+      DUST_COLORS = DUST_COLORS_LOVELAND;
+      MURKLAND_MODE = false;
+      LOVELAND_MODE = true;
     } else {
       STAR_COLORS = STAR_COLORS_DARKLAND;
       DUST_COLORS = DUST_COLORS_DARKLAND;
       MURKLAND_MODE = false;
+      LOVELAND_MODE = false;
     }
-    colorIdx = 0; // reset color cycle on theme switch
+    colorIdx = 0;
   };
   function hexToRgba(hex, alpha) {
     const r = parseInt(hex.slice(1,3),16);
@@ -3151,20 +3161,23 @@ window.__starBorderTheme = function(land) {
     ctx.bezierCurveTo(14,-6,10,2,0,10);
     ctx.closePath();
 
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    ctx.restore();
     if (MURKLAND_MODE) {
       ctx.fillStyle = '#C0C0C0';   // silver fill
       ctx.fill();
       ctx.strokeStyle = '#FFD700'; // gold outline
+    } else if (LOVELAND_MODE) {
+      ctx.fillStyle = '#FFD700';   // golden fill
+      ctx.fill();
+      ctx.strokeStyle = '#3cd14c'; // green outline
     } else {
       ctx.fillStyle = '#000000';   // black fill
       ctx.fill();
       ctx.strokeStyle = '#E8E8E8'; // silver outline
     }
-
-    ctx.lineWidth = 2.5;
-    ctx.lineJoin = 'round';
-    ctx.stroke();
-    ctx.restore();
   }
 
   function drawTrail() {

@@ -1119,24 +1119,30 @@ textarea,
 ============================= */
 #ladder-wrapper {
   position: relative;
+  width: 600px;  /* or whatever your game width is */
+  height: 400px; /* make sure it has a defined height */
   overflow: visible;
 }
 
 .brick-wall {
   position: absolute;
-  inset: -40px;
-  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
+  justify-content: space-between; /* space bricks evenly */
+  z-index: 0; /* make sure it's visible above -1 */
 }
 
 .brick {
   height: 20px;
+  width: 100%;  /* full width of ladder wrapper */
   background: #11FD5A;
   animation: brickFlash 2s infinite;
 }
 
-/* each brick gets different timing */
 .brick:nth-child(2) { animation-delay: .3s; }
 .brick:nth-child(3) { animation-delay: .8s; }
 .brick:nth-child(4) { animation-delay: 1.2s; }

@@ -1127,10 +1127,12 @@ textarea,
   left: -40px;
   width: calc(100% + 80px);
   height: calc(100% + 80px);
-  z-index: 999;        /* ← bump this way up temporarily */
+  z-index: 999;
   pointer-events: none;
   border-radius: 20px;
+  overflow: visible;
 }
+
   @keyframes spaceZoom {
    0% {
     background-size: 100% 100%;

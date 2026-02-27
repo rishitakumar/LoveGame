@@ -3192,17 +3192,6 @@ function safeStopCursor(delay = 1200) {
   loop();
 })();
 
-  // Resize when game screen becomes visible (since canvas has no size when hidden)
-  const gameScreen = document.getElementById('game-screen');
-  const observer = new MutationObserver(() => {
-    if (!gameScreen.hidden) { resize(); }
-  });
-  observer.observe(gameScreen, { attributes: true, attributeFilter: ['hidden'] });
-
-  window.addEventListener('resize', resize, { passive: true });
-  resize();
-  loop();
-})();
 </script>
 </body>
 </html>

@@ -3048,10 +3048,15 @@ function safeStopCursor(delay = 1200) {
   function buildPerimeter() {
     const pts = [];
     const half = BORDER / 2;
-    for (let x = half; x <= W - half; x++) pts.push({ x, y: half });
-    for (let y = half; y <= H - half; y++) pts.push({ x: W - half, y });
-    for (let x = W - half; x >= half; x--) pts.push({ x, y: H - half });
-    for (let y = H - half; y >= half; y--) pts.push({ x: half, y });
+    const PAD = 16; // pushes path inward so heart doesn't get clipped at edges
+    const x0 = half + PAD;
+    const y0 = half + PAD;
+    const x1 = W - half - PAD;
+    const y1 = H - half - PAD;
+    for (let x = x0; x <= x1; x++) pts.push({ x, y: y0 });
+    for (let y = y0; y <= y1; y++) pts.push({ x: x1, y });
+    for (let x = x1; x >= x0; x--) pts.push({ x, y: y1 });
+    for (let y = y1; y >= y0; y--) pts.push({ x: x0, y });
     return pts;
   }
 

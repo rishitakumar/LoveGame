@@ -1118,74 +1118,18 @@ textarea,
    DARKLAND SIDE FLAMES
 ============================= */
 #ladder-wrapper::before {
-  content: "";
-  position: absolute;
-  inset: -40px;
-  border-radius: 20px;
-  z-index: -1;
-  pointer-events: none;
-
-  background-color: #02030a;
-  background-image: repeating-linear-gradient(
-    0deg,
-    #11FD5A 0 20px,
-    #fff234 20px 40px,
-    #ffffff 40px 60px
-  );
-  background-size: 100% 60px;
-  background-repeat: repeat;
-
-  /* glow */
-  box-shadow:
-    0 0 15px #11FD5A,
-    0 0 25px #fff234,
-    0 0 35px #ffffff,
-    inset 0 0 10px rgba(255,255,255,0.1);
-
-  animation: brickBlinkColors 3s infinite;
+  display: none;
 }
 
-@keyframes brickBlinkColors {
-  0% {
-    background-image: repeating-linear-gradient(
-      0deg,
-      #11FD5A 0 20px,
-      #fff234 20px 40px,
-      #ffffff 40px 60px
-    );
-  }
-  25% {
-    background-image: repeating-linear-gradient(
-      0deg,
-      #11FD5A 0 20px,
-      #ffffff 20px 40px,
-      #fff234 40px 60px
-    );
-  }
-  50% {
-    background-image: repeating-linear-gradient(
-      0deg,
-      #fff234 0 20px,
-      #11FD5A 20px 40px,
-      #ffffff 40px 60px
-    );
-  }
-  75% {
-    background-image: repeating-linear-gradient(
-      0deg,
-      #ffffff 0 20px,
-      #11FD5A 20px 40px,
-      #fff234 40px 60px
-    );
-  }
-  100% {
-    background-image: repeating-linear-gradient(
-      0deg,
-      #11FD5A 0 20px,
-      #fff234 20px 40px,
-      #ffffff 40px 60px
-    );
-  }
+#star-border {
+  position: absolute;
+  top: -40px;
+  left: -40px;
+  width: calc(100% + 80px);
+  height: calc(100% + 80px);
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 20px;
 }
   @keyframes spaceZoom {
    0% {

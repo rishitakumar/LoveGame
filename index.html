@@ -2052,7 +2052,7 @@ function transitionToEcstasy() {
   }, 450);
 
   GameState.land = "ecstasy";
-
+window.__starBorderTheme('ecstasy'); // ← ADD
   const char = document.getElementById("player-character");
   if (char) char.style.display = "none";
 
@@ -2063,8 +2063,6 @@ function transitionToEcstasy() {
   requestAnimationFrame(() => scrollGameToMiddle());
 };
 img.src = "ecstasy_screen.png";
-
-
 }
 
 
@@ -2093,6 +2091,7 @@ function startLoveGame() {
   if (char) char.style.display = "block";
 
   GameState.land = "darkland";
+  window.__starBorderTheme('darkland'); // ← ADD near the top of startLoveGame
   GameState.rungIndex = 0;
   questionPhase = "physical";
 lovelandUnlocked = false;
@@ -3038,9 +3037,11 @@ function safeStopCursor(delay = 1200) {
   const canvas = document.getElementById('star-border');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-
+  let ecstasyColorTimer = 0;
+  const ECSTASY_BASE_SPEED = 6.66; // double the normal 3.33
+  let currentSpeed = 3.33;
   const BORDER = 18;
-  const STAR_SPEED = 3.33;
+  let STAR_SPEED = 3.33;
   const TRAIL_LENGTH = 220;
  const STAR_COLORS_DARKLAND = ['#FFE94D', '#7FFF6E', '#FFFFFF'];
   const DUST_COLORS_DARKLAND = ['#FFE94D', '#7FFF6E', '#FFFFFF', '#FFB3DE', '#B3CFFF'];
@@ -3050,6 +3051,11 @@ function safeStopCursor(delay = 1200) {
 
   const STAR_COLORS_LOVELAND = ['#fd11b4', '#fff234', '#D011FD'];
   const DUST_COLORS_LOVELAND = ['#fd11b4', '#fff234', '#D011FD', '#ff9de2', '#f5b8ff'];
+
+  const STAR_COLORS_ECSTASY = ['#fd11b4', '#fff234', '#11FD5A', '#D011FD'];
+  const DUST_COLORS_ECSTASY = ['#fd11b4', '#fff234', '#11FD5A', '#D011FD', '#ff9de2'];
+  let ECSTASY_MODE = false;
+  let currentHeadColor = '#fd11b4'; // tracks head color for heart matching
   let STAR_COLORS = STAR_COLORS_DARKLAND;
   let DUST_COLORS = DUST_COLORS_DARKLAND;
   let MURKLAND_MODE = false;
@@ -3083,21 +3089,35 @@ function safeStopCursor(delay = 1200) {
   }
 window.__starBorderResize = resize;
 window.__starBorderTheme = function(land) {
-    if (land === 'murkland') {
+    if (land === 'ecstasy') {
+      STAR_COLORS = STAR_COLORS_ECSTASY;
+      DUST_COLORS = DUST_COLORS_ECSTASY;
+      MURKLAND_MODE = false;
+      LOVELAND_MODE = false;
+      ECSTASY_MODE = true;
+      STAR_SPEED = 6.66;
+      ecstasyColorTimer = 40 + Math.floor(Math.random() * 80);
+    } else if (land === 'murkland') {
       STAR_COLORS = STAR_COLORS_MURKLAND;
       DUST_COLORS = DUST_COLORS_MURKLAND;
       MURKLAND_MODE = true;
       LOVELAND_MODE = false;
+      ECSTASY_MODE = false;
+      STAR_SPEED = 3.33;
     } else if (land === 'loveland') {
       STAR_COLORS = STAR_COLORS_LOVELAND;
       DUST_COLORS = DUST_COLORS_LOVELAND;
       MURKLAND_MODE = false;
       LOVELAND_MODE = true;
+      ECSTASY_MODE = false;
+      STAR_SPEED = 3.33;
     } else {
       STAR_COLORS = STAR_COLORS_DARKLAND;
       DUST_COLORS = DUST_COLORS_DARKLAND;
       MURKLAND_MODE = false;
       LOVELAND_MODE = false;
+      ECSTASY_MODE = false;
+      STAR_SPEED = 3.33;
     }
     colorIdx = 0;
   };
@@ -3165,18 +3185,31 @@ window.__starBorderTheme = function(land) {
     ctx.lineJoin = 'round';
     ctx.stroke();
     ctx.restore();
-    if (MURKLAND_MODE) {
-      ctx.fillStyle = '#C0C0C0';   // silver fill
+    if (ECSTASY_MODE) {
+      ctx.fillStyle = currentHeadColor; // matches streak color
       ctx.fill();
-      ctx.strokeStyle = '#FFD700'; // gold outline
+      // no stroke/outline at all
+    } else if (MURKLAND_MODE) {
+      ctx.fillStyle = '#C0C0C0';
+      ctx.fill();
+      ctx.strokeStyle = '#FFD700';
+      ctx.lineWidth = 2.5;
+      ctx.lineJoin = 'round';
+      ctx.stroke();
     } else if (LOVELAND_MODE) {
-      ctx.fillStyle = '#FFD700';   // golden fill
+      ctx.fillStyle = '#FFD700';
       ctx.fill();
-      ctx.strokeStyle = '#3cd14c'; // green outline
+      ctx.strokeStyle = '#3cd14c';
+      ctx.lineWidth = 2.5;
+      ctx.lineJoin = 'round';
+      ctx.stroke();
     } else {
-      ctx.fillStyle = '#000000';   // black fill
+      ctx.fillStyle = '#000000';
       ctx.fill();
-      ctx.strokeStyle = '#E8E8E8'; // silver outline
+      ctx.strokeStyle = '#E8E8E8';
+      ctx.lineWidth = 2.5;
+      ctx.lineJoin = 'round';
+      ctx.stroke();
     }
   }
 
@@ -3184,6 +3217,7 @@ window.__starBorderTheme = function(land) {
     if (!perimeter) return;
     const headIdx = Math.floor(pos) % TOTAL;
     const color = STAR_COLORS[colorIdx % STAR_COLORS.length];
+    currentHeadColor = color; // track for heart
 
     for (let i = TRAIL_LENGTH-1; i >= 0; i--) {
       const pct = 1 - (i / TRAIL_LENGTH);
@@ -3222,15 +3256,26 @@ window.__starBorderTheme = function(land) {
     drawHeart(head.x, head.y, 14);
   }
 
-  function loop() {
-    if (!perimeter || TOTAL === 0) { requestAnimationFrame(loop); return; }
+ function loop() {
+    if (!perimeter || !TOTAL) { requestAnimationFrame(loop); return; }
     ctx.clearRect(0, 0, W, H);
     updateAndDrawDust();
     drawTrail();
 
     const prevPos = pos;
     pos = (pos + STAR_SPEED) % TOTAL;
-    if (pos < prevPos) colorIdx = (colorIdx+1) % STAR_COLORS.length;
+
+    if (ECSTASY_MODE) {
+      // sporadic: switch color randomly every 40-120 frames
+      ecstasyColorTimer--;
+      if (ecstasyColorTimer <= 0) {
+        colorIdx = Math.floor(Math.random() * STAR_COLORS.length);
+        ecstasyColorTimer = 40 + Math.floor(Math.random() * 80);
+      }
+    } else {
+      // normal: switch on full lap
+      if (pos < prevPos) colorIdx = (colorIdx + 1) % STAR_COLORS.length;
+    }
 
     requestAnimationFrame(loop);
   }

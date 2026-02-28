@@ -695,20 +695,24 @@ window.addEventListener("mousemove", (e) => {
 /* --- INTRO STARFIELD SETUP --- */
 const overlay = document.getElementById("intro-overlay");
 async function startIntroWhenReady() {
-  // hide intro until bg is ready
   overlay.style.opacity = "0";
   overlay.style.visibility = "hidden";
   overlay.style.backgroundColor = "#000";
 
-  // preload + decode background
   await preloadImage("star-background.png");
 
-  // show intro now
+  // ✅ Force a full decode before animating
+  const img = new Image();
+  img.src = "star-background.png";
+  try { await img.decode(); } catch(e) {}
+
+  // ✅ Now trigger the zoom animation AFTER image is ready
+  overlay.classList.add("zoom-ready");
+
   overlay.style.visibility = "visible";
   overlay.style.transition = "opacity 0.25s ease";
   requestAnimationFrame(() => (overlay.style.opacity = "1"));
 
-  // start your normal intro timer/listeners
   runIntroFlow();
 }
 

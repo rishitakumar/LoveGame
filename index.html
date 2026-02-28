@@ -168,7 +168,9 @@
   <canvas id="star-border"></canvas>  <!-- ADD THIS LINE -->
   <div class="dna-yellow"></div>
   <img id="game-background" />
+  <div id="player-star">
   <img id="player-character" />
+</div>
   <div id="begin-text" class="begin-text"></div>
 </div>
 </div>
@@ -1048,7 +1050,7 @@ async function preloadAllAssets(onProgress) {
 // CHARACTER MOVEMENT
 // =============================
 function positionCharacter() {
-  const char   = document.getElementById("player-character");
+  const char   = document.getElementById("player-star");
   const img    = document.getElementById("game-background");
   const screen = document.getElementById("game-screen");
 

@@ -58,13 +58,15 @@ body {
   overflow: hidden;
   background-color: #000;
   background-image: url("star-background.png");
-
-  background-position: center, center;
-  background-size: cover, cover;
   background-repeat: no-repeat, no-repeat;
-    animation: spaceZoom 8s cubic-bezier(.2,.6,.2,1) forwards;
+   background-size: cover;
+  background-position: center;
+  will-change: background-size;  /* ← hints GPU to prep the layer */
+  transform: translateZ(0);
 }
-
+ #intro-overlay.zoom-ready {
+  animation: spaceZoom 8s cubic-bezier(.2,.6,.2,1) forwards;
+}
 /* Individual Flame Tendrils (Shared Styles) */
 
 

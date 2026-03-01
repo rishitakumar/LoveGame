@@ -110,13 +110,23 @@
 
   <div id="character-caption"></div>
 
-  <div class="character-grid">
+ <div class="character-grid">
+  <div class="character-wrap">
     <img src="1phoenix.png" class="character" data-character="phoenix">
+  </div>
+  <div class="character-wrap">
     <img src="2kitsune.png" class="character" data-character="kitsune">
+  </div>
+  <div class="character-wrap">
     <img src="3wata.png" class="character" data-character="mamiwata">
+  </div>
+  <div class="character-wrap">
     <img src="4hydra.png" class="character" data-character="hydra">
+  </div>
+  <div class="character-wrap">
     <img src="5girl.png" class="character" data-character="human">
   </div>
+</div>
 
   <button id="confirm-character" disabled>CONFIRM</button>
 </div>
@@ -964,20 +974,26 @@ characters.forEach(char => {
   char.addEventListener("click", () => {
     const overlay = document.getElementById("character-overlay");
 
-    // Clear previous state
+    // Clear previous — target wraps for visual classes
+    document.querySelectorAll(".character-wrap").forEach(w => {
+      w.classList.remove("selected", "dimmed");
+    });
     characters.forEach(c => c.classList.remove("selected", "dimmed"));
 
     // Select current
     char.classList.add("selected");
+    char.closest(".character-wrap").classList.add("selected");
     selectedCharacter = char.dataset.character;
     confirmBtn.disabled = false;
 
     // Dim others
     characters.forEach(c => {
-      if (c !== char) c.classList.add("dimmed");
+      if (c !== char) {
+        c.classList.add("dimmed");
+        c.closest(".character-wrap").classList.add("dimmed");
+      }
     });
 
-    // Soft fade of screen
     overlay.classList.add("selection-made");
   });
 });
@@ -1311,7 +1327,6 @@ document.querySelectorAll(".character").forEach(char => {
   char.addEventListener("click", () => {
     const key = char.dataset.character;
     if (!subtitles[key]) return;
-
     caption.classList.add("visible");
     typeWriter(caption, subtitles[key], 50);
   });

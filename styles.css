@@ -265,11 +265,6 @@ body {
 }
 
 .character-wrap {
-  clip-path: polygon(
-    50% 0%, 61% 38%, 98% 38%, 68% 59%,
-    79% 98%, 50% 75%, 21% 98%, 32% 59%,
-    2% 38%, 39% 38%
-  );
   transition: filter 0.3s ease, transform 0.3s ease;
   display: inline-block;
 }
@@ -318,54 +313,11 @@ body {
   z-index: 1;
   display: block;
   transition: transform 0.3s ease;
-  filter: grayscale(30%) brightness(0.9);
-}
-.character::after {
-  content: "";
-  position: absolute;
-  inset: -12px;
-  z-index: -1;
-  background: #f5ff3a;
   clip-path: polygon(
     50% 0%, 61% 38%, 98% 38%, 68% 59%,
     79% 98%, 50% 75%, 21% 98%, 32% 59%,
     2% 38%, 39% 38%
   );
-  opacity: 0.85;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-.character.dimmed::after {
-  opacity: 0.2;
-}
-.character.selected::after {
-  background: #11FD5A;
-  opacity: 1;
-  filter: drop-shadow(0 0 10px #11FD5A) drop-shadow(0 0 22px #11FD5A);
-}
-.character:hover::after {
-  opacity: 1;
-  transform: scale(1.08);
-}
-/* Staggered vertical offsets */
-.character:nth-child(odd) {
-  transform: translateY(20px);
-}
-.character:nth-child(even) {
-  transform: translateY(-20px);
-}
-
-/* Hover glow */
-.character:hover {
-  filter: brightness(1.2) drop-shadow(0 0 6px rgba(255,255,255,0.4));
-}
-
-/* Selected */
-.character.selected {
-  transform: scale(1.15);
-  filter: brightness(1.3)
-          drop-shadow(0 0 8px #11FD5A)
-          drop-shadow(0 0 20px #11FD5A);
-  /* drop-shadow respects clip-path unlike box-shadow */
 }
 
 /* Confirm button */
@@ -406,10 +358,6 @@ body {
   opacity: 0.85;
 }
 
-/* Selected character overrides fade */
-#character-overlay.selection-made .character.selected {
-  opacity: 1;
-}
 #character-overlay{
   position: fixed;
   inset: 0;
@@ -494,9 +442,9 @@ body {
 }
 #player-star {
   position: absolute;
-  transform: translate(-50%, -85%) scale(0.66);
   z-index: 30;
   pointer-events: none;
+  transform: translate(-50%, -85%) scale(0.66);
 }
 
 #player-star::after {
@@ -514,18 +462,16 @@ body {
 }
 
 #player-character {
-  position: relative;
   width: 120px;
   display: block;
-  transform: translate(-50%, -85%) scale(0.66);
-  filter: drop-shadow(0 0 18px #f5ff3a);
-  pointer-events: none;
-  z-index: 30;
   clip-path: polygon(
-    50% 0%, 61% 35%, 98% 35%, 68% 57%,
-    79% 91%, 50% 70%, 21% 91%, 32% 57%,
-    2% 35%, 39% 35%
+    50% 0%, 61% 38%, 98% 38%, 68% 59%,
+    79% 98%, 50% 75%, 21% 98%, 32% 59%,
+    2% 38%, 39% 38%
   );
+  /* NO transform here — #player-star handles positioning */
+  /* NO clip-path with old polygon values */
+  filter: drop-shadow(0 0 18px #f5ff3a);
 }
 
 .begin-text{

@@ -1110,7 +1110,7 @@ function positionCharacter(instant = false) {
   }
 
   // Slower movement — 0.9s instead of instant
-  char.style.transition = instant ? "none" : "left 0.9s cubic-bezier(0.4, 0, 0.2, 1), top 0.9s cubic-bezier(0.4, 0, 0.2, 1)";
+  char.style.transition = instant ? "none" : "left 1.8s cubic-bezier(0.4, 0, 0.2, 1), top 1.8s cubic-bezier(0.4, 0, 0.2, 1)";
   char.style.left = `${x}px`;
   char.style.top  = `${y}px`;
 
@@ -1122,8 +1122,8 @@ function spawnStreakTrail(fromX, fromY, toX, toY, color) {
   const wrapper = document.getElementById("ladder-wrapper");
   if (!wrapper) return;
 
-  const TRAIL_DOTS = 18;
-  const duration  = 900;
+  const TRAIL_DOTS = 28;
+  const duration  = 1800;
 
   function hexToRgba(hex, alpha) {
     const r = parseInt(hex.slice(1,3), 16);
@@ -1144,20 +1144,21 @@ function spawnStreakTrail(fromX, fromY, toX, toY, color) {
       dot.style.borderRadius  = "50%";
 
       // taper: tiny tail, bigger near head
-      const coreR  = 0.8 + t * 3.5;
+      const coreR  = 2 + (1 - t) * 9;
       const glowR  = coreR + 2.5;
       const size   = glowR * 2;
 
       dot.style.width  = `${size}px`;
       dot.style.height = `${size}px`;
 
-      const lx = fromX + (toX - fromX) * t;
-      const ly = fromY + (toY - fromY) * t;
+      // Always draw from head BACK to tail so streak trails behind movement
+const lx = toX + (fromX - toX) * (1 - t);
+const ly = toY + (fromY - toY) * (1 - t);
       dot.style.left = `${lx - size / 2}px`;
       dot.style.top  = `${ly - size / 2}px`;
 
       // three-layer look matching the shooting star border
-      const alpha = Math.pow(t, 2.5);  // fades toward tail just like the star trail
+      const alpha = Math.pow(1 - t, 2.5);  // fades toward tail just like the star trail
 
       dot.style.background = `
         radial-gradient(circle,

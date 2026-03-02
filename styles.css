@@ -267,22 +267,23 @@ body {
 .character-wrap {
   display: inline-block;
   position: relative;
-  transition: filter 0.3s ease, transform 0.3s ease;
+  transition: transform 0.3s ease;
+  cursor: pointer;
 }
 
 .character-wrap::before {
   content: "";
   position: absolute;
-  inset: -14px;
-  background: #f5ff3a;
+  inset: -30px;   /* bigger — extends well beyond the image */
+  background: #000;  /* black star */
   clip-path: polygon(
     50% 0%, 61% 38%, 98% 38%, 68% 59%,
     79% 98%, 50% 75%, 21% 98%, 32% 59%,
     2% 38%, 39% 38%
   );
   z-index: -1;
-  opacity: 0.85;
-  transition: background 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
+  transition: filter 0.3s ease;
 }
 
 .character-wrap:hover::before {
@@ -293,7 +294,7 @@ body {
   opacity: 1;
 }
 .character-wrap.dimmed::before {
-  opacity: 0.15;
+  filter: brightness(0.4);
 }
 .character-wrap.selected {
   transform: scale(1.15);
@@ -304,13 +305,13 @@ body {
 }
 
 .character-wrap.dimmed {
-  filter: brightness(0.5);
+  filter: brightness(0.4);
 }
 
 .character-wrap:hover {
   transform: scale(1.05);
-  filter: drop-shadow(0 0 8px rgba(255,255,255,0.6));
 }
+
 
 /* Title */
 .character-title {
@@ -470,15 +471,15 @@ body {
 #player-star::before {
   content: "";
   position: absolute;
-  inset: -14px;
-  background: #f5ff3a;
+  inset: -30px;
+  background: #000;
   clip-path: polygon(
     50% 0%, 61% 38%, 98% 38%, 68% 59%,
     79% 98%, 50% 75%, 21% 98%, 32% 59%,
     2% 38%, 39% 38%
   );
   z-index: -1;
-  opacity: 0.75;
+  opacity: 1;
 }
 
 #player-character {

@@ -451,18 +451,19 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 140px;
-  height: 140px;
+  width: 220px;
+  height: 220px;
   border-radius: 50%;
-  background: radial-gradient(circle, var(--char-color, #f5ff3a) 0%, transparent 70%);
-  opacity: 0.35;
+  background: radial-gradient(circle, var(--char-color, #f5ff3a) 0%, transparent 65%);
+  opacity: 0.45;
   animation: charPulse 2.2s ease-in-out infinite;
   z-index: -1;
   pointer-events: none;
 }
+
 @keyframes charPulse {
-  0%, 100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.25; }
-  50%       { transform: translate(-50%, -50%) scale(1.3); opacity: 0.45; }
+  0%, 100% { transform: translate(-50%, -50%) scale(0.9);  opacity: 0.3; }
+  50%       { transform: translate(-50%, -50%) scale(1.6);  opacity: 0.55; }
 }
 #player-character {
   width: 120px;

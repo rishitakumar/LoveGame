@@ -1122,7 +1122,7 @@ function spawnStreakTrail(fromX, fromY, toX, toY, color) {
   const wrapper = document.getElementById("ladder-wrapper");
   if (!wrapper) return;
 
-  const TRAIL_DOTS = 28;
+  const TRAIL_DOTS = 45;
   const duration  = 1800;
 
   function hexToRgba(hex, alpha) {
@@ -1152,13 +1152,14 @@ function spawnStreakTrail(fromX, fromY, toX, toY, color) {
       dot.style.height = `${size}px`;
 
       // Always draw from head BACK to tail so streak trails behind movement
-const lx = toX + (fromX - toX) * (1 - t);
-const ly = toY + (fromY - toY) * (1 - t);
+// extend tail 1.6x past the origin point so it shoots out beyond where it came from
+const lx = toX + (fromX - toX) * (1 - t) * 1.6;
+const ly = toY + (fromY - toY) * (1 - t) * 1.6;
       dot.style.left = `${lx - size / 2}px`;
       dot.style.top  = `${ly - size / 2}px`;
 
       // three-layer look matching the shooting star border
-      const alpha = Math.pow(1 - t, 2.5);  // fades toward tail just like the star trail
+      const alpha = Math.pow(1 - t, 1.4);  // fades toward tail just like the star trail
 
       dot.style.background = `
         radial-gradient(circle,
@@ -1177,16 +1178,16 @@ const ly = toY + (fromY - toY) * (1 - t);
       `;
 
       dot.style.opacity    = "1";
-      dot.style.transition = "opacity 0.55s ease, transform 0.55s ease";
+     dot.style.transition = "opacity 1.4s ease, transform 1.4s ease";
       wrapper.appendChild(dot);
 
       // fade + shrink out
       requestAnimationFrame(() => {
         setTimeout(() => {
-          dot.style.opacity   = "0";
-          dot.style.transform = "scale(0.15)";
-          setTimeout(() => dot.remove(), 560);
-        }, 60);
+  dot.style.opacity   = "0";
+  dot.style.transform = "scale(0.15)";
+  setTimeout(() => dot.remove(), 1400);
+}, 400);
       });
 
     }, delay);

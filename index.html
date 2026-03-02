@@ -1133,68 +1133,55 @@ function spawnStreakTrail(fromX, fromY, toX, toY, color) {
   }
 
   for (let i = 0; i < TRAIL_DOTS; i++) {
-    const t     = i / (TRAIL_DOTS - 1);
-const delay = t * (duration * 0.55);
-const coreR = 11 * Math.pow(t, 1.8);
-const glowR = Math.max(0.3, coreR + 2.5 * t);
-const size  = glowR * 2;
+    const t     = i / (TRAIL_DOTS - 1);  // 0 = tail tip, 1 = head (near char)
+    const delay = t * (duration * 0.55);
 
-if (coreR < 0.5) return; // skip near-invisible tail tip
+    // size: biggest at head (t=1), zero at tail (t=0)
+    const coreR = 12 * Math.pow(t, 1.6);
+    const glowR = coreR + 3 * t;
+    const size  = Math.max(1, glowR * 2);
 
-setTimeout(() => {
+    // position: head at toX/toY, tail extends back past fromX/fromY
+    const lx = toX + (fromX - toX) * (1 - t) * 1.6;
+    const ly = toY + (fromY - toY) * (1 - t) * 1.6;
+
+    // alpha: bright at head, fades to tail
+    const alpha = Math.pow(t, 0.8);
+
+    setTimeout(() => {
       const dot = document.createElement("div");
       dot.style.position      = "absolute";
       dot.style.pointerEvents = "none";
       dot.style.zIndex        = "29";
       dot.style.borderRadius  = "50%";
+      dot.style.width         = `${size}px`;
+      dot.style.height        = `${size}px`;
+      dot.style.left          = `${lx - size / 2}px`;
+      dot.style.top           = `${ly - size / 2}px`;
+      dot.style.opacity       = "1";
 
-      // taper: tiny tail, bigger near head
-      const coreR  = 11 * Math.pow(t, 1.8);  // biggest at head (t=0 near char), tapers to near-zero at tail
-      const glowR  = Math.max(0.3, coreR + 2.5 * t);  // glow ring also tapers to nothing at tail
-      const size   = glowR * 2;
+      dot.style.background = `radial-gradient(circle,
+        ${hexToRgba('#ffffff', alpha * 0.95)} 0%,
+        ${hexToRgba(color,     alpha * 0.85)} 35%,
+        ${hexToRgba(color,     alpha * 0.2)}  70%,
+        transparent 100%
+      )`;
 
-      dot.style.width  = `${size}px`;
-      dot.style.height = `${size}px`;
-
-      // Always draw from head BACK to tail so streak trails behind movement
-// extend tail 1.6x past the origin point so it shoots out beyond where it came from
-const lx = toX + (fromX - toX) * (1 - t) * 1.6;
-const ly = toY + (fromY - toY) * (1 - t) * 1.6;
-      dot.style.left = `${lx - size / 2}px`;
-      dot.style.top  = `${ly - size / 2}px`;
-
-      // three-layer look matching the shooting star border
-      const alpha = Math.pow(1 - t, 1.4);  // fades toward tail just like the star trail
-
-      dot.style.background = `
-        radial-gradient(circle,
-          ${hexToRgba('#ffffff', alpha * 0.9)}  0%,
-          ${hexToRgba(color,     alpha * 0.85)} 35%,
-          ${hexToRgba(color,     alpha * 0.18)} 70%,
-          transparent 100%
-        )
-      `;
-
-      // outer shimmer ring (silver edge like the star trail)
       dot.style.boxShadow = `
-        0 0 ${coreR * 1.5}px ${hexToRgba(color, alpha * 0.85)},
-        0 0 ${coreR * 3}px   ${hexToRgba(color, alpha * 0.3)},
-        0 0 ${coreR * 0.5}px ${hexToRgba('#C8C8C8', alpha * 0.3)}
+        0 0 ${coreR * 1.5}px ${hexToRgba(color, alpha * 0.9)},
+        0 0 ${coreR * 3.5}px ${hexToRgba(color, alpha * 0.4)},
+        0 0 ${coreR * 0.6}px ${hexToRgba('#ffffff', alpha * 0.4)}
       `;
 
-      dot.style.opacity    = "1";
-     dot.style.transition = "opacity 1.4s ease, transform 1.4s ease";
+      dot.style.transition = "opacity 1.4s ease, transform 1.4s ease";
       wrapper.appendChild(dot);
 
-      // fade + shrink out
-      requestAnimationFrame(() => {
-  setTimeout(() => {
-  if (coreR < 0.4) return;  // skip invisible tail dots
-  const dot = document.createElement("div");
-  dot.style.transform = "scale(0.15)";
-  setTimeout(() => dot.remove(), 1400);
-}, 400);
-      });
+      // fade out after a brief hold
+      setTimeout(() => {
+        dot.style.opacity   = "0";
+        dot.style.transform = "scale(0.1)";
+        setTimeout(() => dot.remove(), 1400);
+      }, 300);
 
     }, delay);
   }

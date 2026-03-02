@@ -974,23 +974,34 @@ characters.forEach(char => {
   char.addEventListener("click", () => {
     const overlay = document.getElementById("character-overlay");
 
-    // Clear previous — target wraps for visual classes
     document.querySelectorAll(".character-wrap").forEach(w => {
       w.classList.remove("selected", "dimmed");
+      w.style.filter = ""; // ← clear inline style
+      w.style.transform = "";
     });
     characters.forEach(c => c.classList.remove("selected", "dimmed"));
 
-    // Select current
+    const wrap = char.closest(".character-wrap");
+
+    // ✅ Apply glow directly as inline style — bypasses browser hover delay
+    wrap.style.filter = `
+      drop-shadow(0 0 8px #11FD5A)
+      drop-shadow(0 0 22px #11FD5A)
+      drop-shadow(0 0 45px #11FD5A)
+    `;
+    wrap.style.transform = "scale(1.15)";
+    wrap.classList.add("selected");
+
     char.classList.add("selected");
-    char.closest(".character-wrap").classList.add("selected");
     selectedCharacter = char.dataset.character;
     confirmBtn.disabled = false;
 
-    // Dim others
     characters.forEach(c => {
       if (c !== char) {
         c.classList.add("dimmed");
         c.closest(".character-wrap").classList.add("dimmed");
+        c.closest(".character-wrap").style.filter = "brightness(0.4)";
+        c.closest(".character-wrap").style.transform = "";
       }
     });
 

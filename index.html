@@ -1142,8 +1142,10 @@ function spawnStreakTrail(fromX, fromY, toX, toY, color) {
     const size  = Math.max(1, glowR * 2);
 
     // position: head at toX/toY, tail extends back past fromX/fromY
-    const lx = toX + (fromX - toX) * (1 - t) * 1.6;
-    const ly = toY + (fromY - toY) * (1 - t) * 1.6;
+    // offset head to match character's visual center (translate -50%, -85% * scale 0.66)
+const charOffsetY = -60; // pulls head up to match the image position
+const lx = toX + (fromX - toX) * (1 - t) * 1.6;
+const ly = (toY + charOffsetY) + ((fromY + charOffsetY) - (toY + charOffsetY)) * (1 - t) * 1.6;
 
     // alpha: bright at head, fades to tail
     const alpha = Math.pow(t, 0.8);

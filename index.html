@@ -966,14 +966,14 @@ function showCharacterSelect() {
     parent.replaceChild(clone, tp);
   }
 }
-const characterColors = {
+
+ const characterColors = {
   phoenix:  '#fd11b4',
   kitsune:  '#fff234',
   mamiwata: '#11FD5A',
   hydra:    '#D011FD',
   human:    '#3cd14c'
-};
-
+}; 
 document.querySelectorAll(".character-wrap").forEach(wrap => {
   wrap.addEventListener("click", () => {
     const char = wrap.querySelector(".character");

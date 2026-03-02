@@ -970,38 +970,36 @@ function showCharacterSelect() {
 
 const characters = document.querySelectorAll(".character");
 
-characters.forEach(char => {
-  char.addEventListener("click", () => {
+document.querySelectorAll(".character-wrap").forEach(wrap => {
+  wrap.addEventListener("click", () => {
+    const char = wrap.querySelector(".character");
     const overlay = document.getElementById("character-overlay");
 
+    // Clear all
     document.querySelectorAll(".character-wrap").forEach(w => {
       w.classList.remove("selected", "dimmed");
-      w.style.filter = ""; // ← clear inline style
+      w.style.filter = "";
       w.style.transform = "";
     });
-    characters.forEach(c => c.classList.remove("selected", "dimmed"));
+    document.querySelectorAll(".character").forEach(c => c.classList.remove("selected", "dimmed"));
 
-    const wrap = char.closest(".character-wrap");
-
-    // ✅ Apply glow directly as inline style — bypasses browser hover delay
+    // Select this one
+    wrap.classList.add("selected");
     wrap.style.filter = `
       drop-shadow(0 0 8px #11FD5A)
       drop-shadow(0 0 22px #11FD5A)
       drop-shadow(0 0 45px #11FD5A)
     `;
     wrap.style.transform = "scale(1.15)";
-    wrap.classList.add("selected");
-
     char.classList.add("selected");
     selectedCharacter = char.dataset.character;
     confirmBtn.disabled = false;
 
-    characters.forEach(c => {
-      if (c !== char) {
-        c.classList.add("dimmed");
-        c.closest(".character-wrap").classList.add("dimmed");
-        c.closest(".character-wrap").style.filter = "brightness(0.4)";
-        c.closest(".character-wrap").style.transform = "";
+    // Dim others
+    document.querySelectorAll(".character-wrap").forEach(w => {
+      if (w !== wrap) {
+        w.classList.add("dimmed");
+        w.style.filter = "brightness(0.4)";
       }
     });
 
@@ -1334,8 +1332,9 @@ function typeWriter(element, text, speed = 50) {
 
 
 // Character click logic
-document.querySelectorAll(".character").forEach(char => {
-  char.addEventListener("click", () => {
+document.querySelectorAll(".character-wrap").forEach(wrap => {
+  wrap.addEventListener("click", () => {
+    const char = wrap.querySelector(".character");
     const key = char.dataset.character;
     if (!subtitles[key]) return;
     caption.classList.add("visible");

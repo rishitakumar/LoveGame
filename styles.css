@@ -267,6 +267,8 @@ body {
 .character-wrap {
   display: inline-block;
   position: relative;
+  width: 250px;
+  height: 250px;
   transition: transform 0.3s ease;
   cursor: pointer;
 }
@@ -274,16 +276,14 @@ body {
 .character-wrap::before {
   content: "";
   position: absolute;
-  inset: -30px;   /* bigger — extends well beyond the image */
-  background: #000;  /* black star */
+  inset: 0;
+  background: #000;
   clip-path: polygon(
     50% 0%, 61% 38%, 98% 38%, 68% 59%,
     79% 98%, 50% 75%, 21% 98%, 32% 59%,
     2% 38%, 39% 38%
   );
-  z-index: -1;
-  opacity: 1;
-  transition: filter 0.3s ease;
+  z-index: 0;
 }
 
 .character-wrap:hover::before {
@@ -298,14 +298,10 @@ body {
 }
 .character-wrap.selected {
   transform: scale(1.15);
-  filter:
-    drop-shadow(0 0 8px #11FD5A)
-    drop-shadow(0 0 22px #11FD5A)
-    drop-shadow(0 0 45px #11FD5A);
 }
 
 .character-wrap.dimmed {
-  filter: brightness(0.4);
+  opacity: 0.4;
 }
 
 .character-wrap:hover {
@@ -335,10 +331,14 @@ body {
 
 /* Characters */
 .character {
-  width: 250px;
-  cursor: pointer;
+  position: absolute;
+  width: 75%;        /* smaller than the star */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: block;
-  /* NO clip-path — wrap handles the star shape */
+  z-index: 1;        /* sits on top of black star */
+  pointer-events: none;
 }
 
 /* Confirm button */
@@ -466,28 +466,32 @@ body {
   z-index: 30;
   pointer-events: none;
   transform: translate(-50%, -85%) scale(0.66);
+  width: 120px;
+  height: 120px;
 }
 
 #player-star::before {
   content: "";
   position: absolute;
-  inset: -30px;
+  inset: 0;
   background: #000;
   clip-path: polygon(
     50% 0%, 61% 38%, 98% 38%, 68% 59%,
     79% 98%, 50% 75%, 21% 98%, 32% 59%,
     2% 38%, 39% 38%
   );
-  z-index: -1;
-  opacity: 1;
+  z-index: 0;
 }
 
 #player-character {
-  width: 120px;
+  position: absolute;
+  width: 75%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: block;
-  position: relative;
-  /* NO clip-path, NO transform */
-  filter: drop-shadow(0 0 12px #f5ff3a);
+  z-index: 1;
+  /* NO clip-path */
 }
 .begin-text{
   position: absolute;

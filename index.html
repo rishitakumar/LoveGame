@@ -991,9 +991,9 @@ document.querySelectorAll(".character-wrap").forEach(wrap => {
     wrap.classList.add("selected");
     const color = characterColors[char.dataset.character] || '#11FD5A';
 wrap.style.filter = `
-  drop-shadow(0 0 6px ${color}99)
-  drop-shadow(0 0 14px ${color}59)
-  drop-shadow(0 0 24px ${color}2e)
+  drop-shadow(0 0 10px ${color}99)
+  drop-shadow(0 0 22px ${color}59)
+  drop-shadow(0 0 40px ${color}2e)
 `;
     wrap.style.transform = "scale(1.15)";
     char.classList.add("selected");

@@ -1091,22 +1091,79 @@ async function preloadAllAssets(onProgress) {
   // =============================
 // CHARACTER MOVEMENT
 // =============================
-function positionCharacter() {
+function positionCharacter(instant = false) {
   const char   = document.getElementById("player-star");
   const img    = document.getElementById("game-background");
   const screen = document.getElementById("game-screen");
 
-  const coords = RUNG_COORDS[GameState.land]; // ✅ land-aware
   const rung = RUNG_COORDS[GameState.land][GameState.rungIndex];
-
   const x = (rung.x / 1545) * img.clientWidth;
   const y = (rung.y / 2000) * img.clientHeight;
 
+  // Get current position for streak
+  const fromX = parseFloat(char.style.left) || x;
+  const fromY = parseFloat(char.style.top)  || y;
+  const charColor = getComputedStyle(char).getPropertyValue('--char-color').trim() || '#f5ff3a';
+
+  if (!instant && (Math.abs(fromX - x) > 2 || Math.abs(fromY - y) > 2)) {
+    spawnStreakTrail(fromX, fromY, x, y, charColor);
+  }
+
+  // Slower movement — 0.9s instead of instant
+  char.style.transition = instant ? "none" : "left 0.9s cubic-bezier(0.4, 0, 0.2, 1), top 0.9s cubic-bezier(0.4, 0, 0.2, 1)";
   char.style.left = `${x}px`;
   char.style.top  = `${y}px`;
 
   const targetTop = char.offsetTop - screen.clientHeight * 0.65;
   screen.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
+}
+  function spawnStreakTrail(fromX, fromY, toX, toY, color) {
+  const wrapper = document.getElementById("ladder-wrapper");
+  const img     = document.getElementById("game-background");
+  if (!wrapper || !img) return;
+
+  const steps = 10;
+  const duration = 900; // matches movement duration
+
+  for (let i = 0; i < steps; i++) {
+    const t = i / (steps - 1);
+    const delay = t * (duration * 0.6); // stagger spawns along path
+
+    setTimeout(() => {
+      const dot = document.createElement("div");
+      dot.style.position    = "absolute";
+      dot.style.pointerEvents = "none";
+      dot.style.zIndex      = "29";
+      dot.style.borderRadius = "50%";
+
+      // size tapers: big near head, small near tail
+      const size = 6 + (1 - t) * 18;
+      dot.style.width  = `${size}px`;
+      dot.style.height = `${size}px`;
+
+      const lx = fromX + (toX - fromX) * t;
+      const ly = fromY + (toY - fromY) * t;
+      dot.style.left = `${lx - size / 2}px`;
+      dot.style.top  = `${ly - size / 2}px`;
+
+      // glow using character color
+      dot.style.background = color;
+      dot.style.boxShadow  = `0 0 ${size * 1.5}px ${color}, 0 0 ${size * 3}px ${color}88`;
+      dot.style.opacity    = String(0.7 - t * 0.5);
+      dot.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+
+      wrapper.appendChild(dot);
+
+      // fade out and remove
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          dot.style.opacity   = "0";
+          dot.style.transform = "scale(0.2)";
+          setTimeout(() => dot.remove(), 500);
+        }, 80);
+      });
+    }, delay);
+  }
 }
 
 function bigGlowTransition(doDuringGlow, doAfterGlow = null) {
@@ -2151,7 +2208,7 @@ murkTransitionDone = false;
     char.src = characterImages[selectedCharacter];
     const charColor = characterColors[selectedCharacter] || '#f5ff3a';
 document.getElementById('player-star').style.setProperty('--char-color', charColor);
-    positionCharacter();
+    positionCharacter(true);
     setDarklandFlames(true);
     showBeginText();
     cardIndex = 0;

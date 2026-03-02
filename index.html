@@ -1004,6 +1004,13 @@ document.querySelectorAll(".character-wrap").forEach(wrap => {
     });
 
     overlay.classList.add("selection-made");
+
+    // ✅ Caption typewriter — merged in here
+    const key = char.dataset.character;
+    if (subtitles[key]) {
+      caption.classList.add("visible");
+      typeWriter(caption, subtitles[key], 50);
+    }
   });
 });
 
@@ -1330,18 +1337,6 @@ function typeWriter(element, text, speed = 50) {
   }, speed);
 }
 
-
-// Character click logic
-document.querySelectorAll(".character-wrap").forEach(wrap => {
-  wrap.addEventListener("click", () => {
-    const char = wrap.querySelector(".character");
-    const key = char.dataset.character;
-    if (!subtitles[key]) return;
-    caption.classList.add("visible");
-    typeWriter(caption, subtitles[key], 50);
-  });
-});
- 
 // =============================
 // CARD ENGINE
 // =============================

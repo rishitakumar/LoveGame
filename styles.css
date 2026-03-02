@@ -266,24 +266,6 @@ body {
 
 .character-wrap {
   display: inline-block;
-  position: relative;
-  width: 250px;
-  height: 250px;
-  transition: transform 0.3s ease;
-  cursor: pointer;
-}
-
-.character-wrap::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: #000;
-  clip-path: polygon(
-    50% 0%, 61% 38%, 98% 38%, 68% 59%,
-    79% 98%, 50% 75%, 21% 98%, 32% 59%,
-    2% 38%, 39% 38%
-  );
-  z-index: 0;
 }
 
 .character-wrap:hover::before {
@@ -295,17 +277,6 @@ body {
 }
 .character-wrap.dimmed::before {
   filter: brightness(0.4);
-}
-.character-wrap.selected {
-  transform: scale(1.15);
-}
-
-.character-wrap.dimmed {
-  opacity: 0.4;
-}
-
-.character-wrap:hover {
-  transform: scale(1.05);
 }
 
 
@@ -331,14 +302,15 @@ body {
 
 /* Characters */
 .character {
-  position: absolute;
-  width: 75%;        /* smaller than the star */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  width: 250px;
+  cursor: pointer;
   display: block;
-  z-index: 1;        /* sits on top of black star */
-  pointer-events: auto;
+  transition: filter 0.3s ease, transform 0.3s ease;
+  filter: grayscale(30%) brightness(0.9);
+}
+.character:hover {
+  filter: brightness(1.2);
+  transform: scale(1.05);
 }
 
 /* Confirm button */
@@ -466,32 +438,12 @@ body {
   z-index: 30;
   pointer-events: none;
   transform: translate(-50%, -85%) scale(0.66);
-  width: 120px;
-  height: 120px;
-}
-
-#player-star::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: #000;
-  clip-path: polygon(
-    50% 0%, 61% 38%, 98% 38%, 68% 59%,
-    79% 98%, 50% 75%, 21% 98%, 32% 59%,
-    2% 38%, 39% 38%
-  );
-  z-index: 0;
 }
 
 #player-character {
-  position: absolute;
-  width: 75%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  width: 120px;
   display: block;
-  z-index: 1;
-  /* NO clip-path */
+  filter: drop-shadow(0 0 18px #f5ff3a);
 }
 .begin-text{
   position: absolute;

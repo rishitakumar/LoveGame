@@ -338,7 +338,7 @@ body {
   transform: translate(-50%, -50%);
   display: block;
   z-index: 1;        /* sits on top of black star */
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 /* Confirm button */

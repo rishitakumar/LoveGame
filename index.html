@@ -966,7 +966,13 @@ function showCharacterSelect() {
     parent.replaceChild(clone, tp);
   }
 }
-
+const characterColors = {
+  phoenix:  '#fd11b4',
+  kitsune:  '#fff234',
+  mamiwata: '#11FD5A',
+  hydra:    '#D011FD',
+  human:    '#3cd14c'
+};
 
 document.querySelectorAll(".character-wrap").forEach(wrap => {
   wrap.addEventListener("click", () => {
@@ -983,10 +989,11 @@ document.querySelectorAll(".character-wrap").forEach(wrap => {
 
     // Select this one
     wrap.classList.add("selected");
-    wrap.style.filter = `
-  drop-shadow(0 0 6px rgba(17, 253, 90, 0.6))
-  drop-shadow(0 0 14px rgba(17, 253, 90, 0.35))
-  drop-shadow(0 0 24px rgba(17, 253, 90, 0.18))
+    const color = characterColors[char.dataset.character] || '#11FD5A';
+wrap.style.filter = `
+  drop-shadow(0 0 6px ${color}99)
+  drop-shadow(0 0 14px ${color}59)
+  drop-shadow(0 0 24px ${color}2e)
 `;
     wrap.style.transform = "scale(1.15)";
     char.classList.add("selected");
@@ -2137,6 +2144,8 @@ murkTransitionDone = false;
   img.onload = () => {
     const char = document.getElementById("player-character");
     char.src = characterImages[selectedCharacter];
+    const charColor = characterColors[selectedCharacter] || '#f5ff3a';
+document.getElementById('player-star').style.setProperty('--char-color', charColor);
     positionCharacter();
     setDarklandFlames(true);
     showBeginText();

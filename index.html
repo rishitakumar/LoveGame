@@ -989,14 +989,17 @@ document.querySelectorAll(".character-wrap").forEach(wrap => {
 
     // Select this one
     wrap.classList.add("selected");
-    const color = characterColors[char.dataset.character] || '#11FD5A';
-wrap.style.filter = `
-  drop-shadow(0 0 10px ${color}99)
-  drop-shadow(0 0 22px ${color}59)
-  drop-shadow(0 0 40px ${color}2e)
-`;
-    wrap.style.transform = "scale(1.15)";
+const color = characterColors[char.dataset.character] || '#11FD5A';
+
+wrap.style.transition = "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.5s ease";
 wrap.style.transformOrigin = "center center";
+wrap.style.transform = "scale(1.12)";
+wrap.style.filter = `
+  drop-shadow(0 0 20px ${color}dd)
+  drop-shadow(0 0 45px ${color}88)
+  drop-shadow(0 0 80px ${color}44)
+  drop-shadow(0 0 120px ${color}1a)
+`;
     char.classList.add("selected");
     selectedCharacter = char.dataset.character;
     confirmBtn.disabled = false;
@@ -1005,7 +1008,8 @@ wrap.style.transformOrigin = "center center";
     document.querySelectorAll(".character-wrap").forEach(w => {
       if (w !== wrap) {
         w.classList.add("dimmed");
-        w.style.filter = "brightness(0.4)";
+       w.style.transition = "transform 0.4s ease, filter 0.5s ease";
+w.style.filter = "brightness(0.35)";
       }
     });
 
@@ -3204,48 +3208,45 @@ window.__starBorderTheme = function(land) {
   }
 
   function drawHeart(cx, cy, size) {
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.scale(size/10, size/10);
-    ctx.beginPath();
-    ctx.moveTo(0, 10);
-    ctx.bezierCurveTo(-10,2,-14,-6,-7,-10);
-    ctx.bezierCurveTo(-3,-14,0,-10,0,-6);
-    ctx.bezierCurveTo(0,-10,3,-14,7,-10);
-    ctx.bezierCurveTo(14,-6,10,2,0,10);
-    ctx.closePath();
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.scale(size/10, size/10);
+  ctx.beginPath();
+  ctx.moveTo(0, 10);
+  ctx.bezierCurveTo(-10,2,-14,-6,-7,-10);
+  ctx.bezierCurveTo(-3,-14,0,-10,0,-6);
+  ctx.bezierCurveTo(0,-10,3,-14,7,-10);
+  ctx.bezierCurveTo(14,-6,10,2,0,10);
+  ctx.closePath();
 
+  if (ECSTASY_MODE) {
+    ctx.fillStyle = currentHeadColor;
+    ctx.fill();
+  } else if (MURKLAND_MODE) {
+    ctx.fillStyle = '#C0C0C0';
+    ctx.fill();
+    ctx.strokeStyle = '#FFD700';
     ctx.lineWidth = 2.5;
     ctx.lineJoin = 'round';
     ctx.stroke();
-    ctx.restore();
-    if (ECSTASY_MODE) {
-      ctx.fillStyle = currentHeadColor; // matches streak color
-      ctx.fill();
-      // no stroke/outline at all
-    } else if (MURKLAND_MODE) {
-      ctx.fillStyle = '#C0C0C0';
-      ctx.fill();
-      ctx.strokeStyle = '#FFD700';
-      ctx.lineWidth = 2.5;
-      ctx.lineJoin = 'round';
-      ctx.stroke();
-    } else if (LOVELAND_MODE) {
-      ctx.fillStyle = '#FFD700';
-      ctx.fill();
-      ctx.strokeStyle = '#3cd14c';
-      ctx.lineWidth = 2.5;
-      ctx.lineJoin = 'round';
-      ctx.stroke();
-    } else {
-      ctx.fillStyle = '#000000';
-      ctx.fill();
-      ctx.strokeStyle = '#E8E8E8';
-      ctx.lineWidth = 2.5;
-      ctx.lineJoin = 'round';
-      ctx.stroke();
-    }
+  } else if (LOVELAND_MODE) {
+    ctx.fillStyle = '#FFD700';
+    ctx.fill();
+    ctx.strokeStyle = '#3cd14c';
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+  } else {
+    ctx.fillStyle = '#000000';
+    ctx.fill();
+    ctx.strokeStyle = '#E8E8E8';
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
   }
+
+  ctx.restore(); // ← moved to the END
+}
 
   function drawTrail() {
     if (!perimeter) return;

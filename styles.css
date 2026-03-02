@@ -266,6 +266,8 @@ body {
 
 .character-wrap {
   display: inline-block;
+  will-change: transform;
+  isolation: isolate;
 }
 
 .character-wrap:hover::before {
@@ -296,7 +298,8 @@ body {
   display: flex;
   gap: 2rem;
   margin-bottom: 2rem;
-  margin-top: 32px;   /* ✅ pushes characters DOWN */
+  margin-top: 32px;
+  align-items: center;  /* ← keeps items centered so scale doesn't push vertically */
 }
 
 

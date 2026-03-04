@@ -3257,13 +3257,14 @@ function safeStopCursor(delay = 1200) {
   }
 
   function resize() {
-    W = canvas.offsetWidth;
-    H = canvas.offsetHeight;
-    canvas.width = W;
-    canvas.height = H;
-    perimeter = buildPerimeter();
-    TOTAL = perimeter.length;
-  }
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  canvas.width = W;
+  canvas.height = H;
+  perimeter = buildPerimeter();
+  TOTAL = perimeter.length;
+  pos2 = Math.floor(TOTAL / 2); // ← starts opposite
+}
 window.__starBorderResize = resize;
 window.__starBorderTheme = function(land) {
     if (land === 'ecstasy') {
@@ -3362,7 +3363,30 @@ window.__starBorderTheme = function(land) {
       ctx.fill();
     }
   }
-
+function updateAndDrawExplosions() {
+  for (let i = explodeParticles.length-1; i >= 0; i--) {
+    const p = explodeParticles[i];
+    p.x += p.vx; p.y += p.vy;
+    p.vx *= 0.93; p.vy *= 0.93;
+    p.life -= p.decay;
+    p.twinkle += 0.2;
+    if (p.life <= 0) { explodeParticles.splice(i,1); continue; }
+    const shimmer = 0.7 + 0.3*Math.abs(Math.sin(p.twinkle));
+    const alpha = p.life * shimmer;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius*2.5, 0, Math.PI*2);
+    ctx.fillStyle = hexToRgba(p.color, alpha*0.2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
+    ctx.fillStyle = hexToRgba(p.color, alpha);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius*0.3, 0, Math.PI*2);
+    ctx.fillStyle = hexToRgba('#ffffff', alpha*0.9);
+    ctx.fill();
+  }
+}
   function drawHeart(cx, cy, size) {
   ctx.save();
   ctx.translate(cx, cy);

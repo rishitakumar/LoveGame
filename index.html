@@ -251,7 +251,7 @@ let beginShown = false;
 const NEXT_CARD_DELAY = 350;
 const MOVE_TO_CARD_DELAY = 120;
 const LAND_SWAP_DELAY = 0;
-const LAND_ENTRY_DELAY = 1500; // 1 second pause
+const LAND_ENTRY_DELAY = 3000; // 1 second pause
 
 // =============================
 // CARD DATA (QUESTIONS + ANSWERS)
@@ -524,7 +524,7 @@ const MURK_CARDS = [
     answerFront:   "murk_a1_front.png",
     answerBack:    "murk_a7_back.png",
     outcomes: { 
-      a:0, b:+1, c:-1, d:+1, e:-1
+      a:+1, b:0, c:-1, d:+1,
     }
   },
   
@@ -1314,8 +1314,9 @@ if (
   setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
 };
 
-
+setTimeout(() => {
     img.src = "murkland_screen.png";
+  }, 500);
   });
 
   return true;
@@ -1339,8 +1340,9 @@ if (
       positionCharacter(true);
       setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
     };
-
+setTimeout(() => {
     img.src = "darkland_screen.png";
+  }, 500);
   });
 
   return true;
@@ -1374,8 +1376,9 @@ if (
       positionCharacter(true);
       setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
     };
-
+setTimeout(() => {
     img.src = "loveland_screen.png";
+  }, 500);
   });
 
   return true;
@@ -1406,8 +1409,9 @@ if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
       positionCharacter(true);
       setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
     };
-
+setTimeout(() => {
     img.src = "murkland_screen.png";
+  }, 500);
   });
 
   return true;

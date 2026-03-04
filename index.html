@@ -2350,73 +2350,81 @@ setTimeout(() => {
 function exitGame() {
   document.getElementById('exit-btn')?.remove();
 
-  // hide all game-related screens
+  // hide all game screens
   const screen = document.getElementById('game-screen');
   if (screen) { screen.hidden = true; screen.style.display = 'none'; }
-  document.getElementById('card-layer')?.remove();
   document.getElementById('journey-end-overlay')?.remove();
+  const layer = document.getElementById('card-layer');
+  if (layer) layer.style.display = 'none';
 
-  // show exit overlay with restart button
-  const exitOverlay = document.createElement('div');
-  exitOverlay.id = 'exit-overlay';
-  exitOverlay.style.position = 'fixed';
-  exitOverlay.style.inset = '0';
-  exitOverlay.style.zIndex = '999999999';
-  exitOverlay.style.background = '#000';
-  exitOverlay.style.display = 'flex';
-  exitOverlay.style.alignItems = 'center';
-  exitOverlay.style.justifyContent = 'center';
-  exitOverlay.style.opacity = '0';
-  exitOverlay.style.transition = 'opacity 0.6s ease';
-  document.body.appendChild(exitOverlay);
+  // show header + navbar again
+  document.querySelector('.header').style.display = '';
+  document.querySelector('.navbar').style.display = '';
 
-  const restartBtn = document.createElement('button');
-  restartBtn.textContent = 'LOVE GAME';
-  restartBtn.style.background = 'transparent';
-  restartBtn.style.border = '1px solid rgba(245,255,58,0.5)';
-  restartBtn.style.color = '#f5ff3a';
-  restartBtn.style.fontFamily = 'Georgia, serif';
-  restartBtn.style.fontSize = '22px';
-  restartBtn.style.letterSpacing = '4px';
-  restartBtn.style.padding = '18px 40px';
-  restartBtn.style.borderRadius = '999px';
-  restartBtn.style.cursor = 'pointer';
-  restartBtn.style.textShadow = '0 0 18px rgba(245,255,58,0.6), 0 0 40px rgba(245,255,58,0.25)';
-  restartBtn.style.boxShadow = '0 0 22px rgba(245,255,58,0.2)';
-  restartBtn.style.transition = 'all 0.3s ease';
-  restartBtn.addEventListener('mouseenter', () => {
-    restartBtn.style.background = 'rgba(245,255,58,0.08)';
-    restartBtn.style.boxShadow = '0 0 35px rgba(245,255,58,0.4)';
-  });
-  restartBtn.addEventListener('mouseleave', () => {
+  // remove any overlays still sitting on top
+  document.getElementById('intro-overlay')?.remove();
+  document.getElementById('reminder-overlay')?.remove();
+  document.getElementById('character-overlay')?.classList.add('hidden');
+  document.getElementById('character-overlay')?.classList.remove('visible');
+
+  // add LOVE GAME restart button below navbar
+  if (!document.getElementById('lovegame-restart-btn')) {
+    const restartBtn = document.createElement('button');
+    restartBtn.id = 'lovegame-restart-btn';
+    restartBtn.textContent = 'LOVE GAME';
+    restartBtn.style.display = 'block';
+    restartBtn.style.margin = '60px auto 0';
     restartBtn.style.background = 'transparent';
+    restartBtn.style.border = '1px solid rgba(245,255,58,0.5)';
+    restartBtn.style.color = '#f5ff3a';
+    restartBtn.style.fontFamily = 'Georgia, serif';
+    restartBtn.style.fontSize = '22px';
+    restartBtn.style.letterSpacing = '4px';
+    restartBtn.style.padding = '18px 40px';
+    restartBtn.style.borderRadius = '999px';
+    restartBtn.style.cursor = 'pointer';
+    restartBtn.style.textShadow = '0 0 18px rgba(245,255,58,0.6), 0 0 40px rgba(245,255,58,0.25)';
     restartBtn.style.boxShadow = '0 0 22px rgba(245,255,58,0.2)';
-  });
-  restartBtn.addEventListener('click', () => {
-    exitOverlay.remove();
-    INTRO_ENDED = false;
-    selectedCharacter = null;
+    restartBtn.style.transition = 'all 0.3s ease';
+    restartBtn.addEventListener('mouseenter', () => {
+      restartBtn.style.background = 'rgba(245,255,58,0.08)';
+      restartBtn.style.boxShadow = '0 0 35px rgba(245,255,58,0.4)';
+    });
+    restartBtn.addEventListener('mouseleave', () => {
+      restartBtn.style.background = 'transparent';
+      restartBtn.style.boxShadow = '0 0 22px rgba(245,255,58,0.2)';
+    });
+    restartBtn.addEventListener('click', () => {
+      restartBtn.remove();
 
-    const charOverlay = document.getElementById('character-overlay');
-    if (charOverlay) {
-      charOverlay.classList.remove('visible', 'fade-out');
-      charOverlay.classList.add('hidden');
-    }
+      // reset state
+      INTRO_ENDED = false;
+      selectedCharacter = null;
+      const charOverlay = document.getElementById('character-overlay');
+      if (charOverlay) {
+        charOverlay.classList.remove('visible', 'fade-out');
+        charOverlay.classList.add('hidden');
+      }
 
-    const newOverlay = document.createElement('div');
-    newOverlay.id = 'intro-overlay';
-    newOverlay.className = 'flame-frame';
-    newOverlay.innerHTML = '<div id="intro-text" class="cyber-text">ENTERING CYBERSPACE <span id="loading-dots"></span></div>';
-    newOverlay.style.opacity = '0';
-    newOverlay.style.visibility = 'hidden';
-    newOverlay.style.backgroundColor = '#000';
-    document.body.appendChild(newOverlay);
+      // hide header + navbar again for game
+      document.querySelector('.header').style.display = 'none';
+      document.querySelector('.navbar').style.display = 'none';
 
-    startIntroWhenReady();
-  });
+      // rebuild intro overlay
+      const newOverlay = document.createElement('div');
+      newOverlay.id = 'intro-overlay';
+      newOverlay.className = 'flame-frame';
+      newOverlay.innerHTML = '<div id="intro-text" class="cyber-text">ENTERING CYBERSPACE <span id="loading-dots"></span></div>';
+      newOverlay.style.opacity = '0';
+      newOverlay.style.visibility = 'hidden';
+      newOverlay.style.backgroundColor = '#000';
+      document.body.appendChild(newOverlay);
 
-  exitOverlay.appendChild(restartBtn);
-  requestAnimationFrame(() => exitOverlay.style.opacity = '1');
+      startIntroWhenReady();
+    });
+
+    document.body.appendChild(restartBtn);
+  }
 }
 function showBeginText() {
   if (beginShown) return;

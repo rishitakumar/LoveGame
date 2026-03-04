@@ -1154,7 +1154,10 @@ function positionCharacter(instant = false) {
   char.style.top  = `${y}px`;
 
   const targetTop = char.offsetTop - screen.clientHeight * 0.65;
-  screen.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
+  screen.scrollTo({ 
+  top: Math.max(0, targetTop), 
+  behavior: instant ? "instant" : "smooth"  // ← add this
+});
 }
 
 function spawnStreakTrail(fromX, fromY, toX, toY, color) {
@@ -1277,7 +1280,7 @@ function moveCharacter(delta, afterTransition = null) {
   const img = document.getElementById("game-background");
 
   const continueWithNextCard = () => {
-    positionCharacter();
+    positionCharacter(true);
     setTimeout(() => {
       advanceCard();
     }, 450);
@@ -1301,14 +1304,14 @@ if (
 
   bigGlowTransition(() => {
     if (!img) {
-      positionCharacter();
+      positionCharacter(true);
       setTimeout(() => advanceCard(), 450);
       return;
     }
 
     img.onload = () => {
   img.onload = null;
-  positionCharacter();
+  positionCharacter(true);
   setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
 };
 
@@ -1334,7 +1337,7 @@ if (
     if (!img) return;
 
     img.onload = () => {
-      positionCharacter();
+      positionCharacter(true);
       setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
     };
 
@@ -1362,14 +1365,14 @@ if (
 
   bigGlowTransition(() => {
     if (!img) {
-      positionCharacter();
+      positionCharacter(true);
       setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
       return;
     }
 
     img.onload = () => {
       img.onload = null;
-      positionCharacter();
+      positionCharacter(true);
       setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
     };
 
@@ -1395,13 +1398,13 @@ if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
 
   bigGlowTransition(() => {
     if (!img) {
-      positionCharacter();
+      positionCharacter(true);
       setTimeout(() => advanceCard(), 450);
       return;
     }
 
     img.onload = () => {
-      positionCharacter();
+      positionCharacter(true);
       setTimeout(() => afterTransition?.(), LAND_ENTRY_DELAY);
     };
 
@@ -1418,7 +1421,7 @@ if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
   ===================== */
   const max = LADDERS[GameState.land] - 1;
   GameState.rungIndex = Math.max(0, Math.min(max, GameState.rungIndex + delta));
-  positionCharacter();
+  positionCharacter(true);
   return false;
 }
   

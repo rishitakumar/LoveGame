@@ -1280,7 +1280,7 @@ function moveCharacter(delta, afterTransition = null) {
   const img = document.getElementById("game-background");
 
   const continueWithNextCard = () => {
-    positionCharacter(true);
+    positionCharacter();
     setTimeout(() => {
       advanceCard();
     }, 450);
@@ -1421,7 +1421,7 @@ if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
   ===================== */
   const max = LADDERS[GameState.land] - 1;
   GameState.rungIndex = Math.max(0, Math.min(max, GameState.rungIndex + delta));
-  positionCharacter(true);
+  positionCharacter();
   return false;
 }
   

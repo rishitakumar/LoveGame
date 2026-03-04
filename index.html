@@ -1246,7 +1246,7 @@ function bigGlowTransition(doDuringGlow, doAfterGlow = null) {
     )
   `;
   glow.style.opacity = "0";
-  glow.style.transition = "opacity 0.22s ease";
+  glow.style.transition = "opacity 0.6s ease";
   document.body.appendChild(glow);
 
   requestAnimationFrame(() => (glow.style.opacity = "1"));
@@ -1255,16 +1255,15 @@ function bigGlowTransition(doDuringGlow, doAfterGlow = null) {
   setTimeout(() => {
     try { doDuringGlow?.(); } catch (e) { console.error(e); }
 
-    // ✅ fade out quickly
     setTimeout(() => {
-      glow.style.transition = "opacity 0.25s ease";
+      glow.style.transition = "opacity 1.2s ease";  // slower fade out
       glow.style.opacity = "0";
       setTimeout(() => {
         glow.remove();
         CursorFX?.stop?.();
         doAfterGlow?.();
-      }, 260);
-    }, 90);
+      }, 1200);  // matches fade duration
+    }, 600);  // holds at full brightness longer
 
   }, 80);
 }

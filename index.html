@@ -745,33 +745,31 @@ window.addEventListener("mousemove", (e) => {
 
 /* --- INTRO STARFIELD SETUP --- */
 const overlay = document.getElementById("intro-overlay");
-async function startIntroWhenReady() {
-  overlay.style.opacity = "0";
-  overlay.style.visibility = "hidden";
-  overlay.style.backgroundColor = "#000";
+async function startIntroWhenReady(overrideEl) {
+  const introEl = overrideEl || overlay; // ← uses override if provided
+  introEl.style.opacity = "0";
+  introEl.style.visibility = "hidden";
+  introEl.style.backgroundColor = "#000";
 
   await preloadImage("star-background.png");
-
-  // ✅ Force a full decode before animating
   const img = new Image();
   img.src = "star-background.png";
   try { await img.decode(); } catch(e) {}
 
-  // ✅ Now trigger the zoom animation AFTER image is ready
-  overlay.classList.add("zoom-ready");
+  introEl.classList.add("zoom-ready");
+  introEl.style.visibility = "visible";
+  introEl.style.transition = "opacity 0.25s ease";
+  requestAnimationFrame(() => (introEl.style.opacity = "1"));
 
-  overlay.style.visibility = "visible";
-  overlay.style.transition = "opacity 0.25s ease";
-  requestAnimationFrame(() => (overlay.style.opacity = "1"));
-
-  runIntroFlow();
+  runIntroFlow(introEl);
 }
 
 
-function runIntroFlow() {
+function runIntroFlow(introEl) {
+  const el = introEl || overlay;
   const timeout = setTimeout(endIntro, 3500);
 
-  overlay.addEventListener("click", () => {
+  el.addEventListener("click", () => {
     clearTimeout(timeout);
     endIntro();
   }, { once: true });
@@ -786,7 +784,6 @@ function runIntroFlow() {
 
   const dotsElement = document.getElementById("loading-dots");
   let dotCount = 0;
-
   window.dotInterval = setInterval(() => {
     dotCount = (dotCount + 1) % 4;
     if (dotsElement) dotsElement.textContent = ". ".repeat(dotCount);
@@ -2398,29 +2395,69 @@ if (rem) { rem.hidden = true; rem.style.opacity = '0'; }
     restartBtn.addEventListener('click', () => {
   restartBtn.remove();
 
-  // reset state
-  INTRO_ENDED = false;
-  selectedCharacter = null;
-
   // hide header + navbar
   document.querySelector('.header').style.display = 'none';
   document.querySelector('.navbar').style.display = 'none';
+  document.getElementById('exit-btn')?.remove();
+
+  // reset ALL game state
+  INTRO_ENDED = false;
+  selectedCharacter = null;
+  cardIndex = 0;
+  answeredInThisDeck = 0;
+  questionPhase = "physical";
+  activeDeck = PHYSICAL_CARDS;
+  currentCard = null;
+  cardMode = "question";
+  cardSide = "front";
+  totalAnswered = 0;
+  totalCorrect = 0;
+  bonusEligible = true;
+  bonusTriggered = false;
+  murkTransitionDone = false;
+  murkLastSeenIndex = -1;
+  mentalLastSeenIndex = -1;
+  beginShown = false;
+  window.__ecstasyHoldActive = false;
+  GameState.land = "darkland";
+  GameState.rungIndex = 0;
 
   // reset character overlay
   const charOverlay = document.getElementById('character-overlay');
   if (charOverlay) {
     charOverlay.classList.remove('visible', 'fade-out');
     charOverlay.classList.add('hidden');
+    document.getElementById('confirm-character').disabled = true;
+    document.querySelectorAll('.character-wrap').forEach(w => {
+      w.classList.remove('selected', 'dimmed');
+      w.style.filter = '';
+      w.style.transform = '';
+    });
   }
 
-  // reset game screen
+  // reset game + card screens
   const screen = document.getElementById('game-screen');
   if (screen) { screen.hidden = true; screen.style.display = 'none'; }
+  const layer = document.getElementById('card-layer');
+  if (layer) { layer.style.display = 'none'; layer.dataset.delta = '0'; }
+  document.getElementById('journey-end-overlay')?.remove();
 
-  // remove any leftover exit button
-  document.getElementById('exit-btn')?.remove();
+  // restore reminder overlay to original state
+  const rem = document.getElementById('reminder-overlay');
+  if (rem) {
+    rem.hidden = true;
+    rem.style.opacity = '0';
+    document.getElementById('reminders-content').style.display = '';
+    const rulesContent = document.getElementById('rules-content');
+    if (rulesContent) rulesContent.hidden = true;
+    const startBtn = document.getElementById('start-game');
+    if (startBtn) startBtn.hidden = true;
+    const arrow = document.getElementById('rules-arrow');
+    if (arrow) arrow.style.display = '';
+  }
 
-  // rebuild intro overlay fresh
+  // ✅ KEY FIX: patch the module-level overlay variable to the new element
+  document.getElementById('intro-overlay')?.remove();
   const newOverlay = document.createElement('div');
   newOverlay.id = 'intro-overlay';
   newOverlay.className = 'flame-frame';
@@ -2430,30 +2467,9 @@ if (rem) { rem.hidden = true; rem.style.opacity = '0'; }
   newOverlay.style.backgroundColor = '#000';
   document.body.appendChild(newOverlay);
 
-  // rebuild reminder overlay fresh (it was removed during exit)
-  const oldReminder = document.getElementById('reminder-overlay');
-  if (oldReminder) oldReminder.remove();
-
-  const newReminder = document.createElement('div');
-  newReminder.id = 'reminder-overlay';
-  newReminder.hidden = true;
-  newReminder.innerHTML = document.getElementById('reminder-overlay')?.innerHTML || `
-    <div class="reminder-box flame-frame">
-      <div id="reminders-content">
-        <h2>REMINDERS</h2>
-        <ol class="reminder-list">
-          <li>Be as truthful as possible</li>
-        </ol>
-      </div>
-      <div id="rules-arrow">➜</div>
-      <div id="rules-content" hidden>
-        <h2>RULES</h2>
-      </div>
-      <button id="start-game" hidden>FOR SURE :)</button>
-    </div>`;
-  document.body.appendChild(newReminder);
-
-  startIntroWhenReady();
+  // ✅ reassign the module-level `overlay` variable so startIntroWhenReady works
+  window.__introOverride = newOverlay;
+  startIntroWhenReady(newOverlay);
 });
 
     document.body.appendChild(restartBtn);

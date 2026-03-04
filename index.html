@@ -3236,8 +3236,11 @@ function safeStopCursor(delay = 1200) {
   let LOVELAND_MODE = false;
   let W, H, perimeter, TOTAL;
   let pos = 0, colorIdx = 0;
+  let pos2 = 0, colorIdx2 = 0;
+  let lastExplosionFrame = -60; // cooldown so it doesn't fire every frame
+  let frameCount = 0;
   const dust = [];
-
+  const explodeParticles = [];
   function buildPerimeter() {
     const pts = [];
     const half = BORDER / 2;
@@ -3318,6 +3321,23 @@ window.__starBorderTheme = function(land) {
     }
   }
 
+  function spawnExplosion(x, y, color1, color2) {
+  for (let i = 0; i < 18; i++) {
+    const angle = (Math.PI * 2 * i) / 18 + Math.random() * 0.3;
+    const speed = 1.5 + Math.random() * 3.5;
+    explodeParticles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 1.0,
+      decay: 0.022 + Math.random() * 0.018,
+      radius: 1.2 + Math.random() * 3,
+      color: Math.random() < 0.5 ? color1 : color2,
+      twinkle: Math.random() * Math.PI * 2,
+    });
+  }
+}
+  
   function updateAndDrawDust() {
     for (let i = dust.length-1; i >= 0; i--) {
       const p = dust[i];
@@ -3384,72 +3404,101 @@ window.__starBorderTheme = function(land) {
   ctx.restore(); // ← moved to the END
 }
 
-  function drawTrail() {
-    if (!perimeter) return;
-    const headIdx = Math.floor(pos) % TOTAL;
-    const color = STAR_COLORS[colorIdx % STAR_COLORS.length];
-    currentHeadColor = color; // track for heart
+function drawTrail(currentPos, currentColorIdx, reverse = false) {
+  if (!perimeter) return;
+  const headIdx = Math.floor(currentPos) % TOTAL;
+  const color = STAR_COLORS[currentColorIdx % STAR_COLORS.length];
+  currentHeadColor = color;
 
-    for (let i = TRAIL_LENGTH-1; i >= 0; i--) {
-      const pct = 1 - (i / TRAIL_LENGTH);
-      const idx = ((headIdx - i) % TOTAL + TOTAL) % TOTAL;
-      const pt = perimeter[idx];
-      const alpha = Math.pow(pct, 2.5);
-      const radius = 0.2 + pct*2.2;
+  for (let i = TRAIL_LENGTH - 1; i >= 0; i--) {
+    const pct = 1 - (i / TRAIL_LENGTH);
+    // reverse streak looks back in the opposite direction
+    const idx = reverse
+      ? ((headIdx + i) % TOTAL + TOTAL) % TOTAL
+      : ((headIdx - i) % TOTAL + TOTAL) % TOTAL;
+    const pt = perimeter[idx];
+    const alpha = Math.pow(pct, 2.5);
+    const radius = 0.2 + pct * 2.2;
 
-      if (i > 5 && i < TRAIL_LENGTH*0.6 && Math.random() < 0.12) spawnDust(pt.x, pt.y, color);
+    if (i > 5 && i < TRAIL_LENGTH * 0.6 && Math.random() < 0.12) spawnDust(pt.x, pt.y, color);
 
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, radius + 1.5, 0, Math.PI * 2);
+    ctx.fillStyle = hexToRgba(color, alpha * 0.18);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, radius + 0.5, 0, Math.PI * 2);
+    ctx.strokeStyle = hexToRgba('#C8C8C8', alpha * 0.3);
+    ctx.lineWidth = 0.4;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = hexToRgba(color, alpha * 0.85);
+    ctx.fill();
+
+    if (pct > 0.75) {
       ctx.beginPath();
-      ctx.arc(pt.x, pt.y, radius+1.5, 0, Math.PI*2);
-      ctx.fillStyle = hexToRgba(color, alpha*0.18);
+      ctx.arc(pt.x, pt.y, radius * 0.5, 0, Math.PI * 2);
+      ctx.fillStyle = hexToRgba('#ffffff', (pct - 0.75) * 4 * 0.95);
       ctx.fill();
-
-      ctx.beginPath();
-      ctx.arc(pt.x, pt.y, radius+0.5, 0, Math.PI*2);
-      ctx.strokeStyle = hexToRgba('#C8C8C8', alpha*0.3);
-      ctx.lineWidth = 0.4;
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(pt.x, pt.y, radius, 0, Math.PI*2);
-      ctx.fillStyle = hexToRgba(color, alpha*0.85);
-      ctx.fill();
-
-      if (pct > 0.75) {
-        ctx.beginPath();
-        ctx.arc(pt.x, pt.y, radius*0.5, 0, Math.PI*2);
-        ctx.fillStyle = hexToRgba('#ffffff', (pct-0.75)*4*0.95);
-        ctx.fill();
-      }
     }
-
-    const head = perimeter[headIdx];
-    drawHeart(head.x, head.y, 14);
   }
+
+  const head = perimeter[headIdx];
+  drawHeart(head.x, head.y, 14);
+}
 
  function loop() {
-    if (!perimeter || !TOTAL) { requestAnimationFrame(loop); return; }
-    ctx.clearRect(0, 0, W, H);
-    updateAndDrawDust();
-    drawTrail();
+  if (!perimeter || !TOTAL) { requestAnimationFrame(loop); return; }
+  frameCount++;
+  ctx.clearRect(0, 0, W, H);
+  updateAndDrawDust();
+  updateAndDrawExplosions();
 
-    const prevPos = pos;
-    pos = (pos + STAR_SPEED) % TOTAL;
+  // draw streak 1
+  drawTrail(pos, colorIdx);
 
-    if (ECSTASY_MODE) {
-      // sporadic: switch color randomly every 40-120 frames
-      ecstasyColorTimer--;
-      if (ecstasyColorTimer <= 0) {
-        colorIdx = Math.floor(Math.random() * STAR_COLORS.length);
-        ecstasyColorTimer = 40 + Math.floor(Math.random() * 80);
-      }
-    } else {
-      // normal: switch on full lap
-      if (pos < prevPos) colorIdx = (colorIdx + 1) % STAR_COLORS.length;
-    }
+  // draw streak 2 (opposite direction)
+  drawTrail(pos2, colorIdx2, true);
 
-    requestAnimationFrame(loop);
+  // collision detection — check if the two heads are close
+  const head1 = perimeter[Math.floor(pos) % TOTAL];
+  const head2 = perimeter[Math.floor(pos2) % TOTAL];
+  const dx = head1.x - head2.x;
+  const dy = head1.y - head2.y;
+  const dist = Math.hypot(dx, dy);
+
+  if (dist < 28 && frameCount - lastExplosionFrame > 60) {
+    lastExplosionFrame = frameCount;
+    const c1 = STAR_COLORS[colorIdx % STAR_COLORS.length];
+    const c2 = STAR_COLORS[colorIdx2 % STAR_COLORS.length];
+    const mx = (head1.x + head2.x) / 2;
+    const my = (head1.y + head2.y) / 2;
+    spawnExplosion(mx, my, c1, c2);
   }
+
+  const prevPos = pos;
+  pos  = (pos  + STAR_SPEED) % TOTAL;
+  pos2 = ((pos2 - STAR_SPEED) + TOTAL) % TOTAL; // ← moves backwards
+
+  if (ECSTASY_MODE) {
+    ecstasyColorTimer--;
+    if (ecstasyColorTimer <= 0) {
+      colorIdx  = Math.floor(Math.random()*STAR_COLORS.length);
+colorIdx2 = colorIdx; // ← always matches
+      ecstasyColorTimer = 40 + Math.floor(Math.random() * 80);
+    }
+  } else {
+    if (pos < prevPos) {
+      colorIdx  = (colorIdx + 1) % STAR_COLORS.length;
+colorIdx2 = colorIdx; // ← always matches
+    }
+  }
+
+  requestAnimationFrame(loop);
+}
 
   // Resize when game screen becomes visible
   const gameScreen = document.getElementById('game-screen');

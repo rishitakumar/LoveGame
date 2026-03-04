@@ -2363,7 +2363,8 @@ function exitGame() {
 
   // remove any overlays still sitting on top
   document.getElementById('intro-overlay')?.remove();
-  document.getElementById('reminder-overlay')?.remove();
+  const rem = document.getElementById('reminder-overlay');
+if (rem) { rem.hidden = true; rem.style.opacity = '0'; }
   document.getElementById('character-overlay')?.classList.add('hidden');
   document.getElementById('character-overlay')?.classList.remove('visible');
 
@@ -2395,33 +2396,65 @@ function exitGame() {
       restartBtn.style.boxShadow = '0 0 22px rgba(245,255,58,0.2)';
     });
     restartBtn.addEventListener('click', () => {
-      restartBtn.remove();
+  restartBtn.remove();
 
-      // reset state
-      INTRO_ENDED = false;
-      selectedCharacter = null;
-      const charOverlay = document.getElementById('character-overlay');
-      if (charOverlay) {
-        charOverlay.classList.remove('visible', 'fade-out');
-        charOverlay.classList.add('hidden');
-      }
+  // reset state
+  INTRO_ENDED = false;
+  selectedCharacter = null;
 
-      // hide header + navbar again for game
-      document.querySelector('.header').style.display = 'none';
-      document.querySelector('.navbar').style.display = 'none';
+  // hide header + navbar
+  document.querySelector('.header').style.display = 'none';
+  document.querySelector('.navbar').style.display = 'none';
 
-      // rebuild intro overlay
-      const newOverlay = document.createElement('div');
-      newOverlay.id = 'intro-overlay';
-      newOverlay.className = 'flame-frame';
-      newOverlay.innerHTML = '<div id="intro-text" class="cyber-text">ENTERING CYBERSPACE <span id="loading-dots"></span></div>';
-      newOverlay.style.opacity = '0';
-      newOverlay.style.visibility = 'hidden';
-      newOverlay.style.backgroundColor = '#000';
-      document.body.appendChild(newOverlay);
+  // reset character overlay
+  const charOverlay = document.getElementById('character-overlay');
+  if (charOverlay) {
+    charOverlay.classList.remove('visible', 'fade-out');
+    charOverlay.classList.add('hidden');
+  }
 
-      startIntroWhenReady();
-    });
+  // reset game screen
+  const screen = document.getElementById('game-screen');
+  if (screen) { screen.hidden = true; screen.style.display = 'none'; }
+
+  // remove any leftover exit button
+  document.getElementById('exit-btn')?.remove();
+
+  // rebuild intro overlay fresh
+  const newOverlay = document.createElement('div');
+  newOverlay.id = 'intro-overlay';
+  newOverlay.className = 'flame-frame';
+  newOverlay.innerHTML = '<div id="intro-text" class="cyber-text">ENTERING CYBERSPACE <span id="loading-dots"></span></div>';
+  newOverlay.style.opacity = '0';
+  newOverlay.style.visibility = 'hidden';
+  newOverlay.style.backgroundColor = '#000';
+  document.body.appendChild(newOverlay);
+
+  // rebuild reminder overlay fresh (it was removed during exit)
+  const oldReminder = document.getElementById('reminder-overlay');
+  if (oldReminder) oldReminder.remove();
+
+  const newReminder = document.createElement('div');
+  newReminder.id = 'reminder-overlay';
+  newReminder.hidden = true;
+  newReminder.innerHTML = document.getElementById('reminder-overlay')?.innerHTML || `
+    <div class="reminder-box flame-frame">
+      <div id="reminders-content">
+        <h2>REMINDERS</h2>
+        <ol class="reminder-list">
+          <li>Be as truthful as possible</li>
+        </ol>
+      </div>
+      <div id="rules-arrow">➜</div>
+      <div id="rules-content" hidden>
+        <h2>RULES</h2>
+      </div>
+      <button id="start-game" hidden>FOR SURE :)</button>
+    </div>`;
+  document.body.appendChild(newReminder);
+
+  startIntroWhenReady();
+});
 
     document.body.appendChild(restartBtn);
   }

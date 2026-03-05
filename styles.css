@@ -1323,7 +1323,7 @@ textarea,
 }
 /* ===== VISIBILITY SYSTEM (OVERRIDES EVERYTHING ABOVE) ===== */
 
-/* hidden attribute should be the ONLY thing that hides screens */
+/* ===== VISIBILITY SYSTEM ===== */
 #intro-overlay[hidden],
 #reminder-overlay[hidden],
 #character-overlay[hidden],
@@ -1332,24 +1332,16 @@ textarea,
   display: none !important;
 }
 
-/* defaults when NOT hidden */
-#reminder-overlay { display: flex !important; }
-#character-overlay { display: flex !important; }
+#reminder-overlay:not([hidden]) { display: flex; }
+#character-overlay:not([hidden]) { display: flex; }
+#game-screen:not([hidden]) { display: flex; }
+#card-layer { display: none; }
 
-#card-layer { display: none; }              /* JS controls this */
-
-/* FIX: mouse canvas must never be above UI */
-/* ===== Mouse trail MUST be above all screens (click-through) ===== */
-#mouse-canvas{
-  z-index: 2147483000 !important; /* above every overlay */
-  pointer-events: none !important; /* never blocks clicks */
+#mouse-canvas {
+  z-index: 2147483000 !important;
+  pointer-events: none !important;
 }
-
-/* If you use the ring, keep it above the trail */
-#cursor-ring{
-  z-index: 2147483640 !important;
-}
-
+#cursor-ring { z-index: 2147483640 !important; }
 #intro-overlay { z-index: 9999; }
 #reminder-overlay { z-index: 9000; }
 #character-overlay { z-index: 8500; }

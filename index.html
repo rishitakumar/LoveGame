@@ -2374,7 +2374,7 @@ function exitGame() {
     if ((s.position === 'fixed' || s.position === 'absolute') && s.display !== 'none') {
       console.log(el.id || el.className, '| z:', s.zIndex, '| display:', s.display, '| opacity:', s.opacity);
     }
-   }
+   });
 document.getElementById('intro-overlay')?.remove(); // ← ADD THIS
   document.getElementById('character-overlay')?.remove(); // ← AND THIS
   // hide all game screens

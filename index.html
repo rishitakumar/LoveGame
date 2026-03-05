@@ -2369,7 +2369,8 @@ setTimeout(() => {
 }
 function exitGame() {
   document.getElementById('exit-btn')?.remove();
-
+document.getElementById('intro-overlay')?.remove(); // ← ADD THIS
+  document.getElementById('character-overlay')?.remove(); // ← AND THIS
   // hide all game screens
   const screen = document.getElementById('game-screen');
   if (screen) { screen.hidden = true; screen.style.display = 'none'; }

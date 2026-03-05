@@ -1332,6 +1332,12 @@ textarea,
 #reminder-overlay { display: flex !important; }
 #character-overlay { display: flex !important; }
 #game-screen { display: block !important; } /* your game uses flex inside, fine */
+#game-screen {
+  position: fixed;
+  inset: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
 #card-layer { display: none; }              /* JS controls this */
 
 /* FIX: mouse canvas must never be above UI */

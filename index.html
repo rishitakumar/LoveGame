@@ -2369,33 +2369,30 @@ setTimeout(() => {
 }
 function exitGame() {
   document.getElementById('exit-btn')?.remove();
-   document.querySelectorAll('*').forEach(el => {
-    const s = getComputedStyle(el);
-    if ((s.position === 'fixed' || s.position === 'absolute') && s.display !== 'none') {
-      console.log(el.id || el.className, '| z:', s.zIndex, '| display:', s.display, '| opacity:', s.opacity);
-    }
-   });
-document.getElementById('intro-overlay')?.remove(); // ← ADD THIS
-  document.getElementById('character-overlay')?.remove(); // ← AND THIS
-  // hide all game screens
+
+  // force hide with !important inline styles
   const screen = document.getElementById('game-screen');
-  if (screen) { screen.hidden = true; screen.style.display = 'none'; }
-  document.getElementById('journey-end-overlay')?.remove();
+  if (screen) screen.style.setProperty('display', 'none', 'important');
+
   const layer = document.getElementById('card-layer');
-  if (layer) layer.style.display = 'none';
+  if (layer) layer.style.setProperty('display', 'none', 'important');
 
-  // show header + navbar again
-  document.querySelector('.header').style.display = '';
-  document.querySelector('.navbar').style.display = '';
-
-  // remove any overlays still sitting on top
+  document.getElementById('journey-end-overlay')?.remove();
   document.getElementById('intro-overlay')?.remove();
-  const rem = document.getElementById('reminder-overlay');
-if (rem) { rem.hidden = true; rem.style.opacity = '0'; }
-  document.getElementById('character-overlay')?.classList.add('hidden');
-  document.getElementById('character-overlay')?.classList.remove('visible');
 
-  // add LOVE GAME restart button below navbar
+  const rem = document.getElementById('reminder-overlay');
+  if (rem) rem.style.setProperty('display', 'none', 'important');
+
+  const charOverlay = document.getElementById('character-overlay');
+  if (charOverlay) charOverlay.style.setProperty('display', 'none', 'important');
+
+  // force header + navbar visible
+  const header = document.querySelector('.header');
+  const navbar = document.querySelector('.navbar');
+  if (header) header.style.setProperty('display', 'block', 'important');
+  if (navbar) navbar.style.setProperty('display', 'block', 'important');
+
+  // add LOVE GAME restart button
   if (!document.getElementById('lovegame-restart-btn')) {
     const restartBtn = document.createElement('button');
     restartBtn.id = 'lovegame-restart-btn';
@@ -2423,84 +2420,79 @@ if (rem) { rem.hidden = true; rem.style.opacity = '0'; }
       restartBtn.style.boxShadow = '0 0 22px rgba(245,255,58,0.2)';
     });
     restartBtn.addEventListener('click', () => {
-  restartBtn.remove();
+      restartBtn.remove();
 
-  // hide header + navbar
-  document.querySelector('.header').style.display = 'none';
-  document.querySelector('.navbar').style.display = 'none';
-  document.getElementById('exit-btn')?.remove();
+      header.style.setProperty('display', 'none', 'important');
+      navbar.style.setProperty('display', 'none', 'important');
+      document.getElementById('exit-btn')?.remove();
 
-  // reset ALL game state
-  INTRO_ENDED = false;
-  selectedCharacter = null;
-  cardIndex = 0;
-  answeredInThisDeck = 0;
-  questionPhase = "physical";
-  activeDeck = PHYSICAL_CARDS;
-  currentCard = null;
-  cardMode = "question";
-  cardSide = "front";
-  totalAnswered = 0;
-  totalCorrect = 0;
-  bonusEligible = true;
-  bonusTriggered = false;
-  murkTransitionDone = false;
-  murkLastSeenIndex = -1;
-  mentalLastSeenIndex = -1;
-  beginShown = false;
-  window.__ecstasyHoldActive = false;
-  GameState.land = "darkland";
-  GameState.rungIndex = 0;
+      INTRO_ENDED = false;
+      selectedCharacter = null;
+      cardIndex = 0;
+      answeredInThisDeck = 0;
+      questionPhase = "physical";
+      activeDeck = PHYSICAL_CARDS;
+      currentCard = null;
+      cardMode = "question";
+      cardSide = "front";
+      totalAnswered = 0;
+      totalCorrect = 0;
+      bonusEligible = true;
+      bonusTriggered = false;
+      murkTransitionDone = false;
+      murkLastSeenIndex = -1;
+      mentalLastSeenIndex = -1;
+      beginShown = false;
+      window.__ecstasyHoldActive = false;
+      GameState.land = "darkland";
+      GameState.rungIndex = 0;
 
-  // reset character overlay
-  const charOverlay = document.getElementById('character-overlay');
-  if (charOverlay) {
-    charOverlay.classList.remove('visible', 'fade-out');
-    charOverlay.classList.add('hidden');
-    document.getElementById('confirm-character').disabled = true;
-    document.querySelectorAll('.character-wrap').forEach(w => {
-      w.classList.remove('selected', 'dimmed');
-      w.style.filter = '';
-      w.style.transform = '';
+      const charOverlay = document.getElementById('character-overlay');
+      if (charOverlay) {
+        charOverlay.style.removeProperty('display');
+        charOverlay.classList.remove('visible', 'fade-out');
+        charOverlay.classList.add('hidden');
+        document.getElementById('confirm-character').disabled = true;
+        document.querySelectorAll('.character-wrap').forEach(w => {
+          w.classList.remove('selected', 'dimmed');
+          w.style.filter = '';
+          w.style.transform = '';
+        });
+      }
+
+      const screen = document.getElementById('game-screen');
+      if (screen) screen.style.setProperty('display', 'none', 'important');
+
+      const layer = document.getElementById('card-layer');
+      if (layer) { layer.style.setProperty('display', 'none', 'important'); layer.dataset.delta = '0'; }
+
+      document.getElementById('journey-end-overlay')?.remove();
+
+      const rem = document.getElementById('reminder-overlay');
+      if (rem) {
+        rem.style.setProperty('display', 'none', 'important');
+        rem.style.opacity = '0';
+        document.getElementById('reminders-content').style.display = '';
+        const rulesContent = document.getElementById('rules-content');
+        if (rulesContent) rulesContent.hidden = true;
+        const startBtn = document.getElementById('start-game');
+        if (startBtn) startBtn.hidden = true;
+        const arrow = document.getElementById('rules-arrow');
+        if (arrow) arrow.style.display = '';
+      }
+
+      document.getElementById('intro-overlay')?.remove();
+      const newOverlay = document.createElement('div');
+      newOverlay.id = 'intro-overlay';
+      newOverlay.className = 'flame-frame';
+      newOverlay.innerHTML = '<div id="intro-text" class="cyber-text">ENTERING CYBERSPACE <span id="loading-dots"></span></div>';
+      newOverlay.style.opacity = '0';
+      newOverlay.style.visibility = 'hidden';
+      newOverlay.style.backgroundColor = '#000';
+      document.body.appendChild(newOverlay);
+
+      startIntroWhenReady(newOverlay);
     });
-  }
-
-  // reset game + card screens
-  const screen = document.getElementById('game-screen');
-  if (screen) { screen.hidden = true; screen.style.display = 'none'; }
-  const layer = document.getElementById('card-layer');
-  if (layer) { layer.style.display = 'none'; layer.dataset.delta = '0'; }
-  document.getElementById('journey-end-overlay')?.remove();
-
-  // restore reminder overlay to original state
-  const rem = document.getElementById('reminder-overlay');
-  if (rem) {
-    rem.hidden = true;
-    rem.style.opacity = '0';
-    document.getElementById('reminders-content').style.display = '';
-    const rulesContent = document.getElementById('rules-content');
-    if (rulesContent) rulesContent.hidden = true;
-    const startBtn = document.getElementById('start-game');
-    if (startBtn) startBtn.hidden = true;
-    const arrow = document.getElementById('rules-arrow');
-    if (arrow) arrow.style.display = '';
-  }
-
-  // ✅ KEY FIX: patch the module-level overlay variable to the new element
-  document.getElementById('intro-overlay')?.remove();
-  const newOverlay = document.createElement('div');
-  newOverlay.id = 'intro-overlay';
-  newOverlay.className = 'flame-frame';
-  newOverlay.innerHTML = '<div id="intro-text" class="cyber-text">ENTERING CYBERSPACE <span id="loading-dots"></span></div>';
-  newOverlay.style.opacity = '0';
-  newOverlay.style.visibility = 'hidden';
-  newOverlay.style.backgroundColor = '#000';
-  document.body.appendChild(newOverlay);
-
-  // ✅ reassign the module-level `overlay` variable so startIntroWhenReady works
-  window.__introOverride = newOverlay;
-  startIntroWhenReady(newOverlay);
-});
 
     document.body.appendChild(restartBtn);
   }

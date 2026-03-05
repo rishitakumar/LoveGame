@@ -907,8 +907,28 @@ startIntroWhenReady();
 /* =============================
    REMINDERS → RULES → START FLOW
 ============================= */
+function resetReminderOverlay() {
+  // clone each interactive element to wipe all old listeners
+  ['rules-arrow', 'start-game', 'reminders-content', 'rules-content'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      const clone = el.cloneNode(true);
+      el.parentNode.replaceChild(clone, el);
+    }
+  });
 
+  // also reset visibility state
+  const reminders = document.getElementById('reminders-content');
+  const rules = document.getElementById('rules-content');
+  const arrow = document.getElementById('rules-arrow');
+  const startBtn = document.getElementById('start-game');
+  if (reminders) reminders.style.display = '';
+  if (rules) rules.hidden = true;
+  if (arrow) arrow.style.display = '';
+  if (startBtn) startBtn.hidden = true;
+}
 function enableReminderScreen() {
+  resetReminderOverlay(); // ← add this as first line
   const reminderOverlay = document.getElementById("reminder-overlay");
   const reminders = document.getElementById("reminders-content");
   const rules = document.getElementById("rules-content");

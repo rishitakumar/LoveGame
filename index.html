@@ -2372,10 +2372,10 @@ function exitGame() {
 
   // force hide with !important inline styles
   const screen = document.getElementById('game-screen');
-  if (screen) screen.style.setProperty('display', 'none', 'important');
+if (screen) { screen.hidden = true; }
 
-  const layer = document.getElementById('card-layer');
-  if (layer) layer.style.setProperty('display', 'none', 'important');
+const layer = document.getElementById('card-layer');
+if (layer) { layer.style.display = 'none'; }
 
   document.getElementById('journey-end-overlay')?.remove();
   document.getElementById('intro-overlay')?.remove();
@@ -2421,9 +2421,6 @@ function exitGame() {
     });
     restartBtn.addEventListener('click', () => {
       restartBtn.remove();
-
-      header.style.setProperty('display', 'none', 'important');
-      navbar.style.setProperty('display', 'none', 'important');
       document.getElementById('exit-btn')?.remove();
 
       INTRO_ENDED = false;

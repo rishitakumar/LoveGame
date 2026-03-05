@@ -411,16 +411,16 @@ body {
 .hidden {
   pointer-events: none;
 }
-
 #game-screen {
-  position: fixed;
-  inset: 0;
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 220px); /* leaves room for header + navbar */
   overflow-y: scroll;
   overflow-x: hidden;
   background: black;
   display: flex;
   justify-content: center;
-  z-index: 100;
+  z-index: 1;
 }
 
 #game-screen[hidden] {

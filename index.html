@@ -973,18 +973,18 @@ function enableReminderScreen() {
    STEP 2: Close overlay from rules
 ------------------------ */
 function closeRules() {
-  const overlay = document.getElementById("reminder-overlay");
-  if (!overlay) return;
+  const reminderOverlay = document.getElementById("reminder-overlay"); // ← get by ID, not closure
+  if (!reminderOverlay) return;
 
-  overlay.style.transition = "opacity 0.5s ease";
-  overlay.style.opacity = "0";
+  reminderOverlay.style.transition = "opacity 0.5s ease";
+  reminderOverlay.style.opacity = "0";
 
-  // Remove listeners immediately to prevent double triggers
   window.removeEventListener("keydown", closeRules);
-  overlay.removeEventListener("click", closeRules);
+  reminderOverlay.removeEventListener("click", closeRules);
 
   setTimeout(() => {
-    if (overlay.parentNode) overlay.remove(); showCharacterSelect();
+    reminderOverlay.hidden = true;
+    showCharacterSelect();
   }, 500);
 }
 

@@ -1582,7 +1582,21 @@ async function setCardImages({ frontSrc, backSrc, mode, cardData }) {
     });
   }
 }
+function updateCardCounter(land, cardNum, infinity = false) {
+  const counter = document.getElementById('card-counter');
+  if (!counter) return;
 
+  counter.classList.remove('darkland', 'murkland', 'loveland', 'ecstasy');
+  counter.classList.add(land === 'ecstasy' ? 'ecstasy' : land);
+
+  if (infinity) {
+    counter.textContent = '∞ CARDS';
+    counter.style.fontSize = '38px';
+  } else {
+    counter.style.fontSize = '28px';
+    counter.textContent = `${cardNum}/24 CARDS`;
+  }
+}
 
 function showQuestionCard(cardData) {
   if (!cardData) return;
@@ -3537,21 +3551,7 @@ window.__starBorderTheme = function(land) {
     });
   }
 }
-  function updateCardCounter(land, cardNum, infinity = false) {
-  const counter = document.getElementById('card-counter');
-  if (!counter) return;
 
-  counter.classList.remove('darkland', 'murkland', 'loveland', 'ecstasy');
-  counter.classList.add(land === 'ecstasy' ? 'ecstasy' : land);
-
-  if (infinity) {
-    counter.textContent = '∞ CARDS';
-    counter.style.fontSize = '38px';
-  } else {
-    counter.style.fontSize = '28px';
-    counter.textContent = `${cardNum}/24 CARDS`;
-  }
-}
   function updateAndDrawDust() {
     for (let i = dust.length-1; i >= 0; i--) {
       const p = dust[i];

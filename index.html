@@ -671,18 +671,17 @@ function closeAnswerAndContinue() {
     currentCard = null;
     cardMode = "question";
     cardSide = "front";
-
     if (typeof ECSTASY_CARD !== "undefined" && answeredCardId === ECSTASY_CARD.id) {
   if (delta > 0) {
+    updateCardCounter('ecstasy', 25, true); // ← shows ∞ CARDS
     transitionToEcstasy();
-    enterEcstasyHold(); // ✅ waits for click/key, then shows “Your journey…”
+    enterEcstasyHold();
   } else {
     GameState.land = "loveland";
     setTimeout(() => showJourneyEnd("loveland"), 800);
   }
   return;
 }
-
 
     // ✅ Track "perfect run" BEFORE transitions/deck swaps
 totalAnswered++;
@@ -1595,6 +1594,13 @@ function showQuestionCard(cardData) {
   else if (cardData.id >= 300) questionPhase = "ecstasy";
 
   currentCard = cardData;
+  const cardNum =
+  questionPhase === 'physical'  ? cardIndex + 1 :
+  questionPhase === 'emotional' ? cardIndex + 9 :
+  questionPhase === 'mental'    ? cardIndex + 17 :
+  25; // ecstasy bonus
+
+updateCardCounter(GameState.land, cardNum);
 
   // Track progress indexes (keep yours)
   const mIdx = MURK_CARDS.findIndex(c => c.id === cardData.id);
@@ -2315,7 +2321,13 @@ function startLoveGame() {
   requestAnimationFrame(() => {
     screen.style.transition = ""; // restore normal transitions later if you want
   });
-
+// add card counter
+document.getElementById('card-counter')?.remove();
+const counter = document.createElement('div');
+counter.id = 'card-counter';     
+counter.className = 'darkland';
+counter.textContent = '1/24 CARDS';
+document.body.appendChild(counter);
   // ✅ remove any previous journey overlay if it exists
   document.getElementById("journey-end-overlay")?.remove();
 
@@ -3525,7 +3537,21 @@ window.__starBorderTheme = function(land) {
     });
   }
 }
-  
+  function updateCardCounter(land, cardNum, infinity = false) {
+  const counter = document.getElementById('card-counter');
+  if (!counter) return;
+
+  counter.classList.remove('darkland', 'murkland', 'loveland', 'ecstasy');
+  counter.classList.add(land === 'ecstasy' ? 'ecstasy' : land);
+
+  if (infinity) {
+    counter.textContent = '∞ CARDS';
+    counter.style.fontSize = '38px';
+  } else {
+    counter.style.fontSize = '28px';
+    counter.textContent = `${cardNum}/24 CARDS`;
+  }
+}
   function updateAndDrawDust() {
     for (let i = dust.length-1; i >= 0; i--) {
       const p = dust[i];

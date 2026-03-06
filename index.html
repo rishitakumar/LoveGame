@@ -1590,9 +1590,9 @@ function updateCardCounter(land, cardNum, infinity = false) {
   counter.classList.add(land === 'ecstasy' ? 'ecstasy' : land);
 
   if (infinity) {
-    counter.textContent = '∞ CARDS';
-    counter.style.fontSize = '38px';
-  } else {
+  counter.textContent = '∞';
+  counter.style.fontSize = '48px';
+} else {
     counter.style.fontSize = '28px';
     counter.textContent = `${cardNum}/24 CARDS`;
   }

@@ -2399,13 +2399,14 @@ setTimeout(() => {
 }
 function exitGame() {
   document.getElementById('exit-btn')?.remove();
-document.getElementById('card-counter')?.remove();
-  // force hide with !important inline styles
-  const screen = document.getElementById('game-screen');
-if (screen) { screen.hidden = true; }
+  document.getElementById('card-counter')?.remove();
+  document.querySelector('.lovegame-btn-wrap')?.remove();
 
-const layer = document.getElementById('card-layer');
-if (layer) { layer.style.display = 'none'; }
+  const screen = document.getElementById('game-screen');
+  if (screen) { screen.hidden = true; }
+
+  const layer = document.getElementById('card-layer');
+  if (layer) { layer.style.display = 'none'; }
 
   document.getElementById('journey-end-overlay')?.remove();
   document.getElementById('intro-overlay')?.remove();
@@ -2416,41 +2417,155 @@ if (layer) { layer.style.display = 'none'; }
   const charOverlay = document.getElementById('character-overlay');
   if (charOverlay) charOverlay.style.setProperty('display', 'none', 'important');
 
-  // force header + navbar visible
   const header = document.querySelector('.header');
   const navbar = document.querySelector('.navbar');
   if (header) header.style.setProperty('display', 'block', 'important');
   if (navbar) navbar.style.setProperty('display', 'block', 'important');
 
-  // add LOVE GAME restart button
-  if (!document.getElementById('lovegame-restart-btn')) {
+  // ============================
+  // FLAME RESTART BUTTON
+  // ============================
+  if (!document.querySelector('.lovegame-btn-wrap')) {
+    const wrap = document.createElement('div');
+    wrap.className = 'lovegame-btn-wrap';
+    wrap.style.display = 'flex';
+    wrap.style.justifyContent = 'center';
+    wrap.style.marginTop = '80px';
+
+    const flameCanvas = document.createElement('canvas');
+    flameCanvas.id = 'lovegame-flame-canvas';
+
     const restartBtn = document.createElement('button');
     restartBtn.id = 'lovegame-restart-btn';
-    restartBtn.textContent = 'LOVE GAME';
-    restartBtn.style.display = 'block';
-    restartBtn.style.margin = '60px auto 0';
-    restartBtn.style.background = 'transparent';
-    restartBtn.style.border = '1px solid rgba(245,255,58,0.5)';
-    restartBtn.style.color = '#f5ff3a';
-    restartBtn.style.fontFamily = 'Georgia, serif';
-    restartBtn.style.fontSize = '22px';
-    restartBtn.style.letterSpacing = '4px';
-    restartBtn.style.padding = '18px 40px';
-    restartBtn.style.borderRadius = '999px';
-    restartBtn.style.cursor = 'pointer';
-    restartBtn.style.textShadow = '0 0 18px rgba(245,255,58,0.6), 0 0 40px rgba(245,255,58,0.25)';
-    restartBtn.style.boxShadow = '0 0 22px rgba(245,255,58,0.2)';
-    restartBtn.style.transition = 'all 0.3s ease';
+
+    const phoenixImg = document.createElement('img');
+    phoenixImg.src = 'gloriosaw_outbackground.png';
+    phoenixImg.alt = 'Love Game';
+
+    restartBtn.appendChild(phoenixImg);
+    wrap.appendChild(flameCanvas);
+    wrap.appendChild(restartBtn);
+    document.body.appendChild(wrap);
+
+    // flame engine
+    const fCtx = flameCanvas.getContext('2d');
+    const FLAME_COLORS = ['#fd11b4','#FDD011','#fff234','#fd3b96','#11FD5A','#D011FD'];
+    let flameParticles = [];
+    let flameHovered = false;
+    let flameFrame = null;
+    let FW, FH, FCX, FCY, FRADIUS;
+
+    function resizeFlameCanvas() {
+      const PAD_X   = 200;
+      const PAD_TOP = 260;
+      const PAD_BOT = 60;
+      const r = restartBtn.getBoundingClientRect();
+      FW = r.width  + PAD_X * 2;
+      FH = r.height + PAD_TOP + PAD_BOT;
+      FRADIUS = r.width / 2;
+      flameCanvas.width  = FW;
+      flameCanvas.height = FH;
+      flameCanvas.style.width  = FW + 'px';
+      flameCanvas.style.height = FH + 'px';
+      flameCanvas.style.left   = (-PAD_X) + 'px';
+      flameCanvas.style.top    = (-PAD_TOP) + 'px';
+      FCX = FW / 2;
+      FCY = FH - PAD_BOT - r.height / 2;
+    }
+
+    function flameHexToRgba(hex, a) {
+      const r = parseInt(hex.slice(1,3),16);
+      const g = parseInt(hex.slice(3,5),16);
+      const b = parseInt(hex.slice(5,7),16);
+      return `rgba(${r},${g},${b},${Math.max(0,Math.min(1,a)).toFixed(3)})`;
+    }
+
+    function spawnFlameParticle() {
+      const angle = Math.random() * Math.PI * 2;
+      const x = FCX + Math.cos(angle) * (FRADIUS + 2);
+      const y = FCY + Math.sin(angle) * (FRADIUS + 2);
+      const color = FLAME_COLORS[Math.floor(Math.random() * FLAME_COLORS.length)];
+      const outward = 0.2 + Math.random() * 0.5;
+      const upward  = 1.5 + Math.random() * 2.5;
+      flameParticles.push({
+        x, y,
+        vx: Math.cos(angle) * outward + (Math.random() - 0.5) * 0.6,
+        vy: Math.sin(angle) * outward - upward,
+        color,
+        w: 5 + Math.random() * 12,
+        h: 14 + Math.random() * 30,
+        life: 1.0,
+        decay: 0.016 + Math.random() * 0.02,
+        wobble: Math.random() * Math.PI * 2,
+        wobbleSpeed: 0.06 + Math.random() * 0.08,
+        wobbleAmp: 0.25 + Math.random() * 0.5,
+      });
+    }
+
+    function drawFlameParticle(p) {
+      const alpha = p.life;
+      fCtx.save();
+      fCtx.translate(p.x, p.y);
+      fCtx.rotate(p.vx * 0.18);
+      const w = p.w * Math.pow(p.life, 0.5);
+      const h = p.h;
+      fCtx.beginPath();
+      fCtx.moveTo(0, h * 0.5);
+      fCtx.bezierCurveTo( w * 0.9, h * 0.35,  w * 0.5, -h * 0.1, 0, -h * 0.5);
+      fCtx.bezierCurveTo(-w * 0.5, -h * 0.1, -w * 0.9,  h * 0.35, 0,  h * 0.5);
+      fCtx.closePath();
+      const grad = fCtx.createLinearGradient(0, h * 0.5, 0, -h * 0.5);
+      grad.addColorStop(0,    flameHexToRgba('#ffffff', alpha * 0.9));
+      grad.addColorStop(0.2,  flameHexToRgba('#fff234', alpha * 0.9));
+      grad.addColorStop(0.45, flameHexToRgba(p.color,  alpha * 0.75));
+      grad.addColorStop(0.8,  flameHexToRgba(p.color,  alpha * 0.25));
+      grad.addColorStop(1,    flameHexToRgba(p.color,  0));
+      fCtx.fillStyle = grad;
+      fCtx.fill();
+      fCtx.restore();
+    }
+
+    function flameLoop() {
+      fCtx.clearRect(0, 0, FW, FH);
+      if (flameHovered) {
+        for (let i = 0; i < 6; i++) spawnFlameParticle();
+      }
+      for (let i = flameParticles.length - 1; i >= 0; i--) {
+        const p = flameParticles[i];
+        p.wobble += p.wobbleSpeed;
+        p.vx += Math.sin(p.wobble) * p.wobbleAmp * 0.05;
+        p.vy -= 0.02;
+        p.vx *= 0.985;
+        p.vy *= 0.985;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= p.decay;
+        p.w *= 0.986;
+        if (p.life <= 0 || p.w < 0.5) { flameParticles.splice(i, 1); continue; }
+        drawFlameParticle(p);
+      }
+      if (flameParticles.length > 0 || flameHovered) {
+        flameFrame = requestAnimationFrame(flameLoop);
+      } else {
+        flameFrame = null;
+      }
+    }
+
     restartBtn.addEventListener('mouseenter', () => {
-      restartBtn.style.background = 'rgba(245,255,58,0.08)';
-      restartBtn.style.boxShadow = '0 0 35px rgba(245,255,58,0.4)';
+      flameHovered = true;
+      if (!flameFrame) flameFrame = requestAnimationFrame(flameLoop);
     });
-    restartBtn.addEventListener('mouseleave', () => {
-      restartBtn.style.background = 'transparent';
-      restartBtn.style.boxShadow = '0 0 22px rgba(245,255,58,0.2)';
-    });
+    restartBtn.addEventListener('mouseleave', () => { flameHovered = false; });
+
+    setTimeout(resizeFlameCanvas, 50);
+
+    // ============================
+    // RESTART CLICK — your existing logic
+    // ============================
     restartBtn.addEventListener('click', () => {
-      restartBtn.remove();
+      wrap.remove();
+      cancelAnimationFrame(flameFrame);
+      flameParticles = [];
       document.getElementById('exit-btn')?.remove();
 
       INTRO_ENDED = false;
@@ -2520,8 +2635,6 @@ if (layer) { layer.style.display = 'none'; }
 
       startIntroWhenReady(newOverlay);
     });
-
-    document.body.appendChild(restartBtn);
   }
 }
 function showBeginText() {

@@ -2397,6 +2397,7 @@ setTimeout(() => {
   }
 }, 300);
 }
+
 function exitGame() {
   document.getElementById('exit-btn')?.remove();
   document.getElementById('card-counter')?.remove();
@@ -2422,55 +2423,96 @@ function exitGame() {
   if (header) header.style.setProperty('display', 'block', 'important');
   if (navbar) navbar.style.setProperty('display', 'block', 'important');
 
-  // ============================
-  // FLAME RESTART BUTTON
-  // ============================
   if (!document.querySelector('.lovegame-btn-wrap')) {
     const wrap = document.createElement('div');
     wrap.className = 'lovegame-btn-wrap';
-    wrap.style.display = 'flex';
+    wrap.style.position = 'relative';
+    wrap.style.display = 'inline-flex';
+    wrap.style.alignItems = 'center';
     wrap.style.justifyContent = 'center';
-    wrap.style.marginTop = '80px';
+    wrap.style.margin = '80px auto 0';
+    wrap.style.width = '100%';
 
     const flameCanvas = document.createElement('canvas');
     flameCanvas.id = 'lovegame-flame-canvas';
 
     const restartBtn = document.createElement('button');
     restartBtn.id = 'lovegame-restart-btn';
+    restartBtn.style.position = 'relative';
+    restartBtn.style.zIndex = '2';
+    restartBtn.style.display = 'flex';
+    restartBtn.style.alignItems = 'center';
+    restartBtn.style.justifyContent = 'center';
+    restartBtn.style.width = '200px';
+    restartBtn.style.height = '200px';
+    restartBtn.style.borderRadius = '50%';
+    restartBtn.style.background = '#11FD5A';
+    restartBtn.style.border = '4px solid #D011FD';
+    restartBtn.style.cursor = 'pointer';
+    restartBtn.style.boxShadow = '0 0 18px rgba(17,253,90,0.5), 0 0 40px rgba(17,253,90,0.2)';
+    restartBtn.style.outline = 'none';
+    restartBtn.style.padding = '0';
+    restartBtn.style.transition = 'background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease';
+
+    restartBtn.addEventListener('mouseenter', () => {
+      restartBtn.style.background = '#fff234';
+      restartBtn.style.borderColor = '#fd11b4';
+      restartBtn.style.boxShadow = '0 0 28px rgba(255,242,52,0.7), 0 0 60px rgba(255,242,52,0.3)';
+      restartBtn.style.transform = 'scale(1.06)';
+    });
+    restartBtn.addEventListener('mouseleave', () => {
+      restartBtn.style.background = '#11FD5A';
+      restartBtn.style.borderColor = '#D011FD';
+      restartBtn.style.boxShadow = '0 0 18px rgba(17,253,90,0.5), 0 0 40px rgba(17,253,90,0.2)';
+      restartBtn.style.transform = 'scale(1)';
+    });
 
     const phoenixImg = document.createElement('img');
     phoenixImg.src = 'gloriosaw_outbackground.png';
     phoenixImg.alt = 'Love Game';
+    phoenixImg.style.width = '150px';
+    phoenixImg.style.height = '150px';
+    phoenixImg.style.objectFit = 'contain';
+    phoenixImg.style.display = 'block';
+    phoenixImg.style.pointerEvents = 'none';
+    phoenixImg.style.filter = 'drop-shadow(0 0 10px rgba(17,253,90,0.7))';
 
     restartBtn.appendChild(phoenixImg);
     wrap.appendChild(flameCanvas);
     wrap.appendChild(restartBtn);
     document.body.appendChild(wrap);
 
-    // flame engine
+    // ============================
+    // FLAME ENGINE
+    // ============================
     const fCtx = flameCanvas.getContext('2d');
-    const FLAME_COLORS = ['#fd11b4','#FDD011','#fff234','#fd3b96','#11FD5A','#D011FD'];
+    const FLAME_COLORS = [
+      '#ff2200', '#ff4500', '#ff6600',
+      '#ff8c00', '#ffa500', '#ffcc00',
+      '#fff234', '#ffffff',
+    ];
+    const PAD = 220;
+    let FW, FH, FCX, FCY, FRADIUS;
     let flameParticles = [];
     let flameHovered = false;
     let flameFrame = null;
-    let FW, FH, FCX, FCY, FRADIUS;
 
     function resizeFlameCanvas() {
-      const PAD_X   = 200;
-      const PAD_TOP = 260;
-      const PAD_BOT = 60;
-      const r = restartBtn.getBoundingClientRect();
-      FW = r.width  + PAD_X * 2;
-      FH = r.height + PAD_TOP + PAD_BOT;
-      FRADIUS = r.width / 2;
+      FRADIUS = restartBtn.offsetWidth / 2;
+      FW = restartBtn.offsetWidth  + PAD * 2;
+      FH = restartBtn.offsetHeight + PAD * 2;
       flameCanvas.width  = FW;
       flameCanvas.height = FH;
       flameCanvas.style.width  = FW + 'px';
       flameCanvas.style.height = FH + 'px';
-      flameCanvas.style.left   = (-PAD_X) + 'px';
-      flameCanvas.style.top    = (-PAD_TOP) + 'px';
+      flameCanvas.style.position = 'absolute';
+      flameCanvas.style.top  = '50%';
+      flameCanvas.style.left = '50%';
+      flameCanvas.style.transform = 'translate(-50%, -50%)';
+      flameCanvas.style.zIndex = '1';
+      flameCanvas.style.pointerEvents = 'none';
       FCX = FW / 2;
-      FCY = FH - PAD_BOT - r.height / 2;
+      FCY = FH / 2;
     }
 
     function flameHexToRgba(hex, a) {
@@ -2484,21 +2526,22 @@ function exitGame() {
       const angle = Math.random() * Math.PI * 2;
       const x = FCX + Math.cos(angle) * (FRADIUS + 2);
       const y = FCY + Math.sin(angle) * (FRADIUS + 2);
-      const color = FLAME_COLORS[Math.floor(Math.random() * FLAME_COLORS.length)];
-      const outward = 0.2 + Math.random() * 0.5;
-      const upward  = 1.5 + Math.random() * 2.5;
+      const colorIdx = Math.floor(Math.pow(Math.random(), 1.5) * (FLAME_COLORS.length - 1));
+      const color = FLAME_COLORS[colorIdx];
+      const outward = 0.15 + Math.random() * 0.4;
+      const upward  = 1.8 + Math.random() * 2.8;
       flameParticles.push({
         x, y,
-        vx: Math.cos(angle) * outward + (Math.random() - 0.5) * 0.6,
+        vx: Math.cos(angle) * outward + (Math.random() - 0.5) * 0.5,
         vy: Math.sin(angle) * outward - upward,
         color,
-        w: 5 + Math.random() * 12,
-        h: 14 + Math.random() * 30,
+        w: 6 + Math.random() * 14,
+        h: 18 + Math.random() * 36,
         life: 1.0,
-        decay: 0.016 + Math.random() * 0.02,
+        decay: 0.014 + Math.random() * 0.018,
         wobble: Math.random() * Math.PI * 2,
-        wobbleSpeed: 0.06 + Math.random() * 0.08,
-        wobbleAmp: 0.25 + Math.random() * 0.5,
+        wobbleSpeed: 0.05 + Math.random() * 0.07,
+        wobbleAmp: 0.3 + Math.random() * 0.6,
       });
     }
 
@@ -2506,42 +2549,53 @@ function exitGame() {
       const alpha = p.life;
       fCtx.save();
       fCtx.translate(p.x, p.y);
-      fCtx.rotate(p.vx * 0.18);
-      const w = p.w * Math.pow(p.life, 0.5);
+      fCtx.rotate(p.vx * 0.15);
+      const w = p.w * Math.pow(p.life, 0.45);
       const h = p.h;
       fCtx.beginPath();
       fCtx.moveTo(0, h * 0.5);
-      fCtx.bezierCurveTo( w * 0.9, h * 0.35,  w * 0.5, -h * 0.1, 0, -h * 0.5);
-      fCtx.bezierCurveTo(-w * 0.5, -h * 0.1, -w * 0.9,  h * 0.35, 0,  h * 0.5);
+      fCtx.bezierCurveTo( w * 0.9,  h * 0.3,   w * 0.4, -h * 0.1,  0, -h * 0.5);
+      fCtx.bezierCurveTo(-w * 0.4, -h * 0.1,  -w * 0.9,  h * 0.3,  0,  h * 0.5);
       fCtx.closePath();
       const grad = fCtx.createLinearGradient(0, h * 0.5, 0, -h * 0.5);
-      grad.addColorStop(0,    flameHexToRgba('#ffffff', alpha * 0.9));
-      grad.addColorStop(0.2,  flameHexToRgba('#fff234', alpha * 0.9));
-      grad.addColorStop(0.45, flameHexToRgba(p.color,  alpha * 0.75));
-      grad.addColorStop(0.8,  flameHexToRgba(p.color,  alpha * 0.25));
+      grad.addColorStop(0,    flameHexToRgba('#ffffff', alpha * 0.95));
+      grad.addColorStop(0.15, flameHexToRgba('#ffee88', alpha * 0.9));
+      grad.addColorStop(0.4,  flameHexToRgba(p.color,  alpha * 0.85));
+      grad.addColorStop(0.75, flameHexToRgba(p.color,  alpha * 0.35));
       grad.addColorStop(1,    flameHexToRgba(p.color,  0));
       fCtx.fillStyle = grad;
       fCtx.fill();
+      fCtx.save();
+      fCtx.globalAlpha = alpha * 0.18;
+      fCtx.scale(2.0, 1.3);
+      fCtx.beginPath();
+      fCtx.moveTo(0, h * 0.5);
+      fCtx.bezierCurveTo( w * 0.9,  h * 0.3,   w * 0.4, -h * 0.1,  0, -h * 0.5);
+      fCtx.bezierCurveTo(-w * 0.4, -h * 0.1,  -w * 0.9,  h * 0.3,  0,  h * 0.5);
+      fCtx.closePath();
+      fCtx.fillStyle = p.color;
+      fCtx.fill();
+      fCtx.restore();
       fCtx.restore();
     }
 
     function flameLoop() {
       fCtx.clearRect(0, 0, FW, FH);
       if (flameHovered) {
-        for (let i = 0; i < 6; i++) spawnFlameParticle();
+        for (let i = 0; i < 5; i++) spawnFlameParticle();
       }
       for (let i = flameParticles.length - 1; i >= 0; i--) {
         const p = flameParticles[i];
         p.wobble += p.wobbleSpeed;
         p.vx += Math.sin(p.wobble) * p.wobbleAmp * 0.05;
-        p.vy -= 0.02;
-        p.vx *= 0.985;
-        p.vy *= 0.985;
+        p.vy -= 0.025;
+        p.vx *= 0.984;
+        p.vy *= 0.984;
         p.x += p.vx;
         p.y += p.vy;
         p.life -= p.decay;
-        p.w *= 0.986;
-        if (p.life <= 0 || p.w < 0.5) { flameParticles.splice(i, 1); continue; }
+        p.w *= 0.987;
+        if (p.life <= 0 || p.w < 0.4) { flameParticles.splice(i, 1); continue; }
         drawFlameParticle(p);
       }
       if (flameParticles.length > 0 || flameHovered) {
@@ -2560,7 +2614,7 @@ function exitGame() {
     setTimeout(resizeFlameCanvas, 50);
 
     // ============================
-    // RESTART CLICK — your existing logic
+    // RESTART CLICK
     // ============================
     restartBtn.addEventListener('click', () => {
       wrap.remove();
@@ -2637,6 +2691,7 @@ function exitGame() {
     });
   }
 }
+
 function showBeginText() {
   if (beginShown) return;
   beginShown = true;

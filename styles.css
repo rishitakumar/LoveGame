@@ -1496,3 +1496,69 @@ input[type="range"]::-webkit-slider-thumb:active{
     transform: scale(1);
   }
 }
+.lovegame-btn-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 80px auto 0;
+}
+
+#lovegame-flame-canvas {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+
+#lovegame-restart-btn {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: #11FD5A;
+  border: 4px solid #D011FD;
+  cursor: pointer;
+  transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+  box-shadow:
+    0 0 18px rgba(17,253,90,0.5),
+    0 0 40px rgba(17,253,90,0.2),
+    inset 0 0 30px rgba(0,0,0,0.25);
+  outline: none;
+  padding: 0;
+  /* reset text styles from old button */
+  font-size: unset;
+  letter-spacing: unset;
+  color: unset;
+  text-shadow: none;
+}
+
+#lovegame-restart-btn:hover {
+  background: #fff234;
+  border-color: #fd11b4;
+  box-shadow:
+    0 0 28px rgba(255,242,52,0.7),
+    0 0 60px rgba(255,242,52,0.3),
+    inset 0 0 30px rgba(0,0,0,0.15);
+  transform: scale(1.06);
+}
+
+#lovegame-restart-btn img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 0 10px rgba(17,253,90,0.7));
+  transition: filter 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+}
+
+#lovegame-restart-btn:hover img {
+  filter:
+    drop-shadow(0 0 16px rgba(255,242,52,0.95))
+    drop-shadow(0 0 35px rgba(208,17,253,0.55));
+  transform: scale(1.1) translateY(-4px);
+}

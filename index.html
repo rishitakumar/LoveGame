@@ -841,6 +841,7 @@ function endIntro() {
   const reminderOverlay = document.getElementById("reminder-overlay");
   if (reminderOverlay) {
     reminderOverlay.hidden = false;
+    reminderOverlay.style.removeProperty('display');
     reminderOverlay.style.opacity = "1";
     reminderOverlay.style.transition = "opacity 0.4s ease";
     requestAnimationFrame(() => (reminderOverlay.style.opacity = "1"));
@@ -2666,9 +2667,10 @@ function exitGame() {
       document.getElementById('journey-end-overlay')?.remove();
 
       const rem = document.getElementById('reminder-overlay');
-      if (rem) {
-        rem.style.setProperty('display', 'none', 'important');
-        rem.style.opacity = '0';
+if (rem) {
+  rem.hidden = true;
+  rem.style.removeProperty('display');  // ← clear the !important so endIntro can show it
+  rem.style.opacity = '0';
         document.getElementById('reminders-content').style.display = '';
         const rulesContent = document.getElementById('rules-content');
         if (rulesContent) rulesContent.hidden = true;

@@ -1600,19 +1600,31 @@ async function setCardImages({ frontSrc, backSrc, mode, cardData }) {
 }
 
 function setLandBackground(land) {
-  const screen = document.getElementById('game-screen');
-  if (!screen) return;
   const map = {
     darkland: 'darkland_background.png',
     murkland: 'murkland_background.png',
     loveland: 'loveland_background.png',
     ecstasy:  'ecstasy_background.png',
   };
-  screen.style.backgroundImage = `url('${map[land] || map.darkland}')`;
-  screen.style.backgroundSize = 'cover';
-  screen.style.backgroundPosition = 'center top';
-  screen.style.backgroundRepeat = 'no-repeat';
-  screen.style.backgroundAttachment = 'local';
+
+  let bg = document.getElementById('land-background');
+  if (!bg) {
+    bg = document.createElement('div');
+    bg.id = 'land-background';
+    bg.style.position = 'fixed';
+    bg.style.inset = '0';
+    bg.style.zIndex = '0';
+    bg.style.pointerEvents = 'none';
+    bg.style.backgroundSize = 'cover';
+    bg.style.backgroundPosition = 'center top';
+    bg.style.backgroundRepeat = 'no-repeat';
+    bg.style.opacity = '0.35';
+    bg.style.willChange = 'transform'; // ← GPU layer
+    bg.style.transform = 'translateZ(0)'; // ← force compositing
+    document.body.appendChild(bg); // ← on body, not game-screen
+  }
+
+  bg.style.backgroundImage = `url('${map[land] || map.darkland}')`;
 }
   
 function updateCardCounter(land, cardNum, infinity = false) {

@@ -559,12 +559,10 @@ body {
 }
 #card-layer {
   position: fixed;
-  top: 260px; /* ← increase this until card is fully visible */
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   display: none;
   align-items: center;
+  opacity: 1;
   justify-content: center;
   z-index: 20000;
   transition: opacity 0.35s ease;

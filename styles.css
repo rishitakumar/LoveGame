@@ -418,10 +418,6 @@ body {
   overflow-y: scroll;
   overflow-x: hidden;
   background: black;
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-attachment: local; /* ← THIS is the key — scrolls with content */
   display: flex;
   justify-content: center;
   z-index: 1;

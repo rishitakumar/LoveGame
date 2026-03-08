@@ -2691,7 +2691,10 @@ function exitGame() {
       }
 
       const screen = document.getElementById('game-screen');
-      if (screen) screen.style.setProperty('display', 'none', 'important');
+if (screen) {
+  screen.hidden = true;
+  screen.style.removeProperty('display');
+}
 
       const layer = document.getElementById('card-layer');
       if (layer) { layer.style.setProperty('display', 'none', 'important'); layer.dataset.delta = '0'; }

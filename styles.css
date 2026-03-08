@@ -425,6 +425,8 @@ body {
   display: flex;
   justify-content: center;
   z-index: 1;
+  image-rendering: high-quality;
+-webkit-font-smoothing: antialiased;
 }
 
 #board, #card-container {

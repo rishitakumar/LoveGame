@@ -2744,13 +2744,7 @@ function showBeginText() {
   begin.style.opacity = 1;
   begin.textContent = "";
 
-  positionCharacter(true);
-
-  const screen = document.getElementById('game-screen');
-  screen.scrollTo({
-    top: screen.scrollHeight,
-    behavior: 'smooth'
-  });
+  positionCharacter(false);
 
   typeWriter(begin, "BEGIN", 120);
   setTimeout(() => {

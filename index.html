@@ -1609,10 +1609,20 @@ function setLandBackground(land) {
 
   const wrapper = document.getElementById('ladder-wrapper');
   if (!wrapper) return;
-  wrapper.style.backgroundImage = `url('${map[land] || map.darkland}')`;
-  wrapper.style.backgroundSize = 'cover';
-  wrapper.style.backgroundPosition = 'center top';
-  wrapper.style.backgroundRepeat = 'no-repeat';
+
+  function apply() {
+    wrapper.style.backgroundImage = `url('${map[land] || map.darkland}')`;
+    wrapper.style.backgroundSize = 'cover';
+    wrapper.style.backgroundPosition = 'center top';
+    wrapper.style.backgroundRepeat = 'no-repeat';
+  }
+
+  const gameImg = document.getElementById('game-background');
+  if (gameImg && gameImg.clientWidth > 0) {
+    apply(); // image already loaded, apply immediately
+  } else if (gameImg) {
+    gameImg.addEventListener('load', apply, { once: true }); // wait for it
+  }
 }
   
 function updateCardCounter(land, cardNum, infinity = false) {

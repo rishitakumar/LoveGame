@@ -560,10 +560,11 @@ body {
 #card-layer {
   position: fixed;
   inset: 0;
+  top: 45px; /* ← height of your navbar */
   display: none;
   align-items: center;
-  opacity: 1;
   justify-content: center;
+  opacity: 1;
   z-index: 20000;
   transition: opacity 0.35s ease;
   background: rgba(0,0,0,0.35);

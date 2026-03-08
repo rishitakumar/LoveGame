@@ -1350,6 +1350,7 @@ if (
   delta > 0
 ) {
   GameState.land = "murkland";
+  setLandBackground('murkland');
   window.__starBorderTheme('murkland');
   setDarklandFlames(false);
   GameState.rungIndex = 0;
@@ -1382,6 +1383,7 @@ setTimeout(() => {
   ===================== */
   if (GameState.land === "murkland" && GameState.rungIndex === 0 && delta < 0) {
   GameState.land = "darkland";
+  setLandBackground('darkland');
   window.__starBorderTheme('darkland');
   setDarklandFlames(true);
   GameState.rungIndex = LADDERS.darkland - 1;
@@ -1413,6 +1415,7 @@ if (
   delta > 0
 ) {
   GameState.land = "loveland";
+  setLandBackground('loveland');
   window.__starBorderTheme('loveland');
   setDarklandFlames(false);
   GameState.rungIndex = 0;
@@ -1445,6 +1448,7 @@ setTimeout(() => {
 ===================== */
 if (GameState.land === "loveland" && GameState.rungIndex === 0 && delta < 0) {
   GameState.land = "murkland";
+  setLandBackground('murkland');
   window.__starBorderTheme('murkland');
   setDarklandFlames(false);
   GameState.rungIndex = LADDERS.murkland - 1;
@@ -1555,6 +1559,17 @@ async function setCardImages({ frontSrc, backSrc, mode, cardData }) {
   const front = document.getElementById("card-front");
   const back  = document.getElementById("card-back");
   const cardEl = document.getElementById("card");
+  const otherImgs = [
+  "darkland_screen.png",
+  "murkland_screen.png",
+  "loveland_screen.png",
+  "ecstasy_screen.png",
+  "darkland_background.png",   // ← add these
+  "murkland_background.png",
+  "loveland_background.png",
+  "ecstasy_background.png",
+  // ... rest unchanged
+];
 
   // Hide only briefly
   layer.style.visibility = "hidden";
@@ -1582,6 +1597,18 @@ async function setCardImages({ frontSrc, backSrc, mode, cardData }) {
       }
     });
   }
+}
+
+function setLandBackground(land) {
+  const screen = document.getElementById('game-screen');
+  if (!screen) return;
+  const map = {
+    darkland: 'darkland_background.png',
+    murkland: 'murkland_background.png',
+    loveland: 'loveland_background.png',
+    ecstasy:  'ecstasy_background.png',
+  };
+  screen.style.setProperty('--land-bg', `url('${map[land] || map.darkland}')`);
 }
 function updateCardCounter(land, cardNum, infinity = false) {
   const counter = document.getElementById('card-counter');
@@ -2310,6 +2337,7 @@ function transitionToEcstasy() {
   }, 450);
 
   GameState.land = "ecstasy";
+  setLandBackground('ecstasy');
 window.__starBorderTheme('ecstasy'); // ← ADD
   const char = document.getElementById("player-character");
   if (char) char.style.display = "none";
@@ -2355,6 +2383,7 @@ document.body.appendChild(counter);
   if (char) char.style.display = "block";
 
   GameState.land = "darkland";
+  setLandBackground('darkland'); // ← add
   window.__starBorderTheme('darkland'); // ← ADD near the top of startLoveGame
   GameState.rungIndex = 0;
   questionPhase = "physical";

@@ -559,7 +559,7 @@ body {
 }
 #card-layer {
   position: fixed;
-  top: 220px; /* ← pushes it below navbar + header */
+  top: 260px; /* ← increase this until card is fully visible */
   left: 0;
   right: 0;
   bottom: 0;

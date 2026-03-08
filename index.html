@@ -1606,22 +1606,22 @@ function setLandBackground(land) {
     loveland: 'loveland_background.png',
     ecstasy:  'ecstasy_background.png',
   };
-
+  const src = `url('${map[land] || map.darkland}')`;
+  
   const wrapper = document.getElementById('ladder-wrapper');
-  if (!wrapper) return;
-
-  function apply() {
-    wrapper.style.backgroundImage = `url('${map[land] || map.darkland}')`;
+  if (wrapper) {
+    wrapper.style.backgroundImage = src;
     wrapper.style.backgroundSize = 'cover';
     wrapper.style.backgroundPosition = 'center top';
     wrapper.style.backgroundRepeat = 'no-repeat';
   }
 
-  const gameImg = document.getElementById('game-background');
-  if (gameImg && gameImg.clientWidth > 0) {
-    apply(); // image already loaded, apply immediately
-  } else if (gameImg) {
-    gameImg.addEventListener('load', apply, { once: true }); // wait for it
+  const screen = document.getElementById('game-screen');
+  if (screen) {
+    screen.style.backgroundImage = src;
+    screen.style.backgroundSize = 'cover';
+    screen.style.backgroundPosition = 'center top';
+    screen.style.backgroundRepeat = 'no-repeat';
   }
 }
   

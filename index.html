@@ -1602,23 +1602,19 @@ async function setCardImages({ frontSrc, backSrc, mode, cardData }) {
 function setLandBackground(land) {
   const screen = document.getElementById('game-screen');
   if (!screen) return;
-
   const map = {
     darkland: 'darkland_background.png',
     murkland: 'murkland_background.png',
     loveland: 'loveland_background.png',
     ecstasy:  'ecstasy_background.png',
   };
-
-  let bg = document.getElementById('land-background');
-  if (!bg) {
-    bg = document.createElement('div');
-    bg.id = 'land-background';
-    screen.insertBefore(bg, screen.firstChild); // always first child
-  }
-
-  bg.style.backgroundImage = `url('${map[land] || map.darkland}')`;
+  screen.style.backgroundImage = `url('${map[land] || map.darkland}')`;
+  screen.style.backgroundSize = 'cover';
+  screen.style.backgroundPosition = 'center top';
+  screen.style.backgroundRepeat = 'no-repeat';
+  screen.style.backgroundAttachment = 'local';
 }
+  
 function updateCardCounter(land, cardNum, infinity = false) {
   const counter = document.getElementById('card-counter');
   if (!counter) return;

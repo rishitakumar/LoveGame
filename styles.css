@@ -421,6 +421,7 @@ body {
   display: flex;
   justify-content: center;
   z-index: 1;
+   isolation: isolate;
   image-rendering: high-quality;
 -webkit-font-smoothing: antialiased;
 }
@@ -436,7 +437,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 1;
+  z-index: 0;
   pointer-events: none;
   background-size: cover;
   background-position: center top;
@@ -469,7 +470,8 @@ body {
 
 #ladder-wrapper{
   position: relative;
-  display: inline-block;     /* wrapper becomes exact image size */
+  display: inline-block;  
+  z-index: 2; /* wrapper becomes exact image size */
 }
 
 #game-background{

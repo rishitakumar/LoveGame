@@ -1600,9 +1600,6 @@ async function setCardImages({ frontSrc, backSrc, mode, cardData }) {
 }
 
 function setLandBackground(land) {
-  const screen = document.getElementById('game-screen');
-  if (!screen) return;
-
   const map = {
     darkland: 'darkland_background.png',
     murkland: 'murkland_background.png',
@@ -1614,21 +1611,7 @@ function setLandBackground(land) {
   if (!bg) {
     bg = document.createElement('div');
     bg.id = 'land-background';
-    bg.style.position = 'sticky'; // ← sticky inside the scroller
-    bg.style.top = '0';
-    bg.style.left = '0';
-    bg.style.width = '100%';
-    bg.style.height = '100%';
-    bg.style.marginBottom = '-100%'; // ← doesn't push content down
-    bg.style.zIndex = '0';
-    bg.style.pointerEvents = 'none';
-    bg.style.backgroundSize = 'cover';
-    bg.style.backgroundPosition = 'center top';
-    bg.style.backgroundRepeat = 'no-repeat';
-    bg.style.opacity = '0.35';
-    bg.style.willChange = 'transform';
-    bg.style.transform = 'translateZ(0)';
-    screen.insertBefore(bg, screen.firstChild);
+    document.body.appendChild(bg);
   }
 
   bg.style.backgroundImage = `url('${map[land] || map.darkland}')`;

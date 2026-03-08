@@ -13,7 +13,7 @@ body {
 }
 
 .header h1 {
-  font-size: 40px;
+  font-size: 40px;fl
 }
 
 .navbar {
@@ -428,6 +428,27 @@ body {
 #board, #card-container {
   position: relative;
   z-index: 1;
+}
+
+#land-background {
+  position: fixed;
+  top: 220px; /* header + navbar height */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  opacity: 0.35;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.header, .navbar {
+  position: relative;
+  z-index: 2;
 }
 
 #game-screen[hidden] {

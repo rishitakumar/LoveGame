@@ -557,16 +557,18 @@ body {
 #card.flipped{
   transform: rotateY(180deg);
 }
-#card-layer{
+#card-layer {
   position: fixed;
-  inset: 0;
-  display: none;                /* JS toggles to flex */
+  top: 220px; /* ← pushes it below navbar + header */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: none;
   align-items: center;
-  opacity: 1;
   justify-content: center;
   z-index: 20000;
   transition: opacity 0.35s ease;
-  background: rgba(0,0,0,0.35); /* optional dim */
+  background: rgba(0,0,0,0.35);
 }
 
 /* front/back images fill */

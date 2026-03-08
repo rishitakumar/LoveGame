@@ -559,8 +559,10 @@ body {
 }
 #card-layer {
   position: fixed;
-  inset: 0;
-  top: 45px; /* ← height of your navbar */
+  top: 45px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: none;
   align-items: center;
   justify-content: center;

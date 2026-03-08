@@ -421,6 +421,26 @@ body {
   display: flex;
   justify-content: center;
   z-index: 1;
+  transition: background-image 0.8s ease;
+}
+
+#game-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--land-bg);
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  opacity: 0.35; /* adjust this to taste — keeps board readable */
+  z-index: 0;
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+}
+
+#board, #card-layer, #card-container {
+  position: relative;
+  z-index: 1; /* sits above the background */
 }
 
 #game-screen[hidden] {

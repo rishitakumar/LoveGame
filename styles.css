@@ -417,7 +417,7 @@ body {
   height: calc(100vh - 220px);
   overflow-y: scroll;
   overflow-x: hidden;
-  background: black;
+  background: transparent;
   display: block; /* ← change from flex to block */
   z-index: 1;
 }
@@ -451,6 +451,7 @@ body {
 #ladder-wrapper{
   position: relative;
   display: inline-block;  
+   background-attachment: local;
   z-index: 2; /* wrapper becomes exact image size */
 }
 

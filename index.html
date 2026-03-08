@@ -1130,7 +1130,8 @@ confirmBtn.addEventListener("click", () => {
   setTimeout(async () => {
     // 1) Make Darkland show ASAP
     await preloadImage("darkland_screen.png"); // only the first screen
-    overlay.remove();
+    overlay.classList.remove('visible');
+overlay.classList.add('hidden');
     startLoveGame();
 
     // 2) Preload everything else AFTER the game is already visible

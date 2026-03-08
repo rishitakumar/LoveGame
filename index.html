@@ -2743,9 +2743,7 @@ function showBeginText() {
   begin.style.top  = `${y - 180}px`;
   begin.style.opacity = 1;
   begin.textContent = "";
-
-  positionCharacter(false);
-
+  positionCharacter(true);
   typeWriter(begin, "BEGIN", 120);
   setTimeout(() => {
     begin.style.transition = "opacity 0.8s ease";

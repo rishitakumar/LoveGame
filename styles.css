@@ -6,7 +6,7 @@ body {
 }
 
 .header {
-  padding: 80px;
+  padding: 80px; 
   text-align: center;
   background: #1abc9c;
   color: white;
@@ -425,23 +425,6 @@ body {
 #board, #card-container {
   position: relative;
   z-index: 1;
-}
-
-#land-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  min-height: 100%;
-  height: auto;
-  z-index: -1;
-  pointer-events: none;
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  opacity: 0.35;
-  will-change: transform;
-  transform: translateZ(0);
 }
 
 .header, .navbar {

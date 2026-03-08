@@ -1606,23 +1606,13 @@ function setLandBackground(land) {
     loveland: 'loveland_background.png',
     ecstasy:  'ecstasy_background.png',
   };
-  const src = `url('${map[land] || map.darkland}')`;
-  
-  const wrapper = document.getElementById('ladder-wrapper');
-  if (wrapper) {
-    wrapper.style.backgroundImage = src;
-    wrapper.style.backgroundSize = 'cover';
-    wrapper.style.backgroundPosition = 'center top';
-    wrapper.style.backgroundRepeat = 'no-repeat';
-  }
-
   const screen = document.getElementById('game-screen');
-  if (screen) {
-    screen.style.backgroundImage = src;
-    screen.style.backgroundSize = 'cover';
-    screen.style.backgroundPosition = 'center top';
-    screen.style.backgroundRepeat = 'no-repeat';
-  }
+  if (!screen) return;
+  screen.style.backgroundImage = `url('${map[land] || map.darkland}')`;
+  screen.style.backgroundSize = '100% 100%';
+  screen.style.backgroundPosition = 'center top';
+  screen.style.backgroundRepeat = 'no-repeat';
+  screen.style.backgroundAttachment = 'local';
 }
   
 function updateCardCounter(land, cardNum, infinity = false) {
@@ -1947,11 +1937,7 @@ if (cardMode === "answer" && cardSide === "back") {
 
   
 function scrollToCards() {
-  const screen = document.getElementById("game-screen");
-  if (!screen) return;
-
-  // make sure the GAME SCREEN is visible in the page
-  screen.scrollIntoView({ behavior: "smooth", block: "center" });
+ return;
 }
 
 function showAnswerCard(cardData, delta) {

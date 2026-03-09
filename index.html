@@ -1130,8 +1130,7 @@ confirmBtn.addEventListener("click", () => {
   setTimeout(async () => {
     // 1) Make Darkland show ASAP
     await preloadImage("darkland_screen.png"); // only the first screen
-    overlay.classList.remove('visible');
-overlay.classList.add('hidden');
+    overlay.remove();
     startLoveGame();
 
     // 2) Preload everything else AFTER the game is already visible
@@ -1637,7 +1636,6 @@ function updateCardCounter(land, cardNum, infinity = false) {
 }
 
 function showQuestionCard(cardData) {
-  console.log("showQuestionCard called", cardIndex, cardData?.id);
   if (!cardData) return;
 
   // Phase detection (keep this — you NEED it)
@@ -2406,27 +2404,20 @@ murkTransitionDone = false;
   const img = document.getElementById("game-background");
 
   // important: clear previous onload (prevents weirdness on replays)
-img.onload = null;
-beginShown = false;
-
-const onBgReady = () => {
   img.onload = null;
-  const char = document.getElementById("player-character");
-  char.src = characterImages[selectedCharacter];
-  const charColor = characterColors[selectedCharacter] || '#f5ff3a';
-  document.getElementById('player-star').style.setProperty('--char-color', charColor);
-  positionCharacter(true);
-  setDarklandFlames(true);
-  showBeginText();
-};
+  beginShown = false;
+  img.onload = () => {
+    const char = document.getElementById("player-character");
+    char.src = characterImages[selectedCharacter];
+    const charColor = characterColors[selectedCharacter] || '#f5ff3a';
+document.getElementById('player-star').style.setProperty('--char-color', charColor);
+    positionCharacter(true);
+    setDarklandFlames(true);
+    showBeginText();
+    cardIndex = 0;
+  };
 
-if (img.complete && img.naturalWidth > 0) {
-  // already cached — fire immediately
-  onBgReady();
-} else {
-  img.onload = onBgReady;
   img.src = "darkland_screen.png";
-}
   // Trigger star border resize once game is visible
 setTimeout(() => {
   const starCanvas = document.getElementById('star-border');
@@ -2700,10 +2691,7 @@ function exitGame() {
       }
 
       const screen = document.getElementById('game-screen');
-if (screen) {
-  screen.hidden = true;
-  screen.style.removeProperty('display');
-}
+      if (screen) screen.style.setProperty('display', 'none', 'important');
 
       const layer = document.getElementById('card-layer');
       if (layer) { layer.style.setProperty('display', 'none', 'important'); layer.dataset.delta = '0'; }
@@ -2740,7 +2728,6 @@ if (rem) {
 }
 
 function showBeginText() {
-  console.log("showBeginText called, beginShown=", beginShown);
   if (beginShown) return;
   beginShown = true;
 
@@ -2766,7 +2753,8 @@ function showBeginText() {
 
     // ✅ AFTER fade finishes, show first card
     setTimeout(() => {
-      showQuestionCard(activeDeck[0]);
+      cardIndex = 0;
+showQuestionCard(activeDeck[0]);
     }, 850);
 
   }, 2800);

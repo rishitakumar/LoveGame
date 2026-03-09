@@ -2406,20 +2406,27 @@ murkTransitionDone = false;
   const img = document.getElementById("game-background");
 
   // important: clear previous onload (prevents weirdness on replays)
-  img.onload = null;
-  beginShown = false;
-  img.onload = () => {
-     img.onload = null;
-    const char = document.getElementById("player-character");
-    char.src = characterImages[selectedCharacter];
-    const charColor = characterColors[selectedCharacter] || '#f5ff3a';
-document.getElementById('player-star').style.setProperty('--char-color', charColor);
-    positionCharacter(true);
-    setDarklandFlames(true);
-    showBeginText();
-  };
+img.onload = null;
+beginShown = false;
 
+const onBgReady = () => {
+  img.onload = null;
+  const char = document.getElementById("player-character");
+  char.src = characterImages[selectedCharacter];
+  const charColor = characterColors[selectedCharacter] || '#f5ff3a';
+  document.getElementById('player-star').style.setProperty('--char-color', charColor);
+  positionCharacter(true);
+  setDarklandFlames(true);
+  showBeginText();
+};
+
+if (img.complete && img.naturalWidth > 0) {
+  // already cached — fire immediately
+  onBgReady();
+} else {
+  img.onload = onBgReady;
   img.src = "darkland_screen.png";
+}
   // Trigger star border resize once game is visible
 setTimeout(() => {
   const starCanvas = document.getElementById('star-border');

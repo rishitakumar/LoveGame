@@ -205,7 +205,7 @@ if (localStorage.getItem("lovegame-played") === todayKey) {
 
 localStorage.setItem("lovegame-played", todayKey); --- */
 const IMG_CACHE = new Map();
-
+const charOverlayHTML = document.getElementById('character-overlay').outerHTML;
   
 function preloadCard(card) {
   return Promise.all([
@@ -2677,18 +2677,62 @@ function exitGame() {
       GameState.land = "darkland";
       GameState.rungIndex = 0;
 
-      const charOverlay = document.getElementById('character-overlay');
-      if (charOverlay) {
-        charOverlay.style.removeProperty('display');
-        charOverlay.classList.remove('visible', 'fade-out');
-        charOverlay.classList.add('hidden');
-        document.getElementById('confirm-character').disabled = true;
-        document.querySelectorAll('.character-wrap').forEach(w => {
-          w.classList.remove('selected', 'dimmed');
-          w.style.filter = '';
-          w.style.transform = '';
-        });
+      document.getElementById('character-overlay')?.remove();
+const tempDiv = document.createElement('div');
+tempDiv.innerHTML = charOverlayHTML;
+const freshCharOverlay = tempDiv.firstElementChild;
+document.body.appendChild(freshCharOverlay);
+
+// Re-bind character selection events
+freshCharOverlay.querySelectorAll('.character-wrap').forEach(wrap => {
+  wrap.addEventListener('click', () => {
+    const char = wrap.querySelector('.character');
+    freshCharOverlay.querySelectorAll('.character-wrap').forEach(w => {
+      w.classList.remove('selected', 'dimmed');
+      w.style.filter = '';
+      w.style.transform = '';
+    });
+    wrap.classList.add('selected');
+    const color = characterColors[char.dataset.character] || '#11FD5A';
+    wrap.style.transition = "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.5s ease";
+    wrap.style.transform = 'scale(1.12)';
+    wrap.style.filter = `
+      drop-shadow(0 0 20px ${color}dd)
+      drop-shadow(0 0 45px ${color}88)
+      drop-shadow(0 0 80px ${color}44)
+      drop-shadow(0 0 120px ${color}1a)
+    `;
+    char.classList.add('selected');
+    selectedCharacter = char.dataset.character;
+    freshCharOverlay.querySelector('#confirm-character').disabled = false;
+    freshCharOverlay.querySelectorAll('.character-wrap').forEach(w => {
+      if (w !== wrap) {
+        w.classList.add('dimmed');
+        w.style.filter = 'brightness(0.35)';
       }
+    });
+    freshCharOverlay.classList.add('selection-made');
+    const key = char.dataset.character;
+    const captionEl = freshCharOverlay.querySelector('#character-caption');
+    if (subtitles[key]) {
+      captionEl.classList.add('visible');
+      typeWriter(captionEl, subtitles[key], 50);
+    }
+  });
+});
+
+// Re-bind confirm button
+freshCharOverlay.querySelector('#confirm-character').addEventListener('click', () => {
+  if (!selectedCharacter) return;
+  freshCharOverlay.classList.remove('visible');
+  freshCharOverlay.classList.add('fade-out');
+  setTimeout(async () => {
+    await preloadImage('darkland_screen.png');
+    freshCharOverlay.remove();
+    startLoveGame();
+    setTimeout(() => preloadAllAssets().catch(console.warn), 150);
+  }, 800);
+});
 
       const screen = document.getElementById('game-screen');
       if (screen) screen.style.setProperty('display', 'none', 'important');

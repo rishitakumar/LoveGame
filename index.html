@@ -248,6 +248,7 @@ let beginShown = false;
 // =============================
 // TIMING TUNES (faster pacing)
 // =============================
+  let answerProcessing = false;
 const NEXT_CARD_DELAY = 350;
 const MOVE_TO_CARD_DELAY = 120;
 const LAND_SWAP_DELAY = 0;
@@ -656,6 +657,8 @@ function getActiveDeck() {
 }
 
 function closeAnswerAndContinue() {
+  if (answerProcessing) return;
+  answerProcessing = true
   const layer = document.getElementById("card-layer");
   if (!layer || layer.style.display === "none") return;
 
@@ -1636,6 +1639,7 @@ function updateCardCounter(land, cardNum, infinity = false) {
 }
 
 function showQuestionCard(cardData) {
+   answerProcessing = false;
   if (!cardData) return;
 
   // Phase detection (keep this — you NEED it)
@@ -1796,6 +1800,7 @@ if (cardData.centers) {
 
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
+       if (answerProcessing) return;
       selectHotspot(letter);
       flashHotspot(letter);
       setTimeout(() => resolveAnswer(letter), 100);
@@ -1883,6 +1888,7 @@ window.addEventListener("keydown", (e) => {
     // BACK: only A–E answers. Other keys do nothing.
     if (cardSide === "back") {
       if (currentCard.outcomes && (key in currentCard.outcomes)) {
+        if (answerProcessing) return;
         selectHotspot(key);
 flashHotspot(key);
 setTimeout(() => resolveAnswer(key), 140);
@@ -1895,6 +1901,7 @@ setTimeout(() => resolveAnswer(key), 140);
 
 
 function resolveAnswer(letter) {
+  if (answerProcessing) return;
   const delta = currentCard.outcomes[letter];
   showAnswerCard(currentCard, delta);
 }
@@ -2368,6 +2375,7 @@ function startLoveGame() {
   // ✅ reset from end-screen fade
   screen.style.opacity = "1";
   screen.style.transition = "none";
+   answerProcessing = false;
   requestAnimationFrame(() => {
     screen.style.transition = ""; // restore normal transitions later if you want
   });
@@ -2665,6 +2673,7 @@ function exitGame() {
       currentCard = null;
       cardMode = "question";
       cardSide = "front";
+        answerProcessing = false; 
       totalAnswered = 0;
       totalCorrect = 0;
       bonusEligible = true;

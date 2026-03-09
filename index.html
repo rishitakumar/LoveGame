@@ -2409,6 +2409,7 @@ murkTransitionDone = false;
   img.onload = null;
   beginShown = false;
   img.onload = () => {
+     img.onload = null;
     const char = document.getElementById("player-character");
     char.src = characterImages[selectedCharacter];
     const charColor = characterColors[selectedCharacter] || '#f5ff3a';

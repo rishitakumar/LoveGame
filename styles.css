@@ -5,9 +5,22 @@ body {
   color: #eee;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+.header img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .header {
   padding: 0; 
   margin: 0;
+  font-size: 0;
+  display: block;
   line-height: 0;
   text-align: center;
   background: #1abc9c;

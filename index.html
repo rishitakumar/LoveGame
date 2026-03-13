@@ -2856,8 +2856,13 @@ function showBeginText() {
   const y = (rung.y / 2000) * img.clientHeight;
 
   const navbarHeight = document.querySelector('.navbar')?.offsetHeight || 0;
+  const navbar = document.querySelector('.navbar');
+  const navBottom = navbar ? navbar.getBoundingClientRect().bottom : 0;
+  const availableHeight = window.innerHeight - navBottom;
+  const centerY = navBottom + availableHeight / 2;
+
   begin.style.left = `50%`;
-  begin.style.top  = `calc(50% + ${navbarHeight / 2}px)`;
+  begin.style.top  = `${centerY}px`;
   begin.style.transform = `translate(-50%, -50%)`;
   begin.style.opacity = 1;
   begin.textContent = "";

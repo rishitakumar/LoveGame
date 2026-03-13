@@ -503,7 +503,7 @@ html, body {
   filter: drop-shadow(0 0 18px var(--char-color, #f5ff3a));
 }
 .begin-text{
-  position: absolute;
+  position: fixed;
   transform: translate(-50%, 0) scale(3);
   z-index: 9999;
   pointer-events: none;

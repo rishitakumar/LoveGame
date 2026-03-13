@@ -811,7 +811,7 @@ window.addEventListener("mousemove", (e) => {
 /* --- INTRO STARFIELD SETUP --- */
 const overlay = document.getElementById("intro-overlay");
 async function startIntroWhenReady(overrideEl) {
-  const introEl = overrideEl || overlay; // ← uses override if provided
+  const introEl = overrideEl || overlay;
   introEl.style.opacity = "0";
   introEl.style.visibility = "hidden";
   introEl.style.backgroundColor = "#000";
@@ -820,6 +820,9 @@ async function startIntroWhenReady(overrideEl) {
   const img = new Image();
   img.src = "star-background.png";
   try { await img.decode(); } catch(e) {}
+
+  // ✅ wait one extra frame for browser to paint background before showing
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
   introEl.classList.add("zoom-ready");
   introEl.style.visibility = "visible";

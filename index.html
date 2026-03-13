@@ -2855,8 +2855,9 @@ function showBeginText() {
   const x = (rung.x / 1545) * img.clientWidth;
   const y = (rung.y / 2000) * img.clientHeight;
 
-  begin.style.left = `${x}px`;
-  begin.style.top  = `${y - 180}px`;
+  begin.style.left = `50%`;
+  begin.style.top  = `50%`;
+  begin.style.transform = `translate(-50%, -50%)`;
   begin.style.opacity = 1;
   begin.textContent = "";
 

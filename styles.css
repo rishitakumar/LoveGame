@@ -6,7 +6,9 @@ body {
 }
 
 .header {
-  padding: 80px; 
+  padding: 0; 
+  margin: 0;
+  line-height: 0;
   text-align: center;
   background: #1abc9c;
   color: white;

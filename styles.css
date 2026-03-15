@@ -1472,18 +1472,19 @@ input[type="range"]::-webkit-slider-thumb:active{
 #card-counter.darkland {
   color: #000;
   text-shadow: 
-    0 0 6px rgba(255,255,255,1), 
-    0 0 12px rgba(255,255,255,0.9),
-    0 0 25px rgba(255,255,255,0.8),
-    0 0 50px rgba(255,255,255,0.5);
+    0 0 6px rgba(192,192,192,1), 
+    0 0 12px rgba(192,192,192,0.9),
+    0 0 25px rgba(192,192,192,0.8),
+    0 0 50px rgba(192,192,192,0.5);
 }
+
 #card-counter.murkland {
   color: #C0C0C0;
   text-shadow: 
-    0 0 6px rgba(255,255,255,1),
-    0 0 12px rgba(255,255,255,0.9),
-    0 0 25px rgba(255,255,255,0.8),
-    0 0 50px rgba(255,255,255,0.5);
+    0 0 6px rgba(255,242,52,1),
+    0 0 12px rgba(255,242,52,0.9),
+    0 0 25px rgba(255,242,52,0.8),
+    0 0 50px rgba(255,242,52,0.5);
 }
 #card-counter.loveland {
   color: #fff234;

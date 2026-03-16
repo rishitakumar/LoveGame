@@ -3270,15 +3270,26 @@ sizeInput.style.touchAction = "pan-x";
     controls.appendChild(r1);
 
     const rText = row();
-    const textBtn = document.createElement("button");
-    textBtn.type = "button";
-    textBtn.textContent = "TEXT TOOL: OFF";
-    textBtn.style.padding = "10px 12px";
-    textBtn.style.borderRadius = "12px";
-    textBtn.style.border = "1px solid rgba(245,255,58,0.25)";
-    textBtn.style.background = "rgba(0,0,0,0.35)";
-    textBtn.style.color = "#f5ff3a";
-    textBtn.style.cursor = "pointer";
+const textBtn = document.createElement("button");
+textBtn.type = "button";
+textBtn.textContent = "TEXT TOOL: OFF";
+textBtn.style.padding = "10px 12px";
+textBtn.style.borderRadius = "12px";
+textBtn.style.border = "1px solid rgba(253,17,180,0.35)";
+textBtn.style.background = "#D011FD";
+textBtn.style.color = "#11FD5A";
+textBtn.style.cursor = "pointer";
+textBtn.style.transition = "background 0.3s ease, color 0.3s ease, border 0.3s ease";
+textBtn.addEventListener("mouseenter", () => {
+  textBtn.style.background = "#11FD5A";
+  textBtn.style.color = "#D011FD";
+  textBtn.style.border = "1px solid rgba(255,255,255,1)";
+});
+textBtn.addEventListener("mouseleave", () => {
+  textBtn.style.background = "#D011FD";
+  textBtn.style.color = "#11FD5A";
+  textBtn.style.border = "1px solid rgba(253,17,180,0.35)";
+});
 
     const textInput = document.createElement("input");
     textInput.type = "text";

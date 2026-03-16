@@ -3325,21 +3325,34 @@ r2.style.gap = "16px"; // optional: nicer spacing
     eraserBtn.textContent = "ERASER: OFF";
     eraserBtn.style.padding = "10px 12px";
     eraserBtn.style.borderRadius = "12px";
-    eraserBtn.style.border = "1px solid rgba(245,255,58,0.25)";
-    eraserBtn.style.background = "rgba(0,0,0,0.35)";
-    eraserBtn.style.color = "#f5ff3a";
-    eraserBtn.style.cursor = "pointer";
+eraserBtn.style.border = "1px solid rgba(255,242,52,0.8)";
+eraserBtn.style.background = "#11FD5A";
+eraserBtn.style.color = "#fd11b4";
+eraserBtn.style.cursor = "pointer";
+eraserBtn.style.transition = "background 0.3s ease, color 0.3s ease, border 0.3s ease";
+eraserBtn.addEventListener("mouseenter", () => {
+  eraserBtn.style.cssText += "; background: #fd11b4 !important; color: #11FD5A !important; border: 1px solid rgba(208,17,253,1) !important;";
+});
+eraserBtn.addEventListener("mouseleave", () => {
+  eraserBtn.style.cssText += "; background: #11FD5A !important; color: #fd11b4 !important; border: 1px solid rgba(255,242,52,0.8) !important;";
+});
 
-    const clearBtn = document.createElement("button");
-    clearBtn.type = "button";
-    clearBtn.textContent = "CLEAR SIDE";
-    clearBtn.style.padding = "10px 12px";
-    clearBtn.style.borderRadius = "12px";
-    clearBtn.style.border = "1px solid rgba(255,90,90,0.35)";
-    clearBtn.style.background = "rgba(0,0,0,0.35)";
-    clearBtn.style.color = "#ff8a8a";
-    clearBtn.style.cursor = "pointer";
-
+const clearBtn = document.createElement("button");
+clearBtn.type = "button";
+clearBtn.textContent = "CLEAR SIDE";
+clearBtn.style.padding = "10px 12px";
+clearBtn.style.borderRadius = "12px";
+clearBtn.style.border = "1px solid rgba(255,242,52,0.8)";
+clearBtn.style.background = "#11FD5A";
+clearBtn.style.color = "#fd11b4";
+clearBtn.style.cursor = "pointer";
+clearBtn.style.transition = "background 0.3s ease, color 0.3s ease, border 0.3s ease";
+clearBtn.addEventListener("mouseenter", () => {
+  clearBtn.style.cssText += "; background: #fd11b4 !important; color: #11FD5A !important; border: 1px solid rgba(208,17,253,1) !important;";
+});
+clearBtn.addEventListener("mouseleave", () => {
+  clearBtn.style.cssText += "; background: #11FD5A !important; color: #fd11b4 !important; border: 1px solid rgba(255,242,52,0.8) !important;";
+});
     r2.appendChild(eraserBtn);
     r2.appendChild(clearBtn);
     controls.appendChild(r2);

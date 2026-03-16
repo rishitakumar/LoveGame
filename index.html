@@ -3060,19 +3060,28 @@ endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it
     tabs.style.display = "flex";
     tabs.style.gap = "8px";
 
-    function makeTab(text) {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.textContent = text;
-      b.style.padding = "10px 14px";
-      b.style.borderRadius = "999px";
-      b.style.border = "1px solid rgba(245,255,58,0.35)";
-      b.style.background = "rgba(0,0,0,0.35)";
-      b.style.color = "#f5ff3a";
-      b.style.cursor = "pointer";
-      b.style.fontFamily = "Georgia, 'Times New Roman', serif";
-      return b;
-    }
+function makeTab(text) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.textContent = text;
+  b.style.padding = "10px 14px";
+  b.style.borderRadius = "999px";
+  b.style.border = "1px solid rgba(245,255,58,0.35)";
+  b.style.background = "rgba(0,0,0,0.35)";
+  b.style.color = "#f5ff3a";
+  b.style.cursor = "pointer";
+  b.style.fontFamily = "Georgia, 'Times New Roman', serif";
+  b.style.transition = "border 0.3s ease, color 0.3s ease";
+  b.addEventListener("mouseenter", () => {
+    b.style.border = "1px solid rgba(255,255,255,1)";
+    b.style.color = "#ffffff";
+  });
+  b.addEventListener("mouseleave", () => {
+    b.style.border = "1px solid rgba(245,255,58,0.35)";
+    b.style.color = "#f5ff3a";
+  });
+  return b;
+}
 
     const btnFront = makeTab("FRONT");
     const btnBack  = makeTab("BACK");

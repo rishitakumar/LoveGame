@@ -3073,12 +3073,10 @@ function makeTab(text) {
   b.style.fontFamily = "Georgia, 'Times New Roman', serif";
   b.style.transition = "border 0.3s ease, color 0.3s ease";
   b.addEventListener("mouseenter", () => {
-    b.style.border = "1px solid rgba(255,255,255,1)";
-    b.style.color = "#ffffff";
+  b.style.cssText += "; border: 1px solid rgba(255,255,255,1) !important; color: #ffffff !important;";
   });
   b.addEventListener("mouseleave", () => {
-    b.style.border = "1px solid rgba(245,255,58,0.35)";
-    b.style.color = "#f5ff3a";
+  b.style.cssText += "; border: 1px solid rgba(245,255,58,0.35) !important; color: #f5ff3a !important;";
   });
   return b;
 }
@@ -3281,14 +3279,10 @@ textBtn.style.color = "#11FD5A";
 textBtn.style.cursor = "pointer";
 textBtn.style.transition = "background 0.3s ease, color 0.3s ease, border 0.3s ease";
 textBtn.addEventListener("mouseenter", () => {
-  textBtn.style.background = "#11FD5A";
-  textBtn.style.color = "#D011FD";
-  textBtn.style.border = "1px solid rgba(255,255,255,1)";
+  textBtn.style.cssText += "; background: #11FD5A !important; color: #D011FD !important; border: 1px solid rgba(255,255,255,1) !important;";
 });
 textBtn.addEventListener("mouseleave", () => {
-  textBtn.style.background = "#D011FD";
-  textBtn.style.color = "#11FD5A";
-  textBtn.style.border = "1px solid rgba(253,17,180,0.35)";
+  textBtn.style.cssText += "; background: #D011FD !important; color: #11FD5A !important; border: 1px solid rgba(253,17,180,0.35) !important;";
 });
 
     const textInput = document.createElement("input");

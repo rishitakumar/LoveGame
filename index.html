@@ -3368,11 +3368,18 @@ redoBtn.textContent = "Redo ->";
 [undoBtn, redoBtn].forEach(b => {
   b.style.padding = "10px 12px";
   b.style.borderRadius = "12px";
-  b.style.border = "1px solid rgba(245,255,58,0.25)";
-  b.style.background = "rgba(0,0,0,0.35)";
-  b.style.color = "#f5ff3a";
+  b.style.border = "1px solid rgba(208,17,253,0.8)";
+  b.style.background = "#fd11b4";
+  b.style.color = "#fff234";
   b.style.cursor = "pointer";
   b.style.flex = "1";
+  b.style.transition = "background 0.3s ease, color 0.3s ease, border 0.3s ease";
+  b.addEventListener("mouseenter", () => {
+    b.style.cssText += "; background: #fff234 !important; color: #fd11b4 !important; border: 1px solid rgba(253,208,17,1) !important;";
+  });
+  b.addEventListener("mouseleave", () => {
+    b.style.cssText += "; background: #fd11b4 !important; color: #fff234 !important; border: 1px solid rgba(208,17,253,0.8) !important;";
+  });
 });
 
 undoBtn.onclick = () => undo(state.active);

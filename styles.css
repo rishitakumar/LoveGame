@@ -52,6 +52,8 @@ html, body {
   padding: 14px 20px;
   text-decoration: none;
   text-shadow: 0 0 8px rgba(255,242,52,0.6);
+  font-family: Impact, sans-serif;
+  letter-spacing: 2px;
 }
 
 .navbar a:hover {

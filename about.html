@@ -20,8 +20,9 @@
   <h1 style="text-align: center; background: linear-gradient(90deg, #fd11b4, #FDD011, #fff234, #11FD5A, #D011FD, #fd3b96, #fd11b4); background-size: 200% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: gradientSlide 6s linear infinite;">Why should you love to live? Why should you live to love?</h1>
   <h2 style="text-align: center;">1) If you do not love to live, you'll just be a speck of dirt.</h2>
   <h2 style="text-align: center;">2) If you balance your Self and External love, you'll understand the reason for your existence.</h2>
-  <h2 style="text-align: center;"> <i> The process to balance your Self and External love requires caring for both your own and others' mental, physical, and emotional health. Just as Yin and Yang, embrace the balance of opposite yet complementary forces — dark & light energy, brain & soul knowing, Self and Universal love, etc . . . </i> </h2>
+  <h2 class="shimmer-text" style="text-align: center;"> <i> The process to balance your Self and External love requires caring for both your own and others' mental, physical, and emotional health. Just as Yin and Yang, embrace the balance of opposite yet complementary forces — dark & light energy, brain & soul knowing, Self and Universal love, etc . . . </i> </h2>
 </div>
+<canvas id="sparkle-canvas" style="position: fixed; inset: 0; pointer-events: none; z-index: 9999;"></canvas>
 <script>
 /* --- UNIVERSAL MOUSE STREAK --- */
 const mCanvas = document.getElementById("mouse-canvas");
@@ -67,6 +68,88 @@ function drawMouseStreak() {
 }
 drawMouseStreak(); // Start it!
 
+const sparkleCanvas = document.getElementById("sparkle-canvas");
+const sparkleCtx = sparkleCanvas.getContext("2d");
+
+sparkleCanvas.width = window.innerWidth;
+sparkleCanvas.height = window.innerHeight;
+window.addEventListener("resize", () => {
+  sparkleCanvas.width = window.innerWidth;
+  sparkleCanvas.height = window.innerHeight;
+});
+
+const sparkles = [];
+const COLORS = ["#fff234", "#fd11b4", "#ffffff", "#D011FD", "#11FD5A", "#FDD011"];
+
+// Get the paragraph position
+const shimmerEl = document.querySelector(".shimmer-text");
+
+function spawnSparkle() {
+  const rect = shimmerEl.getBoundingClientRect();
+  sparkles.push({
+    x: rect.left + Math.random() * rect.width,
+    y: rect.top + Math.random() * rect.height,
+    size: 1 + Math.random() * 4,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    life: 1.0,
+    decay: 0.02 + Math.random() * 0.03,
+    vx: (Math.random() - 0.5) * 0.8,
+    vy: -0.5 - Math.random() * 1.2,
+    twinkle: Math.random() * Math.PI * 2,
+  });
+}
+
+function drawSparkle(p) {
+  const shimmer = 0.5 + 0.5 * Math.abs(Math.sin(p.twinkle));
+  const alpha = p.life * shimmer;
+  const s = p.size * p.life;
+
+  sparkleCtx.save();
+  sparkleCtx.translate(p.x, p.y);
+
+  // 4-pointed star shape
+  sparkleCtx.beginPath();
+  for (let i = 0; i < 4; i++) {
+    const angle = (i / 4) * Math.PI * 2;
+    const innerAngle = angle + Math.PI / 4;
+    sparkleCtx.lineTo(Math.cos(angle) * s, Math.sin(angle) * s);
+    sparkleCtx.lineTo(Math.cos(innerAngle) * s * 0.3, Math.sin(innerAngle) * s * 0.3);
+  }
+  sparkleCtx.closePath();
+
+  sparkleCtx.fillStyle = p.color;
+  sparkleCtx.globalAlpha = alpha;
+  sparkleCtx.fill();
+
+  // glow
+  sparkleCtx.shadowBlur = 8;
+  sparkleCtx.shadowColor = p.color;
+  sparkleCtx.fill();
+
+  sparkleCtx.restore();
+}
+
+function sparkleLoop() {
+  sparkleCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
+
+  // spawn new sparkles
+  if (Math.random() < 0.4) spawnSparkle();
+
+  for (let i = sparkles.length - 1; i >= 0; i--) {
+    const p = sparkles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life -= p.decay;
+    p.twinkle += 0.15;
+
+    if (p.life <= 0) { sparkles.splice(i, 1); continue; }
+    drawSparkle(p);
+  }
+
+  requestAnimationFrame(sparkleLoop);
+}
+
+sparkleLoop();
 </script>
 </body>
 </html>

@@ -23,51 +23,8 @@
   <h2 style="text-align: center;"> <i> The process to balance your Self and External love requires caring for both your own and others' mental, physical, and emotional health. Just as Yin and Yang, embrace the balance of opposite yet complementary forces — dark & light energy, brain & soul knowing, Self and Universal love, etc . . . </i> </h2>
 </div>
 <canvas id="sparkle-canvas" style="position: fixed; inset: 0; pointer-events: none; z-index: 9999;"></canvas>
+
 <script>
-/* --- UNIVERSAL MOUSE STREAK --- */
-const mCanvas = document.getElementById("mouse-canvas");
-const mCtx = mCanvas.getContext("2d");
-let mPoints = [];
-const TRAIL_LIFESPAN = 15; 
-
-function resizeMouseCanvas() {
-  mCanvas.width = window.innerWidth;
-  mCanvas.height = window.innerHeight;
-}
-window.addEventListener("resize", resizeMouseCanvas);
-resizeMouseCanvas();
-
-// Use 'window' to track the mouse even over the overlay
-window.addEventListener("mousemove", (e) => {
-  mPoints.push({ x: e.clientX, y: e.clientY, age: 0 });
-});
-
-function drawMouseStreak() {
-  mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
-  if (mPoints.length > 1) {
-    for (let i = 1; i < mPoints.length; i++) {
-      const p1 = mPoints[i - 1];
-      const p2 = mPoints[i];
-      const opacity = 1 - (p1.age / TRAIL_LIFESPAN);
-      
-      mCtx.strokeStyle = `rgba(245, 255, 58, ${opacity})`; 
-      mCtx.lineWidth = opacity * 5; // Slightly thicker for better visibility
-      mCtx.lineCap = "round";
-      mCtx.shadowBlur = 10 * opacity;
-      mCtx.shadowColor = "#f5ff3a";
-      
-      mCtx.beginPath();
-      mCtx.moveTo(p1.x, p1.y);
-      mCtx.lineTo(p2.x, p2.y);
-      mCtx.stroke();
-      p1.age++;
-    }
-  }
-  mPoints = mPoints.filter(p => p.age < TRAIL_LIFESPAN);
-  requestAnimationFrame(drawMouseStreak); // Self-calling loop
-}
-drawMouseStreak(); // Start it!
-
 const sparkleCanvas = document.getElementById("sparkle-canvas");
 const sparkleCtx = sparkleCanvas.getContext("2d");
 
@@ -78,72 +35,62 @@ window.addEventListener("resize", () => {
   sparkleCanvas.height = window.innerHeight;
 });
 
-const sparkles = [];
-const COLORS = ["#ffffff", "#ffffff", "#ffffff", "#fffafa", "#f0f0f0"];
-
-// Get the paragraph position
 const shimmerEl = document.querySelectorAll("h2")[2];
+const COLORS = ["#ffffff", "#e0f0ff", "#c8e6ff", "#fffafa", "#d0f0ff"];
 
-function spawnSparkle() {
+// Create a fixed pool of glitter points that sit ON the text
+const glitterPoints = [];
+const POOL_SIZE = 120;
+
+function buildGlitterPool() {
+  glitterPoints.length = 0;
   const rect = shimmerEl.getBoundingClientRect();
-  sparkles.push({
-    x: rect.left + Math.random() * rect.width,
-    y: rect.top + Math.random() * rect.height,
-    size: 0.5 + Math.random() * 2,        // ✅ smaller
-    color: COLORS[Math.floor(Math.random() * COLORS.length)],
-    life: 1.0,
-    decay: 0.008 + Math.random() * 0.012, // ✅ slower fade
-    vx: (Math.random() - 0.5) * 0.2,     // ✅ barely moves sideways
-    vy: -0.1 - Math.random() * 0.2,      // ✅ barely floats up
-    twinkle: Math.random() * Math.PI * 2,
-  });
+  for (let i = 0; i < POOL_SIZE; i++) {
+    glitterPoints.push({
+      x: rect.left + Math.random() * rect.width,
+      y: rect.top + Math.random() * rect.height,
+      size: 0.8 + Math.random() * 2.5,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      phase: Math.random() * Math.PI * 2,      // random start in cycle
+      speed: 0.03 + Math.random() * 0.05,      // twinkling speed
+    });
+  }
 }
 
-function drawSparkle(p) {
-  const shimmer = 0.5 + 0.5 * Math.abs(Math.sin(p.twinkle));
-  const alpha = p.life * shimmer;
-  const s = p.size * p.life;
+buildGlitterPool();
+window.addEventListener("resize", buildGlitterPool);
 
-  sparkleCtx.save();
-  sparkleCtx.translate(p.x, p.y);
+function drawStar(ctx, x, y, size, alpha, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = color;
+  ctx.shadowBlur = 6;
+  ctx.shadowColor = "#ffffff";
 
-  // 4-pointed star shape
-  sparkleCtx.beginPath();
+  // 4-point star
+  ctx.beginPath();
   for (let i = 0; i < 4; i++) {
     const angle = (i / 4) * Math.PI * 2;
-    const innerAngle = angle + Math.PI / 4;
-    sparkleCtx.lineTo(Math.cos(angle) * s, Math.sin(angle) * s);
-    sparkleCtx.lineTo(Math.cos(innerAngle) * s * 0.3, Math.sin(innerAngle) * s * 0.3);
+    const inner = angle + Math.PI / 4;
+    ctx.lineTo(Math.cos(angle) * size, Math.sin(angle) * size);
+    ctx.lineTo(Math.cos(inner) * size * 0.25, Math.sin(inner) * size * 0.25);
   }
-  sparkleCtx.closePath();
-
-  sparkleCtx.fillStyle = p.color;
-  sparkleCtx.globalAlpha = alpha;
-  sparkleCtx.fill();
-
-  // glow
-  sparkleCtx.shadowBlur = 8;
-  sparkleCtx.shadowColor = p.color;
-  sparkleCtx.fill();
-
-  sparkleCtx.restore();
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
 }
 
 function sparkleLoop() {
   sparkleCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
 
-  // spawn new sparkles
-  if (Math.random() < 0.6) spawnSparkle();
-
-  for (let i = sparkles.length - 1; i >= 0; i--) {
-    const p = sparkles[i];
-    p.x += p.vx;
-    p.y += p.vy;
-    p.life -= p.decay;
-    p.twinkle += 0.15;
-
-    if (p.life <= 0) { sparkles.splice(i, 1); continue; }
-    drawSparkle(p);
+  for (const p of glitterPoints) {
+    p.phase += p.speed;
+    // sine wave makes them pulse in and out smoothly
+    const alpha = Math.max(0, Math.sin(p.phase));
+    if (alpha > 0.05) {
+      drawStar(sparkleCtx, p.x, p.y, p.size * alpha, alpha, p.color);
+    }
   }
 
   requestAnimationFrame(sparkleLoop);

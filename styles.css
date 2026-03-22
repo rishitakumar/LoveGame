@@ -1091,8 +1091,8 @@ input, textarea, [contenteditable="true"] { cursor: text !important; }
 
 /* FIX selection: gradients are not supported */
 ::selection {
-  background-color: #D011FD; /* pick ONE */
-  color: #FFFFFF;
+  background-color: #fd3b96; /* pick ONE */
+  color: #000;
 }
 
 ::-moz-selection {

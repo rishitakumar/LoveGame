@@ -2665,10 +2665,17 @@ function exitGame() {
     birdRight.style.pointerEvents = 'none';
     birdRight.style.transform = 'translateY(80px)';
 
+    const centerWrap = document.createElement('div');
+    centerWrap.style.position = 'relative';
+    centerWrap.style.display = 'flex';
+    centerWrap.style.alignItems = 'center';
+    centerWrap.style.justifyContent = 'center';
+
     restartBtn.appendChild(phoenixImg);
     wrap.appendChild(birdLeft);
-    wrap.appendChild(flameCanvas);
-    wrap.appendChild(restartBtn);
+    centerWrap.appendChild(flameCanvas);
+    centerWrap.appendChild(restartBtn);
+    wrap.appendChild(centerWrap);
     wrap.appendChild(birdRight);
     document.body.appendChild(wrap);
 

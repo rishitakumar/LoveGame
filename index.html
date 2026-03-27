@@ -2599,10 +2599,10 @@ function exitGame() {
     const wrap = document.createElement('div');
     wrap.className = 'lovegame-btn-wrap';
     wrap.style.position = 'relative';
-    wrap.style.display = 'inline-flex';
-    wrap.style.alignItems = 'center';
+    wrap.style.display = 'flex'; // Changed from inline-flex
+    wrap.style.alignItems = 'flex-start'; // Align to the top of the container
     wrap.style.justifyContent = 'center';
-    wrap.style.margin = '80px auto 0';
+    wrap.style.margin = '20px auto 0';
     wrap.style.width = '100%';
 
     const flameCanvas = document.createElement('canvas');
@@ -2656,15 +2656,16 @@ function exitGame() {
     birdLeft.style.height = 'auto';
     birdLeft.style.transform = 'scaleX(-1)';
     birdLeft.style.pointerEvents = 'none';
-    birdLeft.style.transform = 'scaleX(-1) translateY(140px)';
+    birdLeft.style.transform = 'scaleX(-1)'; // Only flip it
+    birdLeft.style.marginTop = '100px';      // Use margin to push it down instead of translate
 
     const birdRight = document.createElement('img');
     birdRight.src = 'Home_bird.png';
     birdRight.style.width = '500px';
     birdRight.style.height = 'auto';
     birdRight.style.pointerEvents = 'none';
-    birdRight.style.transform = 'translateY(140px)';
-
+    birdRight.style.marginTop = '100px';      // Use margin to push it down instead of translate
+    
     const centerWrap = document.createElement('div');
     centerWrap.style.width = '200px';
     centerWrap.style.height = '200px';

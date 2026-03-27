@@ -2657,14 +2657,14 @@ function exitGame() {
     birdLeft.style.transform = 'scaleX(-1)';
     birdLeft.style.pointerEvents = 'none';
     birdLeft.style.transform = 'scaleX(-1)'; // Only flip it
-    birdLeft.style.marginTop = '100px';      // Use margin to push it down instead of translate
+    birdLeft.style.marginTop = '-50px';      // Use margin to push it down instead of translate
 
     const birdRight = document.createElement('img');
     birdRight.src = 'Home_bird.png';
     birdRight.style.width = '650px';
     birdRight.style.height = 'auto';
     birdRight.style.pointerEvents = 'none';
-    birdRight.style.marginTop = '100px';      // Use margin to push it down instead of translate
+    birdRight.style.marginTop = '-50px';      // Use margin to push it down instead of translate
     
     const centerWrap = document.createElement('div');
     centerWrap.style.width = '200px';

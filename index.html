@@ -2596,124 +2596,92 @@ function exitGame() {
   if (navbar) navbar.style.setProperty('display', 'block', 'important');
 
   if (!document.querySelector('.lovegame-btn-wrap')) {
-    const wrap = document.createElement('div');
-    wrap.className = 'lovegame-btn-wrap';
-    wrap.style.position = 'relative';
-    wrap.style.display = 'inline-flex';
-    wrap.style.alignItems = 'center';
-    wrap.style.justifyContent = 'center';
-    wrap.style.margin = '80px auto 0';
-    wrap.style.width = '100%';
+  const wrap = document.createElement('div');
+  wrap.className = 'lovegame-btn-wrap';
+  wrap.style.position = 'relative';
+  wrap.style.display = 'flex';
+  wrap.style.flexDirection = 'column'; // stack vertically
+  wrap.style.alignItems = 'center';
+  wrap.style.justifyContent = 'center';
+  wrap.style.margin = '40px auto 0'; // reduce gap at top
+  wrap.style.width = '100%';
 
-    const flameCanvas = document.createElement('canvas');
-    flameCanvas.id = 'lovegame-flame-canvas';
+  // ---- Birds ----
+  const birdLeft = document.createElement('img');
+  birdLeft.src = 'Home_bird.png';
+  birdLeft.style.width = '500px';
+  birdLeft.style.height = 'auto';
+  birdLeft.style.pointerEvents = 'none';
 
-    const restartBtn = document.createElement('button');
-    restartBtn.id = 'lovegame-restart-btn';
-    restartBtn.style.position = 'relative';
-    restartBtn.style.zIndex = '2';
-    restartBtn.style.display = 'flex';
-    restartBtn.style.alignItems = 'center';
-    restartBtn.style.justifyContent = 'center';
-    restartBtn.style.width = '200px';
-    restartBtn.style.height = '200px';
-    restartBtn.style.borderRadius = '50%';
-    restartBtn.style.background = '#11FD5A';
-    restartBtn.style.border = '4px solid #D011FD';
-    restartBtn.style.cursor = 'pointer';
-    restartBtn.style.boxShadow = '0 0 18px rgba(17,253,90,0.5), 0 0 40px rgba(17,253,90,0.2)';
-    restartBtn.style.outline = 'none';
-    restartBtn.style.padding = '0';
-    restartBtn.style.transition = 'background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease';
+  const birdRight = document.createElement('img');
+  birdRight.src = 'Home_bird.png';
+  birdRight.style.width = '500px';
+  birdRight.style.height = 'auto';
+  birdRight.style.pointerEvents = 'none';
 
-    restartBtn.addEventListener('mouseenter', () => {
-      restartBtn.style.background = '#fff234';
-      restartBtn.style.borderColor = '#fd11b4';
-      restartBtn.style.boxShadow = '0 0 28px rgba(255,242,52,0.7), 0 0 60px rgba(255,242,52,0.3)';
-      restartBtn.style.transform = 'scale(1.06)';
-    });
-    restartBtn.addEventListener('mouseleave', () => {
-      restartBtn.style.background = '#11FD5A';
-      restartBtn.style.borderColor = '#D011FD';
-      restartBtn.style.boxShadow = '0 0 18px rgba(17,253,90,0.5), 0 0 40px rgba(17,253,90,0.2)';
-      restartBtn.style.transform = 'scale(1)';
-    });
+  // ---- Button ----
+  const restartBtn = document.createElement('button');
+  restartBtn.id = 'lovegame-restart-btn';
+  restartBtn.style.position = 'relative';
+  restartBtn.style.zIndex = '2';
+  restartBtn.style.display = 'flex';
+  restartBtn.style.alignItems = 'center';
+  restartBtn.style.justifyContent = 'center';
+  restartBtn.style.width = '200px';
+  restartBtn.style.height = '200px';
+  restartBtn.style.borderRadius = '50%';
+  restartBtn.style.background = '#11FD5A';
+  restartBtn.style.border = '4px solid #D011FD';
+  restartBtn.style.cursor = 'pointer';
+  restartBtn.style.boxShadow = '0 0 18px rgba(17,253,90,0.5), 0 0 40px rgba(17,253,90,0.2)';
+  restartBtn.style.outline = 'none';
+  restartBtn.style.padding = '0';
 
-    const phoenixImg = document.createElement('img');
-    phoenixImg.src = 'gloriosaw_outbackground.png';
-    phoenixImg.alt = 'Love Game';
-    phoenixImg.style.width = '150px';
-    phoenixImg.style.height = '150px';
-    phoenixImg.style.objectFit = 'contain';
-    phoenixImg.style.display = 'block';
-    phoenixImg.style.pointerEvents = 'none';
-    phoenixImg.style.marginTop = '12px'; // ← add this
-    phoenixImg.style.filter = 'drop-shadow(0 0 10px rgba(17,253,90,0.7))';
+  // ---- Phoenix inside button ----
+  const phoenixImg = document.createElement('img');
+  phoenixImg.src = 'gloriosaw_outbackground.png';
+  phoenixImg.style.width = '150px';
+  phoenixImg.style.height = '150px';
+  phoenixImg.style.objectFit = 'contain';
+  phoenixImg.style.pointerEvents = 'none';
+  restartBtn.appendChild(phoenixImg);
 
-    const birdLeft = document.createElement('img');
-    birdLeft.src = 'Home_bird.png';
-    birdLeft.style.width = '500px';
-    birdLeft.style.height = 'auto';
-    birdLeft.style.transform = 'scaleX(-1)';
-    birdLeft.style.pointerEvents = 'none';
-    birdLeft.style.transform = 'scaleX(-1) translateY(140px)';
+  // ---- Flame Canvas ----
+  const flameCanvas = document.createElement('canvas');
+  flameCanvas.id = 'lovegame-flame-canvas';
+  flameCanvas.style.position = 'absolute';
+  flameCanvas.style.top = '0';
+  flameCanvas.style.left = '0';
+  flameCanvas.style.width = '100%';
+  flameCanvas.style.height = '100%';
+  flameCanvas.style.pointerEvents = 'none';
+  flameCanvas.style.zIndex = '1';
+  restartBtn.appendChild(flameCanvas); // attached directly to button
 
-    const birdRight = document.createElement('img');
-    birdRight.src = 'Home_bird.png';
-    birdRight.style.width = '500px';
-    birdRight.style.height = 'auto';
-    birdRight.style.pointerEvents = 'none';
-    birdRight.style.transform = 'translateY(140px)';
+  // ---- Append button ----
+  wrap.appendChild(restartBtn);
 
-    const centerWrap = document.createElement('div');
-    centerWrap.style.width = '200px';
-    centerWrap.style.height = '200px';
-    centerWrap.style.flex = '0 0 auto'; // 🔥 prevents flex stretching
-    centerWrap.style.position = 'relative';
-    centerWrap.style.display = 'flex';
-    centerWrap.style.alignItems = 'center';
-    centerWrap.style.justifyContent = 'center';
+  // ---- Birds below button ----
+  const birdsWrap = document.createElement('div');
+  birdsWrap.style.display = 'flex';
+  birdsWrap.style.justifyContent = 'space-between';
+  birdsWrap.style.width = '100%';
+  birdsWrap.style.marginTop = '60px'; // move birds below button
+  birdsWrap.appendChild(birdLeft);
+  birdsWrap.appendChild(birdRight);
+  wrap.appendChild(birdsWrap);
 
-    restartBtn.appendChild(phoenixImg);
-    wrap.appendChild(birdLeft);
-    centerWrap.appendChild(flameCanvas);
-    centerWrap.appendChild(restartBtn);
-    wrap.appendChild(centerWrap);
-    wrap.appendChild(birdRight);
-    document.body.appendChild(wrap);
+  document.body.appendChild(wrap);
 
-    // ============================
-    // FLAME ENGINE
-    // ============================
-    const fCtx = flameCanvas.getContext('2d');
-    const FLAME_COLORS = [
-      '#ff2200', '#ff4500', '#ff6600',
-      '#ff8c00', '#ffa500', '#ffcc00',
-      '#fff234', '#ffffff',
-    ];
-    const PAD = 220;
-    let FW, FH, FCX, FCY, FRADIUS;
-    let flameParticles = [];
-    let flameHovered = false;
-    let flameFrame = null;
-
-    function resizeFlameCanvas() {
-      FRADIUS = restartBtn.offsetWidth / 2;
-      FW = restartBtn.offsetWidth  + PAD * 2;
-      FH = restartBtn.offsetHeight + PAD * 2;
-      flameCanvas.width  = FW;
-      flameCanvas.height = FH;
-      flameCanvas.style.width  = FW + 'px';
-      flameCanvas.style.height = FH + 'px';
-      flameCanvas.style.position = 'absolute';
-      flameCanvas.style.top  = '50%';
-      flameCanvas.style.left = '50%';
-      flameCanvas.style.transform = 'translate(-50%, -50%)';
-      flameCanvas.style.zIndex = '1';
-      flameCanvas.style.pointerEvents = 'none';
-      FCX = FW / 2;
-      FCY = FH / 2;
-    }
+  // ---- Resize flame canvas ----
+  function resizeFlameCanvas() {
+    flameCanvas.width = restartBtn.offsetWidth;
+    flameCanvas.height = restartBtn.offsetHeight;
+    FCX = flameCanvas.width / 2;
+    FCY = flameCanvas.height / 2;
+  }
+  setTimeout(resizeFlameCanvas, 50);
+}
 
     function flameHexToRgba(hex, a) {
       const r = parseInt(hex.slice(1,3),16);

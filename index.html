@@ -2666,6 +2666,9 @@ function exitGame() {
     birdRight.style.transform = 'translateY(140px)';
 
     const centerWrap = document.createElement('div');
+    centerWrap.style.width = '200px';
+    centerWrap.style.height = '200px';
+    centerWrap.style.flex = '0 0 auto'; // 🔥 prevents flex stretching
     centerWrap.style.position = 'relative';
     centerWrap.style.display = 'flex';
     centerWrap.style.alignItems = 'center';

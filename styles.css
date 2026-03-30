@@ -8,6 +8,10 @@ body {
   margin: 0;
 }
 
+.footer-section {
+  margin-top: auto;
+}
+
 input::placeholder {
   color: #fd11b4;
   opacity: 1;

@@ -5,6 +5,11 @@ body {
   color: #eee;
 }
 
+input::placeholder {
+  color: #fd11b4;
+  opacity: 0.75;
+}
+
 html, body {
   margin: 0;
   padding: 0;

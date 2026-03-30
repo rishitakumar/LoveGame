@@ -477,6 +477,7 @@ html, body {
 #game-screen {
   position: relative;
   width: 100%;
+  flex: 1;
   height: calc(100vh - 220px);
   overflow-y: scroll;
   overflow-x: hidden;

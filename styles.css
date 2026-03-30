@@ -80,14 +80,14 @@ html, body {
 
 .yaaas-btn {
   background: #fff234;
-  color: ##D011FD;
+  color: #D011FD;
   border: none;
   font-family: Impact;
   cursor: pointer;
   width: 250px;
   height: 45px;
   text-transform: uppercase;
-   outline: 2px solid rgba(17, 253, 90);        /* purple outline at rest */
+  outline: 2px solid rgba(17,253,90);        /* purple outline at rest */
   font-size: 16px;
   letter-spacing: 1px;
   transition: background 0.2s, color 0.2s;

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Play ⟢ Love Game</title>
+  <title>Love Game</title>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="gloriosaw_outbackground.png">
@@ -14,7 +14,7 @@
 </head>
 <body>
 
-<canvas id="mouse-canvas" style="position: fixed; top: 0; left: 0;"></canvas>
+<canvas id="mouse-canvas"></canvas>
 
 <div class="header">
   <img src="lg_banner.png" alt="Love Game" style="width: 100%; height: 100%; object-fit: cover; display: block;">
@@ -188,6 +188,8 @@
   <div id="card-container"></div>
 </div>
 
+<div style="flex: 1;"></div>
+
 <div class="footer-section" style="text-align: center; padding: 20px 20px 20px 20px; color: #ffffff; font-family: Georgia, sans-serif; font-size: 14px; letter-spacing: 2px; 
   background: linear-gradient(to right, #000000, rgba(208,17,253,0.4), rgba(253,17,180,0.3), rgba(208,17,253,0.4), #000000);
   border-top: 1px solid rgba(208,17,253,0.4);
@@ -259,9 +261,6 @@ if (localStorage.getItem("lovegame-played") === todayKey) {
 }
 
 localStorage.setItem("lovegame-played", todayKey); --- */
-
-document.querySelector('.footer-section').style.display = 'none';
-  
 const IMG_CACHE = new Map();
 const charOverlayHTML = document.getElementById('character-overlay').outerHTML;
   
@@ -1049,8 +1048,8 @@ function endIntro() {
   setTimeout(() => {
     document.getElementById('intro-overlay')?.remove();
     window.CursorFX?.stop?.();
+
     enableReminderScreen();
-    document.querySelector('.footer-section').style.display = 'block';
 
     if (!document.getElementById('exit-btn')) {
       const exitBtn = document.createElement('button');
@@ -2559,8 +2558,6 @@ img.src = "ecstasy_screen.png";
 // START LOVE GAME
 // =============================
 function startLoveGame() {
-  document.querySelector('.header').style.setProperty('display', 'none', 'important');
-document.querySelector('.navbar').style.setProperty('display', 'none', 'important');
   const screen = document.getElementById("game-screen");
   screen.hidden = false;
   screen.style.display = "block";
@@ -2744,14 +2741,8 @@ function exitGame() {
     centerWrap.appendChild(restartBtn);
     wrap.appendChild(centerWrap);
     wrap.appendChild(birdRight);
-
     document.body.appendChild(wrap);
 
-// Move footer to bottom of body so it appears after birds
-    const footer = document.querySelector('.footer-section');
-    document.body.appendChild(footer); // re-appends to end of body
-    footer.style.display = 'block';
-    console.log('footer display:', footer.style.display, 'position:', getComputedStyle(footer).position, 'bottom:', getComputedStyle(footer).bottom);
     // ============================
     // FLAME ENGINE
     // ============================
@@ -2888,7 +2879,6 @@ function exitGame() {
     // ============================
     restartBtn.addEventListener('click', () => {
       wrap.remove();
-      document.querySelector('.footer-section').style.display = 'none';
       cancelAnimationFrame(flameFrame);
       flameParticles = [];
       document.getElementById('exit-btn')?.remove();

@@ -33,15 +33,13 @@ html, body {
   height: auto;
 }
 
-.header, .navbar {
-  display: none;
-}
+
 
 .header {
   padding: 0; 
   margin: 0;
   font-size: 0;
-  display: block;
+  display: none;
   line-height: 0;
   text-align: center;
   background: #1abc9c;

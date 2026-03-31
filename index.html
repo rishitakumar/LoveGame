@@ -2742,9 +2742,13 @@ function exitGame() {
     centerWrap.appendChild(restartBtn);
     wrap.appendChild(centerWrap);
     wrap.appendChild(birdRight);
-    document.body.appendChild(wrap);
-    document.querySelector('.footer-section').style.display = 'block';
 
+    document.body.appendChild(wrap);
+
+// Move footer to bottom of body so it appears after birds
+    const footer = document.querySelector('.footer-section');
+    document.body.appendChild(footer); // re-appends to end of body
+    footer.style.display = 'block';
     // ============================
     // FLAME ENGINE
     // ============================

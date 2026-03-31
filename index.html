@@ -2559,6 +2559,8 @@ img.src = "ecstasy_screen.png";
 // START LOVE GAME
 // =============================
 function startLoveGame() {
+  document.querySelector('.header').style.setProperty('display', 'none', 'important');
+document.querySelector('.navbar').style.setProperty('display', 'none', 'important');
   const screen = document.getElementById("game-screen");
   screen.hidden = false;
   screen.style.display = "block";

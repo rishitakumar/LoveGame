@@ -259,6 +259,9 @@ if (localStorage.getItem("lovegame-played") === todayKey) {
 }
 
 localStorage.setItem("lovegame-played", todayKey); --- */
+
+document.querySelector('.footer-section').style.display = 'none';
+  
 const IMG_CACHE = new Map();
 const charOverlayHTML = document.getElementById('character-overlay').outerHTML;
   
@@ -1046,8 +1049,8 @@ function endIntro() {
   setTimeout(() => {
     document.getElementById('intro-overlay')?.remove();
     window.CursorFX?.stop?.();
-
     enableReminderScreen();
+    document.querySelector('.footer-section').style.display = 'block';
 
     if (!document.getElementById('exit-btn')) {
       const exitBtn = document.createElement('button');

@@ -9,7 +9,8 @@ body {
 }
 
 .footer-section {
-  margin-top: auto;
+  width: 100%;
+  position: static;
 }
 
 input::placeholder {
@@ -234,7 +235,7 @@ html, body {
   z-index: 9000;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 1);
 }
 
 /* Smaller card */

@@ -2742,8 +2742,9 @@ function exitGame() {
     wrap.appendChild(centerWrap);
     wrap.appendChild(birdRight);
     document.body.appendChild(wrap);
-    document.querySelector('.footer-section').style.display = 'block';
-
+    const footer = document.querySelector('.footer-section');
+    document.body.appendChild(footer);
+    footer.style.display = 'block';
 
     // ============================
     // FLAME ENGINE

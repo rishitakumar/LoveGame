@@ -2749,6 +2749,7 @@ function exitGame() {
     const footer = document.querySelector('.footer-section');
     document.body.appendChild(footer); // re-appends to end of body
     footer.style.display = 'block';
+    console.log('footer display:', footer.style.display, 'position:', getComputedStyle(footer).position, 'bottom:', getComputedStyle(footer).bottom);
     // ============================
     // FLAME ENGINE
     // ============================

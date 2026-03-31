@@ -190,7 +190,7 @@
 
 <div style="flex: 1;"></div>
 
-<div class="footer-section" style="text-align: center; padding: 20px 20px 20px 20px; color: #ffffff; font-family: Georgia, sans-serif; font-size: 14px; letter-spacing: 2px; 
+<div class="footer-section" style="display:none; text-align: center; padding: 20px 20px 20px 20px; color: #ffffff; font-family: Georgia, sans-serif; font-size: 14px; letter-spacing: 2px; 
   background: linear-gradient(to right, #000000, rgba(208,17,253,0.4), rgba(253,17,180,0.3), rgba(208,17,253,0.4), #000000);
   border-top: 1px solid rgba(208,17,253,0.4);
   border-bottom: 1px solid rgba(253,17,180,0.4);
@@ -2742,6 +2742,8 @@ function exitGame() {
     wrap.appendChild(centerWrap);
     wrap.appendChild(birdRight);
     document.body.appendChild(wrap);
+    document.querySelector('.footer-section').style.display = 'block';
+
 
     // ============================
     // FLAME ENGINE
@@ -2878,6 +2880,7 @@ function exitGame() {
     // RESTART CLICK
     // ============================
     restartBtn.addEventListener('click', () => {
+      document.querySelector('.footer-section').style.display = 'none';
       wrap.remove();
       cancelAnimationFrame(flameFrame);
       flameParticles = [];

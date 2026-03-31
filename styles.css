@@ -33,6 +33,10 @@ html, body {
   height: auto;
 }
 
+.header, .navbar {
+  display: none;
+}
+
 .header {
   padding: 0; 
   margin: 0;

@@ -2743,6 +2743,7 @@ function exitGame() {
     wrap.appendChild(centerWrap);
     wrap.appendChild(birdRight);
     document.body.appendChild(wrap);
+    document.querySelector('.footer-section').style.display = 'block';
 
     // ============================
     // FLAME ENGINE
@@ -2880,6 +2881,7 @@ function exitGame() {
     // ============================
     restartBtn.addEventListener('click', () => {
       wrap.remove();
+      document.querySelector('.footer-section').style.display = 'none';
       cancelAnimationFrame(flameFrame);
       flameParticles = [];
       document.getElementById('exit-btn')?.remove();

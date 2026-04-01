@@ -215,12 +215,11 @@
       </span>&nbsp;YOU
     </p>
     
-    <input type="email" placeholder="YOUR EMAIL" 
-           style="background: transparent; border: 1px solid rgba(253, 17, 180); outline: none; color: #ffffff; padding: 0 10px; font-family: Georgia; text-align: center; width: 250px; height: 45px; box-sizing: border-box; margin-bottom: 16px;">
+  <input type="email" id="newsletter-email" placeholder="YOUR EMAIL" 
+       style="background: transparent; border: 1px solid rgba(253, 17, 180); outline: none; color: #ffffff; padding: 0 10px; font-family: Georgia; text-align: center; width: 250px; height: 45px; box-sizing: border-box; margin-bottom: 16px;">
+
+<button class="yaaas-btn" onclick="submitEmail()">YAAAS</button>
     
-    <button class="yaaas-btn">
-      YAAAS
-    </button>
   </div>
 
   <!-- Contact -->
@@ -261,6 +260,31 @@ if (localStorage.getItem("lovegame-played") === todayKey) {
 }
 
 localStorage.setItem("lovegame-played", todayKey); --- */
+
+function submitEmail() {
+  const email = document.getElementById('newsletter-email').value;
+  if (!email) return;
+
+  const formId = '1FAIpQLSdlQ_K3lVzetcii_TLvod12mRJTAiUkyGNi4Td1RCF82N6exg'; // your form ID from the URL
+  const entryId = 'entry.2103649398'; // your entry ID from step 2
+
+  const url = `https://docs.google.com/forms/d/e/${formId}/formResponse?${entryId}=${encodeURIComponent(email)}&submit=Submit`;
+
+  fetch(url, { method: 'POST', mode: 'no-cors' })
+    .then(() => {
+      document.getElementById('newsletter-email').value = '';
+      document.querySelector('.yaaas-btn').textContent = 'DONE ✓';
+    })
+    .catch(() => {
+      document.querySelector('.yaaas-btn').textContent = 'TRY AGAIN';
+    });
+}
+
+
+
+
+
+  
 const IMG_CACHE = new Map();
 const charOverlayHTML = document.getElementById('character-overlay').outerHTML;
   

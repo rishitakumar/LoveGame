@@ -1747,3 +1747,67 @@ input[type="range"]::-webkit-slider-thumb:active{
     min-height: 48px;
   }
 }
+
+@media screen and (max-width: 768px) {
+  /* Show birds on mobile - they were overflowing */
+  .lovegame-btn-wrap {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .lovegame-btn-wrap img[src="Home_bird.png"] {
+    width: 45vw !important;
+  }
+
+  /* Footer centering */
+  .footer-section > div {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 30px !important;
+  }
+
+  /* Cyber text stacks instead of side by side */
+  .cyber-text {
+    min-width: unset !important;
+    width: 90vw;
+    font-size: clamp(1rem, 5vw, 2rem);
+    text-align: center;
+  }
+
+  /* Star border fits screen */
+  #star-border {
+    top: -10px;
+    left: -10px;
+    width: calc(100% + 20px) !important;
+    height: calc(100% + 20px) !important;
+  }
+
+  /* Card counter + exit button no overlap */
+  #card-counter {
+    font-size: 16px;
+    top: 10px;
+    left: 10px;
+  }
+
+  #exit-btn {
+    top: 6px !important;
+    right: 6px !important;
+  }
+
+  /* Reflection cards centered and stacked */
+  .reflection-wrap {
+    grid-template-columns: 1fr !important;
+    overflow-y: auto;
+    padding: 10px !important;
+    gap: 12px !important;
+  }
+
+  .reflection-cardstage {
+    width: min(85vw, 400px) !important;
+  }
+
+  /* Draw/write/download box fits */
+  #journey-end-overlay > div[style*="grid"] {
+    grid-template-columns: 1fr !important;
+  }
+}

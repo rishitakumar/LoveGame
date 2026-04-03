@@ -1657,3 +1657,93 @@ input[type="range"]::-webkit-slider-thumb:active{
     drop-shadow(0 0 35px rgba(208,17,253,0.55));
   transform: scale(1.1) translateY(-4px);
 }
+
+/* ===== MOBILE OPTIMIZATIONS ===== */
+
+/* Stack footer newsletter/contact vertically on small screens */
+@media screen and (max-width: 600px) {
+  /* Footer newsletter/contact stacks */
+  .footer-section > div[style*="flex"] {
+    flex-direction: column !important;
+    gap: 30px !important;
+  }
+
+  /* Smaller characters on character select */
+  .character {
+    width: 120px;
+  }
+
+  .character-grid {
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Reminder box fits small screens */
+  .reminder-box {
+    padding: 1.2rem 1.4rem;
+  }
+
+  .reminder-box h2 {
+    font-size: 1.8rem;
+  }
+
+  /* Game board fills screen */
+  #game-background {
+    width: 100vw;
+  }
+
+  /* Card fits screen */
+  #card {
+    width: min(92vw, 400px);
+  }
+
+  /* Reflection cards stack vertically */
+  .reflection-wrap {
+    grid-template-columns: 1fr !important;
+    overflow-y: auto;
+  }
+
+  .reflection-cardstage {
+    width: min(92vw, 420px);
+  }
+
+  /* Cyber text smaller */
+  .cyber-text {
+    font-size: clamp(1.2rem, 6vw, 2.5rem);
+    min-width: unset;
+  }
+
+  /* Swirl title smaller */
+  .swirl-text {
+    font-size: 42px;
+    letter-spacing: 4px;
+  }
+
+  /* Card counter smaller */
+  #card-counter {
+    font-size: 18px;
+  }
+
+  /* Exit button stays visible */
+  #exit-btn {
+    top: 10px;
+    right: 10px;
+  }
+}
+
+/* Touch-friendly tap targets */
+@media (pointer: coarse) {
+  .navbar a {
+    padding: 18px 20px;
+  }
+
+  .choice-hotspot {
+    width: 80px;
+    height: 80px;
+  }
+
+  .yaaas-btn, #start-game, #confirm-character {
+    min-height: 48px;
+  }
+}

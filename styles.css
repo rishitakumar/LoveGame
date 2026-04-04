@@ -1961,7 +1961,7 @@ input[type="range"]::-webkit-slider-thumb:active{
   
   /* Move counter down when on reflection screen to avoid overlap */
   #journey-end-overlay #card-counter {
-    top: 70px; /* Below exit button */
+    top: 70px !important; /* Below exit button */
   }
 }
 
@@ -1979,5 +1979,47 @@ input[type="range"]::-webkit-slider-thumb:active{
   
   #journey-end-overlay #card-counter {
     top: 60px;
+  }
+}
+/* Make footer consistent on all pages */
+.footer-section > div {
+  display: flex;
+  justify-content: center; /* ✅ CHANGED from space-between */
+  align-items: flex-start;
+  gap: 60px;
+  flex-wrap: wrap;
+}
+
+@media screen and (max-width: 768px) {
+  .footer-section > div {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 30px !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+  
+  .footer-section h3,
+  .footer-section p,
+  .footer-section form,
+  .footer-section input,
+  .footer-section button {
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+/* Center reflection cards on mobile */
+@media screen and (max-width: 860px) {
+  .reflection-wrap {
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+    padding: 22px 10px !important;
+  }
+  
+  /* Center both the card stage and controls */
+  .reflection-wrap > * {
+    margin: 0 auto !important;
+    max-width: min(92vw, 560px) !important;
   }
 }

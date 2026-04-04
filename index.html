@@ -11,7 +11,7 @@
   <link rel="preload" as="image" href="darkland_screen.png">
   <link rel="preload" as="image" href="cards_physical_q1_front.png">
   <link rel="preload" as="image" href="cards_physical_q1_back.png">
-  <link rel="preload" as="image" href="Home_bird.png">
+  <link rel="preload" as="image" href="Home_bird.png">   
 </head>
 <body>
 
@@ -2775,21 +2775,27 @@ function exitGame() {
     phoenixImg.style.marginTop = '12px'; // ← add this
     phoenixImg.style.filter = 'drop-shadow(0 0 10px rgba(17,253,90,0.7))';
 
-    const birdLeft = document.createElement('img');
-    birdLeft.src = 'Home_bird.png';
-    birdLeft.style.width = '600px';
-    birdLeft.style.height = 'auto';
-    birdLeft.style.transform = 'scaleX(-1)';
-    birdLeft.style.pointerEvents = 'none';
-    birdLeft.style.transform = 'scaleX(-1)'; // Only flip it
-    birdLeft.style.marginTop = '-50px';      // Use margin to push it down instead of translate
+   // Replace the bird creation section in exitGame() with this:
+const birdLeft = document.createElement('img');
+birdLeft.src = 'Home_bird.png';
+birdLeft.style.width = '600px';
+birdLeft.style.height = 'auto';
+birdLeft.style.transform = 'scaleX(-1)';
+birdLeft.style.pointerEvents = 'none';
+birdLeft.style.order = '-1'; // ✅ ADD - moves above button
+birdLeft.style.marginBottom = '-50px'; // ✅ ADD - overlaps with button
 
-    const birdRight = document.createElement('img');
-    birdRight.src = 'Home_bird.png';
-    birdRight.style.width = '600px';
-    birdRight.style.height = 'auto';
-    birdRight.style.pointerEvents = 'none';
-    birdRight.style.marginTop = '-50px';      // Use margin to push it down instead of translate
+const birdRight = document.createElement('img');
+birdRight.src = 'Home_bird.png';
+birdRight.style.width = '600px';
+birdRight.style.height = 'auto';
+birdRight.style.pointerEvents = 'none';
+birdRight.style.order = '1'; // ✅ ADD - moves below button
+birdRight.style.marginTop = '-50px'; // ✅ ADD - overlaps with button
+
+// Also update the wrap to be flexbox column:
+wrap.style.flexDirection = 'column'; // ✅ ADD THIS LINE
+wrap.style.alignItems = 'center';
     
     const centerWrap = document.createElement('div');
     centerWrap.style.width = '200px';

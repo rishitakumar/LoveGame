@@ -203,10 +203,12 @@ html, body {
   color: #f5ff3a; 
   text-transform: uppercase;
   
-  /* Prevent text from shifting when dots are added */
   display: inline-block;
   min-width: 12em; 
   text-align: center;
+  white-space: normal; /* ✅ ADD THIS - allows wrapping */
+  line-height: 1.3;     /* ✅ ADD THIS - spacing between lines */
+  max-width: 90vw;      /* ✅ ADD THIS - prevents overflow */
 
   /* THICK PIXEL GAPS */
   -webkit-mask-image: repeating-linear-gradient(
@@ -1464,6 +1466,26 @@ input[type="range"]::-webkit-slider-thumb:active{
 }
 /* Bigger cyber text ONLY on journey screen */
 /* Bigger cyber text ONLY on journey screen */
+
+/* Prevent overlap on reflection screen */
+#journey-end-overlay #card-counter {
+  top: 70px !important; /* Below exit button */
+  left: 10px !important;
+}
+
+@media screen and (max-width: 480px) {
+  #card-counter {
+    font-size: 14px;
+    top: 8px;
+    left: 8px;
+    max-width: calc(100vw - 70px); /* Leave room for exit */
+  }
+  
+  #journey-end-overlay #card-counter {
+    top: 60px !important;
+  }
+}
+
 #journey-end-overlay .cyber-text{
   font-size: clamp(3rem, 8vw, 6.5rem);
   min-width: auto;
@@ -1809,5 +1831,153 @@ input[type="range"]::-webkit-slider-thumb:active{
   /* Draw/write/download box fits */
   #journey-end-overlay > div[style*="grid"] {
     grid-template-columns: 1fr !important;
+  }
+}
+/* 1. Stack "ENTERING CYBERSPACE" text on small screens */
+@media screen and (max-width: 768px) {
+  .cyber-text {
+    min-width: unset !important;
+    width: 90vw;
+    font-size: clamp(1rem, 5vw, 2rem);
+    text-align: center;
+    white-space: normal !important; /* Allow text to wrap */
+    line-height: 1.2;
+  }
+}
+
+/* 2. Shrink player character on smaller boards */
+@media screen and (max-width: 768px) {
+  #player-character {
+    width: 80px; /* Down from 120px */
+  }
+  
+  #player-star::after {
+    width: 150px; /* Down from 220px */
+    height: 150px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  #player-character {
+    width: 60px; /* Even smaller on very small screens */
+  }
+  
+  #player-star::after {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+/* 3. Fix footer "About" alignment to match Home page */
+.footer-section > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+@media screen and (max-width: 768px) {
+  .footer-section > div {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 30px !important;
+    text-align: center !important;
+  }
+  
+  /* Center all footer content */
+  .footer-section h3,
+  .footer-section p,
+  .footer-section form,
+  .footer-section input,
+  .footer-section button {
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+/* 4. Fix phoenix button + birds positioning on Home page */
+.lovegame-btn-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 80px auto 0;
+  gap: 0;
+}
+
+/* Birds positioned above and below button */
+.lovegame-btn-wrap img[src="Home_bird.png"]:first-of-type {
+  order: -1; /* Move first bird above button */
+  margin-bottom: -30px; /* Overlap slightly */
+  z-index: 1;
+}
+
+.lovegame-btn-wrap img[src="Home_bird.png"]:last-of-type {
+  order: 1; /* Keep second bird below button */
+  margin-top: -30px; /* Overlap slightly */
+  z-index: 1;
+}
+
+#lovegame-restart-btn {
+  order: 0;
+  z-index: 2; /* Button in middle */
+}
+
+@media screen and (max-width: 768px) {
+  .lovegame-btn-wrap img[src="Home_bird.png"] {
+    width: 45vw !important;
+    max-width: 200px;
+  }
+  
+  .lovegame-btn-wrap {
+    gap: 0;
+    margin-top: 40px;
+  }
+  
+  .lovegame-btn-wrap img[src="Home_bird.png"]:first-of-type {
+    margin-bottom: -20px;
+  }
+  
+  .lovegame-btn-wrap img[src="Home_bird.png"]:last-of-type {
+    margin-top: -20px;
+  }
+}
+
+/* 5. Fix overlap between card counter and exit button */
+@media screen and (max-width: 768px) {
+  #card-counter {
+    font-size: 16px;
+    top: 10px;
+    left: 10px;
+    max-width: calc(100vw - 80px); /* Leave room for exit button */
+  }
+
+  #exit-btn {
+    top: 10px !important;
+    right: 10px !important;
+  }
+  
+  /* Move counter down when on reflection screen to avoid overlap */
+  #journey-end-overlay #card-counter {
+    top: 70px; /* Below exit button */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  #card-counter {
+    font-size: 14px;
+    top: 8px;
+    left: 8px;
+  }
+  
+  #exit-btn {
+    top: 8px !important;
+    right: 8px !important;
+  }
+  
+  #journey-end-overlay #card-counter {
+    top: 60px;
   }
 }

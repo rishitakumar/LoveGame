@@ -1453,7 +1453,6 @@ function positionCharacter(instant = false) {
   const x = (rung.x / 1545) * img.clientWidth;
   const y = (rung.y / 2000) * img.clientHeight;
 
-  // Get current position for streak
   const fromX = parseFloat(char.style.left) || x;
   const fromY = parseFloat(char.style.top)  || y;
   const charColor = getComputedStyle(char).getPropertyValue('--char-color').trim() || '#f5ff3a';
@@ -1462,16 +1461,18 @@ function positionCharacter(instant = false) {
     spawnStreakTrail(fromX, fromY, x, y, charColor);
   }
 
-  // Slower movement — 0.9s instead of instant
   char.style.transition = instant ? "none" : "left 1.8s cubic-bezier(0.4, 0, 0.2, 1), top 1.8s cubic-bezier(0.4, 0, 0.2, 1)";
   char.style.left = `${x}px`;
   char.style.top  = `${y}px`;
 
-  const targetTop = char.offsetTop - screen.clientHeight * 0.65;
-screen.scrollTo({ 
-  top: Math.max(0, targetTop), 
-  behavior: instant ? "instant" : "smooth"
-});
+  // ✅ SCROLL ONLY ONCE when character position changes (not instant placement)
+  if (!instant && screen) {
+    const targetTop = char.offsetTop - screen.clientHeight * 0.5;
+    screen.scrollTo({ 
+      top: Math.max(0, targetTop), 
+      behavior: "smooth"
+    });
+  }
 }
 
 function spawnStreakTrail(fromX, fromY, toX, toY, color) {
@@ -1489,28 +1490,24 @@ function spawnStreakTrail(fromX, fromY, toX, toY, color) {
   }
 
   for (let i = 0; i < TRAIL_DOTS; i++) {
-    const t     = i / (TRAIL_DOTS - 1);  // 0 = tail tip, 1 = head (near char)
+    const t     = i / (TRAIL_DOTS - 1);
     const delay = t * (duration * 0.55);
 
-    // size: biggest at head (t=1), zero at tail (t=0)
     const coreR = 12 * Math.pow(t, 1.6);
     const glowR = coreR + 3 * t;
     const size  = Math.max(1, glowR * 2);
 
-    // position: head at toX/toY, tail extends back past fromX/fromY
-    // offset head to match character's visual center (translate -50%, -85% * scale 0.66)
-const charOffsetY = -60; // pulls head up to match the image position
-const lx = toX + (fromX - toX) * (1 - t) * 1.6;
-const ly = (toY + charOffsetY) + ((fromY + charOffsetY) - (toY + charOffsetY)) * (1 - t) * 1.6;
+    const charOffsetY = -60;
+    const lx = toX + (fromX - toX) * (1 - t) * 1.6;
+    const ly = (toY + charOffsetY) + ((fromY + charOffsetY) - (toY + charOffsetY)) * (1 - t) * 1.6;
 
-    // alpha: bright at head, fades to tail
     const alpha = Math.pow(t, 0.8);
 
     setTimeout(() => {
       const dot = document.createElement("div");
       dot.style.position      = "absolute";
       dot.style.pointerEvents = "none";
-      dot.style.zIndex        = "29";
+      dot.style.zIndex        = "25"; // ✅ CHANGED from 29 to 25 (below character which is 30)
       dot.style.borderRadius  = "50%";
       dot.style.width         = `${size}px`;
       dot.style.height        = `${size}px`;
@@ -1534,7 +1531,6 @@ const ly = (toY + charOffsetY) + ((fromY + charOffsetY) - (toY + charOffsetY)) *
       dot.style.transition = "opacity 1.4s ease, transform 1.4s ease";
       wrapper.appendChild(dot);
 
-      // fade out after a brief hold
       setTimeout(() => {
         dot.style.opacity   = "0";
         dot.style.transform = "scale(0.1)";
@@ -2200,9 +2196,7 @@ if (cardMode === "answer" && cardSide === "back") {
 
   
 function scrollToCards() {
-  const screen = document.getElementById("game-screen");
-  if (!screen) return;
-  screen.scrollIntoView({ behavior: "smooth", block: "center" });
+  return;
 }
 
 function showAnswerCard(cardData, delta) {

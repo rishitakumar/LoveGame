@@ -3,7 +3,6 @@
 <head>
   <title>Love Game</title>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="gloriosaw_outbackground.png">
   <link rel="preload" as="image" href="star-background.png">
@@ -11,7 +10,7 @@
   <link rel="preload" as="image" href="darkland_screen.png">
   <link rel="preload" as="image" href="cards_physical_q1_front.png">
   <link rel="preload" as="image" href="cards_physical_q1_back.png">
-  <link rel="preload" as="image" href="Home_bird.png">   
+  <link rel="preload" as="image" href="Home_bird.png">
 </head>
 <body>
 
@@ -204,7 +203,8 @@
   <br>
   By submitting your email, you agree to receive monthly newsletters. You can unsubscribe at any time.
 
-<div style="display: flex; justify-content: center; align-items: flex-start; gap: 60px; margin-top: 20px; font-family: Impact, sans-serif; flex-wrap: wrap;">  
+<div style="display: flex; justify-content: center; align-items: flex-start; gap: 100px; margin-top: 20px; font-family: Impact, sans-serif;">
+  
   <!-- Newsletter -->
   <div style="display: flex; flex-direction: column; align-items: center; gap: 0;">
     <p style="margin: 0 0 16px 0; color: #fff234; text-shadow: 0 0 8px rgba(255,242,52,0.6); font-size: 18px; letter-spacing: 1px; height: 30px; display: flex; align-items: center;">
@@ -235,7 +235,7 @@
     <div style="display: flex; align-items: center; justify-content: center; margin: 0;">
       <a href="mailto:hello@lovegame.com" 
          style="color: #11FD5A; text-decoration: none; border-bottom: 1px solid #FDD011; font-family: Georgia; font-weight: bold; font-size: 16px; line-height: 1;">
-        xoxogameoflove@gmail.com
+        hello@lovegame.com
       </a>
     </div>
   </div>
@@ -1453,6 +1453,7 @@ function positionCharacter(instant = false) {
   const x = (rung.x / 1545) * img.clientWidth;
   const y = (rung.y / 2000) * img.clientHeight;
 
+  // Get current position for streak
   const fromX = parseFloat(char.style.left) || x;
   const fromY = parseFloat(char.style.top)  || y;
   const charColor = getComputedStyle(char).getPropertyValue('--char-color').trim() || '#f5ff3a';
@@ -1461,26 +1462,16 @@ function positionCharacter(instant = false) {
     spawnStreakTrail(fromX, fromY, x, y, charColor);
   }
 
+  // Slower movement — 0.9s instead of instant
   char.style.transition = instant ? "none" : "left 1.8s cubic-bezier(0.4, 0, 0.2, 1), top 1.8s cubic-bezier(0.4, 0, 0.2, 1)";
   char.style.left = `${x}px`;
   char.style.top  = `${y}px`;
 
-  // ✅ SCROLL THAT ACTUALLY WORKS
-  if (screen && !instant) {
-    // Wait 100ms for position to start updating
-    setTimeout(() => {
-      const charRect = char.getBoundingClientRect();
-      const screenRect = screen.getBoundingClientRect();
-      
-      // Scroll to keep character in middle third of screen
-      const targetScrollTop = char.offsetTop - (screen.clientHeight / 2) + (char.offsetHeight / 2);
-      
-      screen.scrollTo({
-        top: targetScrollTop,
-        behavior: 'smooth'
-      });
-    }, 100);
-  }
+  const targetTop = char.offsetTop - screen.clientHeight * 0.65;
+screen.scrollTo({ 
+  top: Math.max(0, targetTop), 
+  behavior: instant ? "instant" : "smooth"
+});
 }
 
 function spawnStreakTrail(fromX, fromY, toX, toY, color) {
@@ -1498,24 +1489,28 @@ function spawnStreakTrail(fromX, fromY, toX, toY, color) {
   }
 
   for (let i = 0; i < TRAIL_DOTS; i++) {
-    const t     = i / (TRAIL_DOTS - 1);
+    const t     = i / (TRAIL_DOTS - 1);  // 0 = tail tip, 1 = head (near char)
     const delay = t * (duration * 0.55);
 
+    // size: biggest at head (t=1), zero at tail (t=0)
     const coreR = 12 * Math.pow(t, 1.6);
     const glowR = coreR + 3 * t;
     const size  = Math.max(1, glowR * 2);
 
-    // ✅ TRAIL EXTENDS BACKWARD - head never reaches destination
-    const lx = toX + (fromX - toX) * (1 - t) * 1.8; // trail extends further back
-    const ly = toY + (fromY - toY) * (1 - t) * 1.8;
+    // position: head at toX/toY, tail extends back past fromX/fromY
+    // offset head to match character's visual center (translate -50%, -85% * scale 0.66)
+const charOffsetY = -60; // pulls head up to match the image position
+const lx = toX + (fromX - toX) * (1 - t) * 1.6;
+const ly = (toY + charOffsetY) + ((fromY + charOffsetY) - (toY + charOffsetY)) * (1 - t) * 1.6;
 
+    // alpha: bright at head, fades to tail
     const alpha = Math.pow(t, 0.8);
 
     setTimeout(() => {
       const dot = document.createElement("div");
       dot.style.position      = "absolute";
       dot.style.pointerEvents = "none";
-      dot.style.zIndex        = "25"; // Still below character's 30
+      dot.style.zIndex        = "29";
       dot.style.borderRadius  = "50%";
       dot.style.width         = `${size}px`;
       dot.style.height        = `${size}px`;
@@ -1539,6 +1534,7 @@ function spawnStreakTrail(fromX, fromY, toX, toY, color) {
       dot.style.transition = "opacity 1.4s ease, transform 1.4s ease";
       wrapper.appendChild(dot);
 
+      // fade out after a brief hold
       setTimeout(() => {
         dot.style.opacity   = "0";
         dot.style.transform = "scale(0.1)";
@@ -2204,7 +2200,9 @@ if (cardMode === "answer" && cardSide === "back") {
 
   
 function scrollToCards() {
-  return;
+  const screen = document.getElementById("game-screen");
+  if (!screen) return;
+  screen.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 function showAnswerCard(cardData, delta) {
@@ -2777,22 +2775,21 @@ function exitGame() {
     phoenixImg.style.marginTop = '12px'; // ← add this
     phoenixImg.style.filter = 'drop-shadow(0 0 10px rgba(17,253,90,0.7))';
 
-   // Replace the bird creation section in exitGame() with this:
-const birdLeft = document.createElement('img');
-birdLeft.src = 'Home_bird.png';
-birdLeft.style.width = '600px';
-birdLeft.style.height = 'auto';
-birdLeft.style.transform = 'scaleX(-1)';
-birdLeft.style.pointerEvents = 'none';
+    const birdLeft = document.createElement('img');
+    birdLeft.src = 'Home_bird.png';
+    birdLeft.style.width = '600px';
+    birdLeft.style.height = 'auto';
+    birdLeft.style.transform = 'scaleX(-1)';
+    birdLeft.style.pointerEvents = 'none';
+    birdLeft.style.transform = 'scaleX(-1)'; // Only flip it
+    birdLeft.style.marginTop = '-50px';      // Use margin to push it down instead of translate
 
-const birdRight = document.createElement('img');
-birdRight.src = 'Home_bird.png';
-birdRight.style.width = '600px';
-birdRight.style.height = 'auto';
-birdRight.style.pointerEvents = 'none';
-// Also update the wrap to be flexbox column:
-wrap.style.flexDirection = 'column'; // ✅ ADD THIS LINE
-wrap.style.alignItems = 'center';
+    const birdRight = document.createElement('img');
+    birdRight.src = 'Home_bird.png';
+    birdRight.style.width = '600px';
+    birdRight.style.height = 'auto';
+    birdRight.style.pointerEvents = 'none';
+    birdRight.style.marginTop = '-50px';      // Use margin to push it down instead of translate
     
     const centerWrap = document.createElement('div');
     centerWrap.style.width = '200px';

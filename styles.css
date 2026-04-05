@@ -203,14 +203,14 @@ html, body {
   color: #f5ff3a; 
   text-transform: uppercase;
   
-  display: inline-block;
-  min-width: unset; 
+  display: block; /* ✅ CHANGED from inline-block */
+  width: 90%; /* ✅ ADDED */
+  max-width: 90vw;
   text-align: center;
-  white-space: normal; /* ✅ ADD THIS - allows wrapping */
-  line-height: 1.3;     /* ✅ ADD THIS - spacing between lines */
-  max-width: 90vw;      /* ✅ ADD THIS - prevents overflow */
+  white-space: normal;
+  line-height: 1.3;
+  word-wrap: break-word; /* ✅ ADDED */
 
-  /* THICK PIXEL GAPS */
   -webkit-mask-image: repeating-linear-gradient(
     to bottom,
     black 0px,
@@ -1897,33 +1897,10 @@ input[type="range"]::-webkit-slider-thumb:active{
 }
 
 /* 4. Fix phoenix button + birds positioning on Home page */
-.lovegame-btn-wrap {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 80px auto 0;
-  gap: 0;
-}
+
 
 /* Birds positioned above and below button */
-.lovegame-btn-wrap img[src="Home_bird.png"]:first-of-type {
-  order: -1; /* Move first bird above button */
-  margin-bottom: -30px; /* Overlap slightly */
-  z-index: 1;
-}
 
-.lovegame-btn-wrap img[src="Home_bird.png"]:last-of-type {
-  order: 1; /* Keep second bird below button */
-  margin-top: -30px; /* Overlap slightly */
-  z-index: 1;
-}
-
-#lovegame-restart-btn {
-  order: 0;
-  z-index: 2; /* Button in middle */
-}
 
 @media screen and (max-width: 768px) {
   .lovegame-btn-wrap img[src="Home_bird.png"] {
@@ -2024,19 +2001,21 @@ input[type="range"]::-webkit-slider-thumb:active{
   }
 }
 @media screen and (max-width: 768px) {
-  /* Move exit button down on reflection screen to avoid tabs */
+  /* Exit button moves down when reflection cards are showing */
   #journey-end-overlay #exit-btn {
-    top: 70px !important;
+    top: auto !important;
+    bottom: 20px !important;
+    right: 20px !important;
   }
   
+  /* Card counter stays at top left */
   #card-counter {
     font-size: 16px;
     top: 10px;
     left: 10px;
-    max-width: calc(100vw - 80px);
   }
   
   #journey-end-overlay #card-counter {
-    top: 130px !important; /* Below both exit button AND tabs */
+    top: 10px !important; /* Keep at top */
   }
 }

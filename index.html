@@ -1465,15 +1465,21 @@ function positionCharacter(instant = false) {
   char.style.left = `${x}px`;
   char.style.top  = `${y}px`;
 
-  // ✅ SCROLL: Keep character centered vertically
-  if (!instant && screen) {
-    requestAnimationFrame(() => {
-      const targetTop = char.offsetTop - (screen.clientHeight / 2);
-      screen.scrollTo({ 
-        top: Math.max(0, targetTop), 
-        behavior: "smooth"
+  // ✅ SCROLL THAT ACTUALLY WORKS
+  if (screen && !instant) {
+    // Wait 100ms for position to start updating
+    setTimeout(() => {
+      const charRect = char.getBoundingClientRect();
+      const screenRect = screen.getBoundingClientRect();
+      
+      // Scroll to keep character in middle third of screen
+      const targetScrollTop = char.offsetTop - (screen.clientHeight / 2) + (char.offsetHeight / 2);
+      
+      screen.scrollTo({
+        top: targetScrollTop,
+        behavior: 'smooth'
       });
-    });
+    }, 100);
   }
 }
 
@@ -1499,9 +1505,9 @@ function spawnStreakTrail(fromX, fromY, toX, toY, color) {
     const glowR = coreR + 3 * t;
     const size  = Math.max(1, glowR * 2);
 
-    // ✅ FIXED - use the same offset as the character
-    const lx = toX + (fromX - toX) * (1 - t) * 1.6;
-    const ly = toY + (fromY - toY) * (1 - t) * 1.6; // ✅ REMOVED charOffsetY
+    // ✅ TRAIL EXTENDS BACKWARD - head never reaches destination
+    const lx = toX + (fromX - toX) * (1 - t) * 1.8; // trail extends further back
+    const ly = toY + (fromY - toY) * (1 - t) * 1.8;
 
     const alpha = Math.pow(t, 0.8);
 
@@ -1509,7 +1515,7 @@ function spawnStreakTrail(fromX, fromY, toX, toY, color) {
       const dot = document.createElement("div");
       dot.style.position      = "absolute";
       dot.style.pointerEvents = "none";
-      dot.style.zIndex        = "25";
+      dot.style.zIndex        = "25"; // Still below character's 30
       dot.style.borderRadius  = "50%";
       dot.style.width         = `${size}px`;
       dot.style.height        = `${size}px`;
@@ -2778,18 +2784,12 @@ birdLeft.style.width = '600px';
 birdLeft.style.height = 'auto';
 birdLeft.style.transform = 'scaleX(-1)';
 birdLeft.style.pointerEvents = 'none';
-birdLeft.style.order = '-1'; // ✅ ADD - moves above button
-birdLeft.style.marginBottom = '-50px'; // ✅ ADD - overlaps with button
 
 const birdRight = document.createElement('img');
 birdRight.src = 'Home_bird.png';
 birdRight.style.width = '600px';
 birdRight.style.height = 'auto';
 birdRight.style.pointerEvents = 'none';
-birdRight.style.order = '1';
-birdRight.style.marginTop = '-80px'; // ✅ CHANGED from -50px to -80px for more overlap
-birdRight.style.transform = 'translateY(40px)'; // ✅ ADD - pushes bird further down
-
 // Also update the wrap to be flexbox column:
 wrap.style.flexDirection = 'column'; // ✅ ADD THIS LINE
 wrap.style.alignItems = 'center';

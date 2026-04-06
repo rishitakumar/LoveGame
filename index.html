@@ -1896,6 +1896,7 @@ function updateCardCounter(land, cardNum, infinity = false) {
 }
 
 function showQuestionCard(cardData) {
+   const savedScroll = window.scrollY
    answerProcessing = false;
   if (!cardData) return;
 
@@ -1930,6 +1931,9 @@ updateCardCounter(GameState.land, cardNum);
   layer.style.display = "flex";
   fadeInCardLayer();
   // load + decode before showing (prevents flash/jumble)
+   requestAnimationFrame(() => {
+    window.scrollTo({ top: savedScroll, behavior: 'instant' });
+  });
   setCardImages({
     frontSrc: cardData.questionFront,
     backSrc:  cardData.questionBack,
@@ -2205,6 +2209,7 @@ function scrollToCards() {
 }
 
 function showAnswerCard(cardData, delta) {
+  const savedScroll = window.scrollY;
   clearChoiceHotspots();
 
   const layer = document.getElementById("card-layer");
@@ -2221,6 +2226,9 @@ function showAnswerCard(cardData, delta) {
   layer.style.display = "flex";
   fadeInCardLayer();
   // load + decode before showing (prevents flash/jumble)
+  requestAnimationFrame(() => {
+    window.scrollTo({ top: savedScroll, behavior: 'instant' });
+  });
   setCardImages({
     frontSrc: cardData.answerFront,
     backSrc:  cardData.answerBack,

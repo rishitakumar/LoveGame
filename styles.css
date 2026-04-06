@@ -555,7 +555,9 @@ html, body {
 }
 .begin-text{
   position: fixed;
-  transform: translate(-50%, 0) scale(3);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(3);
   z-index: 9999;
   pointer-events: none;
   opacity: 0;

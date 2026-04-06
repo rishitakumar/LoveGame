@@ -481,7 +481,7 @@ html, body {
   width: 100%;
   flex: 1;
   min-height: calc(100vh - 220px);
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
   background: transparent;
   display: block;

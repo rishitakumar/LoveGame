@@ -1931,8 +1931,10 @@ updateCardCounter(GameState.land, cardNum);
   layer.style.display = "flex";
   fadeInCardLayer();
   // load + decode before showing (prevents flash/jumble)
-   requestAnimationFrame(() => {
-    window.scrollTo({ top: savedScroll, behavior: 'instant' });
+    requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: savedScroll, behavior: 'instant' });
+    });
   });
   setCardImages({
     frontSrc: cardData.questionFront,
@@ -2226,8 +2228,10 @@ function showAnswerCard(cardData, delta) {
   layer.style.display = "flex";
   fadeInCardLayer();
   // load + decode before showing (prevents flash/jumble)
-  requestAnimationFrame(() => {
-    window.scrollTo({ top: savedScroll, behavior: 'instant' });
+   requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: savedScroll, behavior: 'instant' });
+    });
   });
   setCardImages({
     frontSrc: cardData.answerFront,

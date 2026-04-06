@@ -554,6 +554,7 @@ html, body {
   filter: drop-shadow(0 0 18px var(--char-color, #f5ff3a));
 }
 .begin-text{
+  visibility: hidden;
   position: fixed;
   left: 50%;
   top: 50%;

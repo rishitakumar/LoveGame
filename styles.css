@@ -512,6 +512,8 @@ html, body {
 
 #ladder-wrapper{
   overflow: visible;
+  padding: 100px 50px;
+  margin: -100px -50px;
   position: relative;
   display: inline-block;  
    background-attachment: local;

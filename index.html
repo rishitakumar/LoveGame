@@ -1935,8 +1935,6 @@ updateCardCounter(GameState.land, cardNum);
     mode: "question",
     cardData
   });
-
-  scrollToCards();
   preloadNextCard();
 }
 
@@ -2200,9 +2198,7 @@ if (cardMode === "answer" && cardSide === "back") {
 
   
 function scrollToCards() {
-  const screen = document.getElementById("game-screen");
-  if (!screen) return;
-  screen.scrollIntoView({ behavior: "smooth", block: "center" });
+  return;
 }
 
 function showAnswerCard(cardData, delta) {

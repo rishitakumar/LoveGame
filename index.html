@@ -1468,7 +1468,7 @@ function positionCharacter(instant = false) {
   char.style.top  = `${y}px`;
 
   const targetTop = char.offsetTop - screen.clientHeight * 0.65;
-screen.scrollTo({ 
+window.scrollTo({ 
   top: Math.max(0, targetTop), 
   behavior: instant ? "instant" : "smooth"
 });

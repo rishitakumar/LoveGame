@@ -922,6 +922,7 @@ function closeAnswerAndContinue() {
     layer.style.display = "none";
 
     const delta = Number(layer.dataset.delta || 0);
+    document.body.style.overflow = '';
     const answeredCardId = Number(layer.dataset.cardId || 0);
 
     currentCard = null;
@@ -958,6 +959,7 @@ if (delta > 0) {
   setTimeout(goNextAfterAnswer, NEXT_CARD_DELAY + 1000);
 }
   }, 220);
+  
 }
 
 
@@ -1928,6 +1930,7 @@ updateCardCounter(GameState.land, cardNum);
   clearChoiceHotspots();
 
   const layer = document.getElementById("card-layer");
+  document.body.style.overflow = 'hidden';
   layer.style.display = "flex";
   fadeInCardLayer();
   // load + decode before showing (prevents flash/jumble)

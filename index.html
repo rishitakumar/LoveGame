@@ -2198,7 +2198,9 @@ if (cardMode === "answer" && cardSide === "back") {
 
   
 function scrollToCards() {
-  return;
+  const screen = document.getElementById("game-screen");
+  if (!screen) return;
+  screen.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 function showAnswerCard(cardData, delta) {

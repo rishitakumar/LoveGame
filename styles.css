@@ -1702,13 +1702,22 @@ input[type="range"]::-webkit-slider-thumb:active{
 }
 
 /* Fix title size on phones */
+/* 1. Tablet (768px) - comes FIRST */
+@media (max-width: 768px) {
+  .swirl-text {
+    font-size: 50px;
+    letter-spacing: 2px;
+  }
+}
+
+/* 2. Phone (480px) - comes LAST to override tablet */
 @media (max-width: 480px) {
   .swirl-text {
-    font-size: 42px;       /* Smaller font */
-    letter-spacing: 4px;   /* Tighter spacing */
+    font-size: 42px;       /* Smaller font for phone */
+    letter-spacing: 1px;   /* Tighter spacing to prevent breaks */
   }
   
   .swirl-title {
-    margin-bottom: 12px;   /* Less space below title */
+    margin-bottom: 12px;
   }
 }

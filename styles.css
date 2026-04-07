@@ -1741,18 +1741,22 @@ input[type="range"]::-webkit-slider-thumb:active{
 
 /* Mobile & Tablet Game Screen Fix */
 /* Center game board on mobile/tablet */
+/* Mobile/Tablet: Force center using absolute positioning */
 @media (max-width: 768px) {
   #game-screen {
-    /* Turn into flex container to center content */
-    display: flex !important;
-    flex-direction: column;
-    justify-content: center; /* Centers vertically */
-    align-items: center;     /* Centers horizontally */
-    min-height: 100dvh !important; /* Fills the full screen height */
+    position: relative !important;
+    min-height: 100dvh !important; /* Full screen height */
+    display: block !important;
   }
 
-  /* Optional: Remove padding that pushes the board down */
   #board {
-    padding: 0;
+    position: absolute !important;
+    top: 50% !important;
+    left: 0 !important;
+    width: 100% !important;
+    /* Pulls the board up by half its height to center it perfectly */
+    transform: translateY(-50%) !important; 
+    margin: 0 !important;
+    padding: 0 !important;
   }
 }

@@ -477,7 +477,7 @@ html, body {
   pointer-events: none;
 }
 #game-screen {
-  overflow-y: visible;
+  overflow-y: visible !important;
   position: relative;
   width: 100%;
   flex: 1;
@@ -513,8 +513,6 @@ html, body {
 
 #ladder-wrapper{
   overflow: visible !important;
-  padding-top: 160px; /* adjust based on your navbar height */
-  margin-top: -160px; /* cancel out so it doesn't shift layout */
   position: relative;
   display: inline-block;  
    background-attachment: local;
@@ -1751,26 +1749,5 @@ input[type="range"]::-webkit-slider-thumb:active{
   #player-character {
     width: 50px !important;
     transform: scale(0.6);
-  }
-}
-@media (max-width: 768px) {
-  #ladder-wrapper {
-    padding: 0 20px;
-    margin: 0 -20px;
-    overflow: visible !important;
-  }
-}
-
-@media (max-width: 480px) {
-  #ladder-wrapper {
-    padding: 0 10px;
-    margin: 0 -10px;
-  }
-}
-
-@media (max-width: 360px) {
-  #ladder-wrapper {
-    padding: 0 5px;
-    margin: 0 -5px;
   }
 }

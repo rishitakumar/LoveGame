@@ -513,6 +513,8 @@ html, body {
 
 #ladder-wrapper{
   overflow: visible !important;
+  padding-top: 80px; /* adjust based on your navbar height */
+  margin-top: -80px; /* cancel out so it doesn't shift layout */
   position: relative;
   display: inline-block;  
    background-attachment: local;
@@ -1749,5 +1751,26 @@ input[type="range"]::-webkit-slider-thumb:active{
   #player-character {
     width: 50px !important;
     transform: scale(0.6);
+  }
+}
+@media (max-width: 768px) {
+  #ladder-wrapper {
+    padding: 0 40px;
+    margin: 0 -40px;
+    overflow: visible !important;
+  }
+}
+
+@media (max-width: 480px) {
+  #ladder-wrapper {
+    padding: 0 30px;
+    margin: 0 -30px;
+  }
+}
+
+@media (max-width: 360px) {
+  #ladder-wrapper {
+    padding: 0 20px;
+    margin: 0 -20px;
   }
 }

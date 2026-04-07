@@ -1700,3 +1700,15 @@ input[type="range"]::-webkit-slider-thumb:active{
     width: 130px; /* Even smaller for phones */
   }
 }
+
+/* Fix title size on phones */
+@media (max-width: 480px) {
+  .swirl-text {
+    font-size: 42px;       /* Smaller font */
+    letter-spacing: 4px;   /* Tighter spacing */
+  }
+  
+  .swirl-title {
+    margin-bottom: 12px;   /* Less space below title */
+  }
+}

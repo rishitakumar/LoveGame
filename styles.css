@@ -1714,3 +1714,28 @@ input[type="range"]::-webkit-slider-thumb:active{
     width: 80px;
   }
 }
+/* Heart streaks - prevent clipping on tablets/phones */
+@media (max-width: 768px) {
+  #ladder-wrapper {
+    padding: 80px 60px;
+    margin: -80px -60px;
+  }
+  
+  #game-screen {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  #ladder-wrapper {
+    padding: 100px 40px;
+    margin: -100px -40px;
+  }
+}
+
+@media (max-width: 360px) {
+  #ladder-wrapper {
+    padding: 120px 30px;
+    margin: -120px -30px;
+  }
+}

@@ -1741,14 +1741,12 @@ input[type="range"]::-webkit-slider-thumb:active{
 
 /* Mobile & Tablet Game Screen Fix */
 @media (max-width: 768px) {
-  #game-screen {
-    /* Use dynamic viewport height (fixes iPhone URL bar issues) */
-    min-height: 100dvh !important; 
-    /* Center the board vertically */
-    display: flex;
+   #game-screen {
+    display: flex !important;
     flex-direction: column;
-    justify-content: center;
+    justify-content: center !important; /* Centers the board vertically */
     align-items: center;
+    min-height: 100dvh !important; /* Uses full screen height (ignores browser bars) */
   }
 
   /* Reduce padding so the board isn't pushed down */

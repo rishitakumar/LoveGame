@@ -1472,7 +1472,7 @@ input[type="range"]::-webkit-slider-thumb:active{
 /* Bigger cyber text ONLY on journey screen */
 /* Bigger cyber text ONLY on journey screen */
 #journey-end-overlay .cyber-text{
-  font-size: clamp(3rem, 8vw, 6.5rem);
+  font-size: clamp(4rem, 15vw, 8rem) !important; /* Significantly bigger */
   min-width: auto;
   animation: none;
 } /* <-- THIS CLOSING BRACE WAS MISSING */

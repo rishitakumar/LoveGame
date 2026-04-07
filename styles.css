@@ -1731,3 +1731,23 @@ input[type="range"]::-webkit-slider-thumb:active{
     overflow: visible !important;
   }
 }
+@media (max-width: 768px) {
+  #player-character {
+    width: 80px !important;
+    transform: scale(0.8);
+  }
+}
+
+@media (max-width: 480px) {
+  #player-character {
+    width: 60px !important;
+    transform: scale(0.7);
+  }
+}
+
+@media (max-width: 360px) {
+  #player-character {
+    width: 50px !important;
+    transform: scale(0.6);
+  }
+}

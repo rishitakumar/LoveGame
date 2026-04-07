@@ -1740,17 +1740,19 @@ input[type="range"]::-webkit-slider-thumb:active{
 }
 
 /* Mobile & Tablet Game Screen Fix */
+/* Center game board on mobile/tablet */
 @media (max-width: 768px) {
-   #game-screen {
+  #game-screen {
+    /* Turn into flex container to center content */
     display: flex !important;
     flex-direction: column;
-    justify-content: center !important; /* Centers the board vertically */
-    align-items: center;
-    min-height: 100dvh !important; /* Uses full screen height (ignores browser bars) */
+    justify-content: center; /* Centers vertically */
+    align-items: center;     /* Centers horizontally */
+    min-height: 100dvh !important; /* Fills the full screen height */
   }
 
-  /* Reduce padding so the board isn't pushed down */
+  /* Optional: Remove padding that pushes the board down */
   #board {
-    padding: 10px 0; 
+    padding: 0;
   }
 }

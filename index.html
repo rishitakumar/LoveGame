@@ -1873,8 +1873,8 @@ function setLandBackground(land) {
   const screen = document.getElementById('game-screen');
   if (!screen) return;
   screen.style.backgroundImage = `url('${map[land] || map.darkland}')`;
-  screen.style.backgroundSize = 'cover';
-  screen.style.backgroundPosition = 'center center';
+  screen.style.backgroundSize = '100% 100%';
+  screen.style.backgroundPosition = 'center top';
   screen.style.backgroundRepeat = 'no-repeat';
   screen.style.backgroundAttachment = 'local';
 }

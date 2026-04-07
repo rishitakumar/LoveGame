@@ -1738,3 +1738,21 @@ input[type="range"]::-webkit-slider-thumb:active{
     width: 100vw;
   }
 }
+
+/* Tablet and Phone: Make Rules/Reminders box 1/3rd larger */
+@media (max-width: 1024px) {
+  .reminder-box {
+    /* Increase max-width from 640px to ~850px */
+    width: min(95%, 850px); 
+    padding: 2.5rem 3rem; /* Slightly more breathing room */
+  }
+
+  /* Scale text up slightly to match the bigger box */
+  .reminder-box h2 {
+    font-size: 3.2rem; /* Was 2.6rem */
+  }
+  
+  .reminder-list li {
+    font-size: 1.15rem; /* Was 0.95rem */
+  }
+}

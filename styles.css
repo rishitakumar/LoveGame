@@ -558,10 +558,11 @@ html, body {
 .begin-text{
   visibility: hidden;
   position: fixed;
+  left: 50%;
   top: 50%;
   width: 100%
   text-align: center;
-  transform: translateY(-50%) scale(3); 
+  transform: translate(-50%, -50%) scale(3); 
   z-index: 9999;
   pointer-events: none;
   opacity: 0;
@@ -597,12 +598,12 @@ html, body {
   );
 }
 
-@keyframes beginPulse{
-  0%,100%{
-    transform: translateY(-50%) scale(3);
+@keyframes beginPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(3); /* Added -50% to X */
   }
-  50%{
-    transform: translateY(-50%) scale(3.03);
+  50% {
+    transform: translate(-50%, -50%) scale(3.03); /* Added -50% to X */
   }
 }
 

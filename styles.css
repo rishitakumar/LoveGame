@@ -1680,3 +1680,23 @@ input[type="range"]::-webkit-slider-thumb:active{
     font-size: clamp(3rem, 15vw, 6rem);
   }
 }
+
+/* Tablet and Phone adjustments */
+@media (max-width: 1024px) {
+  .character-grid {
+    flex-wrap: wrap; /* Allows characters to drop to new lines */
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .character {
+    width: 160px; /* Smaller size so they fit side-by-side */
+  }
+}
+
+/* Phone specific adjustments */
+@media (max-width: 480px) {
+  .character {
+    width: 130px; /* Even smaller for phones */
+  }
+}

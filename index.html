@@ -3964,13 +3964,6 @@ https://github.com/rishitakumar/LoveGame/blob/main/index.html
     // Initial view
    // Initial view
 // Mobile/Tablet: Make card bigger and match controls width
-
-setActive("front");
-
-// baseline snapshots so first undo works
-snapshot("front");
-snapshot("back");
-
 if (window.innerWidth <= 1024) {
   const w = Math.min(window.innerWidth * 0.92, 900);
   stageShell.style.width = w + "px";
@@ -3981,6 +3974,12 @@ if (window.innerWidth <= 1024) {
   wrap.style.paddingTop = "70px";
   wrap.style.alignItems = "center";
 }
+setActive("front");
+
+// baseline snapshots so first undo works
+snapshot("front");
+snapshot("back");
+
 
 }
 

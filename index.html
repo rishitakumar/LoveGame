@@ -3384,32 +3384,41 @@ stageShell.style.zIndex = "1";
 controls.style.position = "relative";
 controls.style.zIndex = "999";
 
-   function applyResponsiveLayout() {
+function applyResponsiveLayout() {
   const isTabletOrMobile = window.innerWidth <= 1024;
+  const isPhone = window.innerWidth <= 480;
 
   if (isTabletOrMobile) {
-    // 📱 MOBILE / TABLET
+    // Base mobile/tablet styles
     wrap.style.display = "flex";
     wrap.style.flexDirection = "column";
     wrap.style.alignItems = "center";
-
     wrap.style.justifyContent = "flex-start";
+
     wrap.style.paddingTop = "80px";
-    wrap.style.gap = "14px";
 
     stageShell.style.width = "min(95vw, 750px)";
     controls.style.width = "min(95vw, 750px)";
     stageShell.style.gap = "6px";
 
+    // 📱 PHONE ONLY adjustments
+    if (isPhone) {
+      wrap.style.gap = "40px";     // 🔥 more breathing room
+      wrap.style.paddingTop = "100px"; // extra space from header
+    } else {
+      // 📲 TABLET (your iPad — already good)
+      wrap.style.gap = "14px";
+    }
+
   } else {
-    // 💻 DESKTOP — FULL RESET
-    wrap.style.display = "grid"; // 🔥 restore grid
+    // 💻 DESKTOP RESET
+    wrap.style.display = "grid";
     wrap.style.gridTemplateColumns = "minmax(320px, 1fr) minmax(280px, 420px)";
     wrap.style.alignItems = "center";
     wrap.style.justifyItems = "center";
+    wrap.style.justifyContent = "center";
 
-    wrap.style.justifyContent = "center"; // undo flex-start
-    wrap.style.paddingTop = "22px";       // back to original
+    wrap.style.paddingTop = "22px";
     wrap.style.gap = "18px";
 
     stageShell.style.width = "min(560px, 92vw)";

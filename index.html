@@ -3979,6 +3979,8 @@ setActive("front");
 // baseline snapshots so first undo works
 snapshot("front");
 snapshot("back");
+  } catch (err) {
+    console.error("❌ attachReflectionCards crashed:", err);
   }
 
 }

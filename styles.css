@@ -1756,3 +1756,16 @@ input[type="range"]::-webkit-slider-thumb:active{
     font-size: 1.15rem; /* Was 0.95rem */
   }
 }
+/* Stack Reflection UI on Tablets & Phones */
+@media (max-width: 1024px) {
+  .reflection-wrap {
+    /* Force single column layout */
+    grid-template-columns: 1fr !important; 
+    
+    /* Push down to clear Exit button and Card Counter */
+    padding-top: 80px !important; 
+    
+    /* Tighter gap for stacked layout */
+    gap: 16px !important;
+  }
+}

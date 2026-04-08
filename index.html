@@ -3162,6 +3162,26 @@ const RUNG_COORDS = {
 
 function attachReflectionCards(endOverlayEl, finalLand) {
   try {
+    // Mobile/Tablet: Set bigger widths for reflection card + controls
+if (window.innerWidth <= 1024) {
+  // Make both card AND controls 1/3rd bigger and match width
+  const biggerWidth = Math.min(window.innerWidth * 0.92, 900);
+  
+  // Set on stage shell
+  stageShell.style.width = biggerWidth + "px";
+  stageShell.style.maxWidth = "92vw";
+  
+  // Set on controls
+  controls.style.width = biggerWidth + "px";
+  controls.style.maxWidth = "92vw";
+  
+  // Stack closer together
+  wrap.style.gap = "12px";
+  wrap.style.paddingTop = "70px";
+  
+  // Center them
+  wrap.style.alignItems = "center";
+}
     console.log("✅ attachReflectionCards fired", { finalLand });
 
     const DESIGN_W = 1545;

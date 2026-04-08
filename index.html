@@ -3384,6 +3384,34 @@ stageShell.style.zIndex = "1";
 controls.style.position = "relative";
 controls.style.zIndex = "999";
 
+    function applyResponsiveLayout() {
+  const isTabletOrMobile = window.innerWidth <= 1024;
+
+  if (isTabletOrMobile) {
+    // STACK layout
+    wrap.style.gridTemplateColumns = "1fr";
+    wrap.style.gap = "10px"; // smaller gap
+
+    // make both same width and bigger
+    stageShell.style.width = "min(90vw, 600px)";
+    controls.style.width = "min(90vw, 600px)";
+
+  } else {
+    // DESKTOP (original)
+    wrap.style.gridTemplateColumns = "minmax(320px, 1fr) minmax(280px, 420px)";
+    wrap.style.gap = "18px";
+
+    stageShell.style.width = "min(560px, 92vw)";
+    controls.style.width = "min(420px, 92vw)";
+  }
+}
+
+// run once
+applyResponsiveLayout();
+
+// update on resize
+window.addEventListener("resize", applyResponsiveLayout);
+
     const h = document.createElement("div");
     h.textContent = "DRAW, WRITE + DOWNLOAD";
     h.style.fontSize = "18px";

@@ -1756,51 +1756,40 @@ input[type="range"]::-webkit-slider-thumb:active{
     font-size: 1.15rem; /* Was 0.95rem */
   }
 }
-/* Stack Reflection UI on Tablets & Phones */
-/* Tablet and Phone (max-width: 1024px) */
 /* Reflection Cards: Bigger + Closer — Tablet/Phone ONLY */
 @media (max-width: 1024px) {
-  /* Force card bigger */
-  .reflection-cardstage {
-    width: min(900px, 92vw) !important;
-    aspect-ratio: 1545 / 2000 !important;
-  }
-
-  /* Force card + controls closer */
-  .reflection-wrap {
-    gap: 8px !important;
-    padding-top: 70px !important;
-    grid-template-columns: 1fr !important;
-  }
-
-  /* Controls bigger */
+  /* Both card AND controls: same width, centered */
+  .reflection-cardstage,
   .reflection-controls {
-    width: min(900px, 92vw) !important;
+    width: min(750px, 88vw) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* Stack them vertically, closer together */
+  .reflection-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;  /* Centers everything */
+    gap: 12px !important;
+    padding-top: 70px !important;
+  }
+
+  /* Controls: match card styling */
+  .reflection-controls {
     padding: 16px 20px !important;
-  }
-
-  .reflection-controls h3 {
-    font-size: 1.2rem !important;
-  }
-
-  .reflection-btn {
-    padding: 14px 18px !important;
-    font-size: 1.1rem !important;
   }
 }
 
 /* Phone ONLY */
 @media (max-width: 480px) {
-  .reflection-cardstage {
-    width: 95vw !important;
+  .reflection-cardstage,
+  .reflection-controls {
+    width: 94vw !important;
   }
 
   .reflection-wrap {
-    gap: 6px !important;
+    gap: 8px !important;
     padding-top: 60px !important;
-  }
-
-  .reflection-controls {
-    width: 95vw !important;
   }
 }

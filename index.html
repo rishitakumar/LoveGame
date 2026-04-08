@@ -3388,15 +3388,20 @@ controls.style.zIndex = "999";
   const isTabletOrMobile = window.innerWidth <= 1024;
 
   if (isTabletOrMobile) {
-    // STACK layout
-    wrap.style.gridTemplateColumns = "1fr";
-    wrap.style.gap = "10px"; // smaller gap
+  wrap.style.display = "flex";
+  wrap.style.flexDirection = "column";
+  wrap.style.alignItems = "center";
 
-    // make both same width and bigger
-    stageShell.style.width = "min(90vw, 600px)";
-    controls.style.width = "min(90vw, 600px)";
+  wrap.style.gap = "6px";
+  wrap.style.padding = "10px";
 
-  } else {
+  stageShell.style.width = "min(95vw, 750px)";
+  controls.style.width = "min(95vw, 750px)";
+
+  stageShell.style.gap = "6px";
+
+  controls.style.marginTop = "-4px"; // optional but nice
+} else {
     // DESKTOP (original)
     wrap.style.gridTemplateColumns = "minmax(320px, 1fr) minmax(280px, 420px)";
     wrap.style.gap = "18px";

@@ -3385,33 +3385,49 @@ controls.style.position = "relative";
 controls.style.zIndex = "999";
 
 function applyResponsiveLayout() {
-  const isTabletOrMobile = window.innerWidth <= 1024;
-  const isPhone = window.innerWidth <= 480;
+  const w = window.innerWidth;
 
-  if (isTabletOrMobile) {
-    // Base mobile/tablet styles
+  const isPhone = w <= 480;
+  const isTablet = w > 480 && w <= 1024;
+
+  if (isPhone) {
+    // 📱 PHONE (more space + slightly smaller so it breathes)
+
     wrap.style.display = "flex";
     wrap.style.flexDirection = "column";
     wrap.style.alignItems = "center";
     wrap.style.justifyContent = "flex-start";
 
-    wrap.style.paddingTop = "80px";
+    wrap.style.paddingTop = "110px";   // 🔥 push down from header
+    wrap.style.gap = "60px";           // 🔥 MUCH more breathing room
 
-    stageShell.style.width = "min(95vw, 750px)";
-    controls.style.width = "min(95vw, 750px)";
-    stageShell.style.gap = "6px";
+    stageShell.style.width = "92vw";   // slightly smaller so it doesn’t feel cramped
+    controls.style.width = "92vw";
 
-    // 📱 PHONE ONLY adjustments
-    if (isPhone) {
-      wrap.style.gap = "40px";     // 🔥 more breathing room
-      wrap.style.paddingTop = "100px"; // extra space from header
-    } else {
-      // 📲 TABLET (your iPad — already good)
-      wrap.style.gap = "14px";
-    }
+    stageShell.style.gap = "8px";
+
+
+  } else if (isTablet) {
+    // 📲 TABLET (reduce size so nothing gets cropped)
+
+    wrap.style.display = "flex";
+    wrap.style.flexDirection = "column";
+    wrap.style.alignItems = "center";
+    wrap.style.justifyContent = "flex-start";
+
+    wrap.style.paddingTop = "90px";
+    wrap.style.gap = "16px";
+
+    // 🔥 KEY FIX: smaller than before (≈ 1/4 increase instead of 1/3)
+    stageShell.style.width = "min(85vw, 620px)";
+    controls.style.width = "min(85vw, 620px)";
+
+    stageShell.style.gap = "8px";
+
 
   } else {
-    // 💻 DESKTOP RESET
+    // 💻 DESKTOP (restore original)
+
     wrap.style.display = "grid";
     wrap.style.gridTemplateColumns = "minmax(320px, 1fr) minmax(280px, 420px)";
     wrap.style.alignItems = "center";

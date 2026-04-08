@@ -1790,6 +1790,6 @@ input[type="range"]::-webkit-slider-thumb:active{
     width: 90vw; /* nearly full width */
   }
   .reflection-wrap {
-    gap: 12px; /* tighter spacing on phones */
+    gap: 5px; /* tighter spacing on phones */
   }
 }

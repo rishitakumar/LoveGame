@@ -1756,27 +1756,3 @@ input[type="range"]::-webkit-slider-thumb:active{
     font-size: 1.15rem; /* Was 0.95rem */
   }
 }
-@media (max-width: 1024px) {
-  .reflection-wrap {
-    grid-template-columns: 1fr !important;
-    gap: 12px !important;
-    padding: 16px !important;
-  }
-
-  .reflection-cardstage,
-  .reflection-controls {
-    width: min(90vw, 560px) !important;
-    margin: 0 auto !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .reflection-cardstage,
-  .reflection-controls {
-    width: 95vw !important;
-  }
-
-  .reflection-wrap {
-    padding: 10px !important;
-  }
-}

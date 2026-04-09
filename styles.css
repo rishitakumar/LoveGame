@@ -1672,10 +1672,14 @@ input[type="range"]::-webkit-slider-thumb:active{
 /* Fix dots - make them float so they don't move text */
 /* Fix dots from affecting layout */
 /* Fix dots - fixed width prevents text from moving */
-#loading-dots::before {
-  content: " ";
-  display: inline-block;
-  width: 40px;
+#loading-dots {
+  min-width: 50px;
+}
+
+@media screen and (max-width: 500px) {
+  #loading-dots {
+    text-align: center;
+  }
 }
 
 /* Desktop/Tablet - keep centered */

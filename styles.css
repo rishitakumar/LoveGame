@@ -1672,13 +1672,18 @@ input[type="range"]::-webkit-slider-thumb:active{
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 20px; /* More space between lines */
+    gap: 4vh; /* Relative spacing based on screen height */
+    width: 100%; /* Ensure it spans the width */
+    padding: 0 5%; /* Keeps text from touching the very edge of the glass */
   }
   
-  /* Bigger text for tablets and phones */
+  /* Responsive text for tablets and phones */
   #intro-text .intro-word,
   #intro-text #loading-dots {
-    font-size: clamp(3rem, 15vw, 6rem);
+    /* 10vw is safer for mobile to prevent horizontal overflow */
+    font-size: clamp(2.5rem, 10vw, 5rem); 
+    line-height: 1.2;
+    text-align: center;
   }
 }
 

@@ -1707,6 +1707,7 @@ input[type="range"]::-webkit-slider-thumb:active{
     left: 50% !important;
     top: 50% !important;
     transform: translate(-50%, -50%) !important;
-    animation: gameFloat 6s ease-in-out infinite !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 }

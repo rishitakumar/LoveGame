@@ -1672,9 +1672,10 @@ input[type="range"]::-webkit-slider-thumb:active{
 /* Fix dots - make them float so they don't move text */
 /* Fix dots from affecting layout */
 /* Fix dots - fixed width prevents text from moving */
-#loading-dots {
-  min-width: 50px;
-  max-width: 50px;
+#loading-dots::before {
+  content: " ";
+  display: inline-block;
+  width: 40px;
 }
 
 /* Desktop/Tablet - keep centered */

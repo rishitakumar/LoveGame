@@ -1671,9 +1671,11 @@ input[type="range"]::-webkit-slider-thumb:active{
 /* Fix dots from affecting layout on all screens */
 /* Fix dots - make them float so they don't move text */
 /* Fix dots from affecting layout */
+/* Fix dots - fixed width prevents text from moving */
 #loading-dots {
   display: inline-block !important;
-  min-width: 40px !important;
+  width: 50px !important;
+  text-align: left !important;
 }
 
 /* Desktop/Tablet - keep centered */

@@ -3400,19 +3400,22 @@ function applyResponsiveLayout() {
 
   if (isPhone) {
     // 📱 PHONE
-wrap.style.justifyContent = "center"; 
-    wrap.style.gap = "40px"; // 🔥 Adjust this value to increase/decrease the space between blocks
+    wrap.style.justifyContent = "center"; // Keeps them grouped in the center
+    wrap.style.gap = "60px";              // 🔥 Force a large gap between the blocks
     
-    // Width logic: 95vw makes it "almost but not completely" fill the width
-    stageShell.style.width = "95vw";
-    controls.style.width = "95vw";
+    // Ensure the container is actually taking up the full height
+    wrap.style.height = "100vh";
+    wrap.style.padding = "20px 0";        // Adds buffer at top/bottom
+
+    // Width logic: Using !important via setProperty to override any external CSS
+    stageShell.style.setProperty("width", "95vw", "important");
+    controls.style.setProperty("width", "95vw", "important");
     
-    // Remove the maxWidth or set it higher to ensure it fills the 95vw on large phones
-    stageShell.style.maxWidth = "none";
-    controls.style.maxWidth = "none";
+    // Reset max-widths that might be shrinking the boxes
+    stageShell.style.maxWidth = "100%";
+    controls.style.maxWidth = "100%";
 
     stageShell.style.gap = "8px";
-    
 
   } else if (isTablet) {
     // 📲 TABLET (increase spacing and slightly reduce size to avoid cropping)

@@ -1690,5 +1690,6 @@ input[type="range"]::-webkit-slider-thumb:active{
     display: block !important;
     min-width: 3ch !important;
     text-align: center !important;
+    flex-shrink: 0 !important;
   }
 }

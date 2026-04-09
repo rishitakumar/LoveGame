@@ -1680,16 +1680,22 @@ input[type="range"]::-webkit-slider-thumb:active{
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    gap: 15px !important;
+    gap: 10px !important;
+    animation: none !important;
+    transform: translate(-50%, -50%) !important;
   }
   
   .intro-word {
     display: block !important;
   }
+  
   #loading-dots {
     display: block !important;
-    min-width: 3ch !important;
-    text-align: center !important;
+    width: 50px !important;
     flex-shrink: 0 !important;
+  }
+  
+  #intro-text * {
+    animation: none !important;
   }
 }

@@ -1675,16 +1675,14 @@ input[type="range"]::-webkit-slider-thumb:active{
 }
 
 /* Stack intro text on phones and tablets */
+/* Phone only - stack and stop animation */
 @media screen and (max-width: 500px) {
   #intro-text {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     gap: 8px !important;
-    position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
+    animation: none !important;
   }
   
   .intro-word {
@@ -1699,5 +1697,16 @@ input[type="range"]::-webkit-slider-thumb:active{
     height: 30px !important;
     line-height: 30px !important;
     text-align: center !important;
+  }
+}
+
+/* Desktop/Tablet - ensure original centering works */
+@media screen and (min-width: 501px) {
+  #intro-text {
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    animation: gameFloat 6s ease-in-out infinite !important;
   }
 }

@@ -3400,19 +3400,20 @@ function applyResponsiveLayout() {
 
   if (isPhone) {
     // 📱 PHONE
-   const baseCardWidth = 560;     // desktop card width
-  const baseControlsWidth = 420; // desktop controls width
-  const maxWidth = window.innerWidth * 0.95; // never exceed 95% of screen
+  const scale = 4 / 3; // 1.333...
+  const baseCardWidth = 560;
+  const baseControlsWidth = 420;
+  const maxWidth = w * 0.95;
+    
+  stageShell.style.width = `min(${baseCardWidth * scale}px, ${maxWidth}px)`;
+  controls.style.width = `min(${baseControlsWidth * scale}px, ${maxWidth}px)`;
 
-  stageShell.style.width = `min(${baseCardWidth * 1.25}px, ${maxWidth}px)`;
-  controls.style.width = `min(${baseControlsWidth * 1.25}px, ${maxWidth}px)`;
-
-  wrap.style.gap = "60px"; // breathing space between card and controls
+  wrap.style.gap = "120px"; // breathing space between card and controls
   stageShell.style.gap = "8px"; // internal gap inside card stage
 
   } else if (isTablet) {
     // 📲 TABLET (increase spacing and slightly reduce size to avoid cropping)
-    wrap.style.gap = "42px";
+    wrap.style.gap = "60px";
 
     // About 1/4 larger than the original desktop size
     stageShell.style.width = "min(85vw, 620px)";

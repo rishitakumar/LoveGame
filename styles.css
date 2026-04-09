@@ -116,6 +116,10 @@ html, body {
 /* The Main Star Screen */
 /* Update the existing #intro-overlay */
 /* Update the main overlay */
+#intro-text {
+  animation: none !important;
+  transform: translate(-50%, -50%) !important;
+}
 #intro-overlay {
   position: fixed;
   inset: 0;

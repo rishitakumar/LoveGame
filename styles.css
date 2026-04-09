@@ -1694,5 +1694,16 @@ input[type="range"]::-webkit-slider-thumb:active{
     width: 60px !important;
     height: 30px !important;
     line-height: 30px !important;
+    text-align: center !important;
+  }
+}
+
+/* Restore desktop/tablet centering */
+@media screen and (min-width: 501px) {
+  #intro-text {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
   }
 }

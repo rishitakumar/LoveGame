@@ -119,6 +119,8 @@ html, body {
 #intro-text {
   animation: none !important;
   transform: translate(-50%, -50%) !important;
+  border: 2px solid red !important;
+}
 }
 #loading-dots {
   display: inline-block;

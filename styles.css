@@ -1689,31 +1689,30 @@ input[type="range"]::-webkit-slider-thumb:active{
 
 /* Tablet and Phone adjustments */
 @media (max-width: 1024px) {
-  .character-grid {
-    display: flex;
-    flex-wrap: wrap;      /* Key: Allows side-by-side */
-    justify-content: center;
-    gap: 15px;            /* Space between characters */
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box; /* Ensures padding doesn't push items off screen */
-  }
+ /* This targets the container holding the characters */
+.character-grid {
+  display: flex !important;
+  flex-direction: row !important; /* Force horizontal flow */
+  flex-wrap: wrap !important;     /* Allow jumping to next line */
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  margin: 0 auto;
+}
 
+@media (max-width: 1024px) {
   .character {
-    /* "flex-grow: 0", "flex-shrink: 1", "flex-basis: calc(50% - 20px)" */
-    /* This forces 2 columns on small screens, minus the gap space */
-    flex: 0 1 calc(45% - 10px); 
-    
-    min-width: 120px;     /* Prevents them from getting too skinny */
-    max-width: 200px;     /* Prevents them from getting too huge on tablets */
+    /* TABLET: Fits ~3-4 per row */
+    flex: 0 1 180px; 
+    max-width: 200px;
   }
 }
 
-/* Extra tweak for very small phones */
-@media (max-width: 360px) {
+@media (max-width: 480px) {
   .character {
-    /* On tiny phones, we might actually need 1 column */
-    flex: 0 1 90%;
+    /* PHONE: Forces exactly 2 per row (46% width + gap) */
+    flex: 0 1 46%; 
+    min-width: 130px; 
   }
 }
 

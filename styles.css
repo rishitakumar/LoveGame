@@ -120,6 +120,11 @@ html, body {
   animation: none !important;
   transform: translate(-50%, -50%) !important;
 }
+#loading-dots {
+  display: inline-block;
+  min-width: 3ch;
+  text-align: left;
+}
 #intro-overlay {
   position: fixed;
   inset: 0;

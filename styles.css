@@ -1680,22 +1680,19 @@ input[type="range"]::-webkit-slider-thumb:active{
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    gap: 10px !important;
-    animation: none !important;
-    transform: translate(-50%, -50%) !important;
+    gap: 8px !important;
   }
   
   .intro-word {
     display: block !important;
+    animation: none !important;
+    transform: none !important;
   }
   
   #loading-dots {
     display: block !important;
-    width: 50px !important;
-    flex-shrink: 0 !important;
-  }
-  
-  #intro-text * {
-    animation: none !important;
+    width: 60px !important;
+    height: 30px !important;
+    line-height: 30px !important;
   }
 }

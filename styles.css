@@ -1691,33 +1691,29 @@ input[type="range"]::-webkit-slider-thumb:active{
 @media (max-width: 1024px) {
   .character-grid {
     display: flex;
-    flex-wrap: wrap; 
+    flex-wrap: wrap;      /* Key: Allows side-by-side */
     justify-content: center;
-    gap: 1.5rem; /* Slightly more breathing room for tablets */
-    padding: 20px;
+    gap: 15px;            /* Space between characters */
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box; /* Ensures padding doesn't push items off screen */
   }
 
   .character {
-    /* Side-by-side on tablets: ~3 characters per row */
-    width: 28%; 
-    min-width: 140px; /* Prevents them from getting too tiny */
+    /* "flex-grow: 0", "flex-shrink: 1", "flex-basis: calc(50% - 20px)" */
+    /* This forces 2 columns on small screens, minus the gap space */
+    flex: 0 1 calc(45% - 10px); 
+    
+    min-width: 120px;     /* Prevents them from getting too skinny */
+    max-width: 200px;     /* Prevents them from getting too huge on tablets */
   }
 }
 
-/* Phone specific adjustments */
-@media (max-width: 480px) {
-  .character-grid {
-    gap: 12px; /* Tighter gap to maximize screen space */
-    padding: 10px;
-  }
-
+/* Extra tweak for very small phones */
+@media (max-width: 360px) {
   .character {
-    /* 2 characters per row with a small gap */
-    width: 45%; 
-    /* OR, if you want them almost full width (1 per row): */
-    /* width: 90%; */
-    
-    min-width: 0; /* Allow them to shrink as needed */
+    /* On tiny phones, we might actually need 1 column */
+    flex: 0 1 90%;
   }
 }
 

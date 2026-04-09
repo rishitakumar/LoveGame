@@ -3400,15 +3400,17 @@ function applyResponsiveLayout() {
 
   if (isPhone) {
     // 📱 PHONE
+  wrap.style.justifyContent = "space-evenly"; // Distributes space above, between, and below
+
   stageShell.style.width = "96vw";
   controls.style.width = "96vw";
 
-  // Optional: set a minimum width for very small devices
+  // Optional: prevent excessive growth on larger phones
   stageShell.style.maxWidth = "720px";
   controls.style.maxWidth = "720px";
 
-  wrap.style.gap = "240px"; // breathing space between card and controls
-  stageShell.style.gap = "8px"; // internal gap inside card stage
+  wrap.style.gap = "0px"; // Not needed when using space-evenly
+  stageShell.style.gap = "8px";
 
   } else if (isTablet) {
     // 📲 TABLET (increase spacing and slightly reduce size to avoid cropping)

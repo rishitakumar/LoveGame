@@ -3386,60 +3386,45 @@ controls.style.zIndex = "999";
 
 function applyResponsiveLayout() {
   const w = window.innerWidth;
-
   const isPhone = w <= 480;
   const isTablet = w > 480 && w <= 1024;
 
-  if (isPhone) {
+  // Ensure the wrapper fills the viewport
+  wrap.style.position = "fixed";
+  wrap.style.inset = "0";
   wrap.style.display = "flex";
   wrap.style.flexDirection = "column";
   wrap.style.alignItems = "center";
-  wrap.style.justifyContent = "flex-start";
+  wrap.style.justifyContent = "center"; // 🔥 Vertically centers both blocks
+  wrap.style.overflowY = "auto";        // Allows scrolling if content is taller than the screen
 
-  // 🔥 THIS FIXES YOUR GAP ISSUE
-  wrap.style.top = "0";
-  wrap.style.left = "0";
-  wrap.style.right = "0";
-  wrap.style.bottom = "auto";
-  wrap.style.minHeight = "100vh";
-  wrap.style.height = "auto";
-  wrap.style.overflowY = "auto";
+  if (isPhone) {
+    // 📱 PHONE
+    wrap.style.gap = "32px"; // More breathing room
 
-  wrap.style.paddingTop = "110px";
-  wrap.style.gap = "28px"; // THIS WILL NOW ACTUALLY WORK
-
-  stageShell.style.width = "92vw";
-  controls.style.width = "92vw";
-} else if (isTablet) {
-    // 📲 TABLET (reduce size so nothing gets cropped)
-
-    wrap.style.display = "flex";
-    wrap.style.flexDirection = "column";
-    wrap.style.alignItems = "center";
-    wrap.style.justifyContent = "flex-start";
-
-    wrap.style.paddingTop = "90px";
-    wrap.style.gap = "25px";
-
-    // 🔥 KEY FIX: smaller than before (≈ 1/4 increase instead of 1/3)
-    stageShell.style.width = "min(85vw, 620px)";
-    controls.style.width = "min(85vw, 620px)";
-
+    stageShell.style.width = "92vw";
+    controls.style.width = "92vw";
     stageShell.style.gap = "8px";
 
+  } else if (isTablet) {
+    // 📲 TABLET (increase spacing and slightly reduce size to avoid cropping)
+    wrap.style.gap = "36px";
+
+    // About 1/4 larger than the original desktop size
+    stageShell.style.width = "min(85vw, 620px)";
+    controls.style.width = "min(85vw, 620px)";
+    stageShell.style.gap = "8px";
 
   } else {
-    // 💻 DESKTOP (restore original)
-
+    // 💻 DESKTOP
     wrap.style.display = "grid";
     wrap.style.gridTemplateColumns = "minmax(320px, 1fr) minmax(280px, 420px)";
     wrap.style.alignItems = "center";
     wrap.style.justifyItems = "center";
     wrap.style.justifyContent = "center";
+    wrap.style.gap = "32px";
 
-    wrap.style.paddingTop = "22px";
-    wrap.style.gap = "18px";
-
+    // Restore original sizes
     stageShell.style.width = "min(560px, 92vw)";
     controls.style.width = "min(420px, 92vw)";
     stageShell.style.gap = "10px";

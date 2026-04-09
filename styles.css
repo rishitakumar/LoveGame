@@ -1686,4 +1686,9 @@ input[type="range"]::-webkit-slider-thumb:active{
   .intro-word {
     display: block !important;
   }
+  #loading-dots {
+    display: block !important;
+    min-width: 3ch !important;
+    text-align: center !important;
+  }
 }

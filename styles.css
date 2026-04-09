@@ -1665,3 +1665,27 @@ input[type="range"]::-webkit-slider-thumb:active{
     drop-shadow(0 0 35px rgba(208,17,253,0.55));
   transform: scale(1.1) translateY(-4px);
 }
+.cyber-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  /* Critical: prevent the text from wrapping or shifting */
+  white-space: nowrap; 
+  text-align: center;
+  
+  /* Remove min-width if you had it, it's no longer needed */
+}
+
+#loading-dots {
+  /* This pulls the dots out of the layout calculation */
+  position: absolute;
+  left: 100%; 
+  text-align: left;
+  
+  /* Give it a fixed width so the cursor doesn't flicker 
+     if you add more dots later */
+  width: 4rem; 
+  padding-left: 10px;
+}

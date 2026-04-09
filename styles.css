@@ -1723,22 +1723,38 @@ input[type="range"]::-webkit-slider-thumb:active{
 
 /* Fix title size on phones */
 /* 1. Tablet (768px) - comes FIRST */
+/* 1. Tablet (768px) */
 @media (max-width: 768px) {
   .swirl-text {
-    font-size: 50px;
+    /* Using vw makes it scale perfectly with the screen width */
+    font-size: 8vw; 
+    font-weight: bold;
     letter-spacing: 2px;
-  }
-}
-
-/* 2. Phone (480px) - comes LAST to override tablet */
-@media (max-width: 480px) {
-  .swirl-text {
-    font-size: 42px;       /* Smaller font for phone */
-    letter-spacing: 1px;   /* Tighter spacing to prevent breaks */
+    display: block;
+    text-align: center;
+    line-height: 1.2;
   }
   
   .swirl-title {
-    margin-bottom: 12px;
+    margin-bottom: 30px;
+    padding: 0 10px;
+  }
+}
+
+/* 2. Phone (480px) */
+@media (max-width: 480px) {
+  .swirl-text {
+    /* Larger percentage of the screen width for phones */
+    font-size: 12vw; 
+    letter-spacing: 1px;
+    /* Optional: helps prevent long words from breaking weirdly */
+    word-break: keep-all; 
+  }
+  
+  .swirl-title {
+    margin-bottom: 20px;
+    /* Bring it closer to the characters but keep it prominent */
+    margin-top: 10px; 
   }
 }
 

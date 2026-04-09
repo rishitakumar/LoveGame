@@ -3400,17 +3400,20 @@ function applyResponsiveLayout() {
 
   if (isPhone) {
     // 📱 PHONE
-  wrap.style.justifyContent = "space-evenly"; // Distributes space above, between, and below
-
-  stageShell.style.width = "96vw";
-  controls.style.width = "96vw";
-
-  // Optional: prevent excessive growth on larger phones
-  stageShell.style.maxWidth = "720px";
-  controls.style.maxWidth = "720px";
-
-  wrap.style.gap = "0px"; // Not needed when using space-evenly
-  stageShell.style.gap = "8px";
+  wrap.style.justifyContent = "flex-start"; // Start from top
+    wrap.style.paddingTop = "20px"; // Top padding
+    wrap.style.paddingBottom = "20px"; // Bottom padding
+    wrap.style.gap = "40px"; // ✅ Increased spacing between blocks
+    
+    // Almost but not completely fill width
+    stageShell.style.width = "92vw"; // ✅ Almost full width (was 96vw)
+    controls.style.width = "92vw"; // ✅ Almost full width (was 96vw)
+    
+    // Optional: prevent excessive growth on larger phones
+    stageShell.style.maxWidth = "720px";
+    controls.style.maxWidth = "720px";
+    stageShell.style.gap = "8px";
+    
 
   } else if (isTablet) {
     // 📲 TABLET (increase spacing and slightly reduce size to avoid cropping)

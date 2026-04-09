@@ -1681,6 +1681,10 @@ input[type="range"]::-webkit-slider-thumb:active{
     flex-direction: column !important;
     align-items: center !important;
     gap: 8px !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
   }
   
   .intro-word {

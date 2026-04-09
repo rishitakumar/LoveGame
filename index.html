@@ -3400,18 +3400,17 @@ function applyResponsiveLayout() {
 
   if (isPhone) {
     // 📱 PHONE
-  wrap.style.justifyContent = "flex-start"; // Start from top
-    wrap.style.paddingTop = "20px"; // Top padding
-    wrap.style.paddingBottom = "20px"; // Bottom padding
-    wrap.style.gap = "40px"; // ✅ Increased spacing between blocks
+wrap.style.justifyContent = "center"; 
+    wrap.style.gap = "40px"; // 🔥 Adjust this value to increase/decrease the space between blocks
     
-    // Almost but not completely fill width
-    stageShell.style.width = "92vw"; // ✅ Almost full width (was 96vw)
-    controls.style.width = "92vw"; // ✅ Almost full width (was 96vw)
+    // Width logic: 95vw makes it "almost but not completely" fill the width
+    stageShell.style.width = "95vw";
+    controls.style.width = "95vw";
     
-    // Optional: prevent excessive growth on larger phones
-    stageShell.style.maxWidth = "720px";
-    controls.style.maxWidth = "720px";
+    // Remove the maxWidth or set it higher to ensure it fills the 95vw on large phones
+    stageShell.style.maxWidth = "none";
+    controls.style.maxWidth = "none";
+
     stageShell.style.gap = "8px";
     
 

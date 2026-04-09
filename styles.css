@@ -1674,10 +1674,17 @@ input[type="range"]::-webkit-slider-thumb:active{
 /* Stack intro text on phones and tablets */
 /* Phone only - stack and stop animation */
 /* Fix dots from affecting layout on all screens */
+/* Fix dots - make them float so they don't move text */
 #loading-dots {
   display: inline-block !important;
-  min-width: 50px !important;
-  text-align: left !important;
+  position: absolute !important;
+  width: 50px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+}
+
+#intro-text {
+  position: relative !important;
 }
 
 /* Phone only - stack vertically */
@@ -1686,19 +1693,18 @@ input[type="range"]::-webkit-slider-thumb:active{
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    gap: 8px !important;
-    animation: none !important;
+    gap: 10px !important;
   }
   
   .intro-word {
     display: block !important;
     animation: none !important;
-    transform: none !important;
   }
   
   #loading-dots {
-    display: block !important;
-    width: 60px !important;
-    text-align: center !important;
+    position: relative !important;
+    transform: none !important;
+    left: auto !important;
+    margin-top: 5px !important;
   }
 }

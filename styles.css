@@ -116,11 +116,6 @@ html, body {
 /* The Main Star Screen */
 /* Update the existing #intro-overlay */
 /* Update the main overlay */
-#intro-text {
-  animation: none !important;
-  transform: translate(-50%, -50%) !important;
-}
-}
 
 #intro-overlay {
   position: fixed;
@@ -1675,21 +1670,27 @@ input[type="range"]::-webkit-slider-thumb:active{
 /* Phone only - stack and stop animation */
 /* Fix dots from affecting layout on all screens */
 /* Fix dots - make them float so they don't move text */
+/* Fix dots from affecting layout */
 #loading-dots {
   display: inline-block !important;
-  position: absolute !important;
-  width: 50px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
+  min-width: 40px !important;
 }
 
+/* Desktop/Tablet - keep centered */
 #intro-text {
-  position: relative !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
 }
 
 /* Phone only - stack vertically */
 @media screen and (max-width: 500px) {
   #intro-text {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -1698,13 +1699,5 @@ input[type="range"]::-webkit-slider-thumb:active{
   
   .intro-word {
     display: block !important;
-    animation: none !important;
-  }
-  
-  #loading-dots {
-    position: relative !important;
-    transform: none !important;
-    left: auto !important;
-    margin-top: 5px !important;
   }
 }

@@ -192,39 +192,6 @@ html, body {
   z-index: 2147483647;
 }
 
-.cyber-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10001;
-
-  font-family: 'Impact', sans-serif;
-  font-size: clamp(2rem, 10vw, 4rem);
-  color: #f5ff3a; 
-  text-transform: uppercase;
-  
-  /* Prevent text from shifting when dots are added */
-  display: inline-block;
-  min-width: 12em; 
-  text-align: center;
-
-  /* THICK PIXEL GAPS */
-  -webkit-mask-image: repeating-linear-gradient(
-    to bottom,
-    black 0px,
-    black 4px,
-    transparent 4px,
-    transparent 8px
-  );
-  mask-image: repeating-linear-gradient(
-    to bottom,
-    black 0px,
-    black 4px,
-    transparent 4px,
-    transparent 8px
-  );
-}
 /* New Animation that keeps the text centered while floating */
 @keyframes gameFloat {
   0%, 100% { transform: translate(-50%, -50%); }
@@ -1664,4 +1631,43 @@ input[type="range"]::-webkit-slider-thumb:active{
     drop-shadow(0 0 16px rgba(255,242,52,0.95))
     drop-shadow(0 0 35px rgba(208,17,253,0.55));
   transform: scale(1.1) translateY(-4px);
+}
+
+.cyber-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10001;
+
+  font-family: 'Impact', sans-serif;
+  font-size: clamp(2rem, 10vw, 4rem);
+  color: #f5ff3a;
+  text-transform: uppercase;
+
+  /* Keep the text block stable */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  white-space: nowrap;
+
+  -webkit-mask-image: repeating-linear-gradient(
+    to bottom,
+    black 0px, black 4px,
+    transparent 4px, transparent 8px
+  );
+  mask-image: repeating-linear-gradient(
+    to bottom,
+    black 0px, black 4px,
+    transparent 4px, transparent 8px
+  );
+}
+
+#loading-dots {
+  display: block;        /* own line, below the words */
+  height: 1.2em;         /* reserve space so layout never shifts */
+  line-height: 1.2em;
+  text-align: center;
+  letter-spacing: 0.2em;
 }

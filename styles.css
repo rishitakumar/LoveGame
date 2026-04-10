@@ -214,7 +214,7 @@ html, body {
 /* Smaller card */
 .reminder-box {
   background: #fd3b96;
-  padding: 1.5rem 1.5rem 3rem;  /* extra bottom padding clears flames */
+  padding: 1.5rem 1.5rem 1.5rem;  /* reduced bottom padding */
   width: min(90%, 640px);
   max-height: 90vh;
   overflow-y: auto;
@@ -263,8 +263,8 @@ html, body {
 
 /* Button */
 #start-game {
-  margin-top: 1.5rem;
-  margin-bottom: 1rem;          /* gap between button and box edge */
+  margin-top: 0.8rem;
+  margin-bottom: 0.4rem;          /* closer to flames but not touching */
   padding: 0.6rem 2rem;
   font-family: Impact, sans-serif;
   font-size: clamp(0.85rem, 3vw, 1.1rem);
@@ -281,8 +281,8 @@ html, body {
 }
 /* Arrow */
 #rules-arrow {
-  margin-top: 1.2rem;
-  margin-bottom: 1rem;          /* gap between arrow and box edge */
+  margin-top: 0.6rem;
+  margin-bottom: 0.4rem;          /* closer to flames but not touching */
   font-size: clamp(1.6rem, 5vw, 2.4rem);
   color: #11FD5A;
   cursor: pointer;

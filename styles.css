@@ -202,19 +202,26 @@ html, body {
   position: fixed;
   inset: 0;
   z-index: 9000;
+  display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 1);
+  padding: 5vh 5vw;          /* breathing room on all sides */
+  box-sizing: border-box;
+  pointer-events: auto;
 }
 
 /* Smaller card */
 .reminder-box {
   background: #fd3b96;
-  padding: 2rem 2.5rem;
+  padding: 1.5rem;
   width: min(90%, 640px);
+  max-height: 90vh;          /* never taller than the screen */
+  overflow-y: auto;          /* scroll inside the box if content is long */
   border-radius: 12px;
   box-shadow: 0 0 40px rgba(253, 17, 180, 0.6);
   text-align: center;
+  box-sizing: border-box;
 }
 
 /* Header */

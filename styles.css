@@ -1670,23 +1670,24 @@ input[type="range"]::-webkit-slider-thumb:active{
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  
-  display: flex;
-  align-items: baseline;
   white-space: nowrap;
+  
+  /* Remove flex and margins here to reset the calculation */
+  display: block; 
+}
+
+.main-title {
+  /* This is the part that stays dead center */
+  display: inline-block;
 }
 
 #loading-dots {
+  /* This takes the dots completely out of the centering math */
+  position: absolute;
+  left: 100%; 
+  margin-left: 10px; /* Space between text and dots */
+  
   display: inline-block;
   text-align: left;
-  
-  /* 1. Set a fixed width so it doesn't jitter */
-  width: 1.5em; 
-  
-  /* 2. Push it away from the text slightly */
-  margin-left: 8px; 
-  
-  /* 3. THE MAGIC: Pull the right "edge" of the container back.
-     This tells the browser: "ignore this element's width when centering" */
-  margin-right: -1.5em; 
+  width: 2em;
 }

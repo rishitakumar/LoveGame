@@ -216,8 +216,8 @@ html, body {
   background: #fd3b96;
   padding: 1.5rem;
   width: min(90%, 640px);
-  max-height: 90vh;          /* never taller than the screen */
-  overflow-y: auto;          /* scroll inside the box if content is long */
+  max-height: 90vh;
+  overflow-y: auto;
   border-radius: 12px;
   box-shadow: 0 0 40px rgba(253, 17, 180, 0.6);
   text-align: center;
@@ -1690,5 +1690,11 @@ input[type="range"]::-webkit-slider-thumb:active{
 @media (max-width: 600px) {
   .cyber-text {
     flex-direction: column;
+  }
+}
+@media (min-width: 768px) {
+  .reminder-box {
+    width: min(90%, 853px);   /* 640px × 1.33 ≈ 853px */
+    padding: 2.7rem 3.3rem;   /* 2rem/2.5rem × 1.33 */
   }
 }

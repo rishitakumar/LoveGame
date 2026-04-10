@@ -2495,24 +2495,28 @@ function stopDots() {
   }
 }
 
-  // build line 1: "Your journey has brought you to" + dots span
-  const line1 = document.createElement("span");
-  line1.textContent = "Your journey has brought you to";
+const line1 = document.createElement("span");
+line1.textContent = "Your journey has brought you to";
 
-  const dots = document.createElement("span");
-  dots.style.display = "inline-block";
-  dots.style.minWidth = "4ch";
-  dots.style.marginLeft = "10px";
-  dots.textContent = "";
+const dots = document.createElement("span");
+dots.style.display = "block";      // own line below the sentence
+dots.style.height = "1.2em";       // reserved space so layout never shifts
+dots.style.lineHeight = "1.2em";
+dots.style.textAlign = "center";
+dots.style.letterSpacing = "0.2em";
+dots.textContent = "";
 
-  // show overlay
-  requestAnimationFrame(() => (end.style.opacity = "1"));
+// show overlay
+requestAnimationFrame(() => (end.style.opacity = "1"));
 
-  // ---- Beat 1 (2s): sentence + blinking dots
-  msg.innerHTML = "";
-  msg.appendChild(line1);
-  msg.appendChild(dots);
-  startDots(dots);
+// ---- Beat 1 (2s): sentence + blinking dots
+msg.innerHTML = "";
+msg.style.display = "flex";
+msg.style.flexDirection = "column";
+msg.style.alignItems = "center";
+msg.appendChild(line1);
+msg.appendChild(dots);
+startDots(dots);
 
   setTimeout(() => {
     // fade Beat 1 out

@@ -226,7 +226,7 @@ html, body {
 
 /* Header */
 .reminder-box h2 {
-  font-size: 2.6rem;
+  font-size: clamp(1.4rem, 6vw, 2.6rem);   /* was fixed 2.6rem */
   color: #fff234;
   font-family: Impact, sans-serif;
   margin-bottom: 1rem;
@@ -245,7 +245,7 @@ html, body {
 .reminder-list li {
   counter-increment: cyber;
   margin-bottom: 0.8rem;
-  font-size: 0.95rem;
+  font-size: clamp(0.75rem, 2.5vw, 0.95rem);  /* was fixed 0.95rem */
   color: #000000;
   position: relative;
   padding-left: 2rem;
@@ -266,7 +266,7 @@ html, body {
   margin-top: 1.5rem;
   padding: 0.6rem 2rem;
   font-family: Impact, sans-serif;
-  font-size: 1.1rem;
+  font-size: clamp(0.85rem, 3vw, 1.1rem);   /* was fixed 1.1rem */
   background: #000000;
   color: #11FD5A;
   border: 2px solid #fff234;
@@ -281,7 +281,7 @@ html, body {
 /* Arrow */
 #rules-arrow {
   margin-top: 1.2rem;
-  font-size: 2.4rem;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);    /* was fixed 2.4rem */
   color: #11FD5A;
   cursor: pointer;
   animation: arrowPulse 1.4s infinite;

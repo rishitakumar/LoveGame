@@ -386,6 +386,12 @@ html, body {
   transition: opacity 0.3s ease, background 0.3s ease;
   max-width: 90vw;
   box-sizing: border-box;
+  /* always visible even if content is tall */
+  position: relative;
+  z-index: 10;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 
@@ -415,14 +421,17 @@ html, body {
   opacity: 0.85;
 }
 
-#character-overlay{
+#character-overlay {
   position: fixed;
   inset: 0;
   z-index: 8500;
-  background: #000;          /* ✅ solid black */
+  background: #000;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;  /* don't center-clip on small screens */
+  overflow-y: auto;             /* scroll if content is too tall */
+  padding: 60px 1rem 1rem;      /* top pad clears exit button */
+  box-sizing: border-box;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.8s ease;
@@ -1257,7 +1266,7 @@ textarea,
 }
 .swirl-title {
   width: min(1100px, 94vw);
-  margin: 0 auto 24px;
+  margin: 0 auto 16px;
   padding-top: 0;
   filter:
     drop-shadow(0 0 10px rgba(245,255,58,0.55))
@@ -1265,8 +1274,8 @@ textarea,
   transform-origin: 50% 60%;
   display: flex;
   justify-content: center;
+  flex-shrink: 0;
 }
-
 /* the letters */
 .swirl-text{
   font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
@@ -1667,23 +1676,19 @@ input[type="range"]::-webkit-slider-thumb:active{
   z-index: 10001;
 
   font-family: 'Impact', sans-serif;
-  font-size: clamp(1.8rem, 8vw, 4rem);  /* never shrinks too small */
+  font-size: clamp(2.2rem, 9vw, 4rem);  /* stays big on all screens */
   color: #f5ff3a;
   text-transform: uppercase;
 
-  /* always perfectly centered, never shifts */
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;   /* always stacked — no wrapping issues */
   align-items: center;
   justify-content: center;
-  gap: 0.3em;
   text-align: center;
 
-  /* width is content-based so dots are never clipped */
   width: max-content;
-  max-width: 85vw;
-  padding-bottom: 1.4em;   /* reserves dots row space */
+  max-width: 95vw;
+  padding-bottom: 1.4em;
   box-sizing: border-box;
 
   -webkit-mask-image: repeating-linear-gradient(
@@ -1697,6 +1702,7 @@ input[type="range"]::-webkit-slider-thumb:active{
     transparent 4px, transparent 8px
   );
 }
+
 
 #loading-dots {
   position: absolute;
@@ -1740,41 +1746,55 @@ input[type="range"]::-webkit-slider-thumb:active{
 }
 @media (max-width: 768px) {
   .character {
-    width: clamp(100px, 35vw, 180px);
-  }
-
-  .character-grid {
-    gap: 1rem;
-  }
-}
-@media (max-width: 480px) {
-  .character {
-    width: clamp(80px, 40vw, 140px);
+    width: clamp(70px, 28vw, 160px);
   }
 
   .character-grid {
     gap: 0.75rem;
-  }
-}
-@media (max-width: 600px) {
-  .swirl-title {
-    padding-top: 48px;   /* clears exit button */
+    margin-top: 16px;
+    margin-bottom: 1rem;
   }
 
   .swirl-text {
-    font-size: 52px;
-    letter-spacing: 5px;
+    font-size: 58px;
+    letter-spacing: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .character {
+    width: clamp(60px, 26vw, 120px);
+  }
+
+  .character-grid {
+    gap: 0.5rem;
+    margin-top: 12px;
+    margin-bottom: 0.75rem;
+  }
+
+  .swirl-text {
+    font-size: 46px;
+    letter-spacing: 4px;
+  }
+
+  #character-caption {
+    font-size: 1rem;
+    margin-bottom: 10px;
   }
 }
 
 @media (max-width: 390px) {
-  .swirl-title {
-    padding-top: 52px;
+  .character {
+    width: clamp(55px, 24vw, 100px);
+  }
+
+  .character-grid {
+    gap: 0.4rem;
   }
 
   .swirl-text {
-    font-size: 40px;
-    letter-spacing: 3px;
+    font-size: 36px;
+    letter-spacing: 2px;
   }
 
   #confirm-character {

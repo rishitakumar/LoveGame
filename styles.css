@@ -1645,12 +1645,13 @@ input[type="range"]::-webkit-slider-thumb:active{
   color: #f5ff3a;
   text-transform: uppercase;
 
-  /* Keep the text block stable */
   display: flex;
-  flex-direction: column;
+  flex-direction: row;        /* side by side on desktop */
+  flex-wrap: wrap;            /* wraps to two lines on small screens */
   align-items: center;
+  justify-content: center;
+  gap: 0.3em;
   text-align: center;
-  white-space: nowrap;
 
   -webkit-mask-image: repeating-linear-gradient(
     to bottom,
@@ -1665,9 +1666,17 @@ input[type="range"]::-webkit-slider-thumb:active{
 }
 
 #loading-dots {
-  display: block;        /* own line, below the words */
-  height: 1.2em;         /* reserve space so layout never shifts */
+  flex-basis: 100%;           /* forces dots onto their own line */
+  display: block;
+  height: 1.2em;
   line-height: 1.2em;
   text-align: center;
   letter-spacing: 0.2em;
+}
+
+/* Stack on phones/tablets */
+@media (max-width: 600px) {
+  .cyber-text {
+    flex-direction: column;   /* each word on its own line */
+  }
 }

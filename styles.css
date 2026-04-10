@@ -223,11 +223,10 @@ html, body {
   text-align: center;
   box-sizing: border-box;
 
-  /* center everything inside, space distributed evenly */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between;  /* phones: spread top to bottom */
 }
 
 /* Header */
@@ -1706,5 +1705,12 @@ input[type="range"]::-webkit-slider-thumb:active{
   .reminder-box {
     width: min(90%, 853px);
     padding: 2.7rem 3.3rem;
+    justify-content: center;       /* tablets/desktops: cluster in middle */
+    gap: 1.2rem;                   /* consistent spacing between children */
+  }
+
+  .reminder-list {
+    flex: unset;                   /* don't stretch the list on desktop */
+    justify-content: unset;
   }
 }

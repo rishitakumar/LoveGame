@@ -214,7 +214,7 @@ html, body {
 /* Smaller card */
 .reminder-box {
   background: #fd3b96;
-  padding: 1.5rem 1.5rem 1.5rem;  /* reduced bottom padding */
+  padding: 1.5rem;
   width: min(90%, 640px);
   max-height: 90vh;
   overflow-y: auto;
@@ -222,6 +222,12 @@ html, body {
   box-shadow: 0 0 40px rgba(253, 17, 180, 0.6);
   text-align: center;
   box-sizing: border-box;
+
+  /* center everything inside, space distributed evenly */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
 }
 
 /* Header */
@@ -238,8 +244,12 @@ html, body {
   list-style: none;
   counter-reset: cyber;
   padding: 0;
-  margin: 1.5rem 0;
+  margin: 0;
   text-align: left;
+  flex: 1;                  /* fills remaining vertical space */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  /* centers list items in their space */
 }
 
 .reminder-list li {
@@ -263,8 +273,7 @@ html, body {
 
 /* Button */
 #start-game {
-  margin-top: 0.8rem;
-  margin-bottom: 0.4rem;          /* closer to flames but not touching */
+  margin: 0;                /* let flexbox handle all spacing */
   padding: 0.6rem 2rem;
   font-family: Impact, sans-serif;
   font-size: clamp(0.85rem, 3vw, 1.1rem);
@@ -281,8 +290,7 @@ html, body {
 }
 /* Arrow */
 #rules-arrow {
-  margin-top: 0.6rem;
-  margin-bottom: 0.4rem;          /* closer to flames but not touching */
+  margin: 0;                /* let flexbox handle all spacing */
   font-size: clamp(1.6rem, 5vw, 2.4rem);
   color: #11FD5A;
   cursor: pointer;
@@ -1696,7 +1704,7 @@ input[type="range"]::-webkit-slider-thumb:active{
 }
 @media (min-width: 768px) {
   .reminder-box {
-    width: min(90%, 853px);   /* 640px × 1.33 ≈ 853px */
-    padding: 2.7rem 3.3rem;   /* 2rem/2.5rem × 1.33 */
+    width: min(90%, 853px);
+    padding: 2.7rem 3.3rem;
   }
 }

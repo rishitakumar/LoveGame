@@ -1671,8 +1671,8 @@ input[type="range"]::-webkit-slider-thumb:active{
   left: 50%;
   transform: translate(-50%, -50%);
   
-  display: flex;          /* Use flex to align text and dots */
-  align-items: baseline;  /* Keeps dots on the same line as text */
+  display: flex;
+  align-items: baseline;
   white-space: nowrap;
 }
 
@@ -1680,10 +1680,13 @@ input[type="range"]::-webkit-slider-thumb:active{
   display: inline-block;
   text-align: left;
   
-  /* Reserve space for 3 dots + spaces */
-  /* This is the magic part: it never gets wider or narrower */
+  /* 1. Set a fixed width so it doesn't jitter */
   width: 1.5em; 
   
-  /* Ensure dots aren't cut off by the mask if it's too tight */
+  /* 2. Push it away from the text slightly */
   margin-left: 8px; 
+  
+  /* 3. THE MAGIC: Pull the right "edge" of the container back.
+     This tells the browser: "ignore this element's width when centering" */
+  margin-right: -1.5em; 
 }

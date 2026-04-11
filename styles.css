@@ -348,13 +348,14 @@ html, body {
 /* Grid */
 .character-grid {
   display: flex;
-  flex-wrap: wrap;              /* wraps into rows when needed */
+  flex-wrap: wrap;
   gap: 1.5rem;
-  margin-bottom: 2rem;
-  margin-top: 32px;
+  margin-bottom: 1rem;
+  margin-top: 16px;
   align-items: center;
-  justify-content: center;      /* centers wrapped rows */
-  padding: 0 1rem;              /* breathing room from screen edges */
+  justify-content: center;
+  padding: 0 1rem;
+  flex-shrink: 0;
 }
 
 
@@ -367,6 +368,7 @@ html, body {
   transition: filter 0.3s ease, transform 0.3s ease;
   filter: grayscale(30%) brightness(0.9);
 }
+
 
 .character:hover {
   filter: brightness(1.2);
@@ -386,12 +388,8 @@ html, body {
   transition: opacity 0.3s ease, background 0.3s ease;
   max-width: 90vw;
   box-sizing: border-box;
-  /* always visible even if content is tall */
-  position: relative;
-  z-index: 10;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
   flex-shrink: 0;
+  margin-bottom: 0.5rem;
 }
 
 
@@ -428,10 +426,11 @@ html, body {
   background: #000;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;  /* don't center-clip on small screens */
-  overflow-y: auto;             /* scroll if content is too tall */
-  padding: 60px 1rem 1rem;      /* top pad clears exit button */
+  justify-content: center;     /* vertically centered on all screens */
+  overflow-y: auto;
+  padding: 60px 1rem 1rem;     /* top clears exit button */
   box-sizing: border-box;
+  gap: 0;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.8s ease;
@@ -450,23 +449,21 @@ html, body {
 }
 #character-caption {
   text-align: center;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.5rem;
+  font-size: clamp(0.9rem, 2.5vw, 1.5rem);
   letter-spacing: 0.12em;
   font-style: italic;
-
   color: #fff234;
   text-shadow:
     0 0 6px rgba(190, 140, 255, 0.5),
     0 0 14px rgba(130, 80, 220, 0.35);
-
   opacity: 0;
-  transform: translateY(-55px);   /* 🔼 was -8px → move UP */
+  transform: translateY(-55px);
   transition: opacity 0.6s ease, transform 0.6s ease;
-
   position: relative;
-  z-index: 10;                    /* 🔥 ABOVE characters */
+  z-index: 10;
+  flex-shrink: 0;
 }
 
 
@@ -1267,28 +1264,26 @@ textarea,
 .swirl-title {
   width: min(1100px, 94vw);
   margin: 0 auto 16px;
-  padding-top: 0;
+  flex-shrink: 0;
   filter:
     drop-shadow(0 0 10px rgba(245,255,58,0.55))
     drop-shadow(0 0 28px rgba(245,255,58,0.25));
   transform-origin: 50% 60%;
   display: flex;
   justify-content: center;
-  flex-shrink: 0;
 }
 /* the letters */
-.swirl-text{
+.swirl-text {
   font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
-  font-size: 82px;
+  font-size: 82px;   /* SVG units — scales automatically with svg width */
   letter-spacing: 10px;
   text-transform: uppercase;
   fill: #f5ff3a;
-
-  /* letter-hugging glow */
   paint-order: stroke;
   stroke: rgba(245,255,58,0.22);
   stroke-width: 6px;
 }
+
 
 /* animate the whole title in */
 .swirl-title.play{
@@ -1368,11 +1363,11 @@ textarea,
   opacity: 1;
   transform: none;
 }
-.swirl-title svg{
+.swirl-title svg {
   display: block;
-  width: min(1100px, 94vw);
-  height: auto;
-  overflow: visible;   /* ✅ prevents “CH” getting cut off */
+  width: 100%;       /* fills .swirl-title on every screen */
+  height: auto;      /* preserves the wave aspect ratio */
+  overflow: visible;
 }
 .character img{
   position: relative;
@@ -1746,55 +1741,40 @@ input[type="range"]::-webkit-slider-thumb:active{
 }
 @media (max-width: 768px) {
   .character {
-    width: clamp(70px, 28vw, 160px);
+    width: clamp(80px, 25vw, 180px);
   }
 
   .character-grid {
     gap: 0.75rem;
-    margin-top: 16px;
-    margin-bottom: 1rem;
-  }
-
-  .swirl-text {
-    font-size: 58px;
-    letter-spacing: 6px;
   }
 }
 
 @media (max-width: 480px) {
   .character {
-    width: clamp(60px, 26vw, 120px);
+    width: clamp(65px, 22vw, 120px);
   }
 
   .character-grid {
     gap: 0.5rem;
-    margin-top: 12px;
-    margin-bottom: 0.75rem;
-  }
-
-  .swirl-text {
-    font-size: 46px;
-    letter-spacing: 4px;
+    margin-top: 8px;
   }
 
   #character-caption {
-    font-size: 1rem;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 }
 
 @media (max-width: 390px) {
+  #character-overlay {
+    padding-top: 50px;
+  }
+
   .character {
-    width: clamp(55px, 24vw, 100px);
+    width: clamp(55px, 20vw, 100px);
   }
 
   .character-grid {
     gap: 0.4rem;
-  }
-
-  .swirl-text {
-    font-size: 36px;
-    letter-spacing: 2px;
   }
 
   #confirm-character {

@@ -476,7 +476,6 @@ html, body {
   pointer-events: none;
 }
 #game-screen {
-  overflow-y: visible !important;
   position: relative;
   width: 100%;
   flex: 1;
@@ -486,7 +485,9 @@ html, body {
   background: transparent;
   display: block;
   z-index: 1;
+  box-sizing: border-box;
 }
+
 
 #board, #card-container {
   position: relative;
@@ -501,27 +502,32 @@ html, body {
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 40px 0 40px 0; 
+  padding: 20px 0;
   position: relative;
   z-index: 1;
+  box-sizing: border-box;
 }
 #card-container {
   position: relative;
   z-index: 1;
 }
 
-#ladder-wrapper{
+#ladder-wrapper {
   overflow: visible !important;
   position: relative;
-  display: inline-block;  
-   background-attachment: local;
-  z-index: 2; /* wrapper becomes exact image size */
+  display: inline-block;
+  background-attachment: local;
+  z-index: 2;
+  max-width: 100vw;
+  box-sizing: border-box;
 }
 
-#game-background{
+
+#game-background {
   display: block;
-  width: min(900px, 95vw);
+  width: min(900px, 100vw);   /* never wider than viewport */
   height: auto;
+  max-width: 100%;
 }
 #player-star {
   position: absolute;
@@ -550,7 +556,7 @@ html, body {
   50%       { transform: translate(-50%, -50%) scale(1.6);  opacity: 0.55; }
 }
 #player-character {
-  width: 120px;
+  width: clamp(60px, 10vw, 120px);   /* shrinks on small screens */
   display: block;
   filter: drop-shadow(0 0 18px var(--char-color, #f5ff3a));
 }
@@ -1234,10 +1240,10 @@ textarea,
 
 #star-border {
   position: absolute;
-  top: -40px;
-  left: -40px;
-  width: calc(100% + 80px);
-  height: calc(100% + 80px);
+  top: -20px;                  /* reduced from -40px on mobile */
+  left: -20px;                 /* reduced from -40px on mobile */
+  width: calc(100% + 40px);    /* reduced from 80px on mobile */
+  height: calc(100% + 40px);
   z-index: 999;
   pointer-events: none;
   border-radius: 20px;
@@ -1515,7 +1521,7 @@ input[type="range"]::-webkit-slider-thumb:active{
   left: 22px;
   z-index: 99999999;
   font-family: Impact, sans-serif;
-  font-size: 28px;
+  font-size: clamp(14px, 4vw, 28px);  /* shrinks on small screens */
   letter-spacing: 2px;
   pointer-events: none;
   background: none !important;
@@ -1523,7 +1529,8 @@ input[type="range"]::-webkit-slider-thumb:active{
   box-shadow: none !important;
   padding: 0;
   transition: color 0.6s ease, text-shadow 0.6s ease;
-   display: inline-block;
+  display: inline-block;
+  max-width: 40vw;             /* never overlaps exit button */
 }
 #card-counter.darkland {
   color: #000;
@@ -1787,5 +1794,34 @@ input[type="range"]::-webkit-slider-thumb:active{
     height: 30px;
     top: 8px;
     right: 8px;
+  }
+}
+@media (max-width: 768px) {
+  #star-border {
+    top: -12px;
+    left: -12px;
+    width: calc(100% + 24px);
+    height: calc(100% + 24px);
+  }
+
+  #board {
+    padding: 12px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  #star-border {
+    top: -8px;
+    left: -8px;
+    width: calc(100% + 16px);
+    height: calc(100% + 16px);
+  }
+
+  #board {
+    padding: 8px 0;
+  }
+
+  #player-character {
+    width: clamp(50px, 9vw, 90px);
   }
 }

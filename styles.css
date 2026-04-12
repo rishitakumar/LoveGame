@@ -479,14 +479,13 @@ html, body {
   position: relative;
   width: 100%;
   flex: 1;
-  min-height: 100vh;
+  min-height: 100svh;          /* fill full phone screen height */
   overflow-y: auto;
   overflow-x: hidden;
-  background: transparent;
-  display: flex;
+  display: flex !important;    /* override the block override */
   flex-direction: column;
   align-items: center;
-  justify-content: center;   /* centers board vertically within the background */
+  justify-content: center;
   z-index: 1;
   box-sizing: border-box;
   background-size: cover !important;
@@ -506,10 +505,10 @@ html, body {
 }
 #board {
   width: 100%;
-  flex: 1;                   /* board grows to fill all available height */
+  flex: 1;
   display: flex;
   justify-content: center;
-  align-items: center;       /* centers ladder-wrapper vertically */
+  align-items: center;
   padding: 20px 0;
   position: relative;
   z-index: 1;
@@ -1431,10 +1430,10 @@ textarea,
 
 #reminder-overlay:not([hidden]) { display: flex; }
 #character-overlay:not([hidden]) { display: flex; }
-#game-screen:not([hidden]) { 
-  display: flex; 
-  min-height: 100vh;
+#game-screen:not([hidden]) {
+  display: flex !important;    /* must be flex, not block */
 }
+
 #card-layer { display: none; }
 
 #mouse-canvas {

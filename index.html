@@ -1458,13 +1458,13 @@ function positionCharacter(instant = false) {
   const x = (rung.x / 1545) * img.clientWidth;
   const y = (rung.y / 2000) * img.clientHeight;
 
-   const letterHeightPct = 101 / 2000;
-  const scaledHeight = Math.round(letterHeightPct * img.clientHeight);
+  const letterHeightPct = 101 / 2000;
+  const scaledHeight = Math.round((letterHeightPct * img.clientHeight) / 0.66);  // compensate for scale(0.66)
   const playerChar = document.getElementById("player-character");
-  if (playerChar) {
-    playerChar.style.width = "auto";
-    playerChar.style.height = `${scaledHeight}px`;
-  }
+if (playerChar) {
+  playerChar.style.width = "auto";
+  playerChar.style.height = `${scaledHeight}px`;
+}
 
   // Get current position for streak
   const fromX = parseFloat(char.style.left) || x;

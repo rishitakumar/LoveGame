@@ -1802,32 +1802,6 @@ input[type="range"]::-webkit-slider-thumb:active{
     right: 8px;
   }
 }
-@media (max-width: 768px) {
-  #star-border {
-    top: -12px;
-    left: -12px;
-    width: calc(100% + 24px);
-    height: calc(100% + 24px);
-  }
-
-  #game-background {
-    width: 100vw;
-    height: 100svh;            /* fills the full phone screen height */
-    object-fit: fill;          /* stretches to fit without cropping */
-    object-position: center;
-  }
-
-  #board {
-    min-height: 100svh;        /* board takes full screen height */
-    align-items: center;       /* centers ladder wrapper vertically */
-    padding: 0;
-  }
-
-  #ladder-wrapper {
-    position: relative;
-    width: 100vw;
-  }
-}
 
 @media (max-width: 480px) {
   #star-border {

@@ -562,7 +562,8 @@ html, body {
   50%       { transform: translate(-50%, -50%) scale(1.6);  opacity: 0.55; }
 }
 #player-character {
-  width: clamp(60px, 10vw, 120px);   /* shrinks on small screens */
+  width: auto;
+  height: auto;
   display: block;
   filter: drop-shadow(0 0 18px var(--char-color, #f5ff3a));
 }

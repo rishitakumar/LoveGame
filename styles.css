@@ -47,8 +47,6 @@ html, body {
 
 .navbar {
   overflow: hidden;
-  position: relative;          /* needed for z-index to work */
-  z-index: 100;                /* above the star border canvas */
   background: linear-gradient(to right, 
     #000000, 
     rgba(208,17,253,0.4), 
@@ -508,7 +506,6 @@ html, body {
   position: relative;
   z-index: 1;
   box-sizing: border-box;
-  overflow: visible;           /* let star border breathe vertically */
 }
 #card-container {
   position: relative;
@@ -521,15 +518,14 @@ html, body {
   display: inline-block;
   background-attachment: local;
   z-index: 2;
-  max-width: calc(100vw - 40px);   /* 20px breathing room each side */
+  max-width: 100vw;
   box-sizing: border-box;
 }
 
 
-
 #game-background {
   display: block;
-  width: min(900px, calc(100vw - 40px));  /* 20px margin each side */
+  width: min(900px, 100vw);   /* never wider than viewport */
   height: auto;
   max-width: 100%;
 }
@@ -1244,11 +1240,11 @@ textarea,
 
 #star-border {
   position: absolute;
-  top: -40px;
-  left: -40px;
-  width: calc(100% + 80px);
-  height: calc(100% + 80px);
-  z-index: 1;                  /* was 999 — now sits below navbar */
+  top: -20px;                  /* reduced from -40px on mobile */
+  left: -20px;                 /* reduced from -40px on mobile */
+  width: calc(100% + 40px);    /* reduced from 80px on mobile */
+  height: calc(100% + 40px);
+  z-index: 999;
   pointer-events: none;
   border-radius: 20px;
   overflow: visible;
@@ -1801,19 +1797,11 @@ input[type="range"]::-webkit-slider-thumb:active{
   }
 }
 @media (max-width: 768px) {
-  #game-background {
-    width: min(900px, calc(100vw - 24px));
-  }
-
-  #ladder-wrapper {
-    max-width: calc(100vw - 24px);
-  }
-
   #star-border {
-    top: -6px;
-    left: -6px;
-    width: calc(100% + 12px);
-    height: calc(100% + 12px);
+    top: -12px;
+    left: -12px;
+    width: calc(100% + 24px);
+    height: calc(100% + 24px);
   }
 
   #board {
@@ -1822,19 +1810,11 @@ input[type="range"]::-webkit-slider-thumb:active{
 }
 
 @media (max-width: 480px) {
-   #game-background {
-    width: min(900px, calc(100vw - 16px));
-  }
-
-  #ladder-wrapper {
-    max-width: calc(100vw - 16px);
-  }
-
   #star-border {
-    top: -4px;
-    left: -4px;
-    width: calc(100% + 8px);
-    height: calc(100% + 8px);
+    top: -8px;
+    left: -8px;
+    width: calc(100% + 16px);
+    height: calc(100% + 16px);
   }
 
   #board {
@@ -1843,21 +1823,5 @@ input[type="range"]::-webkit-slider-thumb:active{
 
   #player-character {
     width: clamp(50px, 9vw, 90px);
-  }
-}
-@media (max-width: 1024px) {
-  #game-background {
-    width: min(900px, calc(100vw - 32px));
-  }
-
-  #ladder-wrapper {
-    max-width: calc(100vw - 32px);
-  }
-
-  #star-border {
-    top: -8px;                 /* pull border in so hearts stay visible */
-    left: -8px;
-    width: calc(100% + 16px);
-    height: calc(100% + 16px);
   }
 }

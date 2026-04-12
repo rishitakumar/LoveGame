@@ -4040,7 +4040,7 @@ function safeStopCursor(delay = 1200) {
   let ecstasyColorTimer = 0;
   const ECSTASY_BASE_SPEED = 6.66; // double the normal 3.33
   let currentSpeed = 3.33;
-  const BORDER = 14;
+  const BORDER = 18;
   let STAR_SPEED = 3.33;
   const TRAIL_LENGTH = 220;
  const STAR_COLORS_DARKLAND = ['#FFE94D', '#7FFF6E', '#FFFFFF'];
@@ -4067,20 +4067,20 @@ function safeStopCursor(delay = 1200) {
   let frameCount = 0;
   const dust = [];
   const explodeParticles = [];
- function buildPerimeter() {
-  const pts = [];
-  const half = BORDER / 2;    /* BORDER is 18, so half = 9 */
-  const PAD = 0;              /* remove inward padding — path is at the edge */
-  const x0 = half;
-  const y0 = half;
-  const x1 = W - half;
-  const y1 = H - half;
-  for (let x = x0; x <= x1; x++) pts.push({ x, y: y0 });
-  for (let y = y0; y <= y1; y++) pts.push({ x: x1, y });
-  for (let x = x1; x >= x0; x--) pts.push({ x, y: y1 });
-  for (let y = y1; y >= y0; y--) pts.push({ x: x0, y });
-  return pts;
-}
+  function buildPerimeter() {
+    const pts = [];
+    const half = BORDER / 2;
+    const PAD = 16; // pushes path inward so heart doesn't get clipped at edges
+    const x0 = half + PAD;
+    const y0 = half + PAD;
+    const x1 = W - half - PAD;
+    const y1 = H - half - PAD;
+    for (let x = x0; x <= x1; x++) pts.push({ x, y: y0 });
+    for (let y = y0; y <= y1; y++) pts.push({ x: x1, y });
+    for (let x = x1; x >= x0; x--) pts.push({ x, y: y1 });
+    for (let y = y1; y >= y0; y--) pts.push({ x: x0, y });
+    return pts;
+  }
 
   function resize() {
   W = canvas.offsetWidth;

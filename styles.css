@@ -1798,10 +1798,10 @@ input[type="range"]::-webkit-slider-thumb:active{
 }
 @media (max-width: 768px) {
   #star-border {
-    top: -12px;
-    left: -12px;
-    width: calc(100% + 24px);
-    height: calc(100% + 24px);
+    top: -40px;
+    left: -40px;
+    width: calc(100% + 80px);
+    height: calc(100% + 80px);
   }
 
   #board {

@@ -525,9 +525,8 @@ html, body {
 
 #game-background {
   display: block;
-  width: min(900px, 100vw);   /* never wider than viewport */
+  width: min(900px, 95vw);
   height: auto;
-  max-width: 100%;
 }
 #player-star {
   position: absolute;
@@ -1804,8 +1803,22 @@ input[type="range"]::-webkit-slider-thumb:active{
     height: calc(100% + 24px);
   }
 
+  #game-background {
+    width: 100vw;
+    height: 100svh;            /* fills the full phone screen height */
+    object-fit: fill;          /* stretches to fit without cropping */
+    object-position: center;
+  }
+
   #board {
-    padding: 12px 0;
+    min-height: 100svh;        /* board takes full screen height */
+    align-items: center;       /* centers ladder wrapper vertically */
+    padding: 0;
+  }
+
+  #ladder-wrapper {
+    position: relative;
+    width: 100vw;
   }
 }
 

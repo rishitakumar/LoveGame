@@ -47,6 +47,8 @@ html, body {
 
 .navbar {
   overflow: hidden;
+  position: relative;          /* needed for z-index to work */
+  z-index: 100;                /* above the star border canvas */
   background: linear-gradient(to right, 
     #000000, 
     rgba(208,17,253,0.4), 
@@ -1246,7 +1248,7 @@ textarea,
   left: -40px;
   width: calc(100% + 80px);
   height: calc(100% + 80px);
-  z-index: 999;
+  z-index: 1;                  /* was 999 — now sits below navbar */
   pointer-events: none;
   border-radius: 20px;
   overflow: visible;

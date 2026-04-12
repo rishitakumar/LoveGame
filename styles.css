@@ -1430,7 +1430,7 @@ textarea,
 
 #reminder-overlay:not([hidden]) { display: flex; }
 #character-overlay:not([hidden]) { display: flex; }
-#game-screen:not([hidden]) { display: block; }
+#game-screen:not([hidden]) { display: flex; }
 #card-layer { display: none; }
 
 #mouse-canvas {

@@ -479,13 +479,19 @@ html, body {
   position: relative;
   width: 100%;
   flex: 1;
-  min-height: calc(100vh - 220px);
+  min-height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
-  background: transparent;
-  display: block;
+  display: flex;               /* center board vertically */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   z-index: 1;
   box-sizing: border-box;
+  /* background images set by setLandBackground will fill this */
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
 }
 
 
@@ -502,6 +508,7 @@ html, body {
   width: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: 20px 0;
   position: relative;
   z-index: 1;
@@ -527,6 +534,7 @@ html, body {
   display: block;
   width: min(900px, 95vw);
   height: auto;
+  max-width: 100%;
 }
 #player-star {
   position: absolute;

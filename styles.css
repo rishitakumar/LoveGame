@@ -506,9 +506,10 @@ html, body {
 }
 #board {
   width: 100%;
+  flex: 1;                   /* board grows to fill all available height */
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center;       /* centers ladder-wrapper vertically */
   padding: 20px 0;
   position: relative;
   z-index: 1;
@@ -1430,7 +1431,10 @@ textarea,
 
 #reminder-overlay:not([hidden]) { display: flex; }
 #character-overlay:not([hidden]) { display: flex; }
-#game-screen:not([hidden]) { display: flex; }
+#game-screen:not([hidden]) { 
+  display: flex; 
+  min-height: 100vh;
+}
 #card-layer { display: none; }
 
 #mouse-canvas {

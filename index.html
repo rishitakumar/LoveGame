@@ -4035,6 +4035,11 @@ function safeStopCursor(delay = 1200) {
 // =============================
 (function initStarBorder() {
   const canvas = document.getElementById('star-border');
+  // move canvas to body so no parent clips it
+document.body.appendChild(canvas);
+canvas.style.position = 'absolute';
+canvas.style.pointerEvents = 'none';
+canvas.style.zIndex = '999';
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   let ecstasyColorTimer = 0;
@@ -4082,15 +4087,30 @@ function safeStopCursor(delay = 1200) {
     return pts;
   }
 
-  function resize() {
-  W = canvas.offsetWidth;
-  H = canvas.offsetHeight;
-  canvas.width = W;
+ function resize() {
+  const img = document.getElementById('game-background');
+  if (!img || !img.offsetWidth) return;
+
+  const wrapperRect = document.getElementById('ladder-wrapper').getBoundingClientRect();
+  const scrollY = window.scrollY;
+
+  W = wrapperRect.width  + 80;
+  H = wrapperRect.height + 80;
+
+  canvas.width  = W;
   canvas.height = H;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+  canvas.style.left   = (wrapperRect.left - 40) + 'px';
+  canvas.style.top    = (wrapperRect.top + scrollY - 40) + 'px';
+
   perimeter = buildPerimeter();
   TOTAL = perimeter.length;
-  pos2 = Math.floor(TOTAL / 2); // ← starts opposite
+  pos2 = Math.floor(TOTAL / 2);
 }
+
+// also re-run resize on scroll so it tracks the board
+window.addEventListener('scroll', resize, { passive: true });
 window.__starBorderResize = resize;
 window.__starBorderTheme = function(land) {
     if (land === 'ecstasy') {

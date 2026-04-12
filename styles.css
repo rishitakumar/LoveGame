@@ -534,7 +534,6 @@ html, body {
   display: block;
   width: min(900px, 95vw);
   height: auto;
-  max-width: 100%;
 }
 #player-star {
   position: absolute;

@@ -1875,7 +1875,7 @@ function setLandBackground(land) {
   if (!screen) return;
   screen.style.backgroundImage = `url('${map[land] || map.darkland}')`;
   screen.style.backgroundSize = 'cover';           /* was 100% 100% */
-  screen.style.backgroundPosition = 'center top';
+  screen.style.backgroundPosition = 'center';
   screen.style.backgroundRepeat = 'no-repeat';
   screen.style.backgroundAttachment = 'scroll';    /* was local */
 }

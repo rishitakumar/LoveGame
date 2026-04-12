@@ -1242,10 +1242,10 @@ textarea,
 
 #star-border {
   position: absolute;
-  top: -7px;                   /* half the heart size (14px / 2) */
-  left: -7px;
-  width: calc(100% + 14px);    /* 7px overhang on each side */
-  height: calc(100% + 14px);
+  top: -40px;
+  left: -40px;
+  width: calc(100% + 80px);
+  height: calc(100% + 80px);
   z-index: 999;
   pointer-events: none;
   border-radius: 20px;

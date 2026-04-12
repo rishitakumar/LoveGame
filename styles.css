@@ -6,6 +6,11 @@ body {
   flex-direction: column;
   min-height: 100vh;
   margin: 0;
+  overflow-x: visible;
+}
+
+html {
+  overflow-x: hidden;
 }
 
 .footer-section {

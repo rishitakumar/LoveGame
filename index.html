@@ -3208,11 +3208,14 @@ endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it
     wrap.style.inset = "0";
     wrap.style.zIndex = "10000000";
     wrap.style.display = "grid";
-    wrap.style.gridTemplateColumns = "minmax(320px, 1fr) minmax(280px, 420px)";
-    wrap.style.gap = "18px";
+    wrap.style.gridTemplateColumns = "minmax(280px, 1fr) minmax(280px, 420px)";
+    wrap.style.gap = "40px";                  /* breathable gap between the two columns */
     wrap.style.padding = "22px";
     wrap.style.alignItems = "center";
-    wrap.style.justifyItems = "center";
+    wrap.style.justifyContent = "center";     /* centers the whole grid horizontally */
+    wrap.style.justifyItems = "center";       /* centers each item within its column */
+    wrap.style.maxWidth = "1100px";           /* prevents it from stretching too wide */
+    wrap.style.margin = "0 auto";            /* centers the grid itself */
     wrap.style.pointerEvents = "auto";
 
     const stageShell = document.createElement("div");

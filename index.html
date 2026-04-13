@@ -3221,11 +3221,33 @@ endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it
 
 // switch to single column on small screens
 if (window.innerWidth <= 768) {
-  wrap.style.gridTemplateColumns = "1fr";           /* stack vertically */
-  wrap.style.padding = "60px 16px 16px";            /* top padding clears card counter + exit btn */
-  wrap.style.gap = "24px";
-  wrap.style.alignItems = "start";
+  wrap.style.gridTemplateColumns = "1fr";
+  wrap.style.padding = "50px 12px 12px";  /* clears top buttons */
+  wrap.style.gap = "12px";
+  wrap.style.alignItems = "center";
+  wrap.style.justifyItems = "center";
+  wrap.style.height = "100vh";
   wrap.style.overflowY = "auto";
+
+  /* shrink the card stage so both fit */
+  stageShell.style.width = "min(320px, 80vw)";
+  stageShell.style.flex = "0 0 auto";
+
+  /* shrink controls to match */
+  controls.style.width = "min(320px, 80vw)";
+  controls.style.padding = "10px";
+  controls.style.fontSize = "12px";
+
+  /* shrink button text */
+  [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
+    b.style.padding = "6px 8px";
+    b.style.fontSize = "11px";
+    b.style.borderRadius = "8px";
+  });
+
+  /* shrink sliders */
+  sizeInput.style.minWidth = "80px";
+  textSize.style.minWidth = "80px";
 }
     const stageShell = document.createElement("div");
     stageShell.style.width = "min(560px, 92vw)";

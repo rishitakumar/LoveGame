@@ -3205,7 +3205,11 @@ endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it
     const wrap = document.createElement("div");
     wrap.className = "reflection-wrap";
     wrap.style.position = "fixed";
-    wrap.style.inset = "0";
+    wrap.style.top = "0";
+    wrap.style.left = "0";
+    wrap.style.right = "0";
+    wrap.style.bottom = "0";
+    wrap.style.overflowY = "auto";
     wrap.style.zIndex = "10000000";
     wrap.style.display = "grid";
     wrap.style.gridTemplateColumns = "minmax(280px, 1fr) minmax(280px, 420px)";
@@ -3992,28 +3996,26 @@ snapshot("front");
 snapshot("back");
 
 const isMobile = window.innerWidth <= 768;
-const topOffset = 60; // clears card counter + exit button
+const topOffset = 60;
 
 if (isMobile) {
-  const availH = window.innerHeight - topOffset;
-
-  wrap.style.gridTemplateColumns = "1fr";
+  wrap.style.display = "flex";
+  wrap.style.flexDirection = "column";
+  wrap.style.alignItems = "center";
+  wrap.style.justifyContent = "flex-start";
   wrap.style.padding = `${topOffset}px 12px 12px`;
   wrap.style.gap = "10px";
-  wrap.style.alignItems = "center";
-  wrap.style.justifyItems = "center";
-  wrap.style.height = "100vh";
-  wrap.style.overflowY = "hidden";
+  wrap.style.overflowY = "auto";
   wrap.style.boxSizing = "border-box";
 
-  // card stage takes up 40% of available height
-  const cardH = Math.floor(availH * 0.40);
+  const availH = window.innerHeight - topOffset - 22;
+  const cardH = Math.floor(availH * 0.38);
   const cardW = Math.floor(cardH * (1545 / 2000));
+
   stageShell.style.width = `${cardW}px`;
-  stageShell.style.flex = "0 0 auto";
+  stageShell.style.flexShrink = "0";
   stage.style.width = `${cardW}px`;
 
-  // controls take up remaining space
   const controlsH = availH - cardH - 10;
   controls.style.width = `${cardW}px`;
   controls.style.padding = "8px";
@@ -4021,6 +4023,7 @@ if (isMobile) {
   controls.style.overflowY = "auto";
   controls.style.boxSizing = "border-box";
   controls.style.fontSize = "11px";
+  controls.style.flexShrink = "0";
 
   [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
     b.style.padding = "5px 6px";
@@ -4033,6 +4036,7 @@ if (isMobile) {
   h.style.fontSize = "12px";
 
 } else {
+  wrap.style.display = "grid";
   wrap.style.gridTemplateColumns = "minmax(280px, 1fr) minmax(280px, 420px)";
   wrap.style.padding = "22px";
   wrap.style.gap = "40px";
@@ -4047,6 +4051,7 @@ if (isMobile) {
   stageShell.style.width = "min(560px, 92vw)";
   controls.style.width = "min(420px, 92vw)";
 }
+    
   } catch (err) {
     console.error("❌ attachReflectionCards crashed:", err);
   }

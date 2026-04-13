@@ -3990,34 +3990,62 @@ setActive("front");
 // baseline snapshots so first undo works
 snapshot("front");
 snapshot("back");
-    if (window.innerWidth <= 768) {
+
+const isMobile = window.innerWidth <= 768;
+const topOffset = 60; // clears card counter + exit button
+
+if (isMobile) {
+  const availH = window.innerHeight - topOffset;
+
   wrap.style.gridTemplateColumns = "1fr";
-  wrap.style.padding = "50px 12px 12px";  /* clears top buttons */
-  wrap.style.gap = "12px";
+  wrap.style.padding = `${topOffset}px 12px 12px`;
+  wrap.style.gap = "10px";
   wrap.style.alignItems = "center";
   wrap.style.justifyItems = "center";
   wrap.style.height = "100vh";
-  wrap.style.overflowY = "auto";
+  wrap.style.overflowY = "hidden";
+  wrap.style.boxSizing = "border-box";
 
-  /* shrink the card stage so both fit */
-  stageShell.style.width = "min(320px, 80vw)";
+  // card stage takes up 40% of available height
+  const cardH = Math.floor(availH * 0.40);
+  const cardW = Math.floor(cardH * (1545 / 2000));
+  stageShell.style.width = `${cardW}px`;
   stageShell.style.flex = "0 0 auto";
+  stage.style.width = `${cardW}px`;
 
-  /* shrink controls to match */
-  controls.style.width = "min(320px, 80vw)";
-  controls.style.padding = "10px";
-  controls.style.fontSize = "12px";
+  // controls take up remaining space
+  const controlsH = availH - cardH - 10;
+  controls.style.width = `${cardW}px`;
+  controls.style.padding = "8px";
+  controls.style.maxHeight = `${controlsH}px`;
+  controls.style.overflowY = "auto";
+  controls.style.boxSizing = "border-box";
+  controls.style.fontSize = "11px";
 
-  /* shrink button text */
   [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
-    b.style.padding = "6px 8px";
-    b.style.fontSize = "11px";
-    b.style.borderRadius = "8px";
+    b.style.padding = "5px 6px";
+    b.style.fontSize = "10px";
+    b.style.borderRadius = "6px";
   });
 
-  /* shrink sliders */
-  sizeInput.style.minWidth = "80px";
-  textSize.style.minWidth = "80px";
+  sizeInput.style.minWidth = "70px";
+  textSize.style.minWidth = "70px";
+  h.style.fontSize = "12px";
+
+} else {
+  wrap.style.gridTemplateColumns = "minmax(280px, 1fr) minmax(280px, 420px)";
+  wrap.style.padding = "22px";
+  wrap.style.gap = "40px";
+  wrap.style.alignItems = "center";
+  wrap.style.justifyContent = "center";
+  wrap.style.justifyItems = "center";
+  wrap.style.maxWidth = "1100px";
+  wrap.style.margin = "0 auto";
+  wrap.style.height = "100vh";
+  wrap.style.overflowY = "auto";
+
+  stageShell.style.width = "min(560px, 92vw)";
+  controls.style.width = "min(420px, 92vw)";
 }
   } catch (err) {
     console.error("❌ attachReflectionCards crashed:", err);

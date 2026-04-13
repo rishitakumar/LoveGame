@@ -3204,12 +3204,6 @@ endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it
     // ---------- Layout (NO CSS REQUIRED) ----------
     const wrap = document.createElement("div");
     wrap.className = "reflection-wrap";
-    wrap.style.position = "fixed";
-    wrap.style.top = "0";
-    wrap.style.left = "0";
-    wrap.style.right = "0";
-    wrap.style.bottom = "0";
-    wrap.style.overflowY = "auto";
     wrap.style.zIndex = "10000000";
     wrap.style.display = "grid";
     wrap.style.gridTemplateColumns = "minmax(280px, 1fr) minmax(280px, 420px)";

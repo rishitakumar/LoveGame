@@ -3999,28 +3999,32 @@ const isMobile = window.innerWidth <= 768;
 const topOffset = 60;
 
 if (isMobile) {
+  wrap.style.position = "fixed";
+  wrap.style.top = `${topOffset}px`;      /* starts BELOW card counter + exit btn */
+  wrap.style.left = "0";
+  wrap.style.right = "0";
+  wrap.style.bottom = "0";
+  wrap.style.height = `calc(100vh - ${topOffset}px)`;
   wrap.style.display = "flex";
   wrap.style.flexDirection = "column";
   wrap.style.alignItems = "center";
   wrap.style.justifyContent = "flex-start";
-  wrap.style.padding = `${topOffset}px 12px 12px`;
+  wrap.style.padding = "12px";
   wrap.style.gap = "8px";
-  wrap.style.overflowY = "hidden";   /* no scrolling */
+  wrap.style.overflowY = "hidden";
   wrap.style.boxSizing = "border-box";
-  wrap.style.height = "100vh";
+  wrap.style.background = "rgba(0,0,0,1)";
 
-  const availH = window.innerHeight - topOffset - 22;
-
-  /* card: 45% of available height */
+  const availH = window.innerHeight - topOffset - 24;
   const cardH = Math.floor(availH * 0.45);
   const cardW = Math.floor(cardH * (1545 / 2000));
+
   stageShell.style.width = `${cardW}px`;
   stageShell.style.flexShrink = "0";
   stage.style.width = `${cardW}px`;
 
-  /* controls: fill remaining height, full available width */
   const controlsH = availH - cardH - 8;
-  controls.style.width = "calc(100vw - 24px)";  /* full width, not tied to card */
+  controls.style.width = "calc(100vw - 24px)";
   controls.style.padding = "8px 10px";
   controls.style.maxHeight = `${controlsH}px`;
   controls.style.overflowY = "hidden";
@@ -4029,7 +4033,6 @@ if (isMobile) {
   controls.style.fontSize = "11px";
   controls.style.flexShrink = "0";
 
-  /* compact buttons so nothing overflows */
   [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
     b.style.padding = "4px 6px";
     b.style.fontSize = "10px";
@@ -4041,7 +4044,6 @@ if (isMobile) {
   textSize.style.minWidth = "60px";
   h.style.fontSize = "11px";
   h.style.marginBottom = "6px";
-
 } else {
   /* ── DESKTOP: side by side, unchanged ── */
   wrap.style.display = "grid";

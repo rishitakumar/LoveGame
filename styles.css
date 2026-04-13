@@ -1823,7 +1823,7 @@ input[type="range"]::-webkit-slider-thumb:active{
     width: clamp(50px, 9vw, 90px);
   }
 }
-/* End overlay: responsive reflection layout */
+/* End overlay: contained, responsive layout */
 #journey-end-overlay {
   display: flex;
   align-items: center;
@@ -1833,16 +1833,31 @@ input[type="range"]::-webkit-slider-thumb:active{
   max-height: 90vh;
 }
 
+/* Reflection wrapper - desktop: two columns, mobile: single column */
 .reflection-wrap {
-  width: min(92vw, 900px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
+  width: min(92vw, 1200px);
+  display: grid;
+  gap: 32px;
+  align-items: start;
 }
 
+/* Desktop: two columns side by side */
+@media (min-width: 861px) {
+  .reflection-wrap {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Mobile: single column stacked */
+@media (max-width: 860px) {
+  .reflection-wrap {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Reflection stage (the card) */
 .reflection-cardstage {
-  width: min(90vw, 720px);
+  width: min(90vw, 560px);  /* Reduced from 720px for better fit */
   aspect-ratio: 1545 / 2000;
   border-radius: 14px;
   overflow: hidden;
@@ -1850,27 +1865,47 @@ input[type="range"]::-webkit-slider-thumb:active{
   box-shadow: 0 0 46px rgba(245,255,58,0.25);
 }
 
+/* Controls panel */
 .reflection-controls {
-  width: min(92vw, 720px);
-  overflow: hidden;
-  max-height: 40vh;
-  overflow-y: auto;
+  width: min(92vw, 420px);  /* Matches original sizing */
+  background: url('reflections_box.png') center/cover no-repeat;
+  border: 3px solid rgba(245,255,58,0.25);
+  border-radius: 18px;
+  padding: 16px;
+  color: #f5ff3a;
+  font-family: Georgia, 'Times New Roman', serif;
+  box-shadow: 0 0 30px rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
 }
 
+/* Force controls above stage for slider interaction */
+.stageShell, .controls {
+  position: relative;
+  z-index: 1;
+}
+.controls {
+  z-index: 999;
+}
+
+/* Typography adjustments */
+.reflection-controls h3 {
+  margin: 0 0 10px 0;
+  font-family: Impact, sans-serif;
+  color: #fff234;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 1.05rem;
+}
+
+/* Small screens: tighten spacing */
 @media (max-width: 860px) {
-  .reflection-wrap {
-    width: min(92vw, 540px);
-  }
   .reflection-cardstage {
-    width: min(92vw, 540px);
+    width: min(90vw, 500px);
   }
   .reflection-controls {
-    width: min(92vw, 540px);
-    max-height: 55vh;
+    width: min(92vw, 500px);
   }
-}
-
-/* tighten typography on small screens */
-.reflection-controls h3 {
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  .reflection-wrap {
+    gap: 16px;
+  }
 }

@@ -1823,3 +1823,54 @@ input[type="range"]::-webkit-slider-thumb:active{
     width: clamp(50px, 9vw, 90px);
   }
 }
+/* End overlay: responsive reflection layout */
+#journey-end-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow: auto;
+  max-height: 90vh;
+}
+
+.reflection-wrap {
+  width: min(92vw, 900px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.reflection-cardstage {
+  width: min(90vw, 720px);
+  aspect-ratio: 1545 / 2000;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 0 46px rgba(245,255,58,0.25);
+}
+
+.reflection-controls {
+  width: min(92vw, 720px);
+  overflow: hidden;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+@media (max-width: 860px) {
+  .reflection-wrap {
+    width: min(92vw, 540px);
+  }
+  .reflection-cardstage {
+    width: min(92vw, 540px);
+  }
+  .reflection-controls {
+    width: min(92vw, 540px);
+    max-height: 55vh;
+  }
+}
+
+/* tighten typography on small screens */
+.reflection-controls h3 {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+}

@@ -1825,40 +1825,29 @@ input[type="range"]::-webkit-slider-thumb:active{
 }
 /* End overlay: contained, responsive layout */
 /* End overlay: responsive reflection layout */
+/* End overlay: responsive reflection layout */
 #journey-end-overlay {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 12px;
   overflow: auto;
-  max-height: 90vh;
+  max-height: 92vh;  /* Slightly increased */
 }
 
-/* Reflection wrapper - desktop: two columns, mobile: single column */
+/* Reflection wrapper - mobile: single column stacked */
 .reflection-wrap {
-  width: min(96vw, 1200px);  /* Increased from 92vw to use more space */
-  display: grid;
-  gap: 24px;  /* Reduced gap for tighter layout */
-  align-items: start;
+  width: min(96vw, 500px);  /* Increased from 92vw/540px */
+  display: flex;
+  flex-direction: column;
+  gap: 14px;  /* Reduced gap */
+  align-items: stretch;
 }
 
-/* Desktop: two columns side by side */
-@media (min-width: 861px) {
-  .reflection-wrap {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-/* Mobile: single column stacked */
-@media (max-width: 860px) {
-  .reflection-wrap {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Reflection stage (the card) - optimized for tablet space */
+/* Reflection stage (the card) - optimized for small screens */
 .reflection-cardstage {
-  width: min(94vw, 600px);  /* Increased from 560px to use more space */
+  width: 100%;  /* Use full container width */
+  min-height: 200px;  /* Minimum height */
   aspect-ratio: 1545 / 2000;
   border-radius: 14px;
   overflow: hidden;
@@ -1866,26 +1855,27 @@ input[type="range"]::-webkit-slider-thumb:active{
   box-shadow: 0 0 46px rgba(245,255,58,0.25);
 }
 
-/* Controls panel - optimized for tablet space */
+/* Controls panel - optimized for small screens with fixed height issue fix */
 .reflection-controls {
-  width: min(96vw, 500px);  /* Increased from 420px */
+  width: 100%;  /* Use full container width */
   background: url('reflections_box.png') center/cover no-repeat;
   border: 3px solid rgba(245,255,58,0.25);
   border-radius: 18px;
-  padding: 20px;  /* Increased padding for better touch targets */
+  padding: 16px;  /* Standard padding */
+  min-height: 280px;  /* ADDED: Ensures text tool button isn't cut off */
   color: #f5ff3a;
   font-family: Georgia, 'Times New Roman', serif;
   box-shadow: 0 0 30px rgba(0,0,0,0.35);
   backdrop-filter: blur(6px);
+  overflow: visible;  /* ADDED: Prevents clipping of positioned elements */
 }
 
-/* Force controls above stage for slider interaction */
-.stageShell, .controls {
-  position: relative;
-  z-index: 1;
-}
-.controls {
-  z-index: 999;
+/* Text tool button specific fix */
+.reflection-controls #textBtn {
+  min-height: 40px;  /* Ensures button has adequate height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Typography adjustments */
@@ -1895,36 +1885,51 @@ input[type="range"]::-webkit-slider-thumb:active{
   color: #fff234;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  font-size: clamp(1.1rem, 2.5vw, 1.2rem);  /* Responsive font size */
+  font-size: 1.1rem;  /* Slightly increased */
 }
 
-/* Tablet-specific optimizations (768px-1024px) */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .reflection-wrap {
-    width: min(96vw, 1000px);  /* Slightly constrained for tablets */
-    gap: 20px;
-  }
-  .reflection-cardstage {
-    width: min(94vw, 550px);
-  }
-  .reflection-controls {
-    width: min(96vw, 450px);
-    padding: 18px;
-  }
+/* Row layout optimizations */
+.reflection-controls .row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 
-/* Mobile optimizations */
-@media (max-width: 767px) {
-  .reflection-cardstage {
-    width: min(94vw, 480px);
-  }
+/* Input field adjustments */
+.reflection-controls input[type="color"],
+.reflection-controls input[type="range"] {
+  height: 36px;  /* Consistent height */
+}
+
+/* Button adjustments */
+.reflection-controls button {
+  min-height: 36px;  /* Ensures buttons aren't too short */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+}
+
+/* Very small screens adjustment */
+@media (max-width: 320px) {
   .reflection-controls {
-    width: min(96vw, 420px);
-  }
-  .reflection-wrap {
-    gap: 16px;
+    min-height: 260px;  /* Reduced minimum height for very small screens */
+    padding: 12px;
   }
   .reflection-controls h3 {
-    font-size: clamp(1rem, 2.5vw, 1.1rem);
+    font-size: 1rem;
+  }
+  .reflection-controls .row {
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+}
+
+/* Ensure controls don't get too tall on larger small screens */
+@media (min-width: 481px) and (max-width: 767px) {
+  .reflection-controls {
+    max-height: 80vh;  /* Prevents excessive height */
   }
 }

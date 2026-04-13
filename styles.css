@@ -1824,6 +1824,7 @@ input[type="range"]::-webkit-slider-thumb:active{
   }
 }
 /* End overlay: contained, responsive layout */
+/* End overlay: responsive reflection layout */
 #journey-end-overlay {
   display: flex;
   align-items: center;
@@ -1835,9 +1836,9 @@ input[type="range"]::-webkit-slider-thumb:active{
 
 /* Reflection wrapper - desktop: two columns, mobile: single column */
 .reflection-wrap {
-  width: min(92vw, 1200px);
+  width: min(96vw, 1200px);  /* Increased from 92vw to use more space */
   display: grid;
-  gap: 32px;
+  gap: 24px;  /* Reduced gap for tighter layout */
   align-items: start;
 }
 
@@ -1855,9 +1856,9 @@ input[type="range"]::-webkit-slider-thumb:active{
   }
 }
 
-/* Reflection stage (the card) */
+/* Reflection stage (the card) - optimized for tablet space */
 .reflection-cardstage {
-  width: min(90vw, 560px);  /* Reduced from 720px for better fit */
+  width: min(94vw, 600px);  /* Increased from 560px to use more space */
   aspect-ratio: 1545 / 2000;
   border-radius: 14px;
   overflow: hidden;
@@ -1865,13 +1866,13 @@ input[type="range"]::-webkit-slider-thumb:active{
   box-shadow: 0 0 46px rgba(245,255,58,0.25);
 }
 
-/* Controls panel */
+/* Controls panel - optimized for tablet space */
 .reflection-controls {
-  width: min(92vw, 420px);  /* Matches original sizing */
+  width: min(96vw, 500px);  /* Increased from 420px */
   background: url('reflections_box.png') center/cover no-repeat;
   border: 3px solid rgba(245,255,58,0.25);
   border-radius: 18px;
-  padding: 16px;
+  padding: 20px;  /* Increased padding for better touch targets */
   color: #f5ff3a;
   font-family: Georgia, 'Times New Roman', serif;
   box-shadow: 0 0 30px rgba(0,0,0,0.35);
@@ -1894,18 +1895,36 @@ input[type="range"]::-webkit-slider-thumb:active{
   color: #fff234;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  font-size: 1.05rem;
+  font-size: clamp(1.1rem, 2.5vw, 1.2rem);  /* Responsive font size */
 }
 
-/* Small screens: tighten spacing */
-@media (max-width: 860px) {
+/* Tablet-specific optimizations (768px-1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .reflection-wrap {
+    width: min(96vw, 1000px);  /* Slightly constrained for tablets */
+    gap: 20px;
+  }
   .reflection-cardstage {
-    width: min(90vw, 500px);
+    width: min(94vw, 550px);
   }
   .reflection-controls {
-    width: min(92vw, 500px);
+    width: min(96vw, 450px);
+    padding: 18px;
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 767px) {
+  .reflection-cardstage {
+    width: min(94vw, 480px);
+  }
+  .reflection-controls {
+    width: min(96vw, 420px);
   }
   .reflection-wrap {
     gap: 16px;
+  }
+  .reflection-controls h3 {
+    font-size: clamp(1rem, 2.5vw, 1.1rem);
   }
 }

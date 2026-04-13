@@ -3209,15 +3209,24 @@ endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it
     wrap.style.zIndex = "10000000";
     wrap.style.display = "grid";
     wrap.style.gridTemplateColumns = "minmax(280px, 1fr) minmax(280px, 420px)";
-    wrap.style.gap = "40px";                  /* breathable gap between the two columns */
+    wrap.style.gap = "40px";
     wrap.style.padding = "22px";
     wrap.style.alignItems = "center";
-    wrap.style.justifyContent = "center";     /* centers the whole grid horizontally */
-    wrap.style.justifyItems = "center";       /* centers each item within its column */
-    wrap.style.maxWidth = "1100px";           /* prevents it from stretching too wide */
-    wrap.style.margin = "0 auto";            /* centers the grid itself */
-    wrap.style.pointerEvents = "auto";
+    wrap.style.justifyContent = "center";
+    wrap.style.justifyItems = "center";
+    wrap.style.maxWidth = "1100px";
+    wrap.style.margin = "0 auto";
+    wrap.style.overflowY = "auto";           /* scroll if content is too tall */
+    wrap.style.boxSizing = "border-box";
 
+// switch to single column on small screens
+if (window.innerWidth <= 768) {
+  wrap.style.gridTemplateColumns = "1fr";           /* stack vertically */
+  wrap.style.padding = "60px 16px 16px";            /* top padding clears card counter + exit btn */
+  wrap.style.gap = "24px";
+  wrap.style.alignItems = "start";
+  wrap.style.overflowY = "auto";
+}
     const stageShell = document.createElement("div");
     stageShell.style.width = "min(560px, 92vw)";
     stageShell.style.display = "flex";

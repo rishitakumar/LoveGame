@@ -4068,7 +4068,6 @@ function applyLayout() {
   const exitBtn = document.getElementById('exit-btn');
   const isPortrait = vw <= 700 || (vw <= 900 && vh > vw);
 
-  // Fix exit button white box
   if (exitBtn) {
     exitBtn.style.cssText = `
       position: fixed;
@@ -4086,27 +4085,36 @@ function applyLayout() {
   }
 
   if (isPortrait) {
-    const exitH  = 54;
-    const padV   = 6;
-    const padH   = 12;
-    const gap    = 6;
-    const ratio  = 2000 / 1545;
+    const exitH = 54;
+    const padV  = 6;
+    const padH  = 12;
+    const gap   = 6;
+    const ratio = 2000 / 1545; // card h/w
 
-    // card + gap + (card * 0.38) = availH
-    const availH = vh - exitH - padV * 2 - gap;
+    // Total vertical budget
+    const totalH = vh - exitH - padV * 2;
     const availW = vw - padH * 2;
 
-    let cardH = Math.floor((availH - gap) / 1.38);
+    // card + gap + (card * 0.5) = totalH
+    // cardH * 1.5 + gap = totalH
+    // cardH = (totalH - gap) / 1.5
+    let cardH = Math.floor((totalH - gap) / 1.5);
     let cardW = Math.floor(cardH / ratio);
 
+    // clamp to available width
     if (cardW > availW) {
-      cardW = availW;
-      cardH = Math.floor(cardW * ratio);
+      cardW  = availW;
+      cardH  = Math.floor(cardW * ratio);
     }
 
-    // Recompute ctrlH from final cardH so it never overflows
-    const ctrlH = availH - cardH - gap;
+    // ctrlH is exactly half of cardH, never more
+    const ctrlH = Math.floor(cardH * 0.5);
     const ctrlW = cardW;
+
+    // Verify everything fits; if not, shrink card
+    const totalUsed = cardH + gap + ctrlH;
+    const slack = totalH - totalUsed;
+    const offsetTop = exitH + padV + Math.max(0, Math.floor(slack / 2));
 
     endOverlayEl.style.cssText = `
       position: fixed;
@@ -4115,8 +4123,11 @@ function applyLayout() {
       background: #000;
       overflow: hidden;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      padding-top: ${exitH}px;
+      box-sizing: border-box;
     `;
 
     wrap.style.cssText = `
@@ -4125,10 +4136,7 @@ function applyLayout() {
       align-items: center;
       justify-content: center;
       gap: ${gap}px;
-      padding: ${exitH + padV}px ${padH}px ${padV}px;
-      box-sizing: border-box;
-      width: 100%;
-      height: 100%;
+      flex-shrink: 0;
     `;
 
     stageShell.style.cssText = `
@@ -4148,6 +4156,7 @@ function applyLayout() {
       overflow: hidden;
       background: #fff;
       box-shadow: 0 0 46px rgba(245,255,58,0.25);
+      flex-shrink: 0;
     `;
 
     controls.style.cssText = `
@@ -4155,52 +4164,65 @@ function applyLayout() {
       width: ${ctrlW}px;
       height: ${ctrlH}px;
       max-height: ${ctrlH}px;
+      min-height: 0;
       overflow-y: auto;
       overflow-x: hidden;
       box-sizing: border-box;
       background: url('reflections_box.png') center/cover no-repeat;
       border: 3px solid rgba(245,255,58,0.25);
       border-radius: 18px;
-      padding: 6px 10px;
+      padding: 5px 8px;
       color: #f5ff3a;
       font-family: Georgia, 'Times New Roman', serif;
       box-shadow: 0 0 30px rgba(0,0,0,0.35);
       backdrop-filter: blur(6px);
     `;
 
-    h.style.fontSize      = "10px";
-    h.style.marginBottom  = "4px";
+    // Scale font/buttons to fit ctrlH
+    const scale = Math.max(0.6, ctrlH / 200);
+    h.style.fontSize      = Math.round(10 * scale) + "px";
+    h.style.marginBottom  = "3px";
     h.style.letterSpacing = "0.5px";
+
     [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
-      b.style.padding  = "3px 4px";
-      b.style.fontSize = "8px";
+      b.style.padding  = `${Math.round(3 * scale)}px ${Math.round(4 * scale)}px`;
+      b.style.fontSize = Math.round(8 * scale) + "px";
       b.style.flex     = "1";
       b.style.minWidth = "0";
     });
+
+    // Compress row margins
+    wrap.querySelectorAll && wrap.querySelectorAll('.reflection-row, [style*="margin-bottom"]');
+    controls.querySelectorAll('div').forEach(d => {
+      if (d.style.marginBottom) d.style.marginBottom = "3px";
+    });
+
     sizeInput.style.minWidth  = "30px";
     textSize.style.minWidth   = "30px";
-    textInput.style.fontSize  = "8px";
-    textInput.style.padding   = "3px 5px";
+    textInput.style.fontSize  = Math.round(8 * scale) + "px";
+    textInput.style.padding   = "2px 4px";
 
   } else {
     // DESKTOP
     const padV  = 24;
-    const padH  = 40;
-    const gap   = 40;
+    const padH  = 60;
+    const gap   = 48;
     const ratio = 2000 / 1545;
 
     const availH = vh - padV * 2;
-    const availW = vw - padH * 2 - gap;
-
-    // Card: height-driven, capped at half available width
+    // Both card and controls are the same width.
+    // Total width = cardW + gap + ctrlW = cardW*2 + gap
+    // So cardW = (availW - gap) / 2
+    const availW = vw - padH * 2;
+    const cardFromW = Math.floor((availW - gap) / 2);
+    // Also constrain by height
     const cardFromH = Math.floor(availH / ratio);
-    const cardFromW = Math.floor(availW / 2);
-    const cardW     = Math.min(cardFromH, cardFromW, 480);
-    const cardH     = Math.floor(cardW * ratio);
+    const cardW = Math.min(cardFromW, cardFromH, 500);
+    const cardH = Math.floor(cardW * ratio);
 
-    // Controls: same width as card, height = cardH * 0.38, centered vertically
+    // Controls: same width, max half the card height, centered vertically
     const ctrlW = cardW;
-    const ctrlH = Math.floor(cardH * 0.38);
+    const ctrlH = Math.min(Math.floor(cardH * 0.5), Math.floor(availH * 0.5));
 
     const totalW = cardW + gap + ctrlW;
 
@@ -4222,6 +4244,7 @@ function applyLayout() {
       justify-content: center;
       gap: ${gap}px;
       width: ${totalW}px;
+      max-width: ${totalW}px;
       height: ${cardH}px;
       flex-shrink: 0;
     `;
@@ -4245,6 +4268,7 @@ function applyLayout() {
       overflow: hidden;
       background: #fff;
       box-shadow: 0 0 46px rgba(245,255,58,0.25);
+      flex-shrink: 0;
     `;
 
     controls.style.cssText = `
@@ -4252,6 +4276,7 @@ function applyLayout() {
       width: ${ctrlW}px;
       height: ${ctrlH}px;
       max-height: ${ctrlH}px;
+      min-height: 0;
       align-self: center;
       overflow-y: auto;
       overflow-x: hidden;
@@ -4266,17 +4291,17 @@ function applyLayout() {
       backdrop-filter: blur(6px);
     `;
 
-    h.style.fontSize      = "16px";
-    h.style.marginBottom  = "10px";
+    h.style.fontSize      = "15px";
+    h.style.marginBottom  = "8px";
     h.style.letterSpacing = "1px";
     [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
-      b.style.padding  = "8px 10px";
-      b.style.fontSize = "13px";
+      b.style.padding  = "7px 9px";
+      b.style.fontSize = "12px";
       b.style.flex     = "1";
       b.style.minWidth = "0";
     });
-    sizeInput.style.minWidth  = "80px";
-    textSize.style.minWidth   = "80px";
+    sizeInput.style.minWidth  = "70px";
+    textSize.style.minWidth   = "70px";
     textInput.style.fontSize  = "";
     textInput.style.padding   = "";
   }
@@ -4284,7 +4309,6 @@ function applyLayout() {
 
 window.addEventListener('resize', applyLayout, { passive: true });
 applyLayout();
-
   } catch (err) {
     console.error("❌ attachReflectionCards crashed:", err);
   }

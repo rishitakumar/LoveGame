@@ -3202,9 +3202,8 @@ endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it
 
 
     // ---------- Layout (NO CSS REQUIRED) ----------
-   const wrap = document.createElement("div");
+    const wrap = document.createElement("div");
     wrap.className = "reflection-wrap";
-    wrap.style.zIndex = "10000000";
     wrap.style.boxSizing = "border-box";
     wrap.style.background = "rgba(0,0,0,1)";
     wrap.style.pointerEvents = "auto";
@@ -3212,7 +3211,6 @@ endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it
 // switch to single column on small screens
 
     const stageShell = document.createElement("div");
-    stageShell.style.width = "min(560px, 92vw)";
     stageShell.style.display = "flex";
     stageShell.style.flexDirection = "column";
     stageShell.style.gap = "10px";
@@ -3377,16 +3375,7 @@ function makeTab(text) {
     drawTemplate("back");
 
     // ---------- Controls ----------
-    const controls = document.createElement("div");
-    controls.style.width = "min(420px, 92vw)";
-    controls.style.background = "url('reflections_box.png') center/cover no-repeat";
-    controls.style.border = "3px solid rgba(245,255,58,0.25)";
-    controls.style.borderRadius = "18px";
-    controls.style.padding = "16px";
-    controls.style.color = "#f5ff3a";
-    controls.style.fontFamily = "Georgia, 'Times New Roman', serif";
-    controls.style.boxShadow = "0 0 30px rgba(0,0,0,0.35)";
-    controls.style.backdropFilter = "blur(6px)";
+   const controls = document.createElement("div");
 // --- FORCE controls above the stage so sliders can be dragged ---
 stageShell.style.position = "relative";
 stageShell.style.zIndex = "1";
@@ -3987,40 +3976,154 @@ const cardCounter = document.getElementById('card-counter');
 if (cardCounter) cardCounter.style.display = 'none';
 
 // ── Responsive layout engine ──────────────────────────────────────────
+// Force the end overlay itself to be a clean slate
+endOverlayEl.removeAttribute("style");
+endOverlayEl.style.cssText = `
+  position: fixed;
+  inset: 0;
+  z-index: 9999999;
+  background: #000;
+  overflow: hidden;
+`;
+
+// Inject a <style> tag — avoids all inline specificity wars
+const reflStyle = document.createElement("style");
+reflStyle.id = "refl-layout";
+reflStyle.textContent = `
+  #journey-end-overlay {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 32px !important;
+    padding: 20px 40px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* stageShell */
+  #journey-end-overlay > .reflection-wrap > div:first-child {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* controls */
+  #journey-end-overlay > .reflection-wrap > div:last-child {
+    flex: 0 0 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    background: url('reflections_box.png') center/cover no-repeat;
+    border: 3px solid rgba(245,255,58,0.25);
+    border-radius: 18px;
+    padding: 16px 18px;
+    color: #f5ff3a;
+    font-family: Georgia, 'Times New Roman', serif;
+    box-shadow: 0 0 30px rgba(0,0,0,0.35);
+    backdrop-filter: blur(6px);
+  }
+
+  .reflection-wrap {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+  .reflection-cardstage {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 0 46px rgba(245,255,58,0.25);
+  }
+
+  @media (max-width: 700px), (orientation: portrait) and (max-width: 900px) {
+    #journey-end-overlay {
+      flex-direction: column !important;
+      padding: 56px 12px 12px !important;
+      gap: 10px !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    .reflection-wrap {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+  }
+`;
+document.head.appendChild(reflStyle);
+
+// Now size everything with JS based on actual viewport
 function applyLayout() {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
+  const exitBtn = document.getElementById('exit-btn');
   const isPortrait = vw <= 700 || (vw <= 900 && vh > vw);
 
+  if (exitBtn) {
+    exitBtn.style.cssText = `
+      position: fixed;
+      top: 10px;
+      right: 12px;
+      z-index: 999999999;
+      width: 44px;
+      height: 44px;
+    `;
+  }
+
   if (isPortrait) {
-    // ── MOBILE / PORTRAIT TABLET ──
-    // Split viewport: card gets top half, controls get bottom half
-    const totalPad = 28; // top + bottom + gap between
-    const availH = vh - totalPad;
-    const halfH = Math.floor(availH * 0.5);
+    const exitH   = 54;   // reserved for exit button
+    const padV    = 8;
+    const padH    = 12;
+    const gap     = 8;
+    const ratio   = 2000 / 1545;  // card h/w
 
-    // Card width derived from its half of height
-    const cardW = Math.floor(halfH * (1545 / 2000));
-    // Clamp so it never exceeds viewport width
-    const finalCardW = Math.min(cardW, vw - 20);
-    const finalCardH = Math.floor(finalCardW * (2000 / 1545));
+    // card + gap + controls = availH, controls = card * 0.38
+    const availH  = vh - exitH - padV * 2 - gap;
+    const availW  = vw - padH * 2;
 
-    // Controls: same width as card
-    const ctrlW = finalCardW;
-    const ctrlH = availH - finalCardH;
+    // solve: cardH + cardH*0.38 + gap = availH  =>  cardH = (availH-gap)/1.38
+    let cardH     = Math.floor((availH - gap) / 1.38);
+    let cardW     = Math.floor(cardH / ratio);
 
-    wrap.style.cssText = `
+    // clamp to available width
+    if (cardW > availW) {
+      cardW = availW;
+      cardH = Math.floor(cardW * ratio);
+    }
+
+    const ctrlH   = Math.floor(cardH * 0.38);
+    const ctrlW   = cardW;  // exact same width
+
+    endOverlayEl.style.cssText = `
       position: fixed;
       inset: 0;
+      z-index: 9999999;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
+
+    wrap.style.cssText = `
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 6px 10px;
+      gap: ${gap}px;
+      padding: ${exitH + padV}px ${padH}px ${padV}px;
       box-sizing: border-box;
-      background: rgba(0,0,0,1);
-      overflow: hidden;
+      width: 100%;
+      height: 100%;
     `;
 
     stageShell.style.cssText = `
@@ -4028,23 +4131,20 @@ function applyLayout() {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      width: ${finalCardW}px;
+      width: ${cardW}px;
     `;
 
-    stage.style.cssText = `
-      position: relative;
-      width: 100%;
-      height: ${finalCardH}px;
-      border-radius: 14px;
-      overflow: hidden;
-      background: #fff;
-      box-shadow: 0 0 46px rgba(245,255,58,0.25);
-    `;
+    stage.style.width  = cardW + "px";
+    stage.style.height = cardH + "px";
+    stage.style.aspectRatio = "unset";
 
     controls.style.cssText = `
       flex: 0 0 auto;
       width: ${ctrlW}px;
       height: ${ctrlH}px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-sizing: border-box;
       background: url('reflections_box.png') center/cover no-repeat;
       border: 3px solid rgba(245,255,58,0.25);
       border-radius: 18px;
@@ -4053,64 +4153,66 @@ function applyLayout() {
       font-family: Georgia, 'Times New Roman', serif;
       box-shadow: 0 0 30px rgba(0,0,0,0.35);
       backdrop-filter: blur(6px);
-      box-sizing: border-box;
-      overflow-y: auto;
-      overflow-x: hidden;
     `;
 
-    h.style.fontSize = '10px';
-    h.style.marginBottom = '4px';
-    h.style.letterSpacing = '0.5px';
-
+    h.style.fontSize      = "10px";
+    h.style.marginBottom  = "4px";
+    h.style.letterSpacing = "0.5px";
     [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
-      b.style.padding = '3px 4px';
-      b.style.fontSize = '8px';
-      b.style.flex = '1';
-      b.style.minWidth = '0';
+      b.style.padding   = "3px 4px";
+      b.style.fontSize  = "8px";
+      b.style.flex      = "1";
+      b.style.minWidth  = "0";
     });
-
-    sizeInput.style.minWidth = '30px';
-    textSize.style.minWidth = '30px';
-    textInput.style.fontSize = '8px';
-    textInput.style.padding = '3px 5px';
+    sizeInput.style.minWidth   = "30px";
+    textSize.style.minWidth    = "30px";
+    textInput.style.fontSize   = "8px";
+    textInput.style.padding    = "3px 5px";
 
   } else {
-    // ── DESKTOP / LANDSCAPE ──
-    // Both elements must fit side by side within the viewport with no overflow.
-    // Use the viewport itself as the constraint — no max-width wrapper.
+    // DESKTOP
+    const padV  = 24;
+    const padH  = 40;
+    const gap   = 40;
+    const ratio = 2000 / 1545;
 
-    const padH = 48;  // 24px top + bottom
-    const padW = 80;  // 40px left + right
-    const gap = 40;
+    const availH = vh - padV * 2;
+    const availW = vw - padH * 2 - gap;
 
-    const availH = vh - padH;
-    const availW = vw - padW - gap;
+    // card width: at most half the available width, and fits in height
+    const cardFromH = Math.floor(availH / ratio);
+    const cardFromW = Math.floor(availW / 2);
+    const cardW     = Math.min(cardFromH, cardFromW, 480);
+    const cardH     = Math.floor(cardW * ratio);
 
-    // Card: constrained by height first (it has a fixed aspect ratio)
-    const cardFromH = Math.floor(availH * (1545 / 2000));
-    // Also constrained so card never takes more than 48% of available width
-    const cardFromW = Math.floor(availW * 0.48);
-    const cardW = Math.min(cardFromH, cardFromW, 480);
-    const cardH = Math.floor(cardW * (2000 / 1545));
+    // controls: same width and height as card
+    const ctrlW = cardW;
+    const ctrlH = cardH;
 
-    // Controls: fill the rest of the width exactly
-    const ctrlW = availW - cardW;
+    // center the pair
+    const totalW  = cardW + gap + ctrlW;
+    const offsetL = Math.floor((vw - totalW) / 2);
+
+    endOverlayEl.style.cssText = `
+      position: fixed;
+      inset: 0;
+      z-index: 9999999;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
 
     wrap.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: center;
       gap: ${gap}px;
-      padding: 24px 40px;
-      box-sizing: border-box;
-      background: rgba(0,0,0,1);
-      overflow: hidden;
+      width: ${totalW}px;
+      height: ${cardH}px;
+      flex-shrink: 0;
     `;
 
     stageShell.style.cssText = `
@@ -4121,53 +4223,46 @@ function applyLayout() {
       width: ${cardW}px;
     `;
 
-    stage.style.cssText = `
-      position: relative;
-      width: 100%;
-      height: ${cardH}px;
-      border-radius: 14px;
-      overflow: hidden;
-      background: #fff;
-      box-shadow: 0 0 46px rgba(245,255,58,0.25);
-    `;
+    stage.style.width      = cardW + "px";
+    stage.style.height     = cardH + "px";
+    stage.style.aspectRatio = "unset";
 
     controls.style.cssText = `
       flex: 0 0 ${ctrlW}px;
       width: ${ctrlW}px;
-      height: ${cardH}px;
+      height: ${ctrlH}px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-sizing: border-box;
       background: url('reflections_box.png') center/cover no-repeat;
       border: 3px solid rgba(245,255,58,0.25);
       border-radius: 18px;
-      padding: clamp(12px, 1.8vh, 22px) clamp(12px, 1.5vw, 22px);
+      padding: clamp(12px,1.8vh,22px) clamp(12px,1.5vw,22px);
       color: #f5ff3a;
       font-family: Georgia, 'Times New Roman', serif;
       box-shadow: 0 0 30px rgba(0,0,0,0.35);
       backdrop-filter: blur(6px);
-      overflow-y: auto;
-      overflow-x: hidden;
-      box-sizing: border-box;
     `;
 
-    h.style.fontSize = '16px';
-    h.style.marginBottom = '10px';
-    h.style.letterSpacing = '1px';
-
+    h.style.fontSize      = "16px";
+    h.style.marginBottom  = "10px";
+    h.style.letterSpacing = "1px";
     [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
-      b.style.padding = '8px 10px';
-      b.style.fontSize = '13px';
-      b.style.flex = '1';
-      b.style.minWidth = '0';
+      b.style.padding  = "8px 10px";
+      b.style.fontSize = "13px";
+      b.style.flex     = "1";
+      b.style.minWidth = "0";
     });
-
-    sizeInput.style.minWidth = '80px';
-    textSize.style.minWidth = '80px';
-    textInput.style.fontSize = '';
-    textInput.style.padding = '';
+    sizeInput.style.minWidth  = "80px";
+    textSize.style.minWidth   = "80px";
+    textInput.style.fontSize  = "";
+    textInput.style.padding   = "";
   }
 }
 
 window.addEventListener('resize', applyLayout, { passive: true });
 applyLayout();
+
   } catch (err) {
     console.error("❌ attachReflectionCards crashed:", err);
   }

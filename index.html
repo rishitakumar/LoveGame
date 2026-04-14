@@ -4068,6 +4068,7 @@ function applyLayout() {
   const exitBtn = document.getElementById('exit-btn');
   const isPortrait = vw <= 700 || (vw <= 900 && vh > vw);
 
+  // Fix exit button white box
   if (exitBtn) {
     exitBtn.style.cssText = `
       position: fixed;
@@ -4076,32 +4077,36 @@ function applyLayout() {
       z-index: 999999999;
       width: 44px;
       height: 44px;
+      background: transparent;
+      border: none;
+      padding: 0;
+      box-shadow: none;
+      outline: none;
     `;
   }
 
   if (isPortrait) {
-    const exitH   = 54;   // reserved for exit button
-    const padV    = 8;
-    const padH    = 12;
-    const gap     = 8;
-    const ratio   = 2000 / 1545;  // card h/w
+    const exitH  = 54;
+    const padV   = 6;
+    const padH   = 12;
+    const gap    = 6;
+    const ratio  = 2000 / 1545;
 
-    // card + gap + controls = availH, controls = card * 0.38
-    const availH  = vh - exitH - padV * 2 - gap;
-    const availW  = vw - padH * 2;
+    // card + gap + (card * 0.38) = availH
+    const availH = vh - exitH - padV * 2 - gap;
+    const availW = vw - padH * 2;
 
-    // solve: cardH + cardH*0.38 + gap = availH  =>  cardH = (availH-gap)/1.38
-    let cardH     = Math.floor((availH - gap) / 1.38);
-    let cardW     = Math.floor(cardH / ratio);
+    let cardH = Math.floor((availH - gap) / 1.38);
+    let cardW = Math.floor(cardH / ratio);
 
-    // clamp to available width
     if (cardW > availW) {
       cardW = availW;
       cardH = Math.floor(cardW * ratio);
     }
 
-    const ctrlH   = Math.floor(cardH * 0.38);
-    const ctrlW   = cardW;  // exact same width
+    // Recompute ctrlH from final cardH so it never overflows
+    const ctrlH = availH - cardH - gap;
+    const ctrlW = cardW;
 
     endOverlayEl.style.cssText = `
       position: fixed;
@@ -4134,14 +4139,22 @@ function applyLayout() {
       width: ${cardW}px;
     `;
 
-    stage.style.width  = cardW + "px";
-    stage.style.height = cardH + "px";
-    stage.style.aspectRatio = "unset";
+    stage.style.cssText = `
+      position: relative;
+      width: ${cardW}px;
+      height: ${cardH}px;
+      aspect-ratio: unset;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 0 46px rgba(245,255,58,0.25);
+    `;
 
     controls.style.cssText = `
       flex: 0 0 auto;
       width: ${ctrlW}px;
       height: ${ctrlH}px;
+      max-height: ${ctrlH}px;
       overflow-y: auto;
       overflow-x: hidden;
       box-sizing: border-box;
@@ -4159,15 +4172,15 @@ function applyLayout() {
     h.style.marginBottom  = "4px";
     h.style.letterSpacing = "0.5px";
     [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
-      b.style.padding   = "3px 4px";
-      b.style.fontSize  = "8px";
-      b.style.flex      = "1";
-      b.style.minWidth  = "0";
+      b.style.padding  = "3px 4px";
+      b.style.fontSize = "8px";
+      b.style.flex     = "1";
+      b.style.minWidth = "0";
     });
-    sizeInput.style.minWidth   = "30px";
-    textSize.style.minWidth    = "30px";
-    textInput.style.fontSize   = "8px";
-    textInput.style.padding    = "3px 5px";
+    sizeInput.style.minWidth  = "30px";
+    textSize.style.minWidth   = "30px";
+    textInput.style.fontSize  = "8px";
+    textInput.style.padding   = "3px 5px";
 
   } else {
     // DESKTOP
@@ -4179,19 +4192,17 @@ function applyLayout() {
     const availH = vh - padV * 2;
     const availW = vw - padH * 2 - gap;
 
-    // card width: at most half the available width, and fits in height
+    // Card: height-driven, capped at half available width
     const cardFromH = Math.floor(availH / ratio);
     const cardFromW = Math.floor(availW / 2);
     const cardW     = Math.min(cardFromH, cardFromW, 480);
     const cardH     = Math.floor(cardW * ratio);
 
-    // controls: same width and height as card
+    // Controls: same width as card, height = cardH * 0.38, centered vertically
     const ctrlW = cardW;
-    const ctrlH = cardH;
+    const ctrlH = Math.floor(cardH * 0.38);
 
-    // center the pair
-    const totalW  = cardW + gap + ctrlW;
-    const offsetL = Math.floor((vw - totalW) / 2);
+    const totalW = cardW + gap + ctrlW;
 
     endOverlayEl.style.cssText = `
       position: fixed;
@@ -4221,23 +4232,34 @@ function applyLayout() {
       flex-direction: column;
       gap: 10px;
       width: ${cardW}px;
+      height: ${cardH}px;
+      align-self: center;
     `;
 
-    stage.style.width      = cardW + "px";
-    stage.style.height     = cardH + "px";
-    stage.style.aspectRatio = "unset";
+    stage.style.cssText = `
+      position: relative;
+      width: ${cardW}px;
+      height: ${cardH}px;
+      aspect-ratio: unset;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 0 46px rgba(245,255,58,0.25);
+    `;
 
     controls.style.cssText = `
       flex: 0 0 ${ctrlW}px;
       width: ${ctrlW}px;
       height: ${ctrlH}px;
+      max-height: ${ctrlH}px;
+      align-self: center;
       overflow-y: auto;
       overflow-x: hidden;
       box-sizing: border-box;
       background: url('reflections_box.png') center/cover no-repeat;
       border: 3px solid rgba(245,255,58,0.25);
       border-radius: 18px;
-      padding: clamp(12px,1.8vh,22px) clamp(12px,1.5vw,22px);
+      padding: clamp(10px,1.5vh,18px) clamp(10px,1.2vw,18px);
       color: #f5ff3a;
       font-family: Georgia, 'Times New Roman', serif;
       box-shadow: 0 0 30px rgba(0,0,0,0.35);

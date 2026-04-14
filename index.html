@@ -3981,77 +3981,114 @@ setActive("front");
 snapshot("front");
 snapshot("back");
 
-const isMobile = window.innerWidth <= 768;
-const topOffset = 60;
+// ── Single responsive layout ──────────────────────────────────────────
+wrap.style.cssText = `
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 3vw, 48px);
+  padding: 12px clamp(12px, 3vw, 40px);
+  box-sizing: border-box;
+  background: rgba(0,0,0,1);
+  overflow: hidden;
+`;
 
-if (isMobile) {
-  wrap.style.position = "fixed";
-  wrap.style.top = `${topOffset}px`;
-  wrap.style.left = "0";
-  wrap.style.right = "0";
-  wrap.style.bottom = "0";
-  wrap.style.display = "flex";
-  wrap.style.flexDirection = "column";
-  wrap.style.alignItems = "center";
-  wrap.style.justifyContent = "space-evenly";
-  wrap.style.padding = "8px 12px";
-  wrap.style.overflowY = "hidden";
-  wrap.style.boxSizing = "border-box";
-  wrap.style.background = "rgba(0,0,0,1)";
+stageShell.style.cssText = `
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(42vh, 46vw, 420px);
+  max-width: 420px;
+  min-width: 160px;
+`;
 
-  const availH = window.innerHeight - topOffset - 16;
-  const cardH = Math.floor(availH * 0.42);
-  const cardW = Math.floor(cardH * (1545 / 2000));
+stage.style.cssText = `
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1545 / 2000;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 0 46px rgba(245,255,58,0.25);
+`;
 
-  stageShell.style.width = `${cardW}px`;
-  stageShell.style.flexShrink = "0";
-  stage.style.width = `${cardW}px`;
+controls.style.cssText = `
+  flex: 1 1 auto;
+  max-width: 420px;
+  min-width: 200px;
+  background: url('reflections_box.png') center/cover no-repeat;
+  border: 3px solid rgba(245,255,58,0.25);
+  border-radius: 18px;
+  padding: clamp(10px, 2vh, 20px) clamp(10px, 2vw, 20px);
+  color: #f5ff3a;
+  font-family: Georgia, 'Times New Roman', serif;
+  box-shadow: 0 0 30px rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
+  overflow-y: auto;
+  max-height: calc(100vh - 24px);
+  box-sizing: border-box;
+`;
 
-  const availW = window.innerWidth - 24;
-  const controlsW = Math.min(availW, Math.floor(cardW * 1.3));
-  const controlsH = Math.floor(availH * 0.50);
-  controls.style.width = `${controlsW}px`;
-  controls.style.padding = "6px 10px";
-  controls.style.maxHeight = `${controlsH}px`;
-  controls.style.overflowY = "auto";
-  controls.style.overflowX = "hidden";
-  controls.style.fontSize = "11px";
-  controls.style.flexShrink = "0";
-  controls.style.boxSizing = "border-box";
+// Stack vertically on narrow screens
+const mq = window.matchMedia('(max-width: 700px), (orientation: portrait) and (max-width: 900px)');
 
-  [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
-    b.style.padding = "4px 5px";
-    b.style.fontSize = "9px";
-    b.style.flex = "1";
-    b.style.minWidth = "0";
-  });
+function applyLayout(e) {
+  if (e.matches) {
+    // Phone / portrait tablet: stack vertically
+    wrap.style.flexDirection = 'column';
+    wrap.style.overflowY = 'auto';
+    wrap.style.overflowX = 'hidden';
+    wrap.style.alignItems = 'center';
+    wrap.style.justifyContent = 'flex-start';
+    wrap.style.padding = '8px 12px 12px';
 
-  sizeInput.style.minWidth = "50px";
-  textSize.style.minWidth = "50px";
-  h.style.fontSize = "10px";
-  h.style.marginBottom = "4px";
+    stageShell.style.width = 'min(55vw, 260px)';
+    stageShell.style.minWidth = '120px';
 
-} else {
-  wrap.style.position = "fixed";
-  wrap.style.top = "0";
-  wrap.style.left = "0";
-  wrap.style.right = "0";
-  wrap.style.bottom = "0";
-  wrap.style.display = "grid";
-  wrap.style.gridTemplateColumns = "minmax(280px, 1fr) minmax(280px, 420px)";
-  wrap.style.gap = "40px";
-  wrap.style.padding = "22px";
-  wrap.style.alignItems = "center";
-  wrap.style.justifyContent = "center";
-  wrap.style.justifyItems = "center";
-  wrap.style.maxWidth = "1100px";
-  wrap.style.margin = "0 auto";
-  wrap.style.height = "100vh";
-  wrap.style.overflowY = "auto";
+    controls.style.width = 'min(96vw, 420px)';
+    controls.style.maxHeight = 'none';
+    controls.style.flex = '0 0 auto';
 
-  stageShell.style.width = "min(560px, 92vw)";
-  controls.style.width = "min(420px, 92vw)";
+    [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
+      b.style.padding = '5px 6px';
+      b.style.fontSize = '10px';
+    });
+    sizeInput.style.minWidth = '60px';
+    textSize.style.minWidth = '60px';
+    h.style.fontSize = '13px';
+    h.style.marginBottom = '6px';
+  } else {
+    // Desktop / landscape: side by side
+    wrap.style.flexDirection = 'row';
+    wrap.style.overflowY = 'hidden';
+    wrap.style.alignItems = 'center';
+    wrap.style.justifyContent = 'center';
+    wrap.style.padding = '12px clamp(12px, 3vw, 40px)';
+
+    stageShell.style.width = 'min(42vh, 46vw, 420px)';
+    stageShell.style.minWidth = '160px';
+
+    controls.style.width = '';
+    controls.style.maxHeight = 'calc(100vh - 24px)';
+    controls.style.flex = '1 1 auto';
+
+    [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
+      b.style.padding = '10px 12px';
+      b.style.fontSize = '';
+    });
+    sizeInput.style.minWidth = '140px';
+    textSize.style.minWidth = '140px';
+    h.style.fontSize = '18px';
+    h.style.marginBottom = '12px';
+  }
 }
+
+mq.addEventListener('change', applyLayout);
+applyLayout(mq);
     
   } catch (err) {
     console.error("❌ attachReflectionCards crashed:", err);

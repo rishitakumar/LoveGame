@@ -1933,3 +1933,30 @@ input[type="range"]::-webkit-slider-thumb:active{
     max-height: 80vh;  /* Prevents excessive height */
   }
 }
+/* Desktop: let the controls shrink‑wrap to their content */
+@media (min-width: 861px) {
+  .reflection-controls {
+    height: auto;               /* only as tall as needed */
+    min-height: 0;              /* remove any forced minimum */
+    overflow: visible;          /* allow inner elements to paint outside if needed */
+    padding: 16px 18px;         /* keep your desktop padding */
+  }
+}
+
+/* Small screens: keep a reasonable minimum so buttons aren’t cut off,
+   but still let it grow with content */
+@media (max-width: 860px) {
+  .reflection-controls {
+    min-height: 260px;          /* adjust if you still see cut‑off */
+    height: auto;               /* grow beyond min if needed */
+    overflow: visible;          /* prevents the white line caused by clipping */
+    padding: 12px;              /* your mobile padding */
+  }
+}
+
+/* Ensure the background image always fills the element so no whitespace appears */
+.reflection-controls {
+  background-size: cover;       /* already set, but keep it */
+  background-position: center;
+  background-repeat: no-repeat;
+}

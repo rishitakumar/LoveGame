@@ -4159,11 +4159,9 @@ function applyLayout() {
       flex-shrink: 0;
     `;
 
-  controls.style.cssText = `
-  flex: 0 0 ${ctrlW}px;
-  align-self: center;
+   controls.style.cssText = `
+  flex: 0 0 auto;
   width: ${ctrlW}px;
-  height: auto;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
@@ -4171,7 +4169,7 @@ function applyLayout() {
   background: url('reflections_box.png') center/cover no-repeat;
   border: 3px solid rgba(245,255,58,0.25);
   border-radius: 18px;
-  padding: clamp(10px,1.5vh,18px) clamp(10px,1.2vw,18px);
+  padding: 5px 8px;
   color: #f5ff3a;
   font-family: Georgia, 'Times New Roman', serif;
   box-shadow: 0 0 30px rgba(0,0,0,0.35);
@@ -4226,29 +4224,28 @@ function applyLayout() {
 
     const totalW = cardW + gap + ctrlW;
 
-endOverlayEl.style.cssText = `
-  position: fixed;
-  inset: 0;
-  z-index: 9999999;
-  background: #000;
-  overflow: clip;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding-top: ${exitH}px;
-  box-sizing: border-box;
-`;  
+    endOverlayEl.style.cssText = `
+      position: fixed;
+      inset: 0;
+      z-index: 9999999;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
 
     wrap.style.cssText = `
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: ${gap}px;
-  flex-shrink: 0;
-  overflow: visible;
-`;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: ${gap}px;
+      width: ${totalW}px;
+      max-width: ${totalW}px;
+      height: ${cardH}px;
+      flex-shrink: 0;
+    `;
 
     stageShell.style.cssText = `
       flex: 0 0 ${cardW}px;
@@ -4310,7 +4307,9 @@ endOverlayEl.style.cssText = `
 requestAnimationFrame(() => {
   requestAnimationFrame(() => {
     const maxH = Math.floor(cardH * 0.5);
+    controls.style.height    = "auto";
     controls.style.maxHeight = maxH + "px";
+    controls.style.overflowY = "auto";
   });
 });
 }

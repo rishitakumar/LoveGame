@@ -1846,15 +1846,13 @@ input[type="range"]::-webkit-slider-thumb:active{
 
 /* Reflection stage (the card) - optimized for small screens */
 .reflection-cardstage {
+  width: 100%;  /* Use full container width */
   min-height: 200px;  /* Minimum height */
   aspect-ratio: 1545 / 2000;
   border-radius: 14px;
   overflow: hidden;
   background: #fff;
   box-shadow: 0 0 46px rgba(245,255,58,0.25);
-  width: min(90%, 400px);   /* same as .reflection-controls */
-  margin: 0 auto;           /* center it */
-  /* Optional: keep a consistent aspect ratio */
 }
 
 /* Controls panel - optimized for small screens with fixed height issue fix */
@@ -1934,50 +1932,4 @@ input[type="range"]::-webkit-slider-thumb:active{
   .reflection-controls {
     max-height: 80vh;  /* Prevents excessive height */
   }
-}
-/* Desktop: let the controls shrink‑wrap to their content */
-@media (min-width: 861px) {
-  .reflection-controls {
-    height: auto;               /* only as tall as needed */
-    min-height: 0;              /* remove any forced minimum */
-    overflow: visible;          /* allow inner elements to paint outside if needed */
-    padding: 16px 18px;         /* keep your desktop padding */
-  }
-}
-
-/* Small screens: keep a reasonable minimum so buttons aren’t cut off,
-   but still let it grow with content */
-@media (max-width: 860px) {
-  .reflection-controls {
-    min-height: 260px;          /* adjust if you still see cut‑off */
-    height: auto;               /* grow beyond min if needed */
-    overflow: visible;          /* prevents the white line caused by clipping */
-    padding: 12px;              /* your mobile padding */
-  }
-}
-
-/* Ensure the background image always fills the element so no whitespace appears */
-.reflection-controls {
-  background-size: cover;       /* already set, but keep it */
-  background-position: center;
-  background-repeat: no-repeat;
-  display: flex;
-  align-items: center;          /* vertical centering */
-  justify-content: center;      /* horizontal centering if you want it */
-  /* Keep the height minimal – let it shrink to fit content */
-  height: fit-content;
-}
-@media (max-width: 1024px) {
-  .reflection-controls {
-  /* Make the container only as tall as its content */
-  height: fit-content;          /* or min-height: auto; */
-  /* Prevent clipping when inner elements need a bit more space */
-  overflow: visible;
-  /* Center the controls horizontally */
-  margin: 0 auto;
-  /* Ensure it matches the reflection card’s width */
-  width: min(90%, 400px);      /* adjust %/max-width to your liking */
-  /* Optional: add a little vertical gap between stacked elements */
-  margin-top: 1rem;
-}
 }

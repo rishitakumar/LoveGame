@@ -3591,6 +3591,9 @@ controls.appendChild(rNav);
     wrap.appendChild(stageShell);
     wrap.appendChild(controls);
     endOverlayEl.appendChild(wrap);
+    controls.style.display        = "flex";
+controls.style.flexDirection  = "column";
+controls.style.justifyContent = "space-between";
 
     // ---------- State wiring ----------
     function setActive(which) {
@@ -4306,10 +4309,39 @@ function applyLayout() {
   // After layout is painted, shrink controls to fit content naturally
 requestAnimationFrame(() => {
   requestAnimationFrame(() => {
-    const maxH = Math.floor(cardH * 0.5);
-    controls.style.height    = "auto";
-    controls.style.maxHeight = maxH + "px";
-    controls.style.overflowY = "auto";
+    if (isPortrait) {
+      // Measure actual remaining space below the card
+      const stageRect    = stage.getBoundingClientRect();
+      const bottomEdge   = vh - 6; // 6px bottom pad
+      const spaceBelow   = bottomEdge - stageRect.bottom - gap;
+      const maxH         = Math.min(
+        Math.floor(cardH * 0.5),
+        Math.floor(spaceBelow)
+      );
+
+      controls.style.maxHeight = Math.max(60, maxH) + "px";
+
+      // If content still overflows, shrink font/buttons further
+      if (controls.scrollHeight > maxH) {
+        const scale = maxH / controls.scrollHeight;
+        controls.querySelectorAll('button, input[type="text"]').forEach(el => {
+          const curr = parseFloat(window.getComputedStyle(el).fontSize);
+          el.style.fontSize = Math.max(7, Math.floor(curr * scale)) + "px";
+        });
+        controls.querySelectorAll('button').forEach(el => {
+          el.style.padding = "2px 3px";
+        });
+        h.style.fontSize = Math.max(8, Math.floor(parseFloat(h.style.fontSize) * scale)) + "px";
+      }
+    } else {
+      // Desktop: natural height capped at half card
+      const maxH = Math.floor(cardH * 0.5);
+      controls.style.maxHeight      = maxH + "px";
+      controls.style.height         = "auto";
+      controls.style.display        = "flex";
+      controls.style.flexDirection  = "column";
+      controls.style.justifyContent = "space-between";
+    }
   });
 });
 }

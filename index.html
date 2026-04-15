@@ -4094,27 +4094,29 @@ function applyLayout() {
     const gap   = 4;
     const ratio = 2000 / 1545;
 
-    // Use 56% for card, 44% minus gaps for controls — fixed split
     const totalH = vh - exitH - padV * 2 - gap;
     const availW = vw - padH * 2;
 
-    // Card gets 60% of total, controls gets 40% — capped at half card
-    // Split 50/50 - both get equal space
-let cardH = Math.floor(totalH * 0.48);
-let ctrlH = Math.floor(totalH * 0.48);
-// If card would be too big, shrink it and let controls grow
-if (cardH > totalH * 0.50) {
-  cardH = Math.floor(totalH * 0.50);
-  ctrlH = totalH - cardH - gap;
-}
-const ctrlW = cardW;
+    // Card gets ~48% of space, controls gets the rest
+    let cardH = Math.floor(totalH * 0.48);
+    let cardW = Math.floor(cardH / ratio);
+
+    if (cardW > availW) {
+      cardW = availW;
+      cardH = Math.floor(cardW * ratio);
+    }
+
+    // Controls gets remaining space (allow it to grow)
+    const remaining = totalH - cardH - gap;
+    const ctrlW = cardW;
+    const ctrlH = remaining;  // Let controls use all remaining space
 
     endOverlayEl.style.cssText = `
       position: fixed;
       inset: 0;
       z-index: 9999999;
       background: #000;
-      overflow: clip;
+      overflow: visible;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -4158,10 +4160,9 @@ const ctrlW = cardW;
       align-self: center;
       width: ${ctrlW}px;
       height: auto;
-      min-height: ${ctrlH}px;  // minimum, but can grow
+      min-height: ${Math.floor(cardH * 0.3)}px;
       max-height: none;
-      min-height: 0;
-      overflow: hidden;
+      overflow: visible;
       box-sizing: border-box;
       background: url('reflections_box.png') center/cover no-repeat;
       border: 3px solid rgba(245,255,58,0.25);
@@ -4174,39 +4175,7 @@ const ctrlW = cardW;
       display: flex;
       flex-direction: column;
       justify-content: space-evenly;
-    `;
-
-    // Scale everything to fit ctrlH
-    const btnPad  = Math.max(2, Math.floor(ctrlH * 0.025)) + "px " +
-                    Math.max(3, Math.floor(ctrlH * 0.035)) + "px";
-    const btnSize = Math.max(7, Math.floor(ctrlH * 0.09)) + "px";
-    const hdSize  = Math.max(8, Math.floor(ctrlH * 0.10)) + "px";
-
-    h.style.fontSize      = hdSize;
-    h.style.marginBottom  = "0";
-    h.style.letterSpacing = "0.5px";
-
-    // Make all row divs also flex so they don't add extra height
-    controls.querySelectorAll('div').forEach(d => {
-      d.style.marginBottom = "0";
-      d.style.margin       = "0";
-    });
-
-    [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
-      b.style.padding   = btnPad;
-      b.style.fontSize  = btnSize;
-      b.style.flex      = "1";
-      b.style.minWidth  = "0";
-      b.style.boxSizing = "border-box";
-    });
-
-    sizeInput.style.minWidth  = "28px";
-    textSize.style.minWidth   = "28px";
-    textInput.style.fontSize  = btnSize;
-    textInput.style.padding   = "2px 3px";
-    colorInput.style.height   = Math.max(20, Math.floor(ctrlH * 0.12)) + "px";
-
-  } else {
+    `; else {
     // DESKTOP
     const padV  = 24;
     const padH  = 60;

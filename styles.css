@@ -1846,13 +1846,15 @@ input[type="range"]::-webkit-slider-thumb:active{
 
 /* Reflection stage (the card) - optimized for small screens */
 .reflection-cardstage {
-  width: 100%;  /* Use full container width */
   min-height: 200px;  /* Minimum height */
   aspect-ratio: 1545 / 2000;
   border-radius: 14px;
   overflow: hidden;
   background: #fff;
   box-shadow: 0 0 46px rgba(245,255,58,0.25);
+  width: min(90%, 400px);   /* same as .reflection-controls */
+  margin: 0 auto;           /* center it */
+  /* Optional: keep a consistent aspect ratio */
 }
 
 /* Controls panel - optimized for small screens with fixed height issue fix */
@@ -1959,4 +1961,23 @@ input[type="range"]::-webkit-slider-thumb:active{
   background-size: cover;       /* already set, but keep it */
   background-position: center;
   background-repeat: no-repeat;
+  display: flex;
+  align-items: center;          /* vertical centering */
+  justify-content: center;      /* horizontal centering if you want it */
+  /* Keep the height minimal – let it shrink to fit content */
+  height: fit-content;
+}
+@media (max-width: 1024px) {
+  .reflection-controls {
+  /* Make the container only as tall as its content */
+  height: fit-content;          /* or min-height: auto; */
+  /* Prevent clipping when inner elements need a bit more space */
+  overflow: visible;
+  /* Center the controls horizontally */
+  margin: 0 auto;
+  /* Ensure it matches the reflection card’s width */
+  width: min(90%, 400px);      /* adjust %/max-width to your liking */
+  /* Optional: add a little vertical gap between stacked elements */
+  margin-top: 1rem;
+}
 }

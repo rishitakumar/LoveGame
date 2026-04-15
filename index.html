@@ -4159,24 +4159,22 @@ function applyLayout() {
       flex-shrink: 0;
     `;
 
-    controls.style.cssText = `
-      flex: 0 0 auto;
-      width: ${ctrlW}px;
-      height: ${ctrlH}px;
-      max-height: ${ctrlH}px;
-      min-height: 0;
-      overflow-y: auto;
-      overflow-x: hidden;
-      box-sizing: border-box;
-      background: url('reflections_box.png') center/cover no-repeat;
-      border: 3px solid rgba(245,255,58,0.25);
-      border-radius: 18px;
-      padding: 5px 8px;
-      color: #f5ff3a;
-      font-family: Georgia, 'Times New Roman', serif;
-      box-shadow: 0 0 30px rgba(0,0,0,0.35);
-      backdrop-filter: blur(6px);
-    `;
+   controls.style.cssText = `
+  flex: 0 0 auto;
+  width: ${ctrlW}px;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  background: url('reflections_box.png') center/cover no-repeat;
+  border: 3px solid rgba(245,255,58,0.25);
+  border-radius: 18px;
+  padding: 5px 8px;
+  color: #f5ff3a;
+  font-family: Georgia, 'Times New Roman', serif;
+  box-shadow: 0 0 30px rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
+`;
 
     // Scale font/buttons to fit ctrlH
     const scale = Math.max(0.6, ctrlH / 200);
@@ -4308,25 +4306,10 @@ function applyLayout() {
   // After layout is painted, shrink controls to fit content naturally
 requestAnimationFrame(() => {
   requestAnimationFrame(() => {
-    const maxH = isPortrait
-      ? Math.floor(cardH * 0.5)
-      : Math.floor(cardH * 0.5);
-
-    // Remove fixed height so it can report its natural scroll height
-    controls.style.height = "auto";
+    const maxH = Math.floor(cardH * 0.5);
+    controls.style.height    = "auto";
     controls.style.maxHeight = maxH + "px";
-
-    const natural = controls.scrollHeight;
-    const final   = Math.min(natural, maxH);
-
-    controls.style.height    = final + "px";
-    controls.style.maxHeight = final + "px";
-    controls.style.overflowY = natural > maxH ? "auto" : "visible";
-
-    // On portrait, re-center the wrap now that controls height is known
-    if (isPortrait) {
-      wrap.style.justifyContent = "center";
-    }
+    controls.style.overflowY = "auto";
   });
 });
 }

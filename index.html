@@ -4099,18 +4099,15 @@ function applyLayout() {
     const availW = vw - padH * 2;
 
     // Card gets 60% of total, controls gets 40% — capped at half card
-    let cardH = Math.floor(totalH * 0.60);
-    let cardW = Math.floor(cardH / ratio);
-
-    if (cardW > availW) {
-      cardW = availW;
-      cardH = Math.floor(cardW * ratio);
-    }
-
-    // Controls height = whatever is left, never more than half cardH
-    const remaining = totalH - cardH - gap;
-    const ctrlH     = Math.min(remaining, Math.floor(cardH * 0.5));
-    const ctrlW     = cardW;
+    // Split 50/50 - both get equal space
+let cardH = Math.floor(totalH * 0.48);
+let ctrlH = Math.floor(totalH * 0.48);
+// If card would be too big, shrink it and let controls grow
+if (cardH > totalH * 0.50) {
+  cardH = Math.floor(totalH * 0.50);
+  ctrlH = totalH - cardH - gap;
+}
+const ctrlW = cardW;
 
     endOverlayEl.style.cssText = `
       position: fixed;
@@ -4160,8 +4157,9 @@ function applyLayout() {
       flex: 0 0 auto;
       align-self: center;
       width: ${ctrlW}px;
-      height: ${ctrlH}px;
-      max-height: ${ctrlH}px;
+      height: auto;
+      min-height: ${ctrlH}px;  // minimum, but can grow
+      max-height: none;
       min-height: 0;
       overflow: hidden;
       box-sizing: border-box;

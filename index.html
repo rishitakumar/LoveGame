@@ -4108,7 +4108,7 @@ function applyLayout() {
     }
 
     // ctrlH is exactly half of cardH, never more
-    const ctrlH = Math.floor(cardH * 0.5);
+    const ctrlH = Math.floor(cardH * 0.5); // will be overridden after render
     const ctrlW = cardW;
 
     // Verify everything fits; if not, shrink card
@@ -4222,7 +4222,7 @@ function applyLayout() {
 
     // Controls: same width, max half the card height, centered vertically
     const ctrlW = cardW;
-    const ctrlH = Math.min(Math.floor(cardH * 0.5), Math.floor(availH * 0.5));
+    const ctrlH = Math.floor(cardH * 0.5); // will be overridden after render
 
     const totalW = cardW + gap + ctrlW;
 
@@ -4305,6 +4305,30 @@ function applyLayout() {
     textInput.style.fontSize  = "";
     textInput.style.padding   = "";
   }
+  // After layout is painted, shrink controls to fit content naturally
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    const maxH = isPortrait
+      ? Math.floor(cardH * 0.5)
+      : Math.floor(cardH * 0.5);
+
+    // Remove fixed height so it can report its natural scroll height
+    controls.style.height = "auto";
+    controls.style.maxHeight = maxH + "px";
+
+    const natural = controls.scrollHeight;
+    const final   = Math.min(natural, maxH);
+
+    controls.style.height    = final + "px";
+    controls.style.maxHeight = final + "px";
+    controls.style.overflowY = natural > maxH ? "auto" : "visible";
+
+    // On portrait, re-center the wrap now that controls height is known
+    if (isPortrait) {
+      wrap.style.justifyContent = "center";
+    }
+  });
+});
 }
 
 window.addEventListener('resize', applyLayout, { passive: true });

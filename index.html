@@ -4089,42 +4089,35 @@ function applyLayout() {
 
   if (isPortrait) {
     const exitH = 54;
-    const padV  = 6;
-    const padH  = 12;
-    const gap   = 6;
-    const ratio = 2000 / 1545; // card h/w
+    const padV  = 4;
+    const padH  = 10;
+    const gap   = 4;
+    const ratio = 2000 / 1545;
 
-    // Total vertical budget
-    const totalH = vh - exitH - padV * 2;
+    // Use 56% for card, 44% minus gaps for controls — fixed split
+    const totalH = vh - exitH - padV * 2 - gap;
     const availW = vw - padH * 2;
 
-    // card + gap + (card * 0.5) = totalH
-    // cardH * 1.5 + gap = totalH
-    // cardH = (totalH - gap) / 1.5
-    let cardH = Math.floor((totalH - gap) / 1.5);
+    // Card gets 60% of total, controls gets 40% — capped at half card
+    let cardH = Math.floor(totalH * 0.60);
     let cardW = Math.floor(cardH / ratio);
 
-    // clamp to available width
     if (cardW > availW) {
-      cardW  = availW;
-      cardH  = Math.floor(cardW * ratio);
+      cardW = availW;
+      cardH = Math.floor(cardW * ratio);
     }
 
-    // ctrlH is exactly half of cardH, never more
-    const ctrlH = Math.floor(cardH * 0.5); // will be overridden after render
-    const ctrlW = cardW;
-
-    // Verify everything fits; if not, shrink card
-    const totalUsed = cardH + gap + ctrlH;
-    const slack = totalH - totalUsed;
-    const offsetTop = exitH + padV + Math.max(0, Math.floor(slack / 2));
+    // Controls height = whatever is left, never more than half cardH
+    const remaining = totalH - cardH - gap;
+    const ctrlH     = Math.min(remaining, Math.floor(cardH * 0.5));
+    const ctrlW     = cardW;
 
     endOverlayEl.style.cssText = `
       position: fixed;
       inset: 0;
       z-index: 9999999;
       background: #000;
-      overflow: hidden;
+      overflow: clip;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -4140,13 +4133,14 @@ function applyLayout() {
       justify-content: center;
       gap: ${gap}px;
       flex-shrink: 0;
+      overflow: visible;
     `;
 
     stageShell.style.cssText = `
       flex: 0 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
       width: ${cardW}px;
     `;
 
@@ -4162,46 +4156,57 @@ function applyLayout() {
       flex-shrink: 0;
     `;
 
-   controls.style.cssText = `
-  flex: 0 0 auto;
-  width: ${ctrlW}px;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  box-sizing: border-box;
-  background: url('reflections_box.png') center/cover no-repeat;
-  border: 3px solid rgba(245,255,58,0.25);
-  border-radius: 18px;
-  padding: 5px 8px;
-  color: #f5ff3a;
-  font-family: Georgia, 'Times New Roman', serif;
-  box-shadow: 0 0 30px rgba(0,0,0,0.35);
-  backdrop-filter: blur(6px);
-`;
+    controls.style.cssText = `
+      flex: 0 0 auto;
+      align-self: center;
+      width: ${ctrlW}px;
+      height: ${ctrlH}px;
+      max-height: ${ctrlH}px;
+      min-height: 0;
+      overflow: hidden;
+      box-sizing: border-box;
+      background: url('reflections_box.png') center/cover no-repeat;
+      border: 3px solid rgba(245,255,58,0.25);
+      border-radius: 18px;
+      padding: 4px 8px;
+      color: #f5ff3a;
+      font-family: Georgia, 'Times New Roman', serif;
+      box-shadow: 0 0 30px rgba(0,0,0,0.35);
+      backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+    `;
 
-    // Scale font/buttons to fit ctrlH
-    const scale = Math.max(0.6, ctrlH / 200);
-    h.style.fontSize      = Math.round(10 * scale) + "px";
-    h.style.marginBottom  = "3px";
+    // Scale everything to fit ctrlH
+    const btnPad  = Math.max(2, Math.floor(ctrlH * 0.025)) + "px " +
+                    Math.max(3, Math.floor(ctrlH * 0.035)) + "px";
+    const btnSize = Math.max(7, Math.floor(ctrlH * 0.09)) + "px";
+    const hdSize  = Math.max(8, Math.floor(ctrlH * 0.10)) + "px";
+
+    h.style.fontSize      = hdSize;
+    h.style.marginBottom  = "0";
     h.style.letterSpacing = "0.5px";
 
-    [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
-      b.style.padding  = `${Math.round(3 * scale)}px ${Math.round(4 * scale)}px`;
-      b.style.fontSize = Math.round(8 * scale) + "px";
-      b.style.flex     = "1";
-      b.style.minWidth = "0";
-    });
-
-    // Compress row margins
-    wrap.querySelectorAll && wrap.querySelectorAll('.reflection-row, [style*="margin-bottom"]');
+    // Make all row divs also flex so they don't add extra height
     controls.querySelectorAll('div').forEach(d => {
-      if (d.style.marginBottom) d.style.marginBottom = "3px";
+      d.style.marginBottom = "0";
+      d.style.margin       = "0";
     });
 
-    sizeInput.style.minWidth  = "30px";
-    textSize.style.minWidth   = "30px";
-    textInput.style.fontSize  = Math.round(8 * scale) + "px";
-    textInput.style.padding   = "2px 4px";
+    [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
+      b.style.padding   = btnPad;
+      b.style.fontSize  = btnSize;
+      b.style.flex      = "1";
+      b.style.minWidth  = "0";
+      b.style.boxSizing = "border-box";
+    });
+
+    sizeInput.style.minWidth  = "28px";
+    textSize.style.minWidth   = "28px";
+    textInput.style.fontSize  = btnSize;
+    textInput.style.padding   = "2px 3px";
+    colorInput.style.height   = Math.max(20, Math.floor(ctrlH * 0.12)) + "px";
 
   } else {
     // DESKTOP
@@ -4211,19 +4216,15 @@ function applyLayout() {
     const ratio = 2000 / 1545;
 
     const availH = vh - padV * 2;
-    // Both card and controls are the same width.
-    // Total width = cardW + gap + ctrlW = cardW*2 + gap
-    // So cardW = (availW - gap) / 2
-    const availW = vw - padH * 2;
-    const cardFromW = Math.floor((availW - gap) / 2);
-    // Also constrain by height
-    const cardFromH = Math.floor(availH / ratio);
-    const cardW = Math.min(cardFromW, cardFromH, 500);
-    const cardH = Math.floor(cardW * ratio);
+    const availW = vw - padH * 2 - gap;
 
-    // Controls: same width, max half the card height, centered vertically
+    const cardFromW = Math.floor((availW - gap) / 2);
+    const cardFromH = Math.floor(availH / ratio);
+    const cardW     = Math.min(cardFromW, cardFromH, 500);
+    const cardH     = Math.floor(cardW * ratio);
+
     const ctrlW = cardW;
-    const ctrlH = Math.floor(cardH * 0.5); // will be overridden after render
+    const ctrlH = Math.floor(cardH * 0.5);
 
     const totalW = cardW + gap + ctrlW;
 
@@ -4279,71 +4280,44 @@ function applyLayout() {
       max-height: ${ctrlH}px;
       min-height: 0;
       align-self: center;
-      overflow-y: auto;
-      overflow-x: hidden;
+      overflow: hidden;
       box-sizing: border-box;
       background: url('reflections_box.png') center/cover no-repeat;
       border: 3px solid rgba(245,255,58,0.25);
       border-radius: 18px;
-      padding: clamp(10px,1.5vh,18px) clamp(10px,1.2vw,18px);
+      padding: 10px 16px;
       color: #f5ff3a;
       font-family: Georgia, 'Times New Roman', serif;
       box-shadow: 0 0 30px rgba(0,0,0,0.35);
       backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
     `;
 
-    h.style.fontSize      = "15px";
-    h.style.marginBottom  = "8px";
-    h.style.letterSpacing = "1px";
-    [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
-      b.style.padding  = "7px 9px";
-      b.style.fontSize = "12px";
-      b.style.flex     = "1";
-      b.style.minWidth = "0";
+    // Zero out all margins on child rows so space-evenly does the work
+    controls.querySelectorAll('div').forEach(d => {
+      d.style.margin       = "0";
+      d.style.marginBottom = "0";
     });
+
+    h.style.fontSize      = "15px";
+    h.style.marginBottom  = "0";
+    h.style.letterSpacing = "1px";
+
+    [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
+      b.style.padding   = "7px 9px";
+      b.style.fontSize  = "12px";
+      b.style.flex      = "1";
+      b.style.minWidth  = "0";
+      b.style.boxSizing = "border-box";
+    });
+
     sizeInput.style.minWidth  = "70px";
     textSize.style.minWidth   = "70px";
     textInput.style.fontSize  = "";
     textInput.style.padding   = "";
   }
-  // After layout is painted, shrink controls to fit content naturally
-requestAnimationFrame(() => {
-  requestAnimationFrame(() => {
-    if (isPortrait) {
-      // Measure actual remaining space below the card
-      const stageRect    = stage.getBoundingClientRect();
-      const bottomEdge   = vh - 6; // 6px bottom pad
-      const spaceBelow   = bottomEdge - stageRect.bottom - gap;
-      const maxH         = Math.min(
-        Math.floor(cardH * 0.5),
-        Math.floor(spaceBelow)
-      );
-
-      controls.style.maxHeight = Math.max(60, maxH) + "px";
-
-      // If content still overflows, shrink font/buttons further
-      if (controls.scrollHeight > maxH) {
-        const scale = maxH / controls.scrollHeight;
-        controls.querySelectorAll('button, input[type="text"]').forEach(el => {
-          const curr = parseFloat(window.getComputedStyle(el).fontSize);
-          el.style.fontSize = Math.max(7, Math.floor(curr * scale)) + "px";
-        });
-        controls.querySelectorAll('button').forEach(el => {
-          el.style.padding = "2px 3px";
-        });
-        h.style.fontSize = Math.max(8, Math.floor(parseFloat(h.style.fontSize) * scale)) + "px";
-      }
-    } else {
-      // Desktop: natural height capped at half card
-      const maxH = Math.floor(cardH * 0.5);
-      controls.style.maxHeight      = maxH + "px";
-      controls.style.height         = "auto";
-      controls.style.display        = "flex";
-      controls.style.flexDirection  = "column";
-      controls.style.justifyContent = "space-between";
-    }
-  });
-});
 }
 
 window.addEventListener('resize', applyLayout, { passive: true });

@@ -4097,19 +4097,19 @@ function applyLayout() {
     const totalH = vh - exitH - padV * 2 - gap;
     const availW = vw - padH * 2;
 
-    // Card uses what fits, but capped at 85% of screen width
-    let cardW = Math.floor(availW * 0.85);
-    let cardH = Math.floor(cardW * ratio);
+    // Card gets ~48% of space, controls gets the rest
+    let cardH = Math.floor(totalH * 0.48);
+    let cardW = Math.floor(cardH / ratio);
 
-    if (cardH > totalH * 0.50) {
-      cardH = Math.floor(totalH * 0.50);
-      cardW = Math.floor(cardH / ratio);
+    if (cardW > availW) {
+      cardW = availW;
+      cardH = Math.floor(cardW * ratio);
     }
 
-    // Controls: let it size to content, max 95% of screen
-    const ctrlW = Math.min(availW * 0.95, Math.floor(cardW * 1.3));
+    // Controls gets remaining space (allow it to grow)
     const remaining = totalH - cardH - gap;
-    const ctrlH = remaining;
+    const ctrlW = cardW;
+    const ctrlH = remaining;  // Let controls use all remaining space
 
     endOverlayEl.style.cssText = `
       position: fixed;
@@ -4121,7 +4121,7 @@ function applyLayout() {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: ${exitH}px ${padH}px ${padV}px;
+      padding-top: ${exitH}px;
       box-sizing: border-box;
     `;
 
@@ -4133,7 +4133,6 @@ function applyLayout() {
       gap: ${gap}px;
       flex-shrink: 0;
       overflow: visible;
-      width: 100%;
     `;
 
     stageShell.style.cssText = `
@@ -4161,14 +4160,14 @@ function applyLayout() {
       align-self: center;
       width: ${ctrlW}px;
       height: auto;
-      min-height: ${Math.floor(cardH * 0.25)}px;
+      min-height: ${Math.floor(cardH * 0.3)}px;
       max-height: none;
       overflow: visible;
       box-sizing: border-box;
       background: url('reflections_box.png') center/cover no-repeat;
       border: 3px solid rgba(245,255,58,0.25);
       border-radius: 18px;
-      padding: 8px 10px;
+      padding: 4px 8px;
       color: #f5ff3a;
       font-family: Georgia, 'Times New Roman', serif;
       box-shadow: 0 0 30px rgba(0,0,0,0.35);
@@ -4176,7 +4175,7 @@ function applyLayout() {
       display: flex;
       flex-direction: column;
       justify-content: space-evenly;
-    `;
+    `; 
   } else {
     // DESKTOP
     const padV  = 24;

@@ -3434,7 +3434,6 @@ sizeInput.style.touchAction = "pan-x";
     controls.appendChild(r1);
 
     const rText = row();
-    rText.style.alignItems = "stretch";
 const textBtn = document.createElement("button");
 textBtn.type = "button";
 textBtn.textContent = "TEXT TOOL: OFF";
@@ -3454,9 +3453,6 @@ textBtn.addEventListener("mouseleave", () => {
 
     const textInput = document.createElement("input");
     textInput.type = "text";
-    textInput.style.alignSelf = "stretch";
-textInput.style.height = "100%";
-textInput.style.boxSizing = "border-box";
     textInput.placeholder = "Type, click card & resize";
     textInput.style.flex = "1";
     textInput.style.padding = "10px";
@@ -3465,6 +3461,7 @@ textInput.style.boxSizing = "border-box";
     textInput.style.background = "rgba(0,0,0,0.25)";
     textInput.style.color = "#f5ff3a";
     textInput.style.outline = "none";
+    textInput.style.minHeight = "38px";
 
     const textSize = document.createElement("input");
     textSize.type = "range";

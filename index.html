@@ -4108,8 +4108,9 @@ function applyLayout() {
 
     // Controls gets remaining space (allow it to grow)
     const remaining = totalH - cardH - gap;
-    const ctrlW = cardW;
-    const ctrlH = remaining;  // Let controls use all remaining space
+    const ctrlH = remaining;
+// controls can be as wide as needed, up to full available width
+    const ctrlW = availW;
 
     endOverlayEl.style.cssText = `
       position: fixed;
@@ -4156,26 +4157,28 @@ function applyLayout() {
     `;
 
     controls.style.cssText = `
-      flex: 0 0 auto;
-      align-self: center;
-      width: ${ctrlW}px;
-      height: auto;
-      min-height: ${Math.floor(cardH * 0.3)}px;
-      max-height: none;
-      overflow: visible;
-      box-sizing: border-box;
-      background: url('reflections_box.png') center/cover no-repeat;
-      border: 3px solid rgba(245,255,58,0.25);
-      border-radius: 18px;
-      padding: 4px 8px;
-      color: #f5ff3a;
-      font-family: Georgia, 'Times New Roman', serif;
-      box-shadow: 0 0 30px rgba(0,0,0,0.35);
-      backdrop-filter: blur(6px);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-evenly;
-    `; 
+  flex: 0 0 auto;
+  align-self: center;
+  width: max-content;
+  min-width: ${cardW}px;
+  max-width: ${availW}px;
+  height: auto;
+  min-height: ${Math.floor(cardH * 0.3)}px;
+  max-height: none;
+  overflow: visible;
+  box-sizing: border-box;
+  background: url('reflections_box.png') center/cover no-repeat;
+  border: 3px solid rgba(245,255,58,0.25);
+  border-radius: 18px;
+  padding: 4px 8px;
+  color: #f5ff3a;
+  font-family: Georgia, 'Times New Roman', serif;
+  box-shadow: 0 0 30px rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+`;
   } else {
     // DESKTOP
     const padV  = 24;

@@ -4065,12 +4065,10 @@ reflStyle.textContent = `
 `;
 document.head.appendChild(reflStyle);
 
-// Freeze the viewport height so keyboard doesn't shift layout
-const FROZEN_VH = window.innerHeight;
 // Now size everything with JS based on actual viewport
 function applyLayout() {
   const vw = window.innerWidth;
-  const vh = typeof FROZEN_VH !== 'undefined' ? FROZEN_VH : window.innerHeight;
+  const vh = window.innerHeight;
   const exitBtn = document.getElementById('exit-btn');
   const isPortrait = vw <= 700 || (vw <= 900 && vh > vw);
 
@@ -4294,14 +4292,7 @@ function applyLayout() {
   }
 }
 
-let lastVW = window.innerWidth;
-window.addEventListener('resize', () => {
-  // Only re-layout if the WIDTH changed (keyboard open/close only changes height)
-  if (window.innerWidth !== lastVW) {
-    lastVW = window.innerWidth;
-    applyLayout();
-  }
-}, { passive: true });
+window.addEventListener('resize', applyLayout, { passive: true });
 applyLayout();
   } catch (err) {
     console.error("❌ attachReflectionCards crashed:", err);

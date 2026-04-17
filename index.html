@@ -4068,9 +4068,13 @@ document.head.appendChild(reflStyle);
 // Now size everything with JS based on actual viewport
 function applyLayout() {
   const vw = window.innerWidth;
-  const vh = window.innerHeight;
+  // Use clientHeight — the only reliable height on Safari (excludes browser chrome)
+  const vh = document.documentElement.clientHeight;
+  const safeBottom = parseInt(
+    getComputedStyle(document.documentElement).getPropertyValue('--sab') || '0'
+  ) || 0;
   const exitBtn = document.getElementById('exit-btn');
-  const isPortrait = vw <= 700 || (vw <= 900 && vh > vw);
+  const isPortrait = vw <= 700 || (vw <= 900 && vh > vw) || vw <= 428;
 
   if (exitBtn) {
     exitBtn.style.cssText = `
@@ -4094,8 +4098,7 @@ function applyLayout() {
     const padH  = 10;
     const gap   = 4;
     const ratio = 2000 / 1545;
-
-    const totalH = vh - exitH - padV * 2 - gap;
+    const totalH = vh - exitH - padV * 2 - gap - safeBottom;
     const availW = vw - padH * 2;
 
     // Card gets ~48% of space, controls gets the rest
@@ -4175,7 +4178,7 @@ function applyLayout() {
   color: #f5ff3a;
   font-family: Georgia, 'Times New Roman', serif;
   box-shadow: 0 0 30px rgba(0,0,0,0.35);
-  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -4292,8 +4295,32 @@ function applyLayout() {
   }
 }
 
-window.addEventListener('resize', applyLayout, { passive: true });
+// Freeze width for keyboard-safe resize detection
+let lastLayoutVW = window.innerWidth;
+
+// Use visualViewport if available (more reliable on Safari)
+const vvp = window.visualViewport;
+if (vvp) {
+  vvp.addEventListener('resize', () => {
+    const newVW = Math.round(vvp.width);
+    if (newVW !== lastLayoutVW) {
+      lastLayoutVW = newVW;
+      applyLayout();
+    }
+    // height-only change = keyboard open/close, ignore it
+  }, { passive: true });
+}
+
+// Fallback for browsers without visualViewport
+window.addEventListener('resize', () => {
+  if (window.innerWidth !== lastLayoutVW) {
+    lastLayoutVW = window.innerWidth;
+    applyLayout();
+  }
+}, { passive: true });
+
 applyLayout();
+    
   } catch (err) {
     console.error("❌ attachReflectionCards crashed:", err);
   }

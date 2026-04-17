@@ -1828,7 +1828,9 @@ input[type="range"]::-webkit-slider-thumb:active{
 /* End overlay: responsive reflection layout */
 #journey-end-overlay {
   display: flex;
+  height: 100dvh; /* The "Gold Standard" for mobile full-screen */
   align-items: center;
+  flex-direction: column;
   justify-content: center;
   padding: 12px;
   overflow: auto;
@@ -1846,6 +1848,9 @@ input[type="range"]::-webkit-slider-thumb:active{
 
 /* Reflection stage (the card) - optimized for small screens */
 .reflection-cardstage {
+  touch-action: none;   /* Essential: Stops the browser from scrolling while you draw */
+  user-select: none;    /* Stops the "copy/paste" menu from popping up while drawing */
+  -webkit-user-select: none;
   width: 100%;  /* Use full container width */
   min-height: 200px;  /* Minimum height */
   aspect-ratio: 1545 / 2000;

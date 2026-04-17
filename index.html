@@ -4070,7 +4070,9 @@ function applyLayout() {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const exitBtn = document.getElementById('exit-btn');
-  const isPortrait = vw <= 700 || (vw <= 900 && vh > vw);
+  
+  // Simple breakpoint - true for phones/tablets
+  const isPortrait = v
 
   if (exitBtn) {
     exitBtn.style.cssText = `

@@ -1,4 +1,8 @@
-/* Add this near the top of styles.css */
+:root {
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sat: env(safe-area-inset-top, 0px);
+}
+
 #journey-end-overlay,
 #intro-overlay,
 #reminder-overlay,

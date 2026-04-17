@@ -4088,36 +4088,42 @@ function applyLayout() {
     `;
   }
 
-if (isPortrait) {
+  if (isPortrait) {
     const exitH = 54;
-    const padV = 8;
-    const padH = 8;
-    const gap = 8;
+    const padV  = 4;
+    const padH  = 10;
+    const gap   = 4;
     const ratio = 2000 / 1545;
 
-    const totalH = vh - exitH - padV * 2;
+    const totalH = vh - exitH - padV * 2 - gap;
     const availW = vw - padH * 2;
 
-    // Card: 44% of available height
-    let cardH = Math.floor(totalH * 0.44);
+    // Card gets ~48% of space, controls gets the rest
+    let cardH = Math.floor(totalH * 0.48);
     let cardW = Math.floor(cardH / ratio);
-    if (cardW > availW - 20) {
-      cardW = availW - 20;
+
+    if (cardW > availW) {
+      cardW = availW;
       cardH = Math.floor(cardW * ratio);
     }
+
+    // Controls gets remaining space (allow it to grow)
+    const remaining = totalH - cardH - gap;
+    const ctrlH = remaining;
+// controls can be as wide as needed, up to full available width
+    const ctrlW = availW;
 
     endOverlayEl.style.cssText = `
       position: fixed;
       inset: 0;
       z-index: 9999999;
       background: #000;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
+      overflow: visible;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: ${exitH}px ${padH}px ${padV}px;
+      justify-content: center;
+      padding-top: ${exitH}px;
       box-sizing: border-box;
     `;
 
@@ -4125,32 +4131,56 @@ if (isPortrait) {
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: ${gap}px;
       flex-shrink: 0;
-      min-height: min-content;
+      overflow: visible;
     `;
 
     stageShell.style.cssText = `
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
       width: ${cardW}px;
-      flex-shrink: 0;
     `;
 
     stage.style.cssText = `
+      position: relative;
       width: ${cardW}px;
       height: ${cardH}px;
+      aspect-ratio: unset;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 0 46px rgba(245,255,58,0.25);
       flex-shrink: 0;
     `;
 
     controls.style.cssText = `
-      width: ${cardW}px;
-      min-width: ${cardW}px;
-      max-width: ${availW - 16}px;
-      height: auto;
-      max-height: none;
-      overflow: visible;
-      padding: 8px;
-    `;
-} else {
+  flex: 0 0 auto;
+  align-self: center;
+  width: max-content;
+  min-width: ${cardW}px;
+  max-width: ${availW}px;
+  height: auto;
+  min-height: ${Math.floor(cardH * 0.3)}px;
+  max-height: none;
+  overflow: visible;
+  box-sizing: border-box;
+  background: url('reflections_box.png') center/cover no-repeat;
+  border: 3px solid rgba(245,255,58,0.25);
+  border-radius: 18px;
+  padding: 4px 8px;
+  color: #f5ff3a;
+  font-family: Georgia, 'Times New Roman', serif;
+  box-shadow: 0 0 30px rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+`;
+  } else {
     // DESKTOP
     const padV  = 24;
     const padH  = 60;

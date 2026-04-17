@@ -1891,12 +1891,13 @@ input[type="range"]::-webkit-slider-thumb:active{
 /* Row layout optimizations */
 .reflection-controls .row {
   display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
+  gap: 8px;
+  flex-wrap: wrap; /* Crucial for small screens */
+  justify-content: center;
 }
-
+#canvas-stage-id-here {
+  touch-action: none; /* Prevents the "rubber-band" scroll while drawing */
+}
 /* Input field adjustments */
 .reflection-controls input[type="color"],
 .reflection-controls input[type="range"] {
@@ -1907,6 +1908,8 @@ input[type="range"]::-webkit-slider-thumb:active{
 .reflection-controls button {
   min-height: 36px;  /* Ensures buttons aren't too short */
   display: flex;
+  flex: 1 1 auto; /* Allows buttons to grow and shrink */
+  min-width: 60px;
   align-items: center;
   justify-content: center;
   padding: 0 12px;

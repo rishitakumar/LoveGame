@@ -4068,13 +4068,11 @@ document.head.appendChild(reflStyle);
 // Now size everything with JS based on actual viewport
 function applyLayout() {
   const vw = window.innerWidth;
-  // Use clientHeight — the only reliable height on Safari (excludes browser chrome)
-  const vh = document.documentElement.clientHeight;
-  const safeBottom = parseInt(
-    getComputedStyle(document.documentElement).getPropertyValue('--sab') || '0'
-  ) || 0;
+  const vh = document.documentElement.clientHeight || window.innerHeight;
   const exitBtn = document.getElementById('exit-btn');
-  const isPortrait = vw <= 700 || (vw <= 900 && vh > vw) || vw <= 428;
+  
+  // Simple breakpoint - mobile/tablet vs desktop
+  const isMobile = vw <= 1024;
 
   if (exitBtn) {
     exitBtn.style.cssText = `
@@ -4087,31 +4085,12 @@ function applyLayout() {
       background: transparent;
       border: none;
       padding: 0;
-      box-shadow: none;
-      outline: none;
     `;
   }
-if (isPortrait) {
-    const exitH = 54;
-    const gap = 8;
-    const ratio = 2000 / 1545;
 
-    // Use dvh (dynamic viewport height) - works correctly on real Safari
-    const availableH = document.documentElement.clientHeight - exitH - gap;
-    const availableW = document.documentElement.clientWidth - 20;
-
-    // Fixed width based on screen width - not height calculations
-    let cardW = Math.min(availableW - 20, 380);
-    let cardH = Math.floor(cardW / ratio);
-
-    // Cap card to 45% of screen to leave room for controls
-    const maxCardH = Math.floor(availableH * 0.45);
-    if (cardH > maxCardH) {
-        cardH = maxCardH;
-        cardW = Math.floor(cardH * ratio);
-    }
-
-    // SIMPLE: Let overlay handle overflow
+  if (isMobile) {
+    // MOBILE/TABLET: Simple stacked layout
+    
     endOverlayEl.style.cssText = `
       position: fixed;
       inset: 0;
@@ -4123,7 +4102,7 @@ if (isPortrait) {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: ${exitH}px 10px 20px;
+      padding: 60px 12px 20px;
       box-sizing: border-box;
     `;
 
@@ -4131,61 +4110,68 @@ if (isPortrait) {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: ${gap}px;
+      gap: 12px;
       width: 100%;
-      max-width: ${cardW + 20}px;
     `;
 
+    // Card takes most of width, maintains aspect ratio
     stageShell.style.cssText = `
-      width: ${cardW}px;
+      width: min(92vw, 420px);
       flex-shrink: 0;
     `;
 
     stage.style.cssText = `
-      width: ${cardW}px;
-      height: ${cardH}px;
-      flex-shrink: 0;
+      width: 100%;
+      aspect-ratio: 1545 / 2000;
+      border-radius: 14px;
+      overflow: hidden;
     `;
 
+    // Controls auto-size to content, scrollable if needed
     controls.style.cssText = `
-      width: ${cardW}px;
-      min-width: ${cardW}px;
+      width: min(92vw, 420px);
+      min-width: min(92vw, 420px);
       height: auto;
-      min-height: auto;
-      max-height: none;
-      overflow: visible;
+      min-height: 200px;
+      overflow-y: auto;
       box-sizing: border-box;
       background: url('reflections_box.png') center/cover no-repeat;
       border: 3px solid rgba(245,255,58,0.25);
       border-radius: 18px;
-      padding: 12px;
+      padding: 10px;
     `;
-} else {
-    // DESKTOP
-    const padV  = 24;
-    const padH  = 60;
-    const gap   = 48;
+
+    // Scale down controls content
+    const scale = vw < 500 ? 0.75 : (vw < 768 ? 0.85 : 0.9);
+    h.style.cssText = `font-size: ${14 * scale}px; margin: 0 0 6px 0; text-align: center;`;
+    
+    [sizeInput, textInput, textSize].forEach(el => {
+      el.style.transform = `scale(${scale})`;
+      el.style.transformOrigin = 'left center';
+    });
+
+    [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
+      b.style.cssText = `
+        padding: ${6 * scale}px ${8 * scale}px;
+        font-size: ${10 * scale}px;
+        flex: 1;
+      `;
+    });
+
+  } else {
+    // DESKTOP - unchanged
     const ratio = 2000 / 1545;
-
-    const availH = vh - padV * 2;
-    const availW = vw - padH * 2 - gap;
-
-    const cardFromW = Math.floor((availW - gap) / 2);
-    const cardFromH = Math.floor(availH / ratio);
-    const cardW     = Math.min(cardFromW, cardFromH, 500);
-    const cardH     = Math.floor(cardW * ratio);
-
-    const ctrlW = cardW;
+    const availH = vh - 48;
+    const availW = vw - 120;
+    const cardW = Math.min(Math.floor(availW / 2.5), 500);
+    const cardH = Math.floor(cardW * ratio);
     const ctrlH = Math.floor(cardH * 0.5);
-
-    const totalW = cardW + gap + ctrlW;
 
     endOverlayEl.style.cssText = `
       position: fixed;
       inset: 0;
       z-index: 9999999;
       background: #000;
-      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -4194,81 +4180,36 @@ if (isPortrait) {
     wrap.style.cssText = `
       display: flex;
       flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      gap: ${gap}px;
-      width: ${totalW}px;
-      max-width: ${totalW}px;
+      gap: 32px;
       height: ${cardH}px;
-      flex-shrink: 0;
     `;
 
     stageShell.style.cssText = `
-      flex: 0 0 ${cardW}px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
       width: ${cardW}px;
       height: ${cardH}px;
-      align-self: center;
     `;
 
     stage.style.cssText = `
-      position: relative;
       width: ${cardW}px;
       height: ${cardH}px;
-      aspect-ratio: unset;
-      border-radius: 14px;
-      overflow: hidden;
-      background: #fff;
-      box-shadow: 0 0 46px rgba(245,255,58,0.25);
-      flex-shrink: 0;
     `;
 
     controls.style.cssText = `
-      flex: 0 0 ${ctrlW}px;
-      width: ${ctrlW}px;
+      width: ${cardW}px;
       height: ${ctrlH}px;
       max-height: ${ctrlH}px;
-      min-height: 0;
-      align-self: center;
       overflow: visible;
-      box-sizing: border-box;
       background: url('reflections_box.png') center/cover no-repeat;
       border: 3px solid rgba(245,255,58,0.25);
       border-radius: 18px;
-      padding: 10px 16px;
-      color: #f5ff3a;
-      font-family: Georgia, 'Times New Roman', serif;
-      box-shadow: 0 0 30px rgba(0,0,0,0.35);
-      backdrop-filter: blur(6px);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-evenly;
+      padding: 10px;
     `;
-
-    // Zero out all margins on child rows so space-evenly does the work
-    controls.querySelectorAll('div').forEach(d => {
-      d.style.margin       = "0";
-      d.style.marginBottom = "0";
-    });
-
-    h.style.fontSize      = "15px";
-    h.style.marginBottom  = "0";
-    h.style.letterSpacing = "1px";
-
+    
+    h.style.cssText = 'font-size: 15px; margin-bottom: 0;';
+    
     [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
-      b.style.padding   = "7px 9px";
-      b.style.fontSize  = "12px";
-      b.style.flex      = "1";
-      b.style.minWidth  = "0";
-      b.style.boxSizing = "border-box";
+      b.style.cssText = 'padding: 7px 9px; font-size: 12px; flex: 1;';
     });
-
-    sizeInput.style.minWidth  = "70px";
-    textSize.style.minWidth   = "70px";
-    textInput.style.fontSize  = "";
-    textInput.style.padding   = "";
   }
 }
 

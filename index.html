@@ -4101,7 +4101,7 @@ function applyLayout() {
     const availW = vw - padH * 2;
 
     // Card gets ~48% of space, controls gets the rest
-    let cardH = Math.floor(totalH * 0.48);
+let cardH = Math.floor(totalH * 0.42);
     let cardW = Math.floor(cardH / ratio);
 
     if (cardW > availW) {
@@ -4110,7 +4110,7 @@ function applyLayout() {
     }
 
     // Controls gets remaining space (allow it to grow)
-    const remaining = totalH - cardH - gap;
+   const remaining = totalH - cardH - gap;
     const ctrlH = remaining;
 // controls can be as wide as needed, up to full available width
     const ctrlW = availW;
@@ -4181,6 +4181,8 @@ function applyLayout() {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  transform: scale(0.85);        // shrink all controls to fit
+transform-origin: top center;
 `;
   } else {
     // DESKTOP

@@ -4062,6 +4062,14 @@ reflStyle.textContent = `
       gap: 10px;
     }
   }
+  * {
+  -webkit-tap-highlight-color: transparent; /* Removes the grey flash on tap in Safari */
+}
+
+input[type="range"] {
+  -webkit-appearance: none; /* Necessary for styling sliders in Safari */
+  width: 100%;
+}
 `;
 document.head.appendChild(reflStyle);
 

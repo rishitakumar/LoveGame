@@ -1828,9 +1828,7 @@ input[type="range"]::-webkit-slider-thumb:active{
 /* End overlay: responsive reflection layout */
 #journey-end-overlay {
   display: flex;
-  height: 100dvh; /* The "Gold Standard" for mobile full-screen */
   align-items: center;
-  flex-direction: column;
   justify-content: center;
   padding: 12px;
   overflow: auto;
@@ -1848,9 +1846,6 @@ input[type="range"]::-webkit-slider-thumb:active{
 
 /* Reflection stage (the card) - optimized for small screens */
 .reflection-cardstage {
-  touch-action: none;   /* Essential: Stops the browser from scrolling while you draw */
-  user-select: none;    /* Stops the "copy/paste" menu from popping up while drawing */
-  -webkit-user-select: none;
   width: 100%;  /* Use full container width */
   min-height: 200px;  /* Minimum height */
   aspect-ratio: 1545 / 2000;
@@ -1896,13 +1891,12 @@ input[type="range"]::-webkit-slider-thumb:active{
 /* Row layout optimizations */
 .reflection-controls .row {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap; /* Crucial for small screens */
-  justify-content: center;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
 }
-#canvas-stage-id-here {
-  touch-action: none; /* Prevents the "rubber-band" scroll while drawing */
-}
+
 /* Input field adjustments */
 .reflection-controls input[type="color"],
 .reflection-controls input[type="range"] {
@@ -1913,8 +1907,6 @@ input[type="range"]::-webkit-slider-thumb:active{
 .reflection-controls button {
   min-height: 36px;  /* Ensures buttons aren't too short */
   display: flex;
-  flex: 1 1 auto; /* Allows buttons to grow and shrink */
-  min-width: 60px;
   align-items: center;
   justify-content: center;
   padding: 0 12px;

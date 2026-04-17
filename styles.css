@@ -1,3 +1,11 @@
+/* Add this near the top of styles.css */
+#journey-end-overlay,
+#intro-overlay,
+#reminder-overlay,
+#character-overlay {
+  height: 100dvh;
+  min-height: 100dvh;
+}
 body {
   font-family: Georgia, "Times New Roman", sans-serif;
   background: #000;

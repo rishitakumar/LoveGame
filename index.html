@@ -3,7 +3,7 @@
 <head>
   <title>Love Game</title>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="gloriosaw_outbackground.png">
   <link rel="preload" as="image" href="star-background.png">
@@ -3193,9 +3193,9 @@ function attachReflectionCards(endOverlayEl, finalLand) {
     endOverlayEl.style.position = "fixed";
     endOverlayEl.style.inset = "0";
     endOverlayEl.style.zIndex = "9999999";
-    endOverlayEl.style.display = "block";
-    endOverlayEl.style.alignItems = "";
-    endOverlayEl.style.justifyContent = "";
+    endOverlayEl.style.display = "flex";
+    endOverlayEl.style.alignItems = "center";
+    endOverlayEl.style.justifyContent = "center";
     endOverlayEl.style.background = "rgba(0,0,0,1)";  // ✅ fully opaque
 endOverlayEl.style.backgroundImage = "none";      // ✅ kill any overlay bg image
 endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it exists
@@ -3204,13 +3204,19 @@ endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it
     // ---------- Layout (NO CSS REQUIRED) ----------
     const wrap = document.createElement("div");
     wrap.className = "reflection-wrap";
-    wrap.style.boxSizing = "border-box";
-    wrap.style.background = "rgba(0,0,0,1)";
+    wrap.style.position = "fixed";
+    wrap.style.inset = "0";
+    wrap.style.zIndex = "10000000";
+    wrap.style.display = "grid";
+    wrap.style.gridTemplateColumns = "minmax(320px, 1fr) minmax(280px, 420px)";
+    wrap.style.gap = "18px";
+    wrap.style.padding = "22px";
+    wrap.style.alignItems = "center";
+    wrap.style.justifyItems = "center";
     wrap.style.pointerEvents = "auto";
 
-// switch to single column on small screens
-
     const stageShell = document.createElement("div");
+    stageShell.style.width = "min(560px, 92vw)";
     stageShell.style.display = "flex";
     stageShell.style.flexDirection = "column";
     stageShell.style.gap = "10px";
@@ -3375,7 +3381,16 @@ function makeTab(text) {
     drawTemplate("back");
 
     // ---------- Controls ----------
-   const controls = document.createElement("div");
+    const controls = document.createElement("div");
+    controls.style.width = "min(420px, 92vw)";
+    controls.style.background = "url('reflections_box.png') center/cover no-repeat";
+    controls.style.border = "3px solid rgba(245,255,58,0.25)";
+    controls.style.borderRadius = "18px";
+    controls.style.padding = "16px";
+    controls.style.color = "#f5ff3a";
+    controls.style.fontFamily = "Georgia, 'Times New Roman', serif";
+    controls.style.boxShadow = "0 0 30px rgba(0,0,0,0.35)";
+    controls.style.backdropFilter = "blur(6px)";
 // --- FORCE controls above the stage so sliders can be dragged ---
 stageShell.style.position = "relative";
 stageShell.style.zIndex = "1";
@@ -3461,7 +3476,6 @@ textBtn.addEventListener("mouseleave", () => {
     textInput.style.background = "rgba(0,0,0,0.25)";
     textInput.style.color = "#f5ff3a";
     textInput.style.outline = "none";
-    textInput.style.minHeight = "26px";
 
     const textSize = document.createElement("input");
     textSize.type = "range";
@@ -3592,9 +3606,6 @@ controls.appendChild(rNav);
     wrap.appendChild(stageShell);
     wrap.appendChild(controls);
     endOverlayEl.appendChild(wrap);
-    controls.style.display        = "flex";
-controls.style.flexDirection  = "column";
-controls.style.justifyContent = "space-between";
 
     // ---------- State wiring ----------
     function setActive(which) {
@@ -3973,272 +3984,6 @@ setActive("front");
 // baseline snapshots so first undo works
 snapshot("front");
 snapshot("back");
-
-// ── Single responsive layout ──────────────────────────────────────────
-// Hide card counter on reflection screen
-const cardCounter = document.getElementById('card-counter');
-if (cardCounter) cardCounter.style.display = 'none';
-
-// ── Responsive layout engine ──────────────────────────────────────────
-// Force the end overlay itself to be a clean slate
-endOverlayEl.removeAttribute("style");
-endOverlayEl.style.cssText = `
-  position: fixed;
-  inset: 0;
-  z-index: 9999999;
-  background: #000;
-  overflow: hidden;
-`;
-
-// Inject a <style> tag — avoids all inline specificity wars
-const reflStyle = document.createElement("style");
-reflStyle.id = "refl-layout";
-reflStyle.textContent = `
-  #journey-end-overlay {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 32px !important;
-    padding: 20px 40px !important;
-    box-sizing: border-box !important;
-  }
-
-  /* stageShell */
-  #journey-end-overlay > .reflection-wrap > div:first-child {
-    flex: 0 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  /* controls */
-  #journey-end-overlay > .reflection-wrap > div:last-child {
-    flex: 0 0 auto;
-    overflow-y: auto;
-    overflow-x: hidden;
-    box-sizing: border-box;
-    background: url('reflections_box.png') center/cover no-repeat;
-    border: 3px solid rgba(245,255,58,0.25);
-    border-radius: 18px;
-    padding: 16px 18px;
-    color: #f5ff3a;
-    font-family: Georgia, 'Times New Roman', serif;
-    box-shadow: 0 0 30px rgba(0,0,0,0.35);
-    backdrop-filter: blur(6px);
-  }
-
-  .reflection-wrap {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 32px;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-  }
-
-  .reflection-cardstage {
-    position: relative;
-    border-radius: 14px;
-    overflow: hidden;
-    background: #fff;
-    box-shadow: 0 0 46px rgba(245,255,58,0.25);
-  }
-
-  @media (max-width: 700px), (orientation: portrait) and (max-width: 900px) {
-    #journey-end-overlay {
-      flex-direction: column !important;
-      padding: 56px 12px 12px !important;
-      gap: 10px !important;
-      align-items: center !important;
-      justify-content: center !important;
-    }
-    .reflection-wrap {
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-  }
-`;
-document.head.appendChild(reflStyle);
-
-// Now size everything with JS based on actual viewport
-function applyLayout() {
-  const vw = window.innerWidth;
-  const vh = document.documentElement.clientHeight || window.innerHeight;
-  const exitBtn = document.getElementById('exit-btn');
-  
-  // Simple breakpoint - mobile/tablet vs desktop
-  const isMobile = vw <= 1024;
-
-  if (exitBtn) {
-    exitBtn.style.cssText = `
-      position: fixed;
-      top: 10px;
-      right: 12px;
-      z-index: 999999999;
-      width: 44px;
-      height: 44px;
-      background: transparent;
-      border: none;
-      padding: 0;
-    `;
-  }
-
-  if (isMobile) {
-    // MOBILE/TABLET: Simple stacked layout
-    
-    endOverlayEl.style.cssText = `
-      position: fixed;
-      inset: 0;
-      z-index: 9999999;
-      background: #000;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 60px 12px 20px;
-      box-sizing: border-box;
-    `;
-
-    wrap.style.cssText = `
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      width: 100%;
-    `;
-
-    // Card takes most of width, maintains aspect ratio
-    stageShell.style.cssText = `
-      width: min(92vw, 420px);
-      flex-shrink: 0;
-    `;
-
-    stage.style.cssText = `
-      width: 100%;
-      aspect-ratio: 1545 / 2000;
-      border-radius: 14px;
-      overflow: hidden;
-    `;
-
-    // Controls auto-size to content, scrollable if needed
-    controls.style.cssText = `
-      width: min(92vw, 420px);
-      min-width: min(92vw, 420px);
-      height: auto;
-      min-height: 200px;
-      overflow-y: auto;
-      box-sizing: border-box;
-      background: url('reflections_box.png') center/cover no-repeat;
-      border: 3px solid rgba(245,255,58,0.25);
-      border-radius: 18px;
-      padding: 10px;
-    `;
-
-    // Scale down controls content
-    const scale = vw < 500 ? 0.75 : (vw < 768 ? 0.85 : 0.9);
-    h.style.cssText = `font-size: ${14 * scale}px; margin: 0 0 6px 0; text-align: center;`;
-    
-    [sizeInput, textInput, textSize].forEach(el => {
-      el.style.transform = `scale(${scale})`;
-      el.style.transformOrigin = 'left center';
-    });
-
-    [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
-      b.style.cssText = `
-        padding: ${6 * scale}px ${8 * scale}px;
-        font-size: ${10 * scale}px;
-        flex: 1;
-      `;
-    });
-
-  } else {
-    // DESKTOP - unchanged
-    const ratio = 2000 / 1545;
-    const availH = vh - 48;
-    const availW = vw - 120;
-    const cardW = Math.min(Math.floor(availW / 2.5), 500);
-    const cardH = Math.floor(cardW * ratio);
-    const ctrlH = Math.floor(cardH * 0.5);
-
-    endOverlayEl.style.cssText = `
-      position: fixed;
-      inset: 0;
-      z-index: 9999999;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    `;
-
-    wrap.style.cssText = `
-      display: flex;
-      flex-direction: row;
-      gap: 32px;
-      height: ${cardH}px;
-    `;
-
-    stageShell.style.cssText = `
-      width: ${cardW}px;
-      height: ${cardH}px;
-    `;
-
-    stage.style.cssText = `
-      width: ${cardW}px;
-      height: ${cardH}px;
-    `;
-
-    controls.style.cssText = `
-      width: ${cardW}px;
-      height: ${ctrlH}px;
-      max-height: ${ctrlH}px;
-      overflow: visible;
-      background: url('reflections_box.png') center/cover no-repeat;
-      border: 3px solid rgba(245,255,58,0.25);
-      border-radius: 18px;
-      padding: 10px;
-    `;
-    
-    h.style.cssText = 'font-size: 15px; margin-bottom: 0;';
-    
-    [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn].forEach(b => {
-      b.style.cssText = 'padding: 7px 9px; font-size: 12px; flex: 1;';
-    });
-  }
-}
-
-// Freeze width for keyboard-safe resize detection
-let lastLayoutVW = window.innerWidth;
-
-// Use visualViewport if available (more reliable on Safari)
-const vvp = window.visualViewport;
-if (vvp) {
-  vvp.addEventListener('resize', () => {
-    const newVW = Math.round(vvp.width);
-    if (newVW !== lastLayoutVW) {
-      lastLayoutVW = newVW;
-      applyLayout();
-    }
-    // height-only change = keyboard open/close, ignore it
-  }, { passive: true });
-}
-
-// Fallback for browsers without visualViewport
-window.addEventListener('resize', () => {
-  if (window.innerWidth !== lastLayoutVW) {
-    lastLayoutVW = window.innerWidth;
-    applyLayout();
-  }
-}, { passive: true });
-
-applyLayout();
-    
   } catch (err) {
     console.error("❌ attachReflectionCards crashed:", err);
   }

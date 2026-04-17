@@ -4062,21 +4062,13 @@ reflStyle.textContent = `
       gap: 10px;
     }
   }
-  * {
-  -webkit-tap-highlight-color: transparent; /* Removes the grey flash on tap in Safari */
-}
-
-input[type="range"] {
-  -webkit-appearance: none; /* Necessary for styling sliders in Safari */
-  width: 100%;
-}
 `;
 document.head.appendChild(reflStyle);
 
 // Now size everything with JS based on actual viewport
 function applyLayout() {
   const vw = window.innerWidth;
-  const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  const vh = window.innerHeight;
   const exitBtn = document.getElementById('exit-btn');
   const isPortrait = vw <= 700 || (vw <= 900 && vh > vw);
 
@@ -4104,9 +4096,11 @@ function applyLayout() {
     const ratio = 2000 / 1545;
 
     const totalH = vh - exitH - padV * 2 - gap;
-    const availW = vw - 20; // 10px padding each side
-  const cardW = availW;   // Let the card take full width
-  const cardH = cardW * ratio;
+    const availW = vw - padH * 2;
+
+    // Card gets ~48% of space, controls gets the rest
+    let cardH = Math.floor(totalH * 0.48);
+    let cardW = Math.floor(cardH / ratio);
 
     if (cardW > availW) {
       cardW = availW;

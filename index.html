@@ -1005,6 +1005,21 @@ window.addEventListener("mousemove", (e) => {
 
 /* --- INTRO STARFIELD SETUP --- */
 const overlay = document.getElementById("intro-overlay");
+// ==== TEMP DEBUG: Jump straight to reflection cards ====
+(function() {
+  // Create a dummy overlay for the reflection cards
+  const debugOverlay = document.createElement('div');
+  debugOverlay.id = 'journey-end-overlay';
+  document.body.appendChild(debugOverlay);
+
+  // Attach the reflection UI (you can change 'loveland' to any land: darkland, murkland, etc.)
+  attachReflectionCards(debugOverlay, 'loveland');
+
+  // Skip the normal intro/flow
+  window.startIntroWhenReady = function() {}; // make it a no‑op
+  // If you want to be extra sure nothing else runs, you could also throw or return here.
+})();
+// ==== END TEMP DEBUG ====
 async function startIntroWhenReady(overrideEl) {
   const introEl = overrideEl || overlay;
   introEl.style.opacity = "0";

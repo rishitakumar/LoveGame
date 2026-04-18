@@ -3203,17 +3203,19 @@ endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it
 
     // ---------- Layout (NO CSS REQUIRED) ----------
     const wrap = document.createElement("div");
-    wrap.className = "reflection-wrap";
-    wrap.style.position = "fixed";
-    wrap.style.inset = "0";
-    wrap.style.zIndex = "10000000";
-    wrap.style.display = "grid";
-    wrap.style.gridTemplateColumns = "minmax(320px, 1fr) minmax(280px, 420px)";
-    wrap.style.gap = "18px";
-    wrap.style.padding = "22px";
-    wrap.style.alignItems = "center";
-    wrap.style.justifyItems = "center";
-    wrap.style.pointerEvents = "auto";
+wrap.className = "reflection-wrap";
+wrap.style.cssText = `
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  pointer-events: auto;
+`;
 
     const stageShell = document.createElement("div");
     stageShell.style.width = "min(560px, 92vw)";
@@ -3606,6 +3608,9 @@ controls.appendChild(rNav);
     wrap.appendChild(stageShell);
     wrap.appendChild(controls);
     endOverlayEl.appendChild(wrap);
+    endOverlayEl.style.display = "flex";
+endOverlayEl.style.alignItems = "center";
+endOverlayEl.style.justifyContent = "center";
 
     // ---------- State wiring ----------
     function setActive(which) {

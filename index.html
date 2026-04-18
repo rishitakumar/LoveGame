@@ -4087,14 +4087,20 @@ function applyReflectionLayout() {
       d.style.marginBottom = "8px";
       d.style.gap = "8px";
     });
-    [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn,
-     redoBtn, textBtn].forEach(b => {
-      b.style.padding = "8px 10px";
-      b.style.fontSize = "13px";
-      b.style.flex = "1";
-      b.style.minWidth = "0";
-      b.style.boxSizing = "border-box";
-    });
+   [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn,
+ redoBtn, textBtn].forEach(b => {
+  b.style.padding    = "8px 10px";
+  b.style.fontSize   = "13px";
+  b.style.flex       = "1";
+  b.style.minWidth   = "0";
+  b.style.boxSizing  = "border-box";
+  b.style.height     = "36px";
+  b.style.overflow   = "hidden";
+  b.style.whiteSpace = "nowrap";
+  b.style.display    = "flex";
+  b.style.alignItems = "center";
+  b.style.justifyContent = "center";
+});
     sizeInput.style.minWidth = "60px";
     textSize.style.minWidth = "60px";
     textInput.style.fontSize = "13px";
@@ -4128,11 +4134,14 @@ function applyReflectionLayout() {
             d.style.gap = rowGap + "px";
           });
 
-          [dlFront, dlBack, dlBoth, eraserBtn, clearBtn,
-           undoBtn, redoBtn, textBtn].forEach(b => {
-            b.style.padding  = `${btnPad}px ${Math.max(4, Math.floor(10 * scale))}px`;
-            b.style.fontSize = btnSize + "px";
-          });
+         [dlFront, dlBack, dlBoth, eraserBtn, clearBtn,
+         undoBtn, redoBtn, textBtn].forEach(b => {
+        b.style.padding    = `${btnPad}px ${Math.max(4, Math.floor(10 * scale))}px`;
+        b.style.fontSize   = btnSize + "px";
+        b.style.height     = Math.max(24, Math.floor(36 * scale)) + "px";
+        b.style.overflow   = "hidden";
+        b.style.whiteSpace = "nowrap";
+        });
 
           sizeInput.style.minWidth  = Math.max(40, Math.floor(60 * scale)) + "px";
           textSize.style.minWidth   = Math.max(40, Math.floor(60 * scale)) + "px";
@@ -4214,12 +4223,18 @@ function applyReflectionLayout() {
       d.style.gap = "10px";
     });
     [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn,
-     redoBtn, textBtn].forEach(b => {
-      b.style.padding  = "8px 10px";
-      b.style.fontSize = "13px";
-      b.style.flex     = "1";
-      b.style.minWidth = "0";
-      b.style.boxSizing = "border-box";
+    redoBtn, textBtn].forEach(b => {
+    b.style.padding    = "8px 10px";
+    b.style.fontSize   = "13px";
+    b.style.flex       = "1";
+    b.style.minWidth   = "0";
+    b.style.boxSizing  = "border-box";
+    b.style.height     = "36px";
+    b.style.overflow   = "hidden";
+    b.style.whiteSpace = "nowrap";
+    b.style.display    = "flex";
+    b.style.alignItems = "center";
+    b.style.justifyContent = "center";
     });
     sizeInput.style.minWidth  = "80px";
     textSize.style.minWidth   = "80px";
@@ -4250,8 +4265,11 @@ function applyReflectionLayout() {
 
           [dlFront, dlBack, dlBoth, eraserBtn, clearBtn,
            undoBtn, redoBtn, textBtn].forEach(b => {
-            b.style.padding  = `${btnPad}px ${btnPad + 2}px`;
-            b.style.fontSize = btnSize + "px";
+          b.style.padding    = `${btnPad}px ${btnPad + 2}px`;
+          b.style.fontSize   = btnSize + "px";
+          b.style.height     = Math.max(26, Math.floor(36 * scale)) + "px";
+          b.style.overflow   = "hidden";
+          b.style.whiteSpace = "nowrap";
           });
 
           sizeInput.style.minWidth = Math.max(50, Math.floor(80 * scale)) + "px";

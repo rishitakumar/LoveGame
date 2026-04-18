@@ -4025,18 +4025,13 @@ if (cardCounter) cardCounter.style.display = 'none';
 // Responsive layout
 function applyReflectionLayout() {
   const vw = window.innerWidth;
-  // Use clientHeight for Safari accuracy
   const vh = document.documentElement.clientHeight;
 
-  // Phone: narrower than 600px, or portrait on small tablets
   const isPhone = vw < 600;
-  // Tablet portrait: between 600-900px with height > width
   const isTabletPortrait = vw >= 600 && vw <= 900 && vh > vw;
-  // Need to stack if phone, or if tablet portrait and not enough horizontal space
   const shouldStack = isPhone || (isTabletPortrait && vw < 750);
 
   if (shouldStack) {
-    // Stack vertically, allow scrolling
     endOverlayEl.style.alignItems = "flex-start";
     endOverlayEl.style.justifyContent = "flex-start";
 
@@ -4044,11 +4039,10 @@ function applyReflectionLayout() {
     wrap.style.alignItems = "center";
     wrap.style.justifyContent = "flex-start";
     wrap.style.minHeight = "100%";
-    wrap.style.padding = `${Math.max(56, 10)}px 12px 24px`;
+    wrap.style.padding = "56px 12px 24px";
     wrap.style.gap = "16px";
     wrap.style.width = "100%";
 
-    // Card: as wide as possible
     const cardW = Math.min(vw - 24, 420);
     const cardH = Math.floor(cardW * (2000 / 1545));
 
@@ -4073,27 +4067,84 @@ function applyReflectionLayout() {
     `;
 
     controls.style.cssText = `
-    width: ${cardW}px;
-    box-sizing: border-box;
-    max-height: ${Math.floor(vh * 0.45)}px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    background: url('reflections_box.png') center/cover no-repeat;
-    border: 3px solid rgba(245,255,58,0.25);
-    border-radius: 18px;
-    padding: 12px;
-    color: #f5ff3a;
-    font-family: Georgia, 'Times New Roman', serif;
-    box-shadow: 0 0 30px rgba(0,0,0,0.35);
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
-    flex-shrink: 0;
-`;
+      width: ${cardW}px;
+      box-sizing: border-box;
+      overflow: visible;
+      background: url('reflections_box.png') center/cover no-repeat;
+      border: 3px solid rgba(245,255,58,0.25);
+      border-radius: 18px;
+      padding: 12px;
+      color: #f5ff3a;
+      font-family: Georgia, 'Times New Roman', serif;
+      box-shadow: 0 0 30px rgba(0,0,0,0.35);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      flex-shrink: 0;
+    `;
+
+    // Reset all row margins and button sizes first
+    controls.querySelectorAll('div').forEach(d => {
+      d.style.marginBottom = "8px";
+      d.style.gap = "8px";
+    });
+    [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn,
+     redoBtn, textBtn].forEach(b => {
+      b.style.padding = "8px 10px";
+      b.style.fontSize = "13px";
+      b.style.flex = "1";
+      b.style.minWidth = "0";
+      b.style.boxSizing = "border-box";
+    });
+    sizeInput.style.minWidth = "60px";
+    textSize.style.minWidth = "60px";
+    textInput.style.fontSize = "13px";
+    textInput.style.padding = "6px 8px";
+    h.style.fontSize = "14px";
+    h.style.marginBottom = "8px";
+    colorInput.style.height = "32px";
+    colorInput.style.width = "40px";
+
+    // Measure after initial sizing, then scale down if needed
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const natural = controls.scrollHeight;
+        const available = vh - cardH - 56 - 16 - 24; // padTop + gap + padBottom
+
+        if (natural > available && available > 60) {
+          const scale = Math.max(0.6, available / natural);
+
+          const btnPad = Math.max(3, Math.floor(8 * scale));
+          const btnSize = Math.max(9, Math.floor(13 * scale));
+          const hdSize  = Math.max(10, Math.floor(14 * scale));
+          const inputPad = Math.max(2, Math.floor(6 * scale));
+          const rowGap = Math.max(4, Math.floor(8 * scale));
+          const rowMb  = Math.max(3, Math.floor(8 * scale));
+
+          h.style.fontSize     = hdSize + "px";
+          h.style.marginBottom = rowMb + "px";
+
+          controls.querySelectorAll('div').forEach(d => {
+            d.style.marginBottom = rowMb + "px";
+            d.style.gap = rowGap + "px";
+          });
+
+          [dlFront, dlBack, dlBoth, eraserBtn, clearBtn,
+           undoBtn, redoBtn, textBtn].forEach(b => {
+            b.style.padding  = `${btnPad}px ${Math.max(4, Math.floor(10 * scale))}px`;
+            b.style.fontSize = btnSize + "px";
+          });
+
+          sizeInput.style.minWidth  = Math.max(40, Math.floor(60 * scale)) + "px";
+          textSize.style.minWidth   = Math.max(40, Math.floor(60 * scale)) + "px";
+          textInput.style.fontSize  = btnSize + "px";
+          textInput.style.padding   = `${inputPad}px ${inputPad + 2}px`;
+          colorInput.style.height   = Math.max(22, Math.floor(32 * scale)) + "px";
+          colorInput.style.width    = Math.max(28, Math.floor(40 * scale)) + "px";
+        }
+      });
+    });
 
   } else {
-    // Side by side — desktop or landscape tablet
-    // Center both vertically and horizontally
     endOverlayEl.style.alignItems = "center";
     endOverlayEl.style.justifyContent = "center";
 
@@ -4106,17 +4157,13 @@ function applyReflectionLayout() {
     wrap.style.padding = "20px";
     wrap.style.gap = "32px";
 
-    // Available space
     const availH = vh - 40;
     const availW = vw - 80;
 
-    // Card: height-constrained, max 45% of available width
     const cardFromH = Math.floor(availH * (1545 / 2000));
     const cardFromW = Math.floor(availW * 0.45);
     const cardW = Math.min(cardFromH, cardFromW, 480);
     const cardH = Math.floor(cardW * (2000 / 1545));
-
-    // Controls: same width, natural height
     const ctrlW = cardW;
 
     stageShell.style.cssText = `
@@ -4142,24 +4189,76 @@ function applyReflectionLayout() {
     `;
 
     controls.style.cssText = `
-    width: ${ctrlW}px;
-    box-sizing: border-box;
-    max-height: ${cardH}px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    background: url('reflections_box.png') center/cover no-repeat;
-    border: 3px solid rgba(245,255,58,0.25);
-    border-radius: 18px;
-    padding: 16px;
-    color: #f5ff3a;
-    font-family: Georgia, 'Times New Roman', serif;
-    box-shadow: 0 0 30px rgba(0,0,0,0.35);
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
-    align-self: center;
-    flex-shrink: 0;
-`;
+      width: ${ctrlW}px;
+      box-sizing: border-box;
+      max-height: ${cardH}px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      background: url('reflections_box.png') center/cover no-repeat;
+      border: 3px solid rgba(245,255,58,0.25);
+      border-radius: 18px;
+      padding: 16px;
+      color: #f5ff3a;
+      font-family: Georgia, 'Times New Roman', serif;
+      box-shadow: 0 0 30px rgba(0,0,0,0.35);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      align-self: center;
+      flex-shrink: 0;
+    `;
+
+    // Reset sizing for desktop
+    controls.querySelectorAll('div').forEach(d => {
+      d.style.marginBottom = "10px";
+      d.style.gap = "10px";
+    });
+    [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn,
+     redoBtn, textBtn].forEach(b => {
+      b.style.padding  = "8px 10px";
+      b.style.fontSize = "13px";
+      b.style.flex     = "1";
+      b.style.minWidth = "0";
+      b.style.boxSizing = "border-box";
+    });
+    sizeInput.style.minWidth  = "80px";
+    textSize.style.minWidth   = "80px";
+    textInput.style.fontSize  = "";
+    textInput.style.padding   = "";
+    h.style.fontSize           = "16px";
+    h.style.marginBottom       = "12px";
+    colorInput.style.height    = "";
+    colorInput.style.width     = "";
+
+    // Scale down if content still overflows on desktop
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (controls.scrollHeight > cardH) {
+          const scale = Math.max(0.7, cardH / controls.scrollHeight);
+          const btnSize = Math.max(10, Math.floor(13 * scale));
+          const btnPad  = Math.max(4, Math.floor(8 * scale));
+          const hdSize  = Math.max(12, Math.floor(16 * scale));
+          const rowMb   = Math.max(4, Math.floor(10 * scale));
+
+          h.style.fontSize     = hdSize + "px";
+          h.style.marginBottom = rowMb + "px";
+
+          controls.querySelectorAll('div').forEach(d => {
+            d.style.marginBottom = rowMb + "px";
+            d.style.gap = Math.max(4, Math.floor(10 * scale)) + "px";
+          });
+
+          [dlFront, dlBack, dlBoth, eraserBtn, clearBtn,
+           undoBtn, redoBtn, textBtn].forEach(b => {
+            b.style.padding  = `${btnPad}px ${btnPad + 2}px`;
+            b.style.fontSize = btnSize + "px";
+          });
+
+          sizeInput.style.minWidth = Math.max(50, Math.floor(80 * scale)) + "px";
+          textSize.style.minWidth  = Math.max(50, Math.floor(80 * scale)) + "px";
+        }
+      });
+    });
   }
 }
 

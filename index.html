@@ -4101,6 +4101,27 @@ function applyReflectionLayout() {
   b.style.alignItems = "center";
   b.style.justifyContent = "center";
 });
+
+    // Check for overflow even at default size
+requestAnimationFrame(() => {
+  [dlFront, dlBack, dlBoth, eraserBtn, clearBtn,
+   undoBtn, redoBtn, textBtn].forEach(b => {
+    let fs = parseFloat(window.getComputedStyle(b).fontSize);
+    let attempts = 0;
+    while (b.scrollWidth > b.clientWidth && fs > 7 && attempts < 10) {
+      fs = Math.max(7, fs - 1);
+      b.style.fontSize = fs + "px";
+      attempts++;
+    }
+    if (b.scrollWidth > b.clientWidth) {
+      b.style.whiteSpace = "normal";
+      b.style.height = "auto";
+      b.style.minHeight = "36px";
+      b.style.lineHeight = "1.1";
+    }
+  });
+});
+    
     sizeInput.style.minWidth = "60px";
     textSize.style.minWidth = "60px";
     textInput.style.fontSize = "13px";
@@ -4134,14 +4155,33 @@ function applyReflectionLayout() {
             d.style.gap = rowGap + "px";
           });
 
-         [dlFront, dlBack, dlBoth, eraserBtn, clearBtn,
+          [dlFront, dlBack, dlBoth, eraserBtn, clearBtn,
          undoBtn, redoBtn, textBtn].forEach(b => {
-        b.style.padding    = `${btnPad}px ${Math.max(4, Math.floor(10 * scale))}px`;
-        b.style.fontSize   = btnSize + "px";
-        b.style.height     = Math.max(24, Math.floor(36 * scale)) + "px";
-        b.style.overflow   = "hidden";
+         const targetH = Math.max(24, Math.floor(36 * scale));
+        b.style.padding   = `${btnPad}px ${Math.max(4, Math.floor(10 * scale))}px`;
+        b.style.fontSize  = btnSize + "px";
+        b.style.height    = targetH + "px";
+        b.style.overflow  = "hidden";
         b.style.whiteSpace = "nowrap";
-        });
+
+  // Further shrink font if text still overflows button width
+       requestAnimationFrame(() => {
+       let fs = parseFloat(b.style.fontSize);
+      let attempts = 0;
+      while (b.scrollWidth > b.clientWidth && fs > 7 && attempts < 10) {
+      fs = Math.max(7, fs - 1);
+      b.style.fontSize = fs + "px";
+      attempts++;
+    }
+    // If still overflowing at min font, allow wrapping with smaller height
+    if (b.scrollWidth > b.clientWidth) {
+      b.style.whiteSpace = "normal";
+      b.style.height = "auto";
+      b.style.minHeight = targetH + "px";
+      b.style.lineHeight = "1.1";
+    }
+  });
+});
 
           sizeInput.style.minWidth  = Math.max(40, Math.floor(60 * scale)) + "px";
           textSize.style.minWidth   = Math.max(40, Math.floor(60 * scale)) + "px";
@@ -4263,20 +4303,31 @@ function applyReflectionLayout() {
             d.style.gap = Math.max(4, Math.floor(10 * scale)) + "px";
           });
 
-          [dlFront, dlBack, dlBoth, eraserBtn, clearBtn,
-           undoBtn, redoBtn, textBtn].forEach(b => {
-          b.style.padding    = `${btnPad}px ${btnPad + 2}px`;
-          b.style.fontSize   = btnSize + "px";
-          b.style.height     = Math.max(26, Math.floor(36 * scale)) + "px";
-          b.style.overflow   = "hidden";
+         [dlFront, dlBack, dlBoth, eraserBtn, clearBtn,
+         undoBtn, redoBtn, textBtn].forEach(b => {
+         const targetH = Math.max(26, Math.floor(36 * scale));
+         b.style.padding   = `${btnPad}px ${btnPad + 2}px`;
+          b.style.fontSize  = btnSize + "px";
+          b.style.height    = targetH + "px";
+          b.style.overflow  = "hidden";
           b.style.whiteSpace = "nowrap";
-          });
 
-          sizeInput.style.minWidth = Math.max(50, Math.floor(80 * scale)) + "px";
-          textSize.style.minWidth  = Math.max(50, Math.floor(80 * scale)) + "px";
-        }
-      });
-    });
+  requestAnimationFrame(() => {
+    let fs = parseFloat(b.style.fontSize);
+    let attempts = 0;
+    while (b.scrollWidth > b.clientWidth && fs > 8 && attempts < 10) {
+      fs = Math.max(8, fs - 1);
+      b.style.fontSize = fs + "px";
+      attempts++;
+    }
+    if (b.scrollWidth > b.clientWidth) {
+      b.style.whiteSpace = "normal";
+      b.style.height = "auto";
+      b.style.minHeight = targetH + "px";
+      b.style.lineHeight = "1.1";
+    }
+  });
+});
   }
 }
 

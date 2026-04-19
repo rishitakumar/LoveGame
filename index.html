@@ -4031,6 +4031,26 @@ function applyReflectionLayout() {
   const isTabletPortrait = vw >= 600 && vw <= 900 && vh > vw;
   const shouldStack = isPhone || (isTabletPortrait && vw < 750);
 
+  function fitButtonText(b, targetH) {
+    requestAnimationFrame(() => {
+      let fs = parseFloat(b.style.fontSize);
+      let attempts = 0;
+      while (b.scrollWidth > b.clientWidth && fs > 7 && attempts < 10) {
+        fs = Math.max(7, fs - 1);
+        b.style.fontSize = fs + "px";
+        attempts++;
+      }
+      if (b.scrollWidth > b.clientWidth) {
+        b.style.whiteSpace = "normal";
+        b.style.height = "auto";
+        b.style.minHeight = targetH + "px";
+        b.style.lineHeight = "1.1";
+      }
+    });
+  }
+
+  const allBtns = [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn];
+
   if (shouldStack) {
     endOverlayEl.style.alignItems = "flex-start";
     endOverlayEl.style.justifyContent = "flex-start";
@@ -4082,138 +4102,98 @@ function applyReflectionLayout() {
       flex-shrink: 0;
     `;
 
-    // Reset all row margins and button sizes first
     controls.querySelectorAll('div').forEach(d => {
       d.style.marginBottom = "8px";
       d.style.gap = "8px";
     });
-   [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn,
- redoBtn, textBtn].forEach(b => {
-  b.style.padding    = "8px 10px";
-  b.style.fontSize   = "13px";
-  b.style.flex       = "1";
-  b.style.minWidth   = "0";
-  b.style.boxSizing  = "border-box";
-  b.style.height     = "36px";
-  b.style.overflow   = "hidden";
-  b.style.whiteSpace = "nowrap";
-  b.style.display    = "flex";
-  b.style.alignItems = "center";
-  b.style.justifyContent = "center";
-});
 
-    // Check for overflow even at default size
-requestAnimationFrame(() => {
-  [dlFront, dlBack, dlBoth, eraserBtn, clearBtn,
-   undoBtn, redoBtn, textBtn].forEach(b => {
-    let fs = parseFloat(window.getComputedStyle(b).fontSize);
-    let attempts = 0;
-    while (b.scrollWidth > b.clientWidth && fs > 7 && attempts < 10) {
-      fs = Math.max(7, fs - 1);
-      b.style.fontSize = fs + "px";
-      attempts++;
-    }
-    if (b.scrollWidth > b.clientWidth) {
-      b.style.whiteSpace = "normal";
-      b.style.height = "auto";
-      b.style.minHeight = "36px";
-      b.style.lineHeight = "1.1";
-    }
-  });
-});
-    
-    sizeInput.style.minWidth = "60px";
-    textSize.style.minWidth = "60px";
-    textInput.style.fontSize = "13px";
-    textInput.style.padding = "6px 8px";
-    h.style.fontSize = "14px";
-    h.style.marginBottom = "8px";
-    colorInput.style.height = "32px";
-    colorInput.style.width = "40px";
+    allBtns.forEach(b => {
+      b.style.padding       = "8px 10px";
+      b.style.fontSize      = "13px";
+      b.style.flex          = "1";
+      b.style.minWidth      = "0";
+      b.style.boxSizing     = "border-box";
+      b.style.height        = "36px";
+      b.style.overflow      = "hidden";
+      b.style.whiteSpace    = "nowrap";
+      b.style.display       = "flex";
+      b.style.alignItems    = "center";
+      b.style.justifyContent = "center";
+      fitButtonText(b, 36);
+    });
 
-    // Measure after initial sizing, then scale down if needed
+    sizeInput.style.minWidth  = "60px";
+    textSize.style.minWidth   = "60px";
+    textInput.style.fontSize  = "13px";
+    textInput.style.padding   = "6px 8px";
+    h.style.fontSize          = "14px";
+    h.style.marginBottom      = "8px";
+    colorInput.style.height   = "32px";
+    colorInput.style.width    = "40px";
+
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        const natural = controls.scrollHeight;
-        const available = vh - cardH - 56 - 16 - 24; // padTop + gap + padBottom
+        const natural   = controls.scrollHeight;
+        const available = vh - cardH - 56 - 16 - 24;
 
         if (natural > available && available > 60) {
-          const scale = Math.max(0.6, available / natural);
-
-          const btnPad = Math.max(3, Math.floor(8 * scale));
-          const btnSize = Math.max(9, Math.floor(13 * scale));
-          const hdSize  = Math.max(10, Math.floor(14 * scale));
+          const scale    = Math.max(0.6, available / natural);
+          const btnPad   = Math.max(3, Math.floor(8 * scale));
+          const btnSize  = Math.max(9, Math.floor(13 * scale));
+          const hdSize   = Math.max(10, Math.floor(14 * scale));
           const inputPad = Math.max(2, Math.floor(6 * scale));
-          const rowGap = Math.max(4, Math.floor(8 * scale));
-          const rowMb  = Math.max(3, Math.floor(8 * scale));
+          const rowGap   = Math.max(4, Math.floor(8 * scale));
+          const rowMb    = Math.max(3, Math.floor(8 * scale));
 
           h.style.fontSize     = hdSize + "px";
           h.style.marginBottom = rowMb + "px";
 
           controls.querySelectorAll('div').forEach(d => {
             d.style.marginBottom = rowMb + "px";
-            d.style.gap = rowGap + "px";
+            d.style.gap          = rowGap + "px";
           });
 
-          [dlFront, dlBack, dlBoth, eraserBtn, clearBtn,
-         undoBtn, redoBtn, textBtn].forEach(b => {
-         const targetH = Math.max(24, Math.floor(36 * scale));
-        b.style.padding   = `${btnPad}px ${Math.max(4, Math.floor(10 * scale))}px`;
-        b.style.fontSize  = btnSize + "px";
-        b.style.height    = targetH + "px";
-        b.style.overflow  = "hidden";
-        b.style.whiteSpace = "nowrap";
+          const targetH = Math.max(24, Math.floor(36 * scale));
+          allBtns.forEach(b => {
+            b.style.padding    = `${btnPad}px ${Math.max(4, Math.floor(10 * scale))}px`;
+            b.style.fontSize   = btnSize + "px";
+            b.style.height     = targetH + "px";
+            b.style.overflow   = "hidden";
+            b.style.whiteSpace = "nowrap";
+            fitButtonText(b, targetH);
+          });
 
-  // Further shrink font if text still overflows button width
-       requestAnimationFrame(() => {
-       let fs = parseFloat(b.style.fontSize);
-      let attempts = 0;
-      while (b.scrollWidth > b.clientWidth && fs > 7 && attempts < 10) {
-      fs = Math.max(7, fs - 1);
-      b.style.fontSize = fs + "px";
-      attempts++;
-    }
-    // If still overflowing at min font, allow wrapping with smaller height
-    if (b.scrollWidth > b.clientWidth) {
-      b.style.whiteSpace = "normal";
-      b.style.height = "auto";
-      b.style.minHeight = targetH + "px";
-      b.style.lineHeight = "1.1";
-    }
-  });
-});
-
-          sizeInput.style.minWidth  = Math.max(40, Math.floor(60 * scale)) + "px";
-          textSize.style.minWidth   = Math.max(40, Math.floor(60 * scale)) + "px";
-          textInput.style.fontSize  = btnSize + "px";
-          textInput.style.padding   = `${inputPad}px ${inputPad + 2}px`;
-          colorInput.style.height   = Math.max(22, Math.floor(32 * scale)) + "px";
-          colorInput.style.width    = Math.max(28, Math.floor(40 * scale)) + "px";
+          sizeInput.style.minWidth = Math.max(40, Math.floor(60 * scale)) + "px";
+          textSize.style.minWidth  = Math.max(40, Math.floor(60 * scale)) + "px";
+          textInput.style.fontSize = btnSize + "px";
+          textInput.style.padding  = `${inputPad}px ${inputPad + 2}px`;
+          colorInput.style.height  = Math.max(22, Math.floor(32 * scale)) + "px";
+          colorInput.style.width   = Math.max(28, Math.floor(40 * scale)) + "px";
         }
       });
     });
 
   } else {
-    endOverlayEl.style.alignItems = "center";
+    endOverlayEl.style.alignItems    = "center";
     endOverlayEl.style.justifyContent = "center";
 
-    wrap.style.flexDirection = "row";
-    wrap.style.alignItems = "center";
+    wrap.style.flexDirection  = "row";
+    wrap.style.alignItems     = "center";
     wrap.style.justifyContent = "center";
-    wrap.style.minHeight = "unset";
-    wrap.style.width = "auto";
-    wrap.style.maxWidth = "calc(100vw - 40px)";
-    wrap.style.padding = "20px";
-    wrap.style.gap = "32px";
+    wrap.style.minHeight      = "unset";
+    wrap.style.width          = "auto";
+    wrap.style.maxWidth       = "calc(100vw - 40px)";
+    wrap.style.padding        = "20px";
+    wrap.style.gap            = "32px";
 
     const availH = vh - 40;
     const availW = vw - 80;
 
     const cardFromH = Math.floor(availH * (1545 / 2000));
     const cardFromW = Math.floor(availW * 0.45);
-    const cardW = Math.min(cardFromH, cardFromW, 480);
-    const cardH = Math.floor(cardW * (2000 / 1545));
-    const ctrlW = cardW;
+    const cardW     = Math.min(cardFromH, cardFromW, 480);
+    const cardH     = Math.floor(cardW * (2000 / 1545));
+    const ctrlW     = cardW;
 
     stageShell.style.cssText = `
       width: ${cardW}px;
@@ -4257,79 +4237,68 @@ requestAnimationFrame(() => {
       flex-shrink: 0;
     `;
 
-    // Reset sizing for desktop
     controls.querySelectorAll('div').forEach(d => {
       d.style.marginBottom = "10px";
-      d.style.gap = "10px";
+      d.style.gap          = "10px";
     });
-    [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn,
-    redoBtn, textBtn].forEach(b => {
-    b.style.padding    = "8px 10px";
-    b.style.fontSize   = "13px";
-    b.style.flex       = "1";
-    b.style.minWidth   = "0";
-    b.style.boxSizing  = "border-box";
-    b.style.height     = "36px";
-    b.style.overflow   = "hidden";
-    b.style.whiteSpace = "nowrap";
-    b.style.display    = "flex";
-    b.style.alignItems = "center";
-    b.style.justifyContent = "center";
-    });
-    sizeInput.style.minWidth  = "80px";
-    textSize.style.minWidth   = "80px";
-    textInput.style.fontSize  = "";
-    textInput.style.padding   = "";
-    h.style.fontSize           = "16px";
-    h.style.marginBottom       = "12px";
-    colorInput.style.height    = "";
-    colorInput.style.width     = "";
 
-    // Scale down if content still overflows on desktop
+    allBtns.forEach(b => {
+      b.style.padding        = "8px 10px";
+      b.style.fontSize       = "13px";
+      b.style.flex           = "1";
+      b.style.minWidth       = "0";
+      b.style.boxSizing      = "border-box";
+      b.style.height         = "36px";
+      b.style.overflow       = "hidden";
+      b.style.whiteSpace     = "nowrap";
+      b.style.display        = "flex";
+      b.style.alignItems     = "center";
+      b.style.justifyContent = "center";
+      fitButtonText(b, 36);
+    });
+
+    sizeInput.style.minWidth = "80px";
+    textSize.style.minWidth  = "80px";
+    textInput.style.fontSize = "";
+    textInput.style.padding  = "";
+    h.style.fontSize         = "16px";
+    h.style.marginBottom     = "12px";
+    colorInput.style.height  = "";
+    colorInput.style.width   = "";
+
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         if (controls.scrollHeight > cardH) {
-          const scale = Math.max(0.7, cardH / controls.scrollHeight);
+          const scale   = Math.max(0.7, cardH / controls.scrollHeight);
           const btnSize = Math.max(10, Math.floor(13 * scale));
           const btnPad  = Math.max(4, Math.floor(8 * scale));
           const hdSize  = Math.max(12, Math.floor(16 * scale));
           const rowMb   = Math.max(4, Math.floor(10 * scale));
+          const targetH = Math.max(26, Math.floor(36 * scale));
 
           h.style.fontSize     = hdSize + "px";
           h.style.marginBottom = rowMb + "px";
 
           controls.querySelectorAll('div').forEach(d => {
             d.style.marginBottom = rowMb + "px";
-            d.style.gap = Math.max(4, Math.floor(10 * scale)) + "px";
+            d.style.gap          = Math.max(4, Math.floor(10 * scale)) + "px";
           });
 
-         [dlFront, dlBack, dlBoth, eraserBtn, clearBtn,
-         undoBtn, redoBtn, textBtn].forEach(b => {
-         const targetH = Math.max(26, Math.floor(36 * scale));
-         b.style.padding   = `${btnPad}px ${btnPad + 2}px`;
-          b.style.fontSize  = btnSize + "px";
-          b.style.height    = targetH + "px";
-          b.style.overflow  = "hidden";
-          b.style.whiteSpace = "nowrap";
+          allBtns.forEach(b => {
+            b.style.padding    = `${btnPad}px ${btnPad + 2}px`;
+            b.style.fontSize   = btnSize + "px";
+            b.style.height     = targetH + "px";
+            b.style.overflow   = "hidden";
+            b.style.whiteSpace = "nowrap";
+            fitButtonText(b, targetH);
+          });
 
-  requestAnimationFrame(() => {
-    let fs = parseFloat(b.style.fontSize);
-    let attempts = 0;
-    while (b.scrollWidth > b.clientWidth && fs > 8 && attempts < 10) {
-      fs = Math.max(8, fs - 1);
-      b.style.fontSize = fs + "px";
-      attempts++;
-    }
-    if (b.scrollWidth > b.clientWidth) {
-      b.style.whiteSpace = "normal";
-      b.style.height = "auto";
-      b.style.minHeight = targetH + "px";
-      b.style.lineHeight = "1.1";
-    }
-  });
-});
+          sizeInput.style.minWidth = Math.max(50, Math.floor(80 * scale)) + "px";
+          textSize.style.minWidth  = Math.max(50, Math.floor(80 * scale)) + "px";
+        }
+      });
+    });
   }
-}
 }
 
 // Use visualViewport for Safari keyboard detection

@@ -4028,8 +4028,9 @@ function applyReflectionLayout() {
   const vh = document.documentElement.clientHeight;
 
   const isPhone = vw < 600;
-  const isTabletPortrait = vw >= 600 && vw <= 900 && vh > vw;
-  const shouldStack = isPhone || (isTabletPortrait && vw < 750);
+const isTabletPortrait = vw >= 600 && vw <= 900 && vh > vw;
+const shouldStack = isPhone || (isTabletPortrait && vw < 750);
+const isIpadMini = vw >= 740 && vw <= 820;
 
  function fitButtonText(b, targetH) {
   requestAnimationFrame(() => {
@@ -4146,20 +4147,25 @@ function applyReflectionLayout() {
       d.style.gap = "8px";
     });
 
-    allBtns.forEach(b => {
-      b.style.padding       = "8px 10px";
-      b.style.fontSize      = "13px";
-      b.style.flex          = "1";
-      b.style.minWidth      = "0";
-      b.style.boxSizing     = "border-box";
-      b.style.height        = "36px";
-      b.style.overflow      = "hidden";
-      b.style.whiteSpace    = "nowrap";
-      b.style.display       = "flex";
-      b.style.alignItems    = "center";
-      b.style.justifyContent = "center";
-      fitButtonText(b, 36);
-    });
+    const btnH = isIpadMini ? 42 : 36;
+const btnFs = isIpadMini ? "14px" : "13px";
+const btnPadding = isIpadMini ? "10px 12px" : "8px 10px";
+
+allBtns.forEach(b => {
+  b.style.padding        = btnPadding;
+  b.style.fontSize       = btnFs;
+  b.style.flex           = "1";
+  b.style.minWidth       = "0";
+  b.style.boxSizing      = "border-box";
+  b.style.height         = btnH + "px";
+  b.style.overflow       = "hidden";
+  b.style.whiteSpace     = "nowrap";
+  b.style.display        = "flex";
+  b.style.alignItems     = "center";
+  b.style.justifyContent = "center";
+});
+Promise.all(allBtns.map(b => fitButtonText(b, btnH)))
+  .then(() => syncGroupHeight([dlFront, dlBack, dlBoth]));
 
     sizeInput.style.minWidth  = "60px";
     textSize.style.minWidth   = "60px";

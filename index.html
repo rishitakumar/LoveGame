@@ -4031,23 +4031,62 @@ function applyReflectionLayout() {
   const isTabletPortrait = vw >= 600 && vw <= 900 && vh > vw;
   const shouldStack = isPhone || (isTabletPortrait && vw < 750);
 
-  function fitButtonText(b, targetH) {
-    requestAnimationFrame(() => {
-      let fs = parseFloat(b.style.fontSize);
-      let attempts = 0;
-      while (b.scrollWidth > b.clientWidth && fs > 7 && attempts < 10) {
-        fs = Math.max(7, fs - 1);
-        b.style.fontSize = fs + "px";
-        attempts++;
-      }
-      if (b.scrollWidth > b.clientWidth) {
-        b.style.whiteSpace = "normal";
-        b.style.height = "auto";
-        b.style.minHeight = targetH + "px";
-        b.style.lineHeight = "1.1";
-      }
-    });
-  }
+ function fitButtonText(b, targetH) {
+  requestAnimationFrame(() => {
+    let fs = parseFloat(b.style.fontSize);
+    let attempts = 0;
+
+    // First try shrinking font on one line
+    while (b.scrollWidth > b.clientWidth && fs > 7 && attempts < 10) {
+      fs = Math.max(7, fs - 1);
+      b.style.fontSize = fs + "px";
+      attempts++;
+    }
+
+    // If still overflowing, try splitting text onto two lines
+    if (b.scrollWidth > b.clientWidth) {
+      const original = b.textContent.trim();
+
+      // Try natural word wrap first at current font size
+      b.style.whiteSpace = "normal";
+      b.style.height = "auto";
+      b.style.minHeight = targetH + "px";
+      b.style.lineHeight = "1.15";
+
+      // Check if wrapped version fits without being too tall
+      requestAnimationFrame(() => {
+        const wrappedH = b.scrollHeight;
+        const maxAllowed = targetH * 2.2; // allow up to ~2 lines tall
+
+        if (wrappedH <= maxAllowed) {
+          // Wrapped fits — keep it, but try to grow font back a bit
+          let grownFs = fs;
+          while (grownFs < 13 && b.scrollHeight <= maxAllowed) {
+            grownFs++;
+            b.style.fontSize = grownFs + "px";
+          }
+          // Back off one step if we went too far
+          if (b.scrollHeight > maxAllowed) {
+            b.style.fontSize = Math.max(7, grownFs - 1) + "px";
+          }
+          b.style.height = "auto";
+          b.style.minHeight = targetH + "px";
+        } else {
+          // Wrapped is too tall — shrink font until it fits in 2 lines
+          let shrinkFs = fs;
+          b.style.whiteSpace = "normal";
+          while (b.scrollHeight > maxAllowed && shrinkFs > 7) {
+            shrinkFs = Math.max(7, shrinkFs - 1);
+            b.style.fontSize = shrinkFs + "px";
+          }
+          b.style.height = "auto";
+          b.style.minHeight = targetH + "px";
+          b.style.lineHeight = "1.15";
+        }
+      });
+    }
+  });
+}
 
   const allBtns = [dlFront, dlBack, dlBoth, eraserBtn, clearBtn, undoBtn, redoBtn, textBtn];
 

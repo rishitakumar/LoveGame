@@ -3668,9 +3668,12 @@ controls.appendChild(rNav);
     sizeInput.addEventListener("input", () => state.size = Number(sizeInput.value));
 
     eraserBtn.addEventListener("click", () => {
-      state.eraser = !state.eraser;
-      eraserBtn.textContent = state.eraser ? "ERASER: ON" : "ERASER: OFF";
-    });
+  state.eraser = !state.eraser;
+  const short = window.innerWidth < 900;
+  eraserBtn.textContent = state.eraser
+    ? (short ? "ERASER: ON" : "ERASER: ON")
+    : (short ? "ERASER: OFF" : "ERASER: OFF");
+});
 
     textInput.addEventListener("input", () => state.text = textInput.value || "");
 let resizeTimer = null;
@@ -3691,15 +3694,18 @@ textSize.addEventListener("input", () => {
   }
 });
 
-    textBtn.addEventListener("click", () => {
-      const on = state.tool !== "text";
-      state.tool = on ? "text" : "draw";
-      textBtn.textContent = on ? "TEXT TOOL: ON" : "TEXT TOOL: OFF";
-      if (on) {
-        state.eraser = false;
-        eraserBtn.textContent = "ERASER: OFF";
-      }
-    });
+   textBtn.addEventListener("click", () => {
+  const on = state.tool !== "text";
+  state.tool = on ? "text" : "draw";
+  const short = window.innerWidth < 900;
+  textBtn.textContent = on
+    ? (short ? "TEXT: ON" : "TEXT TOOL: ON")
+    : (short ? "TEXT: OFF" : "TEXT TOOL: OFF");
+  if (on) {
+    state.eraser = false;
+    eraserBtn.textContent = short ? "ERASER: OFF" : "ERASER: OFF";
+  }
+});
 
    clearBtn.addEventListener("click", () => {
   const which = state.active;
@@ -4146,6 +4152,29 @@ const isIpadMini = vw >= 740 && vw <= 820;
       d.style.marginBottom = "8px";
       d.style.gap = "8px";
     });
+
+    // Shorten labels on smaller screens
+if (vw < 900) {
+  dlFront.textContent = "↓ FRONT";
+  dlBack.textContent  = "↓ BACK";
+  dlBoth.textContent  = "↓ BOTH";
+  textBtn.textContent = textBtn.textContent.includes("ON")
+    ? "TEXT: ON"
+    : "TEXT: OFF";
+  eraserBtn.textContent = eraserBtn.textContent.includes("ON")
+    ? "ERASER: ON"
+    : "ERASER: OFF";
+  undoBtn.textContent = "← UNDO";
+  redoBtn.textContent = "REDO →";
+  clearBtn.textContent = "CLEAR";
+} else {
+  dlFront.textContent = "DOWNLOAD FRONT";
+  dlBack.textContent  = "DOWNLOAD BACK";
+  dlBoth.textContent  = "DOWNLOAD BOTH";
+  undoBtn.textContent = "<- Undo";
+  redoBtn.textContent = "Redo ->";
+  clearBtn.textContent = "CLEAR SIDE";
+}
 
     const btnH = isIpadMini ? 42 : 36;
 const btnFs = isIpadMini ? "14px" : "13px";

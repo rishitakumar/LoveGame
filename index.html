@@ -3865,23 +3865,23 @@ function redo(which) {
       return state.active === "front" ? inkCtxF : inkCtxB;
     }
 
-    function getPos(evt) {
-      const rect = stage.getBoundingClientRect();
-      const x = ((evt.clientX - rect.left) / rect.width) * DESIGN_W;
-      const y = ((evt.clientY - rect.top) / rect.height) * DESIGN_H;
-      return { x, y };
-    }
+ function getPos(evt) {
+  const rect = stage.getBoundingClientRect();
+  // Use offsetX/offsetY when available (more accurate), fall back to client
+  const clientX = evt.clientX ?? (evt.touches?.[0]?.clientX ?? 0);
+  const clientY = evt.clientY ?? (evt.touches?.[0]?.clientY ?? 0);
+  const x = ((clientX - rect.left) / rect.width) * DESIGN_W;
+  const y = ((clientY - rect.top) / rect.height) * DESIGN_H;
+  return { x, y };
+}
 
-    const lerp = (a, b, t) => a + (b - a) * t;
-
-    function pointerDown(e) {
+function pointerDown(e) {
   e.preventDefault();
-      activePointerId = e.pointerId;
-stage.setPointerCapture?.(e.pointerId);
+  activePointerId = e.pointerId;
+  stage.setPointerCapture?.(e.pointerId);
   const p = getPos(e);
   const which = state.active;
 
-  // ✅ ERASER DELETES TEXT (tap on text deletes it)
   if (state.eraser) {
     const idx = hitText(which, p);
     if (idx !== -1) {
@@ -3893,29 +3893,24 @@ stage.setPointerCapture?.(e.pointerId);
     }
   }
 
-  // If clicking on existing text, select + drag it
   const idx = hitText(which, p);
   if (idx !== -1 && state.tool !== "text" && !state.eraser) {
     selectedText = textItems[which][idx];
     textSize.value = String(selectedText.size);
-
-    snapshot(which); // ✅ drag can be undone
+    snapshot(which);
     dragging = selectedText;
     dragOff.x = p.x - selectedText.x;
     dragOff.y = p.y - selectedText.y;
     return;
   }
 
-  // clicked empty area => deselect
   selectedText = null;
 
-  // Text tool places text
   if (state.tool === "text") {
     if (state.text.trim()) {
-      snapshot(which); // ✅ place text undoable
+      snapshot(which);
       textItems[which].push({
-        x: p.x,
-        y: p.y,
+        x: p.x, y: p.y,
         text: state.text,
         color: state.color,
         size: state.textSize
@@ -3925,15 +3920,19 @@ stage.setPointerCapture?.(e.pointerId);
     return;
   }
 
-  // Draw/Eraser stroke begins
-  snapshot(which); // ✅ stroke undoable
+  snapshot(which);
   drawing = true;
   last = p;
+
+  // Start a smooth path
+  const ctx = getActiveInkCtx();
+  ctx.beginPath();
+  ctx.moveTo(p.x, p.y);
 }
 
+function pointerMove(e) {
+  if (e.pointerId !== activePointerId) return;
 
-  function pointerMove(e) {
-    if (e.pointerId !== activePointerId) return; // ✅ sliders + everything else unaffected
   if (dragging) {
     e.preventDefault();
     const p = getPos(e);
@@ -3947,21 +3946,16 @@ stage.setPointerCapture?.(e.pointerId);
   e.preventDefault();
 
   const ctx = getActiveInkCtx();
-  const p = getPos(e);
 
-  const dx = p.x - last.x;
-  const dy = p.y - last.y;
-  const dist = Math.hypot(dx, dy);
-  const steps = Math.max(1, Math.floor(dist / 2));
+  // Use getCoalescedEvents if available — gives all intermediate points
+  // between frames, crucial for smooth curves on touch
+  const events = e.getCoalescedEvents?.() ?? [e];
 
   ctx.save();
-
-  // ✅ HARD RESET (prevents gray / shadows / alpha leaks)
   ctx.globalAlpha = 1;
   ctx.filter = "none";
   ctx.shadowBlur = 0;
   ctx.shadowColor = "transparent";
-
   ctx.lineWidth = state.size;
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
@@ -3974,20 +3968,39 @@ stage.setPointerCapture?.(e.pointerId);
     ctx.strokeStyle = state.color;
   }
 
+  // Draw through all coalesced points using quadratic curves for smoothness
   ctx.beginPath();
   ctx.moveTo(last.x, last.y);
-  for (let i = 1; i <= steps; i++) {
-    const t = i / steps;
-    ctx.lineTo(lerp(last.x, p.x, t), lerp(last.y, p.y, t));
+
+  for (const ev of events) {
+    const p = getPos(ev);
+
+    if (events.length === 1) {
+      // Single point — use lerp steps like before for consistency
+      const dx = p.x - last.x;
+      const dy = p.y - last.y;
+      const dist = Math.hypot(dx, dy);
+      const steps = Math.max(1, Math.floor(dist / 2));
+      for (let i = 1; i <= steps; i++) {
+        const t = i / steps;
+        ctx.lineTo(last.x + dx * t, last.y + dy * t);
+      }
+    } else {
+      // Multiple coalesced points — use quadratic bezier through midpoints
+      // for smooth curves
+      const mx = (last.x + p.x) / 2;
+      const my = (last.y + p.y) / 2;
+      ctx.quadraticCurveTo(last.x, last.y, mx, my);
+    }
+
+    last = p;
   }
+
   ctx.stroke();
   ctx.restore();
-
-  last = p;
 }
 
-
-    function pointerUp(e) {
+function pointerUp(e) {
   if (e.pointerId !== activePointerId) return;
   stage.releasePointerCapture?.(e.pointerId);
   activePointerId = null;
@@ -3995,12 +4008,12 @@ stage.setPointerCapture?.(e.pointerId);
   drawing = false;
   last = null;
 }
-https://github.com/rishitakumar/LoveGame/blob/main/index.html
-    // Use pointer events (works for mouse + touch)
-    stage.addEventListener("pointerdown", pointerDown);
-    window.addEventListener("pointermove", pointerMove, { passive: false });
-    window.addEventListener("pointerup", pointerUp, { passive: true });
-    window.addEventListener("pointercancel", pointerUp, { passive: true });
+
+// Replace the event listener registrations
+stage.addEventListener("pointerdown", pointerDown, { passive: false });
+stage.addEventListener("pointermove", pointerMove, { passive: false });
+window.addEventListener("pointerup", pointerUp, { passive: true });
+window.addEventListener("pointercancel", pointerUp, { passive: true });
 
 
     // Initial view

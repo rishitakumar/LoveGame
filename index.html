@@ -3304,6 +3304,9 @@ function makeTab(text) {
 
     stageShell.appendChild(topRow);
     stageShell.appendChild(stage);
+    stage.style.touchAction = "none";
+stage.style.webkitUserSelect = "none";
+stage.style.userSelect = "none";
 
     // ---------- Canvases (stacked) ----------
     function mkCanvas(label) {
@@ -3923,6 +3926,8 @@ function pointerDown(e) {
   snapshot(which);
   drawing = true;
   last = p;
+document.body.style.overflow = "hidden";
+document.documentElement.style.overflow = "hidden";
 
   // Start a smooth path
   const ctx = getActiveInkCtx();
@@ -4007,6 +4012,8 @@ function pointerUp(e) {
   dragging = null;
   drawing = false;
   last = null;
+document.body.style.overflow = "";
+document.documentElement.style.overflow = "";
 }
 
 // Replace the event listener registrations
@@ -4014,6 +4021,14 @@ stage.addEventListener("pointerdown", pointerDown, { passive: false });
 stage.addEventListener("pointermove", pointerMove, { passive: false });
 window.addEventListener("pointerup", pointerUp, { passive: true });
 window.addEventListener("pointercancel", pointerUp, { passive: true });
+stage.addEventListener("touchstart", e => e.preventDefault(), { passive: false });
+stage.addEventListener("touchmove",  e => e.preventDefault(), { passive: false });
+stage.addEventListener("touchend",   e => e.preventDefault(), { passive: false });
+
+// Also stop scroll on the overlay itself while a pointer is active on stage
+endOverlayEl.addEventListener("touchmove", e => {
+  if (activePointerId !== null) e.preventDefault();
+}, { passive: false });
 
 
     // Initial view

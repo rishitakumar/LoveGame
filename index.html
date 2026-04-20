@@ -3925,8 +3925,12 @@ function pointerDown(e) {
 
   snapshot(which);
   drawing = true;
-  last = p;
-document.body.style.overflow = "hidden";
+last = p;
+touchStartedOnStage = true;
+document.body.style.overflow    = "hidden";
+document.body.style.position    = "fixed";
+document.body.style.width       = "100%";
+document.body.style.top         = `-${window.scrollY}px`;
 document.documentElement.style.overflow = "hidden";
 
   // Start a smooth path
@@ -4011,9 +4015,15 @@ function pointerUp(e) {
   activePointerId = null;
   dragging = null;
   drawing = false;
-  last = null;
-document.body.style.overflow = "";
+last = null;
+touchStartedOnStage = false;
+const scrollY = parseInt(document.body.style.top || "0") * -1;
+document.body.style.overflow    = "";
+document.body.style.position    = "";
+document.body.style.width       = "";
+document.body.style.top         = "";
 document.documentElement.style.overflow = "";
+window.scrollTo(0, scrollY);
 }
 
 // Replace the event listener registrations
@@ -4021,13 +4031,47 @@ stage.addEventListener("pointerdown", pointerDown, { passive: false });
 stage.addEventListener("pointermove", pointerMove, { passive: false });
 window.addEventListener("pointerup", pointerUp, { passive: true });
 window.addEventListener("pointercancel", pointerUp, { passive: true });
-stage.addEventListener("touchstart", e => e.preventDefault(), { passive: false });
-stage.addEventListener("touchmove",  e => e.preventDefault(), { passive: false });
-stage.addEventListener("touchend",   e => e.preventDefault(), { passive: false });
+    
+// Aggressive touch prevention on stage
+function killTouch(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  return false;
+}
+
+stage.addEventListener("touchstart",  killTouch, { passive: false, capture: true });
+stage.addEventListener("touchmove",   killTouch, { passive: false, capture: true });
+stage.addEventListener("touchend",    killTouch, { passive: false, capture: true });
+stage.addEventListener("touchcancel", killTouch, { passive: false, capture: true });
+
+// Also prevent on the canvas elements themselves
+[tplFront, tplBack, inkFront, inkBack, textFront, textBack].forEach(c => {
+  c.addEventListener("touchstart",  killTouch, { passive: false, capture: true });
+  c.addEventListener("touchmove",   killTouch, { passive: false, capture: true });
+});
 
 // Also stop scroll on the overlay itself while a pointer is active on stage
-endOverlayEl.addEventListener("touchmove", e => {
-  if (activePointerId !== null) e.preventDefault();
+// Track whether finger started on the stage
+let touchStartedOnStage = false;
+
+stage.addEventListener("touchstart", () => {
+  touchStartedOnStage = true;
+}, { passive: false, capture: true });
+
+window.addEventListener("touchend", () => {
+  touchStartedOnStage = false;
+}, { passive: true });
+
+window.addEventListener("touchcancel", () => {
+  touchStartedOnStage = false;
+}, { passive: true });
+
+// If touch started on stage, kill any scroll anywhere on the page
+window.addEventListener("touchmove", e => {
+  if (touchStartedOnStage || activePointerId !== null) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
 }, { passive: false });
 
 

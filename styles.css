@@ -1823,3 +1823,14 @@ input[type="range"]::-webkit-slider-thumb:active{
     width: clamp(50px, 9vw, 90px);
   }
 }
+#journey-end-overlay,
+#journey-end-overlay * {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#journey-end-overlay .reflection-cardstage,
+#journey-end-overlay canvas {
+  touch-action: none !important;
+  overscroll-behavior: none;
+}

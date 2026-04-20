@@ -3064,6 +3064,48 @@ freshCharOverlay.querySelector('#confirm-character').addEventListener('click', (
   }, 800);
 });
 
+
+  // iOS Safari nuclear scroll lock
+// Must be on document with capture:true to fire before Safari's scroll handler
+let _drawingActive = false;
+
+stage.addEventListener("touchstart", e => {
+  _drawingActive = true;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+}, { passive: false, capture: true });
+
+document.addEventListener("touchstart", e => {
+  if (_drawingActive) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  }
+}, { passive: false, capture: true });
+
+document.addEventListener("touchmove", e => {
+  if (_drawingActive || activePointerId !== null || touchStartedOnStage) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  }
+}, { passive: false, capture: true });
+
+document.addEventListener("touchend", e => {
+  _drawingActive = false;
+}, { passive: true, capture: true });
+
+document.addEventListener("touchcancel", e => {
+  _drawingActive = false;
+}, { passive: true, capture: true });
+
+// Also set these CSS properties directly on the overlay and stage
+// Safari respects these at the element level
+endOverlayEl.style.touchAction  = "none";
+endOverlayEl.style.overscrollBehavior = "none";
+stage.style.touchAction          = "none";
+stage.style.overscrollBehavior   = "none";
+wrap.style.touchAction           = "none";
+wrap.style.overscrollBehavior    = "none";
+
       const screen = document.getElementById('game-screen');
       if (screen) screen.style.setProperty('display', 'none', 'important');
 
@@ -3232,7 +3274,9 @@ endOverlayEl.style.cssText = `
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
   box-sizing: border-box;
+  touch-action: none;
 `;
 
 

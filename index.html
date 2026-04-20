@@ -3862,6 +3862,7 @@ function redo(which) {
     // ---------- Drawing ----------
     let drawing = false;
     let last = null;
+    let strokePath = [];  // accumulates all points in current stroke
     let activePointerId = null;   // tracks the pointer that started on the card stage
 
     function getActiveInkCtx() {
@@ -3870,22 +3871,54 @@ function redo(which) {
 
  function getPos(evt) {
   const rect = stage.getBoundingClientRect();
-  // Use offsetX/offsetY when available (more accurate), fall back to client
   const clientX = evt.clientX ?? (evt.touches?.[0]?.clientX ?? 0);
   const clientY = evt.clientY ?? (evt.touches?.[0]?.clientY ?? 0);
-  const x = ((clientX - rect.left) / rect.width) * DESIGN_W;
-  const y = ((clientY - rect.top) / rect.height) * DESIGN_H;
-  return { x, y };
+  return {
+    x: ((clientX - rect.left) / rect.width)  * DESIGN_W,
+    y: ((clientY - rect.top)  / rect.height) * DESIGN_H
+  };
+}
+
+function setCtxStyle(ctx) {
+  ctx.globalAlpha              = 1;
+  ctx.filter                   = "none";
+  ctx.shadowBlur               = 0;
+  ctx.shadowColor              = "transparent";
+  ctx.lineWidth                = state.size;
+  ctx.lineCap                  = "round";
+  ctx.lineJoin                 = "round";
+  ctx.globalCompositeOperation = state.eraser ? "destination-out" : "source-over";
+  ctx.strokeStyle              = state.eraser ? "rgba(0,0,0,1)" : state.color;
+}
+
+function redrawStroke() {
+  if (strokePath.length < 2) return;
+  const ctx = getActiveInkCtx();
+  setCtxStyle(ctx);
+  ctx.beginPath();
+  ctx.moveTo(strokePath[0].x, strokePath[0].y);
+  for (let i = 1; i < strokePath.length; i++) {
+    const prev = strokePath[i - 1];
+    const curr = strokePath[i];
+    // Midpoint smoothing for curves
+    const mx = (prev.x + curr.x) / 2;
+    const my = (prev.y + curr.y) / 2;
+    ctx.quadraticCurveTo(prev.x, prev.y, mx, my);
+  }
+  // Draw to the last point
+  const last = strokePath[strokePath.length - 1];
+  ctx.lineTo(last.x, last.y);
+  ctx.stroke();
 }
 
 function pointerDown(e) {
   e.preventDefault();
   e.stopPropagation();
-  activePointerId = e.pointerId;
-  stage.setPointerCapture?.(e.pointerId);
+  activePointerId     = e.pointerId;
   touchStartedOnStage = true;
+  stage.setPointerCapture?.(e.pointerId);
 
-  const p = getPos(e);
+  const p     = getPos(e);
   const which = state.active;
 
   if (state.eraser) {
@@ -3901,12 +3934,12 @@ function pointerDown(e) {
 
   const idx = hitText(which, p);
   if (idx !== -1 && state.tool !== "text" && !state.eraser) {
-    selectedText = textItems[which][idx];
+    selectedText   = textItems[which][idx];
     textSize.value = String(selectedText.size);
     snapshot(which);
-    dragging = selectedText;
-    dragOff.x = p.x - selectedText.x;
-    dragOff.y = p.y - selectedText.y;
+    dragging   = selectedText;
+    dragOff.x  = p.x - selectedText.x;
+    dragOff.y  = p.y - selectedText.y;
     return;
   }
 
@@ -3917,9 +3950,9 @@ function pointerDown(e) {
       snapshot(which);
       textItems[which].push({
         x: p.x, y: p.y,
-        text: state.text,
+        text:  state.text,
         color: state.color,
-        size: state.textSize
+        size:  state.textSize
       });
       repaintText(which);
     }
@@ -3927,33 +3960,14 @@ function pointerDown(e) {
   }
 
   snapshot(which);
-  drawing = true;
-  last = p;
+  drawing    = true;
+  last       = p;
+  strokePath = [p];
 
-  // Lock scroll
-  document.body.style.overflow    = "hidden";
-  document.body.style.position    = "fixed";
-  document.body.style.width       = "100%";
-  document.body.style.top         = `-${window.scrollY}px`;
+  // Lock scroll — position:fixed is the only reliable Safari lock
+  window.__savedScrollY = window.scrollY;
+  document.body.style.cssText += ";overflow:hidden!important;position:fixed!important;width:100%!important;top:-" + window.scrollY + "px!important;";
   document.documentElement.style.overflow = "hidden";
-
-  // Set up context ONCE at stroke start — never reset mid-stroke
-  const ctx = getActiveInkCtx();
-  ctx.globalAlpha = 1;
-  ctx.filter      = "none";
-  ctx.shadowBlur  = 0;
-  ctx.shadowColor = "transparent";
-  ctx.lineWidth   = state.size;
-  ctx.lineCap     = "round";
-  ctx.lineJoin    = "round";
-  ctx.globalCompositeOperation = state.eraser
-    ? "destination-out"
-    : "source-over";
-  ctx.strokeStyle = state.eraser ? "rgba(0,0,0,1)" : state.color;
-
-  // Start the path ONCE — never call beginPath again until next stroke
-  ctx.beginPath();
-  ctx.moveTo(p.x, p.y);
 }
 
 function pointerMove(e) {
@@ -3962,123 +3976,86 @@ function pointerMove(e) {
   if (dragging) {
     e.preventDefault();
     e.stopPropagation();
-    const p = getPos(e);
+    const p    = getPos(e);
     dragging.x = p.x - dragOff.x;
     dragging.y = p.y - dragOff.y;
     repaintText(state.active);
     return;
   }
 
-  if (!drawing || !last) return;
+  if (!drawing) return;
   e.preventDefault();
   e.stopPropagation();
 
-  const ctx = getActiveInkCtx();
-
-  // Get all coalesced events for smooth curves on touch
+  // Collect all coalesced points
   const events = e.getCoalescedEvents?.() ?? [e];
-
-  // Continue the SAME path — no save/restore, no beginPath, no state reset
-  // These would cause the stripe/gap artifacts
   for (const ev of events) {
-    const p = getPos(ev);
-
-    if (events.length <= 1) {
-      // Mouse or single point — straight segments with lerp
-      const dx    = p.x - last.x;
-      const dy    = p.y - last.y;
-      const dist  = Math.hypot(dx, dy);
-      const steps = Math.max(1, Math.floor(dist / 2));
-      for (let i = 1; i <= steps; i++) {
-        const t = i / steps;
-        ctx.lineTo(last.x + dx * t, last.y + dy * t);
-      }
-    } else {
-      // Touch with multiple coalesced points — quadratic bezier for curves
-      const mx = (last.x + p.x) / 2;
-      const my = (last.y + p.y) / 2;
-      ctx.quadraticCurveTo(last.x, last.y, mx, my);
-    }
-
-    last = p;
+    strokePath.push(getPos(ev));
   }
+  last = strokePath[strokePath.length - 1];
 
-  // Stroke the accumulated path segment
-  ctx.stroke();
-
-  // Move to current position ready for next move event
-  // This continues the same logical stroke without gaps
-  ctx.beginPath();
-  ctx.moveTo(last.x, last.y);
+  // Redraw entire stroke from scratch each move for perfect continuity
+  redrawStroke();
 }
 
 function pointerUp(e) {
   if (e.pointerId !== activePointerId) return;
   stage.releasePointerCapture?.(e.pointerId);
 
-  if (drawing) {
-    // Close the final path segment
-    const ctx = getActiveInkCtx();
-    ctx.stroke();
+  if (drawing && strokePath.length > 0) {
+    // Final redraw to commit the complete stroke
+    redrawStroke();
+    // If it was just a tap (dot), draw a dot
+    if (strokePath.length === 1) {
+      const ctx = getActiveInkCtx();
+      setCtxStyle(ctx);
+      ctx.beginPath();
+      ctx.arc(strokePath[0].x, strokePath[0].y, state.size / 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
-  activePointerId    = null;
-  dragging           = null;
-  drawing            = false;
-  last               = null;
+  activePointerId     = null;
+  dragging            = null;
+  drawing             = false;
+  last                = null;
+  strokePath          = [];
   touchStartedOnStage = false;
 
   // Restore scroll
-  const scrollY = parseInt(document.body.style.top || "0") * -1;
-  document.body.style.overflow    = "";
-  document.body.style.position    = "";
-  document.body.style.width       = "";
-  document.body.style.top         = "";
+  document.body.style.overflow = "";
+  document.body.style.position = "";
+  document.body.style.width    = "";
+  document.body.style.top      = "";
   document.documentElement.style.overflow = "";
-  window.scrollTo(0, scrollY);
+  if (window.__savedScrollY !== undefined) {
+    window.scrollTo(0, window.__savedScrollY);
+    window.__savedScrollY = undefined;
+  }
 }
 
-// Replace the event listener registrations
-stage.addEventListener("pointerdown", pointerDown, { passive: false });
-stage.addEventListener("pointermove", pointerMove, { passive: false });
-window.addEventListener("pointerup", pointerUp, { passive: true });
-window.addEventListener("pointercancel", pointerUp, { passive: true });
-    
-// Aggressive touch prevention on stage
-function killTouch(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  return false;
-}
+// ---- Event registrations ----
+stage.addEventListener("pointerdown",   pointerDown,  { passive: false, capture: true });
+stage.addEventListener("pointermove",   pointerMove,  { passive: false, capture: true });
+window.addEventListener("pointerup",    pointerUp,    { passive: true });
+window.addEventListener("pointercancel", pointerUp,   { passive: true });
 
+function killTouch(e) { e.preventDefault(); e.stopPropagation(); }
 stage.addEventListener("touchstart",  killTouch, { passive: false, capture: true });
 stage.addEventListener("touchmove",   killTouch, { passive: false, capture: true });
 stage.addEventListener("touchend",    killTouch, { passive: false, capture: true });
 stage.addEventListener("touchcancel", killTouch, { passive: false, capture: true });
 
-// Also prevent on the canvas elements themselves
 [tplFront, tplBack, inkFront, inkBack, textFront, textBack].forEach(c => {
-  c.addEventListener("touchstart",  killTouch, { passive: false, capture: true });
-  c.addEventListener("touchmove",   killTouch, { passive: false, capture: true });
+  c.addEventListener("touchstart", killTouch, { passive: false, capture: true });
+  c.addEventListener("touchmove",  killTouch, { passive: false, capture: true });
 });
 
-// Also stop scroll on the overlay itself while a pointer is active on stage
-// Track whether finger started on the stage
 let touchStartedOnStage = false;
-
-stage.addEventListener("touchstart", () => {
-  touchStartedOnStage = true;
-}, { passive: false, capture: true });
-
-window.addEventListener("touchend", () => {
-  touchStartedOnStage = false;
-}, { passive: true });
-
-window.addEventListener("touchcancel", () => {
-  touchStartedOnStage = false;
-}, { passive: true });
-
-// If touch started on stage, kill any scroll anywhere on the page
+stage.addEventListener("touchstart", () => { touchStartedOnStage = true; },
+  { passive: false, capture: true });
+window.addEventListener("touchend",    () => { touchStartedOnStage = false; }, { passive: true });
+window.addEventListener("touchcancel", () => { touchStartedOnStage = false; }, { passive: true });
 window.addEventListener("touchmove", e => {
   if (touchStartedOnStage || activePointerId !== null) {
     e.preventDefault();

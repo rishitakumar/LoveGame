@@ -3880,8 +3880,11 @@ function redo(which) {
 
 function pointerDown(e) {
   e.preventDefault();
+  e.stopPropagation();
   activePointerId = e.pointerId;
   stage.setPointerCapture?.(e.pointerId);
+  touchStartedOnStage = true;
+
   const p = getPos(e);
   const which = state.active;
 
@@ -3925,16 +3928,30 @@ function pointerDown(e) {
 
   snapshot(which);
   drawing = true;
-last = p;
-touchStartedOnStage = true;
-document.body.style.overflow    = "hidden";
-document.body.style.position    = "fixed";
-document.body.style.width       = "100%";
-document.body.style.top         = `-${window.scrollY}px`;
-document.documentElement.style.overflow = "hidden";
+  last = p;
 
-  // Start a smooth path
+  // Lock scroll
+  document.body.style.overflow    = "hidden";
+  document.body.style.position    = "fixed";
+  document.body.style.width       = "100%";
+  document.body.style.top         = `-${window.scrollY}px`;
+  document.documentElement.style.overflow = "hidden";
+
+  // Set up context ONCE at stroke start — never reset mid-stroke
   const ctx = getActiveInkCtx();
+  ctx.globalAlpha = 1;
+  ctx.filter      = "none";
+  ctx.shadowBlur  = 0;
+  ctx.shadowColor = "transparent";
+  ctx.lineWidth   = state.size;
+  ctx.lineCap     = "round";
+  ctx.lineJoin    = "round";
+  ctx.globalCompositeOperation = state.eraser
+    ? "destination-out"
+    : "source-over";
+  ctx.strokeStyle = state.eraser ? "rgba(0,0,0,1)" : state.color;
+
+  // Start the path ONCE — never call beginPath again until next stroke
   ctx.beginPath();
   ctx.moveTo(p.x, p.y);
 }
@@ -3944,6 +3961,7 @@ function pointerMove(e) {
 
   if (dragging) {
     e.preventDefault();
+    e.stopPropagation();
     const p = getPos(e);
     dragging.x = p.x - dragOff.x;
     dragging.y = p.y - dragOff.y;
@@ -3953,50 +3971,30 @@ function pointerMove(e) {
 
   if (!drawing || !last) return;
   e.preventDefault();
+  e.stopPropagation();
 
   const ctx = getActiveInkCtx();
 
-  // Use getCoalescedEvents if available — gives all intermediate points
-  // between frames, crucial for smooth curves on touch
+  // Get all coalesced events for smooth curves on touch
   const events = e.getCoalescedEvents?.() ?? [e];
 
-  ctx.save();
-  ctx.globalAlpha = 1;
-  ctx.filter = "none";
-  ctx.shadowBlur = 0;
-  ctx.shadowColor = "transparent";
-  ctx.lineWidth = state.size;
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-
-  if (state.eraser) {
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.strokeStyle = "rgba(0,0,0,1)";
-  } else {
-    ctx.globalCompositeOperation = "source-over";
-    ctx.strokeStyle = state.color;
-  }
-
-  // Draw through all coalesced points using quadratic curves for smoothness
-  ctx.beginPath();
-  ctx.moveTo(last.x, last.y);
-
+  // Continue the SAME path — no save/restore, no beginPath, no state reset
+  // These would cause the stripe/gap artifacts
   for (const ev of events) {
     const p = getPos(ev);
 
-    if (events.length === 1) {
-      // Single point — use lerp steps like before for consistency
-      const dx = p.x - last.x;
-      const dy = p.y - last.y;
-      const dist = Math.hypot(dx, dy);
+    if (events.length <= 1) {
+      // Mouse or single point — straight segments with lerp
+      const dx    = p.x - last.x;
+      const dy    = p.y - last.y;
+      const dist  = Math.hypot(dx, dy);
       const steps = Math.max(1, Math.floor(dist / 2));
       for (let i = 1; i <= steps; i++) {
         const t = i / steps;
         ctx.lineTo(last.x + dx * t, last.y + dy * t);
       }
     } else {
-      // Multiple coalesced points — use quadratic bezier through midpoints
-      // for smooth curves
+      // Touch with multiple coalesced points — quadratic bezier for curves
       const mx = (last.x + p.x) / 2;
       const my = (last.y + p.y) / 2;
       ctx.quadraticCurveTo(last.x, last.y, mx, my);
@@ -4005,25 +4003,39 @@ function pointerMove(e) {
     last = p;
   }
 
+  // Stroke the accumulated path segment
   ctx.stroke();
-  ctx.restore();
+
+  // Move to current position ready for next move event
+  // This continues the same logical stroke without gaps
+  ctx.beginPath();
+  ctx.moveTo(last.x, last.y);
 }
 
 function pointerUp(e) {
   if (e.pointerId !== activePointerId) return;
   stage.releasePointerCapture?.(e.pointerId);
-  activePointerId = null;
-  dragging = null;
-  drawing = false;
-last = null;
-touchStartedOnStage = false;
-const scrollY = parseInt(document.body.style.top || "0") * -1;
-document.body.style.overflow    = "";
-document.body.style.position    = "";
-document.body.style.width       = "";
-document.body.style.top         = "";
-document.documentElement.style.overflow = "";
-window.scrollTo(0, scrollY);
+
+  if (drawing) {
+    // Close the final path segment
+    const ctx = getActiveInkCtx();
+    ctx.stroke();
+  }
+
+  activePointerId    = null;
+  dragging           = null;
+  drawing            = false;
+  last               = null;
+  touchStartedOnStage = false;
+
+  // Restore scroll
+  const scrollY = parseInt(document.body.style.top || "0") * -1;
+  document.body.style.overflow    = "";
+  document.body.style.position    = "";
+  document.body.style.width       = "";
+  document.body.style.top         = "";
+  document.documentElement.style.overflow = "";
+  window.scrollTo(0, scrollY);
 }
 
 // Replace the event listener registrations

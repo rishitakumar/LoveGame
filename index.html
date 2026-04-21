@@ -3881,14 +3881,13 @@ function redo(which) {
     }
 
 function getPos(evt) {
-  // Use the cached rect from pointerdown — avoids layout reflow on every move (huge perf win on mobile)
+  // Use the rect cached at stroke start — no reflow on every move
   const rect = _stageRect || stage.getBoundingClientRect();
   return {
     x: ((evt.clientX - rect.left) / rect.width)  * DESIGN_W,
     y: ((evt.clientY - rect.top)  / rect.height) * DESIGN_H
   };
 }
-
 function setCtxStyle(ctx) {
   ctx.globalAlpha              = 1;
   ctx.filter                   = "none";
@@ -4011,7 +4010,7 @@ function pointerMove(e) {
   e.preventDefault();
   e.stopPropagation();
 
-  const events = e.getCoalescedEvents?.() ?? [e];
+  const events = [e];
   for (const ev of events) {
     strokePath.push(getPos(ev));
     redrawStroke();
@@ -4052,6 +4051,9 @@ stage.addEventListener("pointerdown",    pointerDown, { passive: false });
 stage.addEventListener("pointermove",    pointerMove, { passive: false });
 stage.addEventListener("pointerup",      pointerUp,   { passive: true  });
 stage.addEventListener("pointercancel",  pointerUp,   { passive: true  });
+
+stage.addEventListener("touchstart", e => e.preventDefault(), { passive: false });
+stage.addEventListener("touchmove",  e => e.preventDefault(), { passive: false });
 
 // REMOVE the old touch event listeners on stage - we'll handle this differently
 

@@ -3065,38 +3065,6 @@ freshCharOverlay.querySelector('#confirm-character').addEventListener('click', (
 });
 
 
-  // iOS Safari nuclear scroll lock
-// Must be on document with capture:true to fire before Safari's scroll handler
-let _drawingActive = false;
-
-stage.addEventListener("touchstart", e => {
-  _drawingActive = true;
-  e.preventDefault();
-  e.stopImmediatePropagation();
-}, { passive: false, capture: true });
-
-document.addEventListener("touchstart", e => {
-  if (_drawingActive) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-  }
-}, { passive: false, capture: true });
-
-document.addEventListener("touchmove", e => {
-  if (_drawingActive || activePointerId !== null || touchStartedOnStage) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-  }
-}, { passive: false, capture: true });
-
-document.addEventListener("touchend", e => {
-  _drawingActive = false;
-}, { passive: true, capture: true });
-
-document.addEventListener("touchcancel", e => {
-  _drawingActive = false;
-}, { passive: true, capture: true });
-
 // Also set these CSS properties directly on the overlay and stage
 // Safari respects these at the element level
 endOverlayEl.style.touchAction  = "none";
@@ -3913,13 +3881,11 @@ function redo(which) {
       return state.active === "front" ? inkCtxF : inkCtxB;
     }
 
- function getPos(evt) {
+function getPos(evt) {
   const rect = stage.getBoundingClientRect();
-  const clientX = evt.clientX ?? (evt.touches?.[0]?.clientX ?? 0);
-  const clientY = evt.clientY ?? (evt.touches?.[0]?.clientY ?? 0);
   return {
-    x: ((clientX - rect.left) / rect.width)  * DESIGN_W,
-    y: ((clientY - rect.top)  / rect.height) * DESIGN_H
+    x: ((evt.clientX - rect.left) / rect.width)  * DESIGN_W,
+    y: ((evt.clientY - rect.top)  / rect.height) * DESIGN_H
   };
 }
 
@@ -3931,12 +3897,14 @@ function setCtxStyle(ctx) {
   ctx.lineWidth                = state.size;
   ctx.lineCap                  = "round";
   ctx.lineJoin                 = "round";
-  ctx.globalCompositeOperation = state.eraser ? "destination-out" : "source-over";
-  ctx.strokeStyle              = state.eraser ? "rgba(0,0,0,1)" : state.color;
+  ctx.globalCompositeOperation = state.eraser
+    ? "destination-out" : "source-over";
+  ctx.strokeStyle              = state.eraser
+    ? "rgba(0,0,0,1)" : state.color;
 }
 
 function redrawStroke() {
-  if (strokePath.length < 2) return;
+  if (strokePath.length < 1) return;
   const ctx = getActiveInkCtx();
   setCtxStyle(ctx);
   ctx.beginPath();
@@ -3944,23 +3912,28 @@ function redrawStroke() {
   for (let i = 1; i < strokePath.length; i++) {
     const prev = strokePath[i - 1];
     const curr = strokePath[i];
-    // Midpoint smoothing for curves
-    const mx = (prev.x + curr.x) / 2;
-    const my = (prev.y + curr.y) / 2;
+    const mx   = (prev.x + curr.x) / 2;
+    const my   = (prev.y + curr.y) / 2;
     ctx.quadraticCurveTo(prev.x, prev.y, mx, my);
   }
-  // Draw to the last point
-  const last = strokePath[strokePath.length - 1];
-  ctx.lineTo(last.x, last.y);
+  const tail = strokePath[strokePath.length - 1];
+  ctx.lineTo(tail.x, tail.y);
   ctx.stroke();
 }
+
+// Track whether touch started on stage
+let _touchOnStage = false;
+let _stageRect    = null; // cached rect updated on pointerdown
 
 function pointerDown(e) {
   e.preventDefault();
   e.stopPropagation();
-  activePointerId     = e.pointerId;
-  touchStartedOnStage = true;
+
+  activePointerId = e.pointerId;
   stage.setPointerCapture?.(e.pointerId);
+
+  // Cache rect at stroke start so it doesn't change mid-stroke
+  _stageRect = stage.getBoundingClientRect();
 
   const p     = getPos(e);
   const which = state.active;
@@ -3972,6 +3945,7 @@ function pointerDown(e) {
       textItems[which].splice(idx, 1);
       selectedText = null;
       repaintText(which);
+      activePointerId = null;
       return;
     }
   }
@@ -3981,9 +3955,9 @@ function pointerDown(e) {
     selectedText   = textItems[which][idx];
     textSize.value = String(selectedText.size);
     snapshot(which);
-    dragging   = selectedText;
-    dragOff.x  = p.x - selectedText.x;
-    dragOff.y  = p.y - selectedText.y;
+    dragging  = selectedText;
+    dragOff.x = p.x - selectedText.x;
+    dragOff.y = p.y - selectedText.y;
     return;
   }
 
@@ -4000,6 +3974,7 @@ function pointerDown(e) {
       });
       repaintText(which);
     }
+    activePointerId = null;
     return;
   }
 
@@ -4007,11 +3982,7 @@ function pointerDown(e) {
   drawing    = true;
   last       = p;
   strokePath = [p];
-
-  // Lock scroll — position:fixed is the only reliable Safari lock
-  window.__savedScrollY = window.scrollY;
-  document.body.style.cssText += ";overflow:hidden!important;position:fixed!important;width:100%!important;top:-" + window.scrollY + "px!important;";
-  document.documentElement.style.overflow = "hidden";
+  _touchOnStage = true;
 }
 
 function pointerMove(e) {
@@ -4031,14 +4002,11 @@ function pointerMove(e) {
   e.preventDefault();
   e.stopPropagation();
 
-  // Collect all coalesced points
   const events = e.getCoalescedEvents?.() ?? [e];
   for (const ev of events) {
     strokePath.push(getPos(ev));
   }
   last = strokePath[strokePath.length - 1];
-
-  // Redraw entire stroke from scratch each move for perfect continuity
   redrawStroke();
 }
 
@@ -4046,10 +4014,8 @@ function pointerUp(e) {
   if (e.pointerId !== activePointerId) return;
   stage.releasePointerCapture?.(e.pointerId);
 
-  if (drawing && strokePath.length > 0) {
-    // Final redraw to commit the complete stroke
+  if (drawing) {
     redrawStroke();
-    // If it was just a tap (dot), draw a dot
     if (strokePath.length === 1) {
       const ctx = getActiveInkCtx();
       setCtxStyle(ctx);
@@ -4059,53 +4025,61 @@ function pointerUp(e) {
     }
   }
 
-  activePointerId     = null;
-  dragging            = null;
-  drawing             = false;
-  last                = null;
-  strokePath          = [];
-  touchStartedOnStage = false;
-
-  // Restore scroll
-  document.body.style.overflow = "";
-  document.body.style.position = "";
-  document.body.style.width    = "";
-  document.body.style.top      = "";
-  document.documentElement.style.overflow = "";
-  if (window.__savedScrollY !== undefined) {
-    window.scrollTo(0, window.__savedScrollY);
-    window.__savedScrollY = undefined;
-  }
+  activePointerId = null;
+  dragging        = null;
+  drawing         = false;
+  last            = null;
+  strokePath      = [];
+  _touchOnStage   = false;
+  _stageRect      = null;
 }
 
-// ---- Event registrations ----
-stage.addEventListener("pointerdown",   pointerDown,  { passive: false, capture: true });
-stage.addEventListener("pointermove",   pointerMove,  { passive: false, capture: true });
-window.addEventListener("pointerup",    pointerUp,    { passive: true });
-window.addEventListener("pointercancel", pointerUp,   { passive: true });
+// ── Event registrations ──────────────────────────────────────────────
 
-function killTouch(e) { e.preventDefault(); e.stopPropagation(); }
-stage.addEventListener("touchstart",  killTouch, { passive: false, capture: true });
-stage.addEventListener("touchmove",   killTouch, { passive: false, capture: true });
-stage.addEventListener("touchend",    killTouch, { passive: false, capture: true });
-stage.addEventListener("touchcancel", killTouch, { passive: false, capture: true });
+// Pointer events — these work on all browsers including Safari 13+
+stage.addEventListener("pointerdown",    pointerDown, { passive: false });
+stage.addEventListener("pointermove",    pointerMove, { passive: false });
+stage.addEventListener("pointerup",      pointerUp,   { passive: true  });
+stage.addEventListener("pointercancel",  pointerUp,   { passive: true  });
+
+// Touch events — only on stage, not document
+// This stops scroll ONLY when touching the drawing area
+stage.addEventListener("touchstart", e => {
+  _touchOnStage = true;
+  e.preventDefault();
+}, { passive: false });
+
+stage.addEventListener("touchmove", e => {
+  e.preventDefault();
+}, { passive: false });
+
+stage.addEventListener("touchend", e => {
+  _touchOnStage = false;
+  e.preventDefault();
+}, { passive: false });
+
+stage.addEventListener("touchcancel", e => {
+  _touchOnStage = false;
+}, { passive: false });
+
+// Apply CSS touch lock only to stage and its canvases
+stage.style.touchAction          = "none";
+stage.style.webkitUserSelect     = "none";
+stage.style.userSelect           = "none";
+stage.style.overscrollBehavior   = "none";
 
 [tplFront, tplBack, inkFront, inkBack, textFront, textBack].forEach(c => {
-  c.addEventListener("touchstart", killTouch, { passive: false, capture: true });
-  c.addEventListener("touchmove",  killTouch, { passive: false, capture: true });
+  c.style.touchAction = "none";
+  c.addEventListener("touchstart", e => e.preventDefault(), { passive: false });
+  c.addEventListener("touchmove",  e => e.preventDefault(), { passive: false });
 });
 
-let touchStartedOnStage = false;
-stage.addEventListener("touchstart", () => { touchStartedOnStage = true; },
-  { passive: false, capture: true });
-window.addEventListener("touchend",    () => { touchStartedOnStage = false; }, { passive: true });
-window.addEventListener("touchcancel", () => { touchStartedOnStage = false; }, { passive: true });
-window.addEventListener("touchmove", e => {
-  if (touchStartedOnStage || activePointerId !== null) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-}, { passive: false });
+// Controls and overlay can still scroll normally — do NOT add touch
+// listeners there
+endOverlayEl.style.overscrollBehavior = "none";
+endOverlayEl.style.webkitOverflowScrolling = "touch";
+
+
 
 
     // Initial view

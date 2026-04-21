@@ -3881,7 +3881,6 @@ function redo(which) {
     }
 
 function getPos(evt) {
-  // Use the rect cached at stroke start — no reflow on every move
   const rect = _stageRect || stage.getBoundingClientRect();
   return {
     x: ((evt.clientX - rect.left) / rect.width)  * DESIGN_W,
@@ -4052,9 +4051,9 @@ stage.addEventListener("pointermove",    pointerMove, { passive: false });
 stage.addEventListener("pointerup",      pointerUp,   { passive: true  });
 stage.addEventListener("pointercancel",  pointerUp,   { passive: true  });
 
-endOverlayEl.addEventListener("touchmove", function(e) {
-  if (drawing || dragging) e.preventDefault();
-}, { passive: false });
+stage.addEventListener("touchmove", e => e.preventDefault(), { passive: false });
+
+
 
 // REMOVE the old touch event listeners on stage - we'll handle this differently
 

@@ -1831,18 +1831,21 @@ input[type="range"]::-webkit-slider-thumb:active{
 }
 
 #journey-end-overlay {
-  touch-action: none !important;
-  overscroll-behavior: none !important;
-  overflow: hidden !important;
+  /* ALLOW vertical scroll - only block on stage */
+  touch-action: pan-y !important;
+  overscroll-behavior-y: contain !important;
+  overflow-y: auto !important;  /* was: hidden */
 }
 
 #journey-end-overlay .reflection-wrap {
-  touch-action: none !important;
-  overscroll-behavior: none !important;
+  /* ALLOW scroll on wrapper */
+  touch-action: pan-y !important;
+  overscroll-behavior-y: contain !important;
 }
 
 #journey-end-overlay .reflection-cardstage,
 #journey-end-overlay canvas {
+  /* BLOCK scroll ONLY on drawing stage (correct) */
   touch-action: none !important;
   overscroll-behavior: none !important;
   -webkit-touch-callout: none;
@@ -1850,6 +1853,7 @@ input[type="range"]::-webkit-slider-thumb:active{
 }
 
 #journey-end-overlay .reflection-controls {
-  touch-action: pan-x !important;
+  /* Allow all touch including vertical scroll */
+  touch-action: manipulation !important;
   overscroll-behavior: auto !important;
 }

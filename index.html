@@ -4052,8 +4052,9 @@ stage.addEventListener("pointermove",    pointerMove, { passive: false });
 stage.addEventListener("pointerup",      pointerUp,   { passive: true  });
 stage.addEventListener("pointercancel",  pointerUp,   { passive: true  });
 
-stage.addEventListener("touchstart", e => e.preventDefault(), { passive: false });
-stage.addEventListener("touchmove",  e => e.preventDefault(), { passive: false });
+endOverlayEl.addEventListener("touchmove", function(e) {
+  if (drawing || dragging) e.preventDefault();
+}, { passive: false });
 
 // REMOVE the old touch event listeners on stage - we'll handle this differently
 

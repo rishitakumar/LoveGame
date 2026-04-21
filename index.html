@@ -3244,7 +3244,6 @@ endOverlayEl.style.cssText = `
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: none;
   box-sizing: border-box;
-  touch-action: none;
 `;
 
 
@@ -3904,20 +3903,29 @@ function setCtxStyle(ctx) {
 }
 
 function redrawStroke() {
-  if (strokePath.length < 1) return;
+  if (strokePath.length < 2) return;
   const ctx = getActiveInkCtx();
   setCtxStyle(ctx);
+
+  const len = strokePath.length;
+  const prev = strokePath[len - 2];
+  const curr = strokePath[len - 1];
+
   ctx.beginPath();
-  ctx.moveTo(strokePath[0].x, strokePath[0].y);
-  for (let i = 1; i < strokePath.length; i++) {
-    const prev = strokePath[i - 1];
-    const curr = strokePath[i];
-    const mx   = (prev.x + curr.x) / 2;
-    const my   = (prev.y + curr.y) / 2;
-    ctx.quadraticCurveTo(prev.x, prev.y, mx, my);
+  if (len === 2) {
+    // First segment — just a line
+    ctx.moveTo(prev.x, prev.y);
+    ctx.lineTo(curr.x, curr.y);
+  } else {
+    // Use midpoints for smooth curves
+    const prevPrev = strokePath[len - 3];
+    const mid1x = (prevPrev.x + prev.x) / 2;
+    const mid1y = (prevPrev.y + prev.y) / 2;
+    const mid2x = (prev.x + curr.x) / 2;
+    const mid2y = (prev.y + curr.y) / 2;
+    ctx.moveTo(mid1x, mid1y);
+    ctx.quadraticCurveTo(prev.x, prev.y, mid2x, mid2y);
   }
-  const tail = strokePath[strokePath.length - 1];
-  ctx.lineTo(tail.x, tail.y);
   ctx.stroke();
 }
 
@@ -4005,9 +4013,9 @@ function pointerMove(e) {
   const events = e.getCoalescedEvents?.() ?? [e];
   for (const ev of events) {
     strokePath.push(getPos(ev));
+    redrawStroke();
   }
   last = strokePath[strokePath.length - 1];
-  redrawStroke();
 }
 
 function pointerUp(e) {

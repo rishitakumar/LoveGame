@@ -3881,7 +3881,8 @@ function redo(which) {
     }
 
 function getPos(evt) {
-  const rect = stage.getBoundingClientRect();
+  // Use the cached rect from pointerdown — avoids layout reflow on every move (huge perf win on mobile)
+  const rect = _stageRect || stage.getBoundingClientRect();
   return {
     x: ((evt.clientX - rect.left) / rect.width)  * DESIGN_W,
     y: ((evt.clientY - rect.top)  / rect.height) * DESIGN_H
@@ -4071,8 +4072,19 @@ stage.style.userSelect = "none";
 stage.style.overscrollBehavior = "none";
 
 // Let controls scroll normally - remove old scroll settings
-endOverlayEl.style.overscrollBehavior = "auto";
+// Keep overscroll contained so the overlay never chain-scrolls while drawing
+endOverlayEl.style.overscrollBehavior = "contain";
 endOverlayEl.style.webkitOverflowScrolling = "touch";
+
+// Safari fallback: touchmove with preventDefault on the stage blocks scroll
+// even when touch-action:none isn't fully respected (Safari 15 and older)
+stage.addEventListener("touchmove", function(e) {
+  e.preventDefault();
+}, { passive: false });
+
+stage.addEventListener("touchstart", function(e) {
+  e.preventDefault();
+}, { passive: false });
 
 
 

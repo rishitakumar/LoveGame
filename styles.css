@@ -1827,10 +1827,29 @@ input[type="range"]::-webkit-slider-thumb:active{
 #journey-end-overlay * {
   -webkit-user-select: none;
   user-select: none;
+  -webkit-touch-callout: none;
+}
+
+#journey-end-overlay {
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+  overflow: hidden !important;
+}
+
+#journey-end-overlay .reflection-wrap {
+  touch-action: none !important;
+  overscroll-behavior: none !important;
 }
 
 #journey-end-overlay .reflection-cardstage,
 #journey-end-overlay canvas {
   touch-action: none !important;
-  overscroll-behavior: none;
+  overscroll-behavior: none !important;
+  -webkit-touch-callout: none;
+  pointer-events: auto;
+}
+
+#journey-end-overlay .reflection-controls {
+  touch-action: pan-x !important;
+  overscroll-behavior: auto !important;
 }

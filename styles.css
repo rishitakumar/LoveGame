@@ -1827,32 +1827,10 @@ input[type="range"]::-webkit-slider-thumb:active{
 #journey-end-overlay * {
   -webkit-user-select: none;
   user-select: none;
-  -webkit-touch-callout: none;
-}
-
-#journey-end-overlay {
-  touch-action: pan-y;
-  overscroll-behavior: contain;  /* was: overscroll-behavior-y — use full shorthand */
-  overflow-y: auto;
-}
-
-#journey-end-overlay .reflection-wrap {
-  /* ALLOW scroll on wrapper */
-  touch-action: pan-y !important;
-  overscroll-behavior-y: contain !important;
 }
 
 #journey-end-overlay .reflection-cardstage,
 #journey-end-overlay canvas {
-  /* BLOCK scroll ONLY on drawing stage (correct) */
   touch-action: none !important;
-  overscroll-behavior: none !important;
-  -webkit-touch-callout: none;
-  pointer-events: auto;
-}
-
-#journey-end-overlay .reflection-controls {
-  /* Allow all touch including vertical scroll */
-  touch-action: manipulation !important;
-  overscroll-behavior: auto !important;
+  overscroll-behavior: none;
 }

@@ -4030,7 +4030,7 @@ stage.addEventListener("pointercancel", pointerUp,   { passive: true });
 
 // Blocks scroll ONLY while actively drawing — does not interfere with pointer events
 stage.addEventListener("touchmove", function(e) {
-  if (drawing || dragging) e.preventDefault();
+  e.preventDefault();
 }, { passive: false });
 
 // touch-action: none on stage AND every canvas inside it

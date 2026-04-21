@@ -1831,10 +1831,9 @@ input[type="range"]::-webkit-slider-thumb:active{
 }
 
 #journey-end-overlay {
-  /* ALLOW vertical scroll - only block on stage */
-  touch-action: pan-y !important;
-  overscroll-behavior-y: contain !important;
-  overflow-y: auto !important;  /* was: hidden */
+  touch-action: pan-y;
+  overscroll-behavior: contain;  /* was: overscroll-behavior-y — use full shorthand */
+  overflow-y: auto;
 }
 
 #journey-end-overlay .reflection-wrap {

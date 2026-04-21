@@ -4057,48 +4057,12 @@ stage.addEventListener("pointercancel",  pointerUp,   { passive: true  });
 
 // Touch events — only on stage, not document
 // This stops scroll ONLY when touching the drawing area
-stage.addEventListener("touchstart", e => {
-  _touchOnStage = true;
-  e.preventDefault();
-}, { passive: false });
 
-stage.addEventListener("touchmove", e => {
-  e.preventDefault();
-}, { passive: false });
-
-stage.addEventListener("touchend", e => {
-  _touchOnStage = false;
-  e.preventDefault();
-}, { passive: false });
-
-stage.addEventListener("touchcancel", e => {
-  _touchOnStage = false;
-}, { passive: false });
 
 // Apply CSS touch lock only to stage and its canvases
 // ── Scroll blocking: Only when touching the card stage ──────────────────
 // Allow scroll on controls, block only when drawing on the card
 
-function preventScroll(e) {
-  // Allow pinch-zoom with two fingers
-  if (e.touches.length > 1) return;
-  // Block scroll when touching stage
-  if (e.cancelable) {
-    e.preventDefault();
-  }
-  return false;
-}
-
-// Apply to stage ONLY - this is where drawing happens
-stage.addEventListener('touchstart', preventScroll, { passive: false });
-stage.addEventListener('touchmove', preventScroll, { passive: false });
-
-// Also apply to canvases inside stage
-[tplFront, tplBack, inkFront, inkBack, textFront, textBack].forEach(c => {
-  c.style.touchAction = "none";
-  c.addEventListener('touchstart', preventScroll, { passive: false });
-  c.addEventListener('touchmove', preventScroll, { passive: false });
-});
 
 // CSS properties for stage
 stage.style.touchAction = "none";

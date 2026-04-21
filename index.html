@@ -3870,23 +3870,26 @@ function redo(which) {
       }
     }
 
-    // ---------- Drawing ----------
-    let drawing = false;
-    let last = null;
-    let strokePath = [];  // accumulates all points in current stroke
-    let activePointerId = null;   // tracks the pointer that started on the card stage
+// ---------- Drawing ----------
+let drawing = false;
+let last = null;
+let strokePath = [];
+let activePointerId = null;
+let _touchOnStage = false;
+let _stageRect = null;
 
-    function getActiveInkCtx() {
-      return state.active === "front" ? inkCtxF : inkCtxB;
-    }
+function getActiveInkCtx() {
+  return state.active === "front" ? inkCtxF : inkCtxB;
+}
 
 function getPos(evt) {
   const rect = _stageRect || stage.getBoundingClientRect();
   return {
-    x: ((evt.clientX - rect.left) / rect.width)  * DESIGN_W,
+    x: ((evt.clientX - rect.left) / rect.width) * DESIGN_W,
     y: ((evt.clientY - rect.top)  / rect.height) * DESIGN_H
   };
 }
+
 function setCtxStyle(ctx) {
   ctx.globalAlpha              = 1;
   ctx.filter                   = "none";
@@ -3895,28 +3898,22 @@ function setCtxStyle(ctx) {
   ctx.lineWidth                = state.size;
   ctx.lineCap                  = "round";
   ctx.lineJoin                 = "round";
-  ctx.globalCompositeOperation = state.eraser
-    ? "destination-out" : "source-over";
-  ctx.strokeStyle              = state.eraser
-    ? "rgba(0,0,0,1)" : state.color;
+  ctx.globalCompositeOperation = state.eraser ? "destination-out" : "source-over";
+  ctx.strokeStyle              = state.eraser ? "rgba(0,0,0,1)" : state.color;
 }
 
 function redrawStroke() {
   if (strokePath.length < 2) return;
   const ctx = getActiveInkCtx();
   setCtxStyle(ctx);
-
   const len = strokePath.length;
   const prev = strokePath[len - 2];
   const curr = strokePath[len - 1];
-
   ctx.beginPath();
   if (len === 2) {
-    // First segment — just a line
     ctx.moveTo(prev.x, prev.y);
     ctx.lineTo(curr.x, curr.y);
   } else {
-    // Use midpoints for smooth curves
     const prevPrev = strokePath[len - 3];
     const mid1x = (prevPrev.x + prev.x) / 2;
     const mid1y = (prevPrev.y + prev.y) / 2;
@@ -3928,20 +3925,12 @@ function redrawStroke() {
   ctx.stroke();
 }
 
-// Track whether touch started on stage
-let _touchOnStage = false;
-let _stageRect    = null; // cached rect updated on pointerdown
-
 function pointerDown(e) {
   e.preventDefault();
   e.stopPropagation();
-
   activePointerId = e.pointerId;
   stage.setPointerCapture?.(e.pointerId);
-
-  // Cache rect at stroke start so it doesn't change mid-stroke
   _stageRect = stage.getBoundingClientRect();
-
   const p     = getPos(e);
   const which = state.active;
 
@@ -3973,12 +3962,7 @@ function pointerDown(e) {
   if (state.tool === "text") {
     if (state.text.trim()) {
       snapshot(which);
-      textItems[which].push({
-        x: p.x, y: p.y,
-        text:  state.text,
-        color: state.color,
-        size:  state.textSize
-      });
+      textItems[which].push({ x: p.x, y: p.y, text: state.text, color: state.color, size: state.textSize });
       repaintText(which);
     }
     activePointerId = null;
@@ -4009,11 +3993,8 @@ function pointerMove(e) {
   e.preventDefault();
   e.stopPropagation();
 
-  const events = [e];
-  for (const ev of events) {
-    strokePath.push(getPos(ev));
-    redrawStroke();
-  }
+  strokePath.push(getPos(e));
+  redrawStroke();
   last = strokePath[strokePath.length - 1];
 }
 
@@ -4041,52 +4022,29 @@ function pointerUp(e) {
   _stageRect      = null;
 }
 
-// ── Event registrations ──────────────────────────────────────────────
+// Event listeners
+stage.addEventListener("pointerdown",   pointerDown, { passive: false });
+stage.addEventListener("pointermove",   pointerMove, { passive: false });
+stage.addEventListener("pointerup",     pointerUp,   { passive: true });
+stage.addEventListener("pointercancel", pointerUp,   { passive: true });
 
-// Pointer events — these work on all browsers including Safari 13+
-// ── Event registrations ──────────────────────────────────────────────
-// Pointer events — these work on all browsers including Safari 13+
-stage.addEventListener("pointerdown",    pointerDown, { passive: false });
-stage.addEventListener("pointermove",    pointerMove, { passive: false });
-stage.addEventListener("pointerup",      pointerUp,   { passive: true  });
-stage.addEventListener("pointercancel",  pointerUp,   { passive: true  });
-
-stage.addEventListener("touchmove", e => e.preventDefault(), { passive: false });
-
-
-
-// REMOVE the old touch event listeners on stage - we'll handle this differently
-
-
-// Touch events — only on stage, not document
-// This stops scroll ONLY when touching the drawing area
-
-
-// Apply CSS touch lock only to stage and its canvases
-// ── Scroll blocking: Only when touching the card stage ──────────────────
-// Allow scroll on controls, block only when drawing on the card
-
-
-// CSS properties for stage
-stage.style.touchAction = "none";
-stage.style.webkitUserSelect = "none";
-stage.style.userSelect = "none";
-stage.style.overscrollBehavior = "none";
-
-// Let controls scroll normally - remove old scroll settings
-// Keep overscroll contained so the overlay never chain-scrolls while drawing
-endOverlayEl.style.overscrollBehavior = "contain";
-endOverlayEl.style.webkitOverflowScrolling = "touch";
-
-// Safari fallback: touchmove with preventDefault on the stage blocks scroll
-// even when touch-action:none isn't fully respected (Safari 15 and older)
+// Blocks scroll ONLY while actively drawing — does not interfere with pointer events
 stage.addEventListener("touchmove", function(e) {
-  e.preventDefault();
+  if (drawing || dragging) e.preventDefault();
 }, { passive: false });
 
-stage.addEventListener("touchstart", function(e) {
-  e.preventDefault();
-}, { passive: false });
+// touch-action: none on stage AND every canvas inside it
+stage.style.touchAction       = "none";
+stage.style.webkitUserSelect  = "none";
+stage.style.userSelect        = "none";
+stage.style.overscrollBehavior = "none";
+stage.querySelectorAll("canvas").forEach(c => {
+  c.style.touchAction = "none";
+});
+
+// Overlay scrolls freely, but doesn't chain-scroll the page
+endOverlayEl.style.overscrollBehavior      = "contain";
+endOverlayEl.style.webkitOverflowScrolling = "touch";
 
 
 

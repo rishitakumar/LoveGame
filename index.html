@@ -3914,6 +3914,13 @@ function drawSegment(p1, p2, p3) {
   ctx.stroke();
 }
 
+let snapshotTimer = null;
+
+function deferSnapshot(which) {
+  clearTimeout(snapshotTimer);
+  snapshotTimer = setTimeout(() => snapshot(which), 400);
+}
+
 function startStroke(clientX, clientY) {
   const p = getPos(clientX, clientY);
   const which = state.active;
@@ -3921,7 +3928,7 @@ function startStroke(clientX, clientY) {
   if (state.eraser) {
     const idx = hitText(which, p);
     if (idx !== -1) {
-      snapshot(which);
+      deferSnapshot(which);
       textItems[which].splice(idx, 1);
       selectedText = null;
       repaintText(which);
@@ -3933,7 +3940,7 @@ function startStroke(clientX, clientY) {
   if (idx !== -1 && state.tool !== "text" && !state.eraser) {
     selectedText   = textItems[which][idx];
     textSize.value = String(selectedText.size);
-    snapshot(which);
+    deferSnapshot(which);
     dragging  = selectedText;
     dragOff.x = p.x - selectedText.x;
     dragOff.y = p.y - selectedText.y;
@@ -3944,7 +3951,7 @@ function startStroke(clientX, clientY) {
 
   if (state.tool === "text") {
     if (state.text.trim()) {
-      snapshot(which);
+      deferSnapshot(which);
       textItems[which].push({
         x: p.x, y: p.y,
         text:  state.text,
@@ -3956,11 +3963,10 @@ function startStroke(clientX, clientY) {
     return false;
   }
 
-  snapshot(which);
+  // Defer snapshot to after stroke ends — never block stroke start
   drawing    = true;
   strokePath = [p];
 
-  // Set context style ONCE here — never reset it mid-stroke
   const ctx = getActiveInkCtx();
   ctx.globalAlpha              = 1;
   ctx.filter                   = "none";
@@ -3992,7 +3998,6 @@ function continueStroke(clientX, clientY) {
 function endStroke() {
   if (drawing && strokePath.length === 1) {
     const ctx = getActiveInkCtx();
-    // Style already set from startStroke
     ctx.beginPath();
     ctx.arc(
       strokePath[0].x, strokePath[0].y,
@@ -4000,10 +4005,18 @@ function endStroke() {
     );
     ctx.fill();
   }
+
+  const which = state.active;
+  const wasDrawing = drawing;
+
   drawing    = false;
   strokePath = [];
   dragging   = null;
   last       = null;
+
+  // Take snapshot after stroke ends, not before it starts
+  // Deferred so it never blocks the next stroke from beginning
+  if (wasDrawing) deferSnapshot(which);
 }
 
 // ── TOUCH EVENTS (mobile/tablet) ──────────────────────────────────────

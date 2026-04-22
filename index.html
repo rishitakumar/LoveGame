@@ -3239,10 +3239,7 @@ endOverlayEl.style.cssText = `
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: none;
+  overflow: hidden;
   box-sizing: border-box;
 `;
 
@@ -4155,13 +4152,23 @@ const isIpadMini = vw >= 740 && vw <= 820;
     endOverlayEl.style.alignItems = "flex-start";
     endOverlayEl.style.justifyContent = "flex-start";
 
-    wrap.style.flexDirection = "column";
-    wrap.style.alignItems = "center";
-    wrap.style.justifyContent = "flex-start";
-    wrap.style.minHeight = "100%";
-    wrap.style.padding = "56px 12px 24px";
-    wrap.style.gap = "16px";
-    wrap.style.width = "100%";
+    wrap.style.cssText = `
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 100%;
+  padding: 56px 12px 24px;
+  gap: 16px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  position: absolute;
+  inset: 0;
+`;
 
     const cardW = Math.min(vw - 24, 420);
     const cardH = Math.floor(cardW * (2000 / 1545));
@@ -4305,14 +4312,19 @@ Promise.all(allBtns.map(b => fitButtonText(b, btnH)))
     endOverlayEl.style.alignItems    = "center";
     endOverlayEl.style.justifyContent = "center";
 
-    wrap.style.flexDirection  = "row";
-    wrap.style.alignItems     = "center";
-    wrap.style.justifyContent = "center";
-    wrap.style.minHeight      = "unset";
-    wrap.style.width          = "auto";
-    wrap.style.maxWidth       = "calc(100vw - 40px)";
-    wrap.style.padding        = "20px";
-    wrap.style.gap            = "32px";
+    wrap.style.cssText = `
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100%;
+  padding: 20px;
+  gap: 32px;
+  box-sizing: border-box;
+  position: absolute;
+  inset: 0;
+`;
 
     const availH = vh - 40;
     const availW = vw - 80;

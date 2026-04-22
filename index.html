@@ -4060,25 +4060,36 @@ endOverlayEl.addEventListener("touchcancel", () => {
 }, { passive: true, capture: true });
 
 // ── MOUSE EVENTS (desktop) ────────────────────────────────────────
+let mouseDrawing = false;
+
 stage.addEventListener("mousedown", e => {
   e.preventDefault();
+  mouseDrawing = true;
   startStroke(e.clientX, e.clientY);
-});
 
-stage.addEventListener("mousemove", e => {
-  if (!drawing && !dragging) return;
-  if (dragging) {
-    const p    = getPos(e.clientX, e.clientY);
-    dragging.x = p.x - dragOff.x;
-    dragging.y = p.y - dragOff.y;
-    repaintText(state.active);
-    return;
+  // Move tracking to document so stroke continues outside stage boundary
+  function onMouseMove(e) {
+    if (!mouseDrawing) return;
+    if (dragging) {
+      const p    = getPos(e.clientX, e.clientY);
+      dragging.x = p.x - dragOff.x;
+      dragging.y = p.y - dragOff.y;
+      repaintText(state.active);
+      return;
+    }
+    continueStroke(e.clientX, e.clientY);
   }
-  continueStroke(e.clientX, e.clientY);
-});
 
-stage.addEventListener("mouseup",    () => endStroke());
-stage.addEventListener("mouseleave", () => { if (drawing) endStroke(); });
+  function onMouseUp() {
+    mouseDrawing = false;
+    endStroke();
+    document.removeEventListener("mousemove", onMouseMove);
+    document.removeEventListener("mouseup",   onMouseUp);
+  }
+
+  document.addEventListener("mousemove", onMouseMove);
+  document.addEventListener("mouseup",   onMouseUp);
+});
 
 // ── CSS: only stage gets touch-action none ────────────────────────
 stage.style.touchAction      = "none";

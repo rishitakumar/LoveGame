@@ -3248,21 +3248,6 @@ endOverlayEl.style.cssText = `
 
 
     const stageShell = document.createElement("div");
-    // LOCK PAGE SCROLL ONLY WHILE DRAWING
-let scrollLock = false;
-
-function lockScroll() {
-  if (scrollLock) return;
-  scrollLock = true;
-  document.body.style.overflow = "hidden";
-  document.documentElement.style.overflow = "hidden";
-}
-
-function unlockScroll() {
-  scrollLock = false;
-  document.body.style.overflow = "";
-  document.documentElement.style.overflow = "";
-}
     stageShell.style.width = "min(560px, 92vw)";
     stageShell.style.display = "flex";
     stageShell.style.flexDirection = "column";
@@ -4013,28 +3998,30 @@ let activeTouchId = null;
 stage.addEventListener("touchstart", e => {
   e.preventDefault();
   e.stopPropagation();
-
-  lockScroll(); // ✅ ADD THIS
-
   if (activeTouchId !== null) return;
   const touch = e.changedTouches[0];
   activeTouchId = touch.identifier;
   startStroke(touch.clientX, touch.clientY);
 }, { passive: false, capture: true });
 
-
 stage.addEventListener("touchmove", e => {
   e.preventDefault();
   e.stopPropagation();
-  // (no change needed here)
+  for (const touch of e.changedTouches) {
+    if (touch.identifier !== activeTouchId) continue;
+    if (dragging) {
+      const p    = getPos(touch.clientX, touch.clientY);
+      dragging.x = p.x - dragOff.x;
+      dragging.y = p.y - dragOff.y;
+      repaintText(state.active);
+    } else {
+      continueStroke(touch.clientX, touch.clientY);
+    }
+  }
 }, { passive: false, capture: true });
-
 
 stage.addEventListener("touchend", e => {
   e.preventDefault();
-
-  unlockScroll(); // ✅ ADD THIS
-
   for (const touch of e.changedTouches) {
     if (touch.identifier === activeTouchId) {
       activeTouchId = null;
@@ -4043,9 +4030,7 @@ stage.addEventListener("touchend", e => {
   }
 }, { passive: false, capture: true });
 
-
 stage.addEventListener("touchcancel", e => {
-  unlockScroll(); // ✅ ADD THIS
   activeTouchId = null;
   endStroke();
 }, { passive: false, capture: true });

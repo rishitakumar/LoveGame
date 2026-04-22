@@ -3213,7 +3213,7 @@ endOverlayEl.style.boxShadow = "none";            // ✅ remove inset tint if it
 
 
     // ---------- Layout (NO CSS REQUIRED) ----------
- const wrap = document.createElement("div");
+const wrap = document.createElement("div");
 wrap.className = "reflection-wrap";
 wrap.style.cssText = `
   display: flex;
@@ -3230,16 +3230,15 @@ wrap.style.cssText = `
 
 endOverlayEl.appendChild(wrap);
 
-// Reset overlay to be a proper scroll container
 endOverlayEl.style.cssText = `
   position: fixed;
   inset: 0;
   z-index: 9999999;
   background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  display: block;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
 `;
 
@@ -3990,22 +3989,40 @@ function endStroke() {
 }
 
 // ── TOUCH EVENTS (mobile/tablet) ──────────────────────────────────────
+// ── TOUCH EVENTS (mobile/tablet) ─────────────────────────────────
 let activeTouchId = null;
 
-stage.addEventListener("touchstart", e => {
-  e.preventDefault();
-  e.stopPropagation();
-  if (activeTouchId !== null) return;
-  const touch = e.changedTouches[0];
-  activeTouchId = touch.identifier;
-  startStroke(touch.clientX, touch.clientY);
-}, { passive: false, capture: true });
+function isTouchOnStage(touch) {
+  const rect = stage.getBoundingClientRect();
+  return (
+    touch.clientX >= rect.left &&
+    touch.clientX <= rect.right &&
+    touch.clientY >= rect.top &&
+    touch.clientY <= rect.bottom
+  );
+}
 
-stage.addEventListener("touchmove", e => {
-  e.preventDefault();
-  e.stopPropagation();
+// Single document-level touch handler —
+// only preventDefault when touch is on the stage
+function onDocTouchStart(e) {
+  for (const touch of e.changedTouches) {
+    if (isTouchOnStage(touch)) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (activeTouchId !== null) return;
+      activeTouchId = touch.identifier;
+      startStroke(touch.clientX, touch.clientY);
+      return;
+    }
+  }
+}
+
+function onDocTouchMove(e) {
   for (const touch of e.changedTouches) {
     if (touch.identifier !== activeTouchId) continue;
+    // This touch started on stage — always prevent scroll
+    e.preventDefault();
+    e.stopPropagation();
     if (dragging) {
       const p    = getPos(touch.clientX, touch.clientY);
       dragging.x = p.x - dragOff.x;
@@ -4014,25 +4031,35 @@ stage.addEventListener("touchmove", e => {
     } else {
       continueStroke(touch.clientX, touch.clientY);
     }
+    return;
   }
-}, { passive: false, capture: true });
+  // Touch didn't start on stage — let scroll happen naturally
+}
 
-stage.addEventListener("touchend", e => {
-  e.preventDefault();
+function onDocTouchEnd(e) {
   for (const touch of e.changedTouches) {
     if (touch.identifier === activeTouchId) {
       activeTouchId = null;
       endStroke();
+      return;
     }
   }
-}, { passive: false, capture: true });
+}
 
-stage.addEventListener("touchcancel", e => {
+// Attach to endOverlayEl not document —
+// so these are removed when overlay is removed
+endOverlayEl.addEventListener("touchstart",  onDocTouchStart,
+  { passive: false, capture: true });
+endOverlayEl.addEventListener("touchmove",   onDocTouchMove,
+  { passive: false, capture: true });
+endOverlayEl.addEventListener("touchend",    onDocTouchEnd,
+  { passive: true,  capture: true });
+endOverlayEl.addEventListener("touchcancel", () => {
   activeTouchId = null;
   endStroke();
-}, { passive: false, capture: true });
+}, { passive: true, capture: true });
 
-// ── MOUSE EVENTS (desktop) ────────────────────────────────────────────
+// ── MOUSE EVENTS (desktop) ────────────────────────────────────────
 stage.addEventListener("mousedown", e => {
   e.preventDefault();
   startStroke(e.clientX, e.clientY);
@@ -4050,13 +4077,13 @@ stage.addEventListener("mousemove", e => {
   continueStroke(e.clientX, e.clientY);
 });
 
-stage.addEventListener("mouseup",    e => endStroke());
-stage.addEventListener("mouseleave", e => { if (drawing) endStroke(); });
+stage.addEventListener("mouseup",    () => endStroke());
+stage.addEventListener("mouseleave", () => { if (drawing) endStroke(); });
 
-// ── CSS touch lock on stage only ─────────────────────────────────────
-stage.style.touchAction        = "none";
-stage.style.webkitUserSelect   = "none";
-stage.style.userSelect         = "none";
+// ── CSS: only stage gets touch-action none ────────────────────────
+stage.style.touchAction      = "none";
+stage.style.webkitUserSelect = "none";
+stage.style.userSelect       = "none";
 
 [tplFront, tplBack, inkFront, inkBack, textFront, textBack].forEach(c => {
   c.style.touchAction = "none";
@@ -4159,7 +4186,7 @@ const isIpadMini = vw >= 740 && vw <= 820;
   justify-content: flex-start;
   width: 100%;
   min-height: 100%;
-  padding: 56px 12px 24px;
+  padding: 70px 12px 24px;
   gap: 16px;
   box-sizing: border-box;
   overflow-y: auto;

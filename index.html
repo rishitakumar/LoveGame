@@ -3898,11 +3898,11 @@ function setCtxStyle(ctx) {
 
 function drawSegment(p1, p2, p3) {
   const ctx = getActiveInkCtx();
-  setCtxStyle(ctx);
+  // No setCtxStyle here — style was set once in startStroke
   ctx.beginPath();
   if (p3) {
-    const mx = (p1.x + p2.x) / 2;
-    const my = (p1.y + p2.y) / 2;
+    const mx  = (p1.x + p2.x) / 2;
+    const my  = (p1.y + p2.y) / 2;
     const mx2 = (p2.x + p3.x) / 2;
     const my2 = (p2.y + p3.y) / 2;
     ctx.moveTo(mx, my);
@@ -3959,6 +3959,21 @@ function startStroke(clientX, clientY) {
   snapshot(which);
   drawing    = true;
   strokePath = [p];
+
+  // Set context style ONCE here — never reset it mid-stroke
+  const ctx = getActiveInkCtx();
+  ctx.globalAlpha              = 1;
+  ctx.filter                   = "none";
+  ctx.shadowBlur               = 0;
+  ctx.shadowColor              = "transparent";
+  ctx.lineWidth                = state.size;
+  ctx.lineCap                  = "round";
+  ctx.lineJoin                 = "round";
+  ctx.globalCompositeOperation = state.eraser
+    ? "destination-out" : "source-over";
+  ctx.strokeStyle              = state.eraser
+    ? "rgba(0,0,0,1)" : state.color;
+
   return true;
 }
 
@@ -3977,9 +3992,12 @@ function continueStroke(clientX, clientY) {
 function endStroke() {
   if (drawing && strokePath.length === 1) {
     const ctx = getActiveInkCtx();
-    setCtxStyle(ctx);
+    // Style already set from startStroke
     ctx.beginPath();
-    ctx.arc(strokePath[0].x, strokePath[0].y, state.size / 2, 0, Math.PI * 2);
+    ctx.arc(
+      strokePath[0].x, strokePath[0].y,
+      state.size / 2, 0, Math.PI * 2
+    );
     ctx.fill();
   }
   drawing    = false;

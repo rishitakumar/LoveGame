@@ -4085,6 +4085,13 @@ function applyTransform() {
 
 // Single document-level touch handler —
 // only preventDefault when touch is on the stage
+
+let _panOrDrawPending = false;
+let _panOrDrawStartX  = 0;
+let _panOrDrawStartY  = 0;
+const PAN_THRESHOLD   = 8; // pixels of movement before committing to pan
+
+    
 function onDocTouchStart(e) {
   for (const t of e.changedTouches) {
     if (isTouchOnStage(t)) activeTouches.set(t.identifier, t);
@@ -4094,7 +4101,7 @@ function onDocTouchStart(e) {
   if (onStage.length === 2) {
     e.preventDefault();
     e.stopPropagation();
-    if (drawing) { drawing = false; strokePath = []; }
+    if (drawing) { drawing = false; strokePath = []; _panOrDrawPending = false; }
     activeTouchId  = null;
     pinchActive    = true;
     const t0 = onStage[0], t1 = onStage[1];
@@ -4122,14 +4129,22 @@ function onDocTouchStart(e) {
     }
     lastTap = now;
 
-    if (currentScale > 1) {
-      activeTouchId = touch.identifier;
+activeTouchId = touch.identifier;
+
+    // When zoomed in, only pan if using the draw tool with no active stroke
+    // Allow drawing/erasing/text regardless of zoom level
+    if (currentScale > 1 && state.tool === "draw" && !state.eraser) {
+      // Start as pan — if finger moves significantly it's a pan,
+      // if it stays put it's a tap/draw start
       panStartX = touch.clientX - panX;
       panStartY = touch.clientY - panY;
+      // Store touch start position to detect intent
+      _panOrDrawStartX = touch.clientX;
+      _panOrDrawStartY = touch.clientY;
+      _panOrDrawPending = true;
       return;
     }
 
-    activeTouchId = touch.identifier;
     startStroke(touch.clientX, touch.clientY);
   }
 }
@@ -4159,6 +4174,21 @@ function onDocTouchMove(e) {
     if (touch.identifier !== activeTouchId) continue;
     e.preventDefault();
     e.stopPropagation();
+
+    // Resolve pan-or-draw intent
+    if (_panOrDrawPending) {
+      const moved = Math.hypot(
+        touch.clientX - _panOrDrawStartX,
+        touch.clientY - _panOrDrawStartY
+      );
+      if (moved >= PAN_THRESHOLD) {
+        // Committed to pan
+        _panOrDrawPending = false;
+      } else {
+        // Not moved enough yet — wait
+        return;
+      }
+    }
 
     if (currentScale > 1 && !drawing) {
       panX = touch.clientX - panStartX;
@@ -4193,6 +4223,15 @@ function onDocTouchEnd(e) {
   for (const touch of e.changedTouches) {
     if (touch.identifier === activeTouchId) {
       activeTouchId = null;
+
+      // If finger lifted without committing to pan, treat as a draw tap
+      if (_panOrDrawPending) {
+        _panOrDrawPending = false;
+        startStroke(touch.clientX, touch.clientY);
+        endStroke();
+        return;
+      }
+
       endStroke();
       return;
     }

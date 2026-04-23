@@ -1898,15 +1898,16 @@ function updateCardCounter(land, cardNum, infinity = false) {
   counter.classList.add(land === 'ecstasy' ? 'ecstasy' : land);
 
   if (infinity) {
-  counter.classList.remove('ecstasy');
-  counter.textContent = '∞';
-  counter.style.fontSize = '48px';
-  // force animation restart
-  void counter.offsetWidth;
-  counter.classList.add('ecstasy');
-} else {
-    counter.style.fontSize = '28px';
-    counter.textContent = `${cardNum}/24 CARDS`;
+    counter.classList.remove('ecstasy');
+    counter.textContent = '∞';
+    counter.style.fontSize = '48px';
+    void counter.offsetWidth;
+    counter.classList.add('ecstasy');
+  } else {
+    // Use short label on small screens
+    const short = window.innerWidth < 500;
+    counter.textContent = short ? `${cardNum}/24` : `${cardNum}/24 CARDS`;
+    counter.style.fontSize = '';
   }
 }
 

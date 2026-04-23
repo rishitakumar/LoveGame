@@ -3751,30 +3751,29 @@ let selectedText = null;
 
 // ---------- History (Undo/Redo) — ImageData based, never blocks ----------
 const MAX_HISTORY = 20;
-const history = { front: [], back: [] };
+const history     = { front: [], back: [] };
 const historyIndex = { front: -1, back: -1 };
 
 function snapshot(which) {
-  const inkCanvas = which === "front" ? inkFront : inkBack;
-  const offscreen = document.createElement("canvas");
-  offscreen.width  = inkCanvas.width;
-  offscreen.height = inkCanvas.height;
-  offscreen.getContext("2d").drawImage(inkCanvas, 0, 0);
+  const src = which === "front" ? inkFront : inkBack;
+
+  // Copy at native pixel size with no transform interference
+  const copy = document.createElement("canvas");
+  copy.width  = src.width;
+  copy.height = src.height;
+  copy.getContext("2d").drawImage(src, 0, 0);
 
   const snap = {
-    canvas: offscreen,
+    canvas: copy,
     texts: textItems[which].map(t => ({ ...t }))
   };
 
   history[which].splice(historyIndex[which] + 1);
   history[which].push(snap);
-
-  if (history[which].length > MAX_HISTORY) {
-    history[which].shift();
-  } else {
-    historyIndex[which]++;
-  }
+  if (history[which].length > MAX_HISTORY) history[which].shift();
+  else historyIndex[which]++;
 }
+
 
 function doSnapshot(which) {
   const inkCanvas = which === "front" ? inkFront : inkBack;
@@ -3803,14 +3802,14 @@ function restore(which, index) {
   const snap = history[which][index];
   if (!snap) return;
 
-  const ctx       = which === "front" ? inkCtxF : inkCtxB;
-  const inkCanvas = which === "front" ? inkFront : inkBack;
+  const dst = which === "front" ? inkFront : inkBack;
+  const ctx = which === "front" ? inkCtxF  : inkCtxB;
 
-  ctx.clearRect(0, 0, DESIGN_W, DESIGN_H);
-  // Draw at full pixel size to match how snapshot saved it
+  // Temporarily remove the DPR transform so drawImage
+  // copies pixel-for-pixel at native resolution
   ctx.save();
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
+  ctx.clearRect(0, 0, dst.width, dst.height);
   ctx.drawImage(snap.canvas, 0, 0);
   ctx.restore();
 
@@ -3989,6 +3988,10 @@ function startStroke(clientX, clientY) {
   strokePath = [p];
 
   const ctx = getActiveInkCtx();
+  // Full reset first
+  ctx.save();
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.restore();
   ctx.globalAlpha              = 1;
   ctx.filter                   = "none";
   ctx.shadowBlur               = 0;
@@ -4048,6 +4051,14 @@ function endStroke() {
   strokePath = [];
   dragging   = null;
   last       = null;
+
+  // Reset context to a known clean state after every stroke
+  // so the next stroke always starts fresh
+  const ctx = getActiveInkCtx();
+  ctx.globalCompositeOperation = "source-over";
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur  = 0;
+  ctx.filter      = "none";
 
   if (wasDrawing) snapshot(which);
 }

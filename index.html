@@ -3750,53 +3750,67 @@ let dragOff = { x: 0, y: 0 };
 let selectedText = null;
 
 // ---------- History (Undo/Redo) — ImageData based, never blocks ----------
-const MAX_HISTORY = 40;
+const MAX_HISTORY = 20;
 const history = { front: [], back: [] };
 const historyIndex = { front: -1, back: -1 };
-
 let snapPending = { front: false, back: false };
 
 function snapshot(which) {
+  // Never block on snapPending — just skip if one is already queued
   if (snapPending[which]) return;
   snapPending[which] = true;
 
-  const doSnap = () => {
+  // Always defer to next frame — never run synchronously
+  requestAnimationFrame(() => {
     snapPending[which] = false;
+
+    // If still drawing, reschedule once more after next frame
     if (drawing) {
-      requestAnimationFrame(() => snapshot(which));
+      requestAnimationFrame(() => {
+        snapPending[which] = true;
+        requestAnimationFrame(() => {
+          snapPending[which] = false;
+          if (drawing) return; // give up — endStroke will call us
+          doSnapshot(which);
+        });
+      });
       return;
     }
-    const inkCanvas = which === "front" ? inkFront : inkBack;
-    const ctx       = which === "front" ? inkCtxF  : inkCtxB;
-    const imageData = ctx.getImageData(0, 0, inkCanvas.width, inkCanvas.height);
-    const snap = {
-      imageData,
-      texts: textItems[which].map(t => ({ ...t }))
-    };
-    history[which].splice(historyIndex[which] + 1);
-    history[which].push(snap);
-    if (history[which].length > MAX_HISTORY) {
-      history[which].shift();
-    } else {
-      historyIndex[which]++;
-    }
-  };
 
-  if (window.requestIdleCallback) {
-    requestIdleCallback(doSnap, { timeout: 500 });
-  } else {
-    requestAnimationFrame(doSnap);
-  }
+    doSnapshot(which);
+  });
 }
 
+function doSnapshot(which) {
+  const inkCanvas = which === "front" ? inkFront : inkBack;
+  const offscreen = document.createElement("canvas");
+  offscreen.width  = DESIGN_W;
+  offscreen.height = DESIGN_H;
+  const offCtx = offscreen.getContext("2d");
+  offCtx.drawImage(inkCanvas, 0, 0, DESIGN_W, DESIGN_H);
+
+  const snap = {
+    canvas: offscreen,
+    texts: textItems[which].map(t => ({ ...t }))
+  };
+
+  history[which].splice(historyIndex[which] + 1);
+  history[which].push(snap);
+
+  if (history[which].length > MAX_HISTORY) {
+    history[which].shift();
+  } else {
+    historyIndex[which]++;
+  }
+}
+  
 function restore(which, index) {
   const snap = history[which][index];
   if (!snap) return;
 
   const ctx = which === "front" ? inkCtxF : inkCtxB;
-
-  // putImageData is also synchronous and instant
-  ctx.putImageData(snap.imageData, 0, 0);
+  ctx.clearRect(0, 0, DESIGN_W, DESIGN_H);
+  ctx.drawImage(snap.canvas, 0, 0, DESIGN_W, DESIGN_H);
 
   textItems[which] = snap.texts.map(t => ({ ...t }));
   selectedText = null;
@@ -3928,7 +3942,7 @@ function drawSegment(p1, p2, p3) {
 function deferSnapshot(which) {
   snapshot(which);
 }
-
+    
 function startStroke(clientX, clientY) {
   const p = getPos(clientX, clientY);
   const which = state.active;
@@ -3936,7 +3950,6 @@ function startStroke(clientX, clientY) {
   if (state.eraser) {
     const idx = hitText(which, p);
     if (idx !== -1) {
-      deferSnapshot(which);
       textItems[which].splice(idx, 1);
       selectedText = null;
       repaintText(which);
@@ -3948,7 +3961,6 @@ function startStroke(clientX, clientY) {
   if (idx !== -1 && state.tool !== "text" && !state.eraser) {
     selectedText   = textItems[which][idx];
     textSize.value = String(selectedText.size);
-    deferSnapshot(which);
     dragging  = selectedText;
     dragOff.x = p.x - selectedText.x;
     dragOff.y = p.y - selectedText.y;
@@ -3959,7 +3971,6 @@ function startStroke(clientX, clientY) {
 
   if (state.tool === "text") {
     if (state.text.trim()) {
-      deferSnapshot(which);
       textItems[which].push({
         x: p.x, y: p.y,
         text:  state.text,
@@ -4028,15 +4039,16 @@ function endStroke() {
     ctx.fill();
   }
 
-  const which = state.active;
+  const which      = state.active;
   const wasDrawing = drawing;
 
+  // Set drawing false BEFORE snapshot so snapshot's drawing check passes
   drawing    = false;
   strokePath = [];
   dragging   = null;
   last       = null;
 
-  if (wasDrawing) snapshot(which);
+  if (wasDrawing) deferSnapshot(which);
 }
 
 // ── TOUCH EVENTS (mobile/tablet) ──────────────────────────────────────
@@ -4175,6 +4187,17 @@ snapshot("back");
 if (cardCounter) cardCounter.style.display = 'none';
 
 // Responsive layout
+
+function syncGroupHeight(buttons) {
+  requestAnimationFrame(() => {
+    const maxH = Math.max(...buttons.map(b => b.getBoundingClientRect().height));
+    if (maxH > 0) buttons.forEach(b => {
+      b.style.height = maxH + "px";
+      b.style.minHeight = maxH + "px";
+    });
+  });
+}
+  
 function applyReflectionLayout() {
   const vw = window.innerWidth;
   const vh = document.documentElement.clientHeight;

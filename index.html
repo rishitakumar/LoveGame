@@ -3754,29 +3754,38 @@ const MAX_HISTORY = 40;
 const history = { front: [], back: [] };
 const historyIndex = { front: -1, back: -1 };
 
+let snapPending = { front: false, back: false };
+
 function snapshot(which) {
-  const inkCanvas = which === "front" ? inkFront : inkBack;
-  const ctx = which === "front" ? inkCtxF : inkCtxB;
+  if (snapPending[which]) return;
+  snapPending[which] = true;
 
-  // ImageData is synchronous and never stalls the canvas
-  const imageData = ctx.getImageData(
-    0, 0,
-    inkCanvas.width,
-    inkCanvas.height
-  );
-
-  const snap = {
-    imageData,
-    texts: textItems[which].map(t => ({ ...t }))
+  const doSnap = () => {
+    snapPending[which] = false;
+    if (drawing) {
+      requestAnimationFrame(() => snapshot(which));
+      return;
+    }
+    const inkCanvas = which === "front" ? inkFront : inkBack;
+    const ctx       = which === "front" ? inkCtxF  : inkCtxB;
+    const imageData = ctx.getImageData(0, 0, inkCanvas.width, inkCanvas.height);
+    const snap = {
+      imageData,
+      texts: textItems[which].map(t => ({ ...t }))
+    };
+    history[which].splice(historyIndex[which] + 1);
+    history[which].push(snap);
+    if (history[which].length > MAX_HISTORY) {
+      history[which].shift();
+    } else {
+      historyIndex[which]++;
+    }
   };
 
-  history[which].splice(historyIndex[which] + 1);
-  history[which].push(snap);
-
-  if (history[which].length > MAX_HISTORY) {
-    history[which].shift();
+  if (window.requestIdleCallback) {
+    requestIdleCallback(doSnap, { timeout: 500 });
   } else {
-    historyIndex[which]++;
+    requestAnimationFrame(doSnap);
   }
 }
 

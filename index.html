@@ -3753,32 +3753,27 @@ let selectedText = null;
 const MAX_HISTORY = 20;
 const history = { front: [], back: [] };
 const historyIndex = { front: -1, back: -1 };
-let snapPending = { front: false, back: false };
 
 function snapshot(which) {
-  // Never block on snapPending — just skip if one is already queued
-  if (snapPending[which]) return;
-  snapPending[which] = true;
+  const inkCanvas = which === "front" ? inkFront : inkBack;
+  const offscreen = document.createElement("canvas");
+  offscreen.width  = inkCanvas.width;
+  offscreen.height = inkCanvas.height;
+  offscreen.getContext("2d").drawImage(inkCanvas, 0, 0);
 
-  // Always defer to next frame — never run synchronously
-  requestAnimationFrame(() => {
-    snapPending[which] = false;
+  const snap = {
+    canvas: offscreen,
+    texts: textItems[which].map(t => ({ ...t }))
+  };
 
-    // If still drawing, reschedule once more after next frame
-    if (drawing) {
-      requestAnimationFrame(() => {
-        snapPending[which] = true;
-        requestAnimationFrame(() => {
-          snapPending[which] = false;
-          if (drawing) return; // give up — endStroke will call us
-          doSnapshot(which);
-        });
-      });
-      return;
-    }
+  history[which].splice(historyIndex[which] + 1);
+  history[which].push(snap);
 
-    doSnapshot(which);
-  });
+  if (history[which].length > MAX_HISTORY) {
+    history[which].shift();
+  } else {
+    historyIndex[which]++;
+  }
 }
 
 function doSnapshot(which) {
@@ -3808,9 +3803,16 @@ function restore(which, index) {
   const snap = history[which][index];
   if (!snap) return;
 
-  const ctx = which === "front" ? inkCtxF : inkCtxB;
+  const ctx       = which === "front" ? inkCtxF : inkCtxB;
+  const inkCanvas = which === "front" ? inkFront : inkBack;
+
   ctx.clearRect(0, 0, DESIGN_W, DESIGN_H);
-  ctx.drawImage(snap.canvas, 0, 0, DESIGN_W, DESIGN_H);
+  // Draw at full pixel size to match how snapshot saved it
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
+  ctx.drawImage(snap.canvas, 0, 0);
+  ctx.restore();
 
   textItems[which] = snap.texts.map(t => ({ ...t }));
   selectedText = null;
@@ -4042,13 +4044,12 @@ function endStroke() {
   const which      = state.active;
   const wasDrawing = drawing;
 
-  // Set drawing false BEFORE snapshot so snapshot's drawing check passes
   drawing    = false;
   strokePath = [];
   dragging   = null;
   last       = null;
 
-  if (wasDrawing) deferSnapshot(which);
+  if (wasDrawing) snapshot(which);
 }
 
 // ── TOUCH EVENTS (mobile/tablet) ──────────────────────────────────────

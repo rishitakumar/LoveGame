@@ -2546,7 +2546,17 @@ startDots(dots);
 
         setTimeout(() => {
           // ---- Beat 3: reflection cards
-          attachReflectionCards(end, finalLand);
+           // Hide wrap contents before attaching
+            end.style.opacity = "0";
+            end.style.transition = "opacity 0.8s ease";
+            attachReflectionCards(end, finalLand);
+
+// Fade in after a brief frame to let layout paint first
+            requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+            end.style.opacity = "1";
+        });
+    });
         }, 800);
 
       }, 2500);

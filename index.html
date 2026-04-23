@@ -3774,29 +3774,6 @@ function snapshot(which) {
   else historyIndex[which]++;
 }
 
-
-function doSnapshot(which) {
-  const inkCanvas = which === "front" ? inkFront : inkBack;
-  const offscreen = document.createElement("canvas");
-  offscreen.width  = DESIGN_W;
-  offscreen.height = DESIGN_H;
-  const offCtx = offscreen.getContext("2d");
-  offCtx.drawImage(inkCanvas, 0, 0, DESIGN_W, DESIGN_H);
-
-  const snap = {
-    canvas: offscreen,
-    texts: textItems[which].map(t => ({ ...t }))
-  };
-
-  history[which].splice(historyIndex[which] + 1);
-  history[which].push(snap);
-
-  if (history[which].length > MAX_HISTORY) {
-    history[which].shift();
-  } else {
-    historyIndex[which]++;
-  }
-}
   
 function restore(which, index) {
   const snap = history[which][index];
@@ -3902,6 +3879,14 @@ function redo(which) {
     function getActiveInkCtx() {
       return state.active === "front" ? inkCtxF : inkCtxB;
     }
+
+
+// ── ZOOM STATE (must be declared before getPos) ───────────────────
+let currentScale = 1;
+let panX = 0;
+let panY = 0;
+const MIN_SCALE = 1;
+const MAX_SCALE = 4;
 
 function getPos(clientX, clientY) {
   const rect = stage.getBoundingClientRect();
@@ -4065,55 +4050,146 @@ function endStroke() {
 
 // ── TOUCH EVENTS (mobile/tablet) ──────────────────────────────────────
 // ── TOUCH EVENTS (mobile/tablet) ─────────────────────────────────
-let activeTouchId = null;
+let pinchActive    = false;
+let pinchStartDist = null;
+let pinchStartScale = 1;
+let pinchStartPanX  = 0;
+let pinchStartPanY  = 0;
+let pinchCenterX    = 0;
+let pinchCenterY    = 0;
+let panStartX = 0;
+let panStartY = 0;
+let lastTap   = 0;
+const activeTouches = new Map();
 
 function isTouchOnStage(touch) {
   const rect = stage.getBoundingClientRect();
   return (
     touch.clientX >= rect.left &&
     touch.clientX <= rect.right &&
-    touch.clientY >= rect.top &&
+    touch.clientY >= rect.top  &&
     touch.clientY <= rect.bottom
   );
+}
+
+function applyTransform() {
+  const maxPanX = stage.offsetWidth  * (currentScale - 1);
+  const maxPanY = stage.offsetHeight * (currentScale - 1);
+  panX = Math.min(0, Math.max(-maxPanX, panX));
+  panY = Math.min(0, Math.max(-maxPanY, panY));
+  [tplFront, tplBack, inkFront, inkBack, textFront, textBack].forEach(c => {
+    c.style.transformOrigin = "0 0";
+    c.style.transform = `translate(${panX}px,${panY}px) scale(${currentScale})`;
+  });
 }
 
 // Single document-level touch handler —
 // only preventDefault when touch is on the stage
 function onDocTouchStart(e) {
-  for (const touch of e.changedTouches) {
-    if (isTouchOnStage(touch)) {
-      e.preventDefault();
-      e.stopPropagation();
-      if (activeTouchId !== null) return;
-      activeTouchId = touch.identifier;
-      startStroke(touch.clientX, touch.clientY);
+  for (const t of e.changedTouches) {
+    if (isTouchOnStage(t)) activeTouches.set(t.identifier, t);
+  }
+  const onStage = [...activeTouches.values()];
+
+  if (onStage.length === 2) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (drawing) { drawing = false; strokePath = []; }
+    activeTouchId  = null;
+    pinchActive    = true;
+    const t0 = onStage[0], t1 = onStage[1];
+    pinchStartDist  = Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY);
+    pinchStartScale = currentScale;
+    pinchStartPanX  = panX;
+    pinchStartPanY  = panY;
+    const rect = stage.getBoundingClientRect();
+    pinchCenterX = ((t0.clientX + t1.clientX) / 2) - rect.left;
+    pinchCenterY = ((t0.clientY + t1.clientY) / 2) - rect.top;
+    return;
+  }
+
+  if (onStage.length === 1 && !pinchActive) {
+    const touch = onStage[0];
+    e.preventDefault();
+    e.stopPropagation();
+
+    const now = Date.now();
+    if (now - lastTap < 300) {
+      currentScale = 1; panX = 0; panY = 0;
+      applyTransform();
+      lastTap = 0;
       return;
     }
+    lastTap = now;
+
+    if (currentScale > 1) {
+      activeTouchId = touch.identifier;
+      panStartX = touch.clientX - panX;
+      panStartY = touch.clientY - panY;
+      return;
+    }
+
+    activeTouchId = touch.identifier;
+    startStroke(touch.clientX, touch.clientY);
   }
 }
 
 function onDocTouchMove(e) {
+  for (const t of e.changedTouches) {
+    if (activeTouches.has(t.identifier)) activeTouches.set(t.identifier, t);
+  }
+  const onStage = [...activeTouches.values()];
+
+  if (pinchActive && onStage.length >= 2) {
+    e.preventDefault();
+    e.stopPropagation();
+    const t0 = onStage[0], t1 = onStage[1];
+    const dist = Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY);
+    const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE,
+      pinchStartScale * (dist / pinchStartDist)));
+    const ratio = newScale / pinchStartScale;
+    panX = pinchCenterX - ratio * (pinchCenterX - pinchStartPanX);
+    panY = pinchCenterY - ratio * (pinchCenterY - pinchStartPanY);
+    currentScale = newScale;
+    applyTransform();
+    return;
+  }
+
   for (const touch of e.changedTouches) {
     if (touch.identifier !== activeTouchId) continue;
     e.preventDefault();
     e.stopPropagation();
+
+    if (currentScale > 1 && !drawing) {
+      panX = touch.clientX - panStartX;
+      panY = touch.clientY - panStartY;
+      applyTransform();
+      return;
+    }
+
     if (dragging) {
-      const p    = getPos(touch.clientX, touch.clientY);
+      const p = getPos(touch.clientX, touch.clientY);
       dragging.x = p.x - dragOff.x;
       dragging.y = p.y - dragOff.y;
       repaintText(state.active);
-    } else {
-      // Use coalesced events for all intermediate points between frames
-      const events = e.getCoalescedEvents?.() ?? [touch];
-      for (const t of events) {
-        continueStroke(t.clientX, t.clientY);
-      }
+      return;
     }
+
+    const events = e.getCoalescedEvents?.() ?? [touch];
+    for (const ev of events) continueStroke(ev.clientX, ev.clientY);
     return;
   }
 }
 
 function onDocTouchEnd(e) {
+  for (const t of e.changedTouches) activeTouches.delete(t.identifier);
+  const onStage = [...activeTouches.values()];
+
+  if (pinchActive && onStage.length < 2) {
+    pinchActive = false; pinchStartDist = null; activeTouchId = null;
+    return;
+  }
+
   for (const touch of e.changedTouches) {
     if (touch.identifier === activeTouchId) {
       activeTouchId = null;
@@ -4131,152 +4207,17 @@ endOverlayEl.addEventListener("touchmove",   onDocTouchMove,
   { passive: false, capture: true });
 endOverlayEl.addEventListener("touchend",    onDocTouchEnd,
   { passive: true,  capture: true });
-endOverlayEl.addEventListener("touchcancel", () => {
+endOverlayEl.addEventListener("touchcancel", e => {
+  for (const t of e.changedTouches) activeTouches.delete(t.identifier);
   activeTouchId = null;
+  pinchActive   = false;
+  pinchStartDist = null;
+  drawing = false;
+  strokePath = [];
   endStroke();
 }, { passive: true, capture: true });
 
 
-// ── PINCH TO ZOOM (phones/tablets only) ──────────────────────────
-let pinchStartDist  = null;
-let pinchStartScale = 1;
-let currentScale    = 1;
-const MIN_SCALE     = 1;
-const MAX_SCALE     = 4;
-
-function getPinchDist(e) {
-  const t = e.touches;
-  const dx = t[0].clientX - t[1].clientX;
-  const dy = t[0].clientY - t[1].clientY;
-  return Math.hypot(dx, dy);
-}
-
-function getPinchCenter(e) {
-  const t = e.touches;
-  const rect = stage.getBoundingClientRect();
-  return {
-    x: ((t[0].clientX + t[1].clientX) / 2 - rect.left) / rect.width,
-    y: ((t[0].clientY + t[1].clientY) / 2 - rect.top)  / rect.height
-  };
-}
-
-stage.addEventListener("touchstart", e => {
-  if (e.touches.length === 2) {
-    // Two fingers — start pinch, cancel any active stroke
-    e.preventDefault();
-    pinchStartDist  = getPinchDist(e);
-    pinchStartScale = currentScale;
-    activeTouchId   = null;
-    drawing         = false;
-    strokePath      = [];
-  }
-}, { passive: false });
-
-stage.addEventListener("touchmove", e => {
-  if (e.touches.length === 2 && pinchStartDist !== null) {
-    e.preventDefault();
-    const dist  = getPinchDist(e);
-    const ratio = dist / pinchStartDist;
-    const center = getPinchCenter(e);
-
-    const newScale = Math.min(
-      MAX_SCALE,
-      Math.max(MIN_SCALE, pinchStartScale * ratio)
-    );
-
-    applyZoom(newScale, center);
-  }
-}, { passive: false });
-
-stage.addEventListener("touchend", e => {
-  if (e.touches.length < 2) {
-    pinchStartDist = null;
-  }
-}, { passive: true });
-
-stage.addEventListener("touchcancel", e => {
-  pinchStartDist = null;
-}, { passive: true });
-
-// Track pan offset when zoomed
-let panX = 0;
-let panY = 0;
-let panStartX = 0;
-let panStartY = 0;
-let panTouchId = null;
-
-function applyZoom(scale, center = { x: 0.5, y: 0.5 }) {
-  const prev   = currentScale;
-  currentScale = scale;
-
-  // Adjust pan so zoom centers on the pinch point
-  panX = center.x * stage.offsetWidth  * (1 - scale) + 
-         (panX - center.x * stage.offsetWidth  * (1 - prev));
-  panY = center.y * stage.offsetHeight * (1 - scale) + 
-         (panY - center.y * stage.offsetHeight * (1 - prev));
-
-  // Clamp pan so you can't pan outside the card
-  const maxPanX = stage.offsetWidth  * (scale - 1);
-  const maxPanY = stage.offsetHeight * (scale - 1);
-  panX = Math.min(0, Math.max(-maxPanX, panX));
-  panY = Math.min(0, Math.max(-maxPanY, panY));
-
-  applyTransform();
-}
-
-function applyTransform() {
-  // Apply to all canvas layers so they all zoom together
-  [tplFront, tplBack, inkFront, inkBack, textFront, textBack].forEach(c => {
-    c.style.transformOrigin = "0 0";
-    c.style.transform       = `translate(${panX}px, ${panY}px) scale(${currentScale})`;
-    c.style.width           = "100%";
-    c.style.height          = "100%";
-  });
-}
-
-// Pan when zoomed in with one finger
-stage.addEventListener("touchstart", e => {
-  if (e.touches.length === 1 && currentScale > 1 && !drawing) {
-    panTouchId = e.touches[0].identifier;
-    panStartX  = e.touches[0].clientX - panX;
-    panStartY  = e.touches[0].clientY - panY;
-  }
-}, { passive: true });
-
-stage.addEventListener("touchmove", e => {
-  if (currentScale <= 1 || pinchStartDist !== null) return;
-  if (e.touches.length !== 1) return;
-  const t = e.touches[0];
-  if (t.identifier !== panTouchId) return;
-  e.preventDefault();
-
-  panX = t.clientX - panStartX;
-  panY = t.clientY - panStartY;
-
-  // Clamp
-  const maxPanX = stage.offsetWidth  * (currentScale - 1);
-  const maxPanY = stage.offsetHeight * (currentScale - 1);
-  panX = Math.min(0, Math.max(-maxPanX, panX));
-  panY = Math.min(0, Math.max(-maxPanY, panY));
-
-  applyTransform();
-}, { passive: false });
-
-// Reset zoom on double tap
-let lastTap = 0;
-stage.addEventListener("touchend", e => {
-  if (e.changedTouches.length === 1) {
-    const now = Date.now();
-    if (now - lastTap < 300) {
-      // Double tap — reset zoom
-      currentScale = 1;
-      panX = 0;
-      panY = 0;
-      applyTransform();
-    }
-    lastTap = now;
-  }
-}, { passive: true });
     
 
 // ── MOUSE EVENTS (desktop) ────────────────────────────────────────

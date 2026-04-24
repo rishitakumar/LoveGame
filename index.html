@@ -3784,18 +3784,10 @@ const historyIndex = { front: -1, back: -1 };
 
 function snapshot(which) {
   const src = which === "front" ? inkFront : inkBack;
-
-  // Create offscreen copy at exact native pixel dimensions
-  const copy = new OffscreenCanvas
-    ? new OffscreenCanvas(src.width, src.height)
-    : document.createElement("canvas");
-  
-  if (!copy.width) { copy.width = src.width; copy.height = src.height; }
-  
+  const copy = document.createElement("canvas");
+  copy.width  = src.width;
+  copy.height = src.height;
   const copyCtx = copy.getContext("2d");
-  // Reset any transform on the copy context before drawing
-  copyCtx.setTransform(1, 0, 0, 1, 0, 0);
-  copyCtx.clearRect(0, 0, src.width, src.height);
   copyCtx.drawImage(src, 0, 0);
 
   const snap = {
@@ -3816,12 +3808,12 @@ function restore(which, index) {
   const dst = which === "front" ? inkFront : inkBack;
   const ctx = which === "front" ? inkCtxF  : inkCtxB;
 
-  // Reset transform, clear, copy pixels back, then restore transform
-  ctx.save();
+  // Bypass DPR transform for pixel-perfect restore
+  const saved = ctx.getTransform();
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, dst.width, dst.height);
   ctx.drawImage(snap.canvas, 0, 0);
-  ctx.restore();
+  ctx.setTransform(saved);
 
   textItems[which] = snap.texts.map(t => ({ ...t }));
   selectedText = null;
@@ -4001,15 +3993,11 @@ function startStroke(clientX, clientY) {
     return false;
   }
 
-  // Defer snapshot to after stroke ends — never block stroke start
   drawing    = true;
   strokePath = [p];
 
+  // Set context style — NO save/restore, just set directly
   const ctx = getActiveInkCtx();
-  // Full reset first
-  ctx.save();
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.restore();
   ctx.globalAlpha              = 1;
   ctx.filter                   = "none";
   ctx.shadowBlur               = 0;
@@ -4073,21 +4061,18 @@ function endStroke() {
   dragging   = null;
   last       = null;
 
+  // Reset to clean state
   const ctx = getActiveInkCtx();
   ctx.globalCompositeOperation = "source-over";
-  ctx.globalAlpha = 1;
-  ctx.shadowBlur  = 0;
-  ctx.filter      = "none";
+  ctx.globalAlpha              = 1;
+  ctx.shadowBlur               = 0;
+  ctx.filter                   = "none";
+  ctx.strokeStyle              = state.color;
+  ctx.fillStyle                = state.color;
 
   if (wasDrawing) {
-    // Use MessageChannel for a true post-paint callback —
-    // more reliable than double rAF for ensuring GPU flush
-    const mc = new MessageChannel();
-    mc.port1.onmessage = () => {
-      mc.port1.close();
-      snapshot(which);
-    };
-    requestAnimationFrame(() => mc.port2.postMessage(null));
+    // Simple 100ms timeout — canvas is always done by then
+    setTimeout(() => snapshot(which), 100);
   }
 }
 

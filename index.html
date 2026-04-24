@@ -4690,24 +4690,35 @@ Promise.all(allBtns.map(b => fitButtonText(b, btnH)))
 }
 
 // Use visualViewport for Safari keyboard detection
+function runLayout() {
+  applyReflectionLayout();
+  stage.style.touchAction      = "none";
+  stage.style.userSelect       = "none";
+  stage.style.webkitUserSelect = "none";
+  [tplFront, tplBack, inkFront, inkBack, textFront, textBack].forEach(c => {
+    c.style.touchAction = "none";
+  });
+  applyTransform();
+}
+
 let lastLayoutVW = window.innerWidth;
 const vvp = window.visualViewport;
 if (vvp) {
   vvp.addEventListener('resize', () => {
     if (Math.round(vvp.width) !== lastLayoutVW) {
       lastLayoutVW = Math.round(vvp.width);
-      applyReflectionLayout();
+      runLayout();
     }
   }, { passive: true });
 }
 window.addEventListener('resize', () => {
   if (window.innerWidth !== lastLayoutVW) {
     lastLayoutVW = window.innerWidth;
-    applyReflectionLayout();
+    runLayout();
   }
 }, { passive: true });
 
-applyReflectionLayout();
+runLayout();
   } catch (err) {
     console.error("❌ attachReflectionCards crashed:", err);
   }

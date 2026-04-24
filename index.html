@@ -3784,20 +3784,14 @@ const historyIndex = { front: -1, back: -1 };
 
 function snapshot(which) {
   const src = which === "front" ? inkFront : inkBack;
-  const ctx = which === "front" ? inkCtxF : inkCtxB;
+  const ctx = which === "front" ? inkCtxF  : inkCtxB;
 
-  // Force the GPU to flush any pending draw calls
-  // before we copy the canvas pixels
-  ctx.save();
-  ctx.restore();
-
-  const copy = document.createElement("canvas");
-  copy.width  = src.width;
-  copy.height = src.height;
-  copy.getContext("2d").drawImage(src, 0, 0);
+  // getImageData forces a synchronous GPU flush —
+  // guarantees all pending strokes are included
+  const imageData = ctx.getImageData(0, 0, src.width, src.height);
 
   const snap = {
-    canvas: copy,
+    imageData,
     texts: textItems[which].map(t => ({ ...t }))
   };
 
@@ -3815,12 +3809,10 @@ function restore(which, index) {
   const dst = which === "front" ? inkFront : inkBack;
   const ctx = which === "front" ? inkCtxF  : inkCtxB;
 
-  // Temporarily remove the DPR transform so drawImage
-  // copies pixel-for-pixel at native resolution
   ctx.save();
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, dst.width, dst.height);
-  ctx.drawImage(snap.canvas, 0, 0);
+  ctx.putImageData(snap.imageData, 0, 0);
   ctx.restore();
 
   textItems[which] = snap.texts.map(t => ({ ...t }));
@@ -4054,7 +4046,6 @@ function continueStroke(clientX, clientY) {
 function endStroke() {
   if (drawing && strokePath.length === 1) {
     const ctx = getActiveInkCtx();
-    // Match fill to current draw color/eraser
     ctx.fillStyle = state.eraser ? "rgba(0,0,0,1)" : state.color;
     ctx.globalCompositeOperation = state.eraser
       ? "destination-out" : "source-over";
@@ -4081,7 +4072,6 @@ function endStroke() {
   ctx.filter      = "none";
 
   if (wasDrawing) {
-    // Defer snapshot to next idle frame so canvas flushes first
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         snapshot(which);

@@ -1529,7 +1529,7 @@ input[type="range"]::-webkit-slider-thumb:active{
   left: 22px;
   z-index: 99999999;
   font-family: Impact, sans-serif;
-  font-size: clamp(14px, 4vw, 28px);
+  font-size: clamp(18px, 5vw, 28px);
   letter-spacing: 2px;
   pointer-events: none;
   background: none !important;

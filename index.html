@@ -4036,7 +4036,16 @@ function continueStroke(clientX, clientY) {
   strokePath.push(newPoint);
   const len = strokePath.length;
 
-  // Draw one continuous path for this move event
+  // DEBUG — remove after fix
+  console.log("stroke", {
+    globalAlpha: ctx.globalAlpha,
+    compositeOp: ctx.globalCompositeOperation,
+    strokeStyle:  ctx.strokeStyle,
+    lineWidth:    ctx.lineWidth,
+    filter:       ctx.filter,
+    transform:    JSON.stringify(ctx.getTransform())
+  });
+
   ctx.beginPath();
   if (len === 2) {
     ctx.moveTo(strokePath[0].x, strokePath[0].y);

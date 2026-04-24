@@ -4009,6 +4009,7 @@ function startStroke(clientX, clientY) {
     return false;
   }
 
+    console.log("startStroke setting drawing = true");
   drawing    = true;
   strokePath = [p];
 
@@ -4030,6 +4031,7 @@ function startStroke(clientX, clientY) {
 }
 
 function continueStroke(clientX, clientY) {
+    console.log("continueStroke called, drawing =", drawing, "mouseDrawing =", mouseDrawing);
   if (!drawing) return;
   const ctx = getActiveInkCtx();
   const newPoint = getPos(clientX, clientY);
@@ -4081,6 +4083,7 @@ function endStroke() {
   const which      = state.active;
   const wasDrawing = drawing;
 
+    console.log("endStroke setting drawing = false");
   drawing    = false;
   strokePath = [];
   dragging   = null;

@@ -4265,38 +4265,50 @@ endOverlayEl.addEventListener("touchcancel", e => {
 
 // ── MOUSE EVENTS (desktop) ────────────────────────────────────────
 let mouseDrawing = false;
+let boundMouseMove = null;
+let boundMouseUp   = null;
 
 stage.addEventListener("mousedown", e => {
+  // Clean up any leftover listeners from a previous stroke
+  if (boundMouseMove) {
+    document.removeEventListener("mousemove", boundMouseMove);
+    boundMouseMove = null;
+  }
+  if (boundMouseUp) {
+    document.removeEventListener("mouseup", boundMouseUp);
+    boundMouseUp = null;
+  }
+
   e.preventDefault();
   mouseDrawing = true;
   startStroke(e.clientX, e.clientY);
 
-  // Move tracking to document so stroke continues outside stage boundary
-  function onMouseMove(e) {
-  if (!mouseDrawing) return;
-  if (dragging) {
-    const p    = getPos(e.clientX, e.clientY);
-    dragging.x = p.x - dragOff.x;
-    dragging.y = p.y - dragOff.y;
-    repaintText(state.active);
-    return;
-  }
-  // Use coalesced events for smoother desktop drawing too
-  const events = e.getCoalescedEvents?.() ?? [e];
-  for (const ev of events) {
-    continueStroke(ev.clientX, ev.clientY);
-  }
-}
+  boundMouseMove = function(e) {
+    if (!mouseDrawing) return;
+    if (dragging) {
+      const p    = getPos(e.clientX, e.clientY);
+      dragging.x = p.x - dragOff.x;
+      dragging.y = p.y - dragOff.y;
+      repaintText(state.active);
+      return;
+    }
+    const events = e.getCoalescedEvents?.() ?? [e];
+    for (const ev of events) {
+      continueStroke(ev.clientX, ev.clientY);
+    }
+  };
 
-  function onMouseUp() {
+  boundMouseUp = function() {
     mouseDrawing = false;
     endStroke();
-    document.removeEventListener("mousemove", onMouseMove);
-    document.removeEventListener("mouseup",   onMouseUp);
-  }
+    document.removeEventListener("mousemove", boundMouseMove);
+    document.removeEventListener("mouseup",   boundMouseUp);
+    boundMouseMove = null;
+    boundMouseUp   = null;
+  };
 
-  document.addEventListener("mousemove", onMouseMove);
-  document.addEventListener("mouseup",   onMouseUp);
+  document.addEventListener("mousemove", boundMouseMove);
+  document.addEventListener("mouseup",   boundMouseUp);
 });
 
 // ── CSS: only stage gets touch-action none ────────────────────────

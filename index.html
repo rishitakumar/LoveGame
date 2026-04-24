@@ -3779,19 +3779,27 @@ let selectedText = null;
 
 // ---------- History (Undo/Redo) — ImageData based, never blocks ----------
 const MAX_HISTORY = 20;
-const history     = { front: [], back: [] };
+const history = { front: [], back: [] };
 const historyIndex = { front: -1, back: -1 };
 
 function snapshot(which) {
   const src = which === "front" ? inkFront : inkBack;
-  const ctx = which === "front" ? inkCtxF  : inkCtxB;
 
-  // getImageData forces a synchronous GPU flush —
-  // guarantees all pending strokes are included
-  const imageData = ctx.getImageData(0, 0, src.width, src.height);
+  // Create offscreen copy at exact native pixel dimensions
+  const copy = new OffscreenCanvas
+    ? new OffscreenCanvas(src.width, src.height)
+    : document.createElement("canvas");
+  
+  if (!copy.width) { copy.width = src.width; copy.height = src.height; }
+  
+  const copyCtx = copy.getContext("2d");
+  // Reset any transform on the copy context before drawing
+  copyCtx.setTransform(1, 0, 0, 1, 0, 0);
+  copyCtx.clearRect(0, 0, src.width, src.height);
+  copyCtx.drawImage(src, 0, 0);
 
   const snap = {
-    imageData,
+    canvas: copy,
     texts: textItems[which].map(t => ({ ...t }))
   };
 
@@ -3801,7 +3809,6 @@ function snapshot(which) {
   else historyIndex[which]++;
 }
 
-  
 function restore(which, index) {
   const snap = history[which][index];
   if (!snap) return;
@@ -3809,10 +3816,11 @@ function restore(which, index) {
   const dst = which === "front" ? inkFront : inkBack;
   const ctx = which === "front" ? inkCtxF  : inkCtxB;
 
+  // Reset transform, clear, copy pixels back, then restore transform
   ctx.save();
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, dst.width, dst.height);
-  ctx.putImageData(snap.imageData, 0, 0);
+  ctx.drawImage(snap.canvas, 0, 0);
   ctx.restore();
 
   textItems[which] = snap.texts.map(t => ({ ...t }));
@@ -4072,11 +4080,14 @@ function endStroke() {
   ctx.filter      = "none";
 
   if (wasDrawing) {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        snapshot(which);
-      });
-    });
+    // Use MessageChannel for a true post-paint callback —
+    // more reliable than double rAF for ensuring GPU flush
+    const mc = new MessageChannel();
+    mc.port1.onmessage = () => {
+      mc.port1.close();
+      snapshot(which);
+    };
+    requestAnimationFrame(() => mc.port2.postMessage(null));
   }
 }
 

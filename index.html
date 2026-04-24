@@ -1904,10 +1904,8 @@ function updateCardCounter(land, cardNum, infinity = false) {
     void counter.offsetWidth;
     counter.classList.add('ecstasy');
   } else {
-    // Use short label on small screens
-    const short = window.innerWidth < 500;
-    counter.textContent = short ? `${cardNum}/24` : `${cardNum}/24 CARDS`;
     counter.style.fontSize = '';
+    counter.textContent = `${cardNum}/24 CARDS`;
   }
 }
 

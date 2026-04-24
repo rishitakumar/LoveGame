@@ -3939,7 +3939,7 @@ function getPos(clientX, clientY) {
 
 function setCtxStyle(ctx) {
   ctx.globalAlpha              = 1;
-  ctx.filter                   = "none";
+  ctx.filter                   = "";
   ctx.shadowBlur               = 0;
   ctx.shadowColor              = "transparent";
   ctx.lineWidth                = state.size;
@@ -4015,7 +4015,7 @@ function startStroke(clientX, clientY) {
   // Set context style — NO save/restore, just set directly
   const ctx = getActiveInkCtx();
   ctx.globalAlpha              = 1;
-  ctx.filter                   = "none";
+  ctx.filter                   = "";
   ctx.shadowBlur               = 0;
   ctx.shadowColor              = "transparent";
   ctx.lineWidth                = state.size;
@@ -4081,7 +4081,7 @@ function endStroke() {
   ctx.globalCompositeOperation = "source-over";
   ctx.globalAlpha              = 1;
   ctx.shadowBlur               = 0;
-  ctx.filter                   = "none";
+  ctx.filter                   = "";
   ctx.strokeStyle              = state.color;
   ctx.fillStyle                = state.color;
 
@@ -4138,7 +4138,7 @@ function onDocTouchStart(e) {
   if (onStage.length === 2) {
     e.preventDefault();
     e.stopPropagation();
-    if (drawing) { drawing = false; strokePath = []; _panOrDrawPending = false; }
+    if (drawing) { drawing = false; strokePath = []; }
     activeTouchId  = null;
     pinchActive    = true;
     const t0 = onStage[0], t1 = onStage[1];

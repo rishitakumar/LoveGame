@@ -4272,6 +4272,7 @@ let boundMouseMove = null;
 let boundMouseUp   = null;
 
 stage.addEventListener("mousedown", e => {
+    console.log("mousedown fired");
   // Clean up any leftover listeners from a previous stroke
   if (boundMouseMove) {
     document.removeEventListener("mousemove", boundMouseMove);
@@ -4287,6 +4288,7 @@ stage.addEventListener("mousedown", e => {
   startStroke(e.clientX, e.clientY);
 
   boundMouseMove = function(e) {
+      console.log("mousemove fired, mouseDrawing =", mouseDrawing, "drawing =", drawing);
     if (!mouseDrawing) return;
     if (dragging) {
       const p    = getPos(e.clientX, e.clientY);

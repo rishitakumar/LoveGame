@@ -3732,9 +3732,9 @@ textSize.addEventListener("input", () => {
   }
 });
 
-   clearBtn.addEventListener("click", () => {
+clearBtn.addEventListener("click", () => {
   const which = state.active;
-  snapshot(which);
+  takeSnapshot(which); // snapshot before clearing
   const ictx = which === "front" ? inkCtxF : inkCtxB;
   ictx.clearRect(0, 0, DESIGN_W, DESIGN_H);
   textItems[which] = [];
@@ -3782,16 +3782,26 @@ const MAX_HISTORY = 20;
 const history = { front: [], back: [] };
 const historyIndex = { front: -1, back: -1 };
 
+// Instead of copying canvas on every stroke,
+// just mark that a snapshot is needed
+let snapshotNeeded = { front: false, back: false };
+
 function snapshot(which) {
+  snapshotNeeded[which] = true;
+}
+
+function takeSnapshot(which) {
   const src = which === "front" ? inkFront : inkBack;
-  const copy = document.createElement("canvas");
-  copy.width  = src.width;
-  copy.height = src.height;
-  const copyCtx = copy.getContext("2d");
-  copyCtx.drawImage(src, 0, 0);
+  const ctx = which === "front" ? inkCtxF  : inkCtxB;
+
+  // getImageData is the only reliable way to copy canvas state
+  // It forces GPU sync before copying
+  const data = ctx.getImageData(0, 0, src.width, src.height);
 
   const snap = {
-    canvas: copy,
+    data,
+    w: src.width,
+    h: src.height,
     texts: textItems[which].map(t => ({ ...t }))
   };
 
@@ -3799,21 +3809,25 @@ function snapshot(which) {
   history[which].push(snap);
   if (history[which].length > MAX_HISTORY) history[which].shift();
   else historyIndex[which]++;
+
+  snapshotNeeded[which] = false;
 }
 
 function restore(which, index) {
   const snap = history[which][index];
   if (!snap) return;
 
-  const dst = which === "front" ? inkFront : inkBack;
-  const ctx = which === "front" ? inkCtxF  : inkCtxB;
+  const ctx = which === "front" ? inkCtxF : inkCtxB;
 
-  // Bypass DPR transform for pixel-perfect restore
-  const saved = ctx.getTransform();
+  // putImageData bypasses all transforms — purely pixel level
+  ctx.save();
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, dst.width, dst.height);
-  ctx.drawImage(snap.canvas, 0, 0);
-  ctx.setTransform(saved);
+  ctx.clearRect(0, 0, snap.w, snap.h);
+  ctx.putImageData(snap.data, 0, 0);
+  ctx.restore();
+
+  // Restore DPR transform
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   textItems[which] = snap.texts.map(t => ({ ...t }));
   selectedText = null;
@@ -3821,6 +3835,9 @@ function restore(which, index) {
 }
 
 function undo(which) {
+  // Take snapshot of current state before undoing
+  // so redo works correctly
+  if (snapshotNeeded[which]) takeSnapshot(which);
   if (historyIndex[which] <= 0) return;
   historyIndex[which]--;
   restore(which, historyIndex[which]);
@@ -3831,7 +3848,6 @@ function redo(which) {
   historyIndex[which]++;
   restore(which, historyIndex[which]);
 }
-
 
     function drawTextAt(ctx, x, y, text, color, sizePx) {
   ctx.save();
@@ -4061,7 +4077,6 @@ function endStroke() {
   dragging   = null;
   last       = null;
 
-  // Reset to clean state
   const ctx = getActiveInkCtx();
   ctx.globalCompositeOperation = "source-over";
   ctx.globalAlpha              = 1;
@@ -4070,10 +4085,8 @@ function endStroke() {
   ctx.strokeStyle              = state.color;
   ctx.fillStyle                = state.color;
 
-  if (wasDrawing) {
-    // Simple 100ms timeout — canvas is always done by then
-    setTimeout(() => snapshot(which), 100);
-  }
+  // Just mark that a snapshot is needed — don't copy anything
+  if (wasDrawing) snapshot(which);
 }
 
 // ── TOUCH EVENTS (mobile/tablet) ──────────────────────────────────────
@@ -4298,8 +4311,8 @@ endOverlayEl.style.overscrollBehavior      = "none";
 setActive("front");
 
 // baseline snapshots so first undo works
-snapshot("front");
-snapshot("back");
+takeSnapshot("front");
+takeSnapshot("back");
     const cardCounter = document.getElementById('card-counter');
 if (cardCounter) cardCounter.style.display = 'none';
 

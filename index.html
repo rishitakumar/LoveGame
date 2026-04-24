@@ -3784,8 +3784,13 @@ const historyIndex = { front: -1, back: -1 };
 
 function snapshot(which) {
   const src = which === "front" ? inkFront : inkBack;
+  const ctx = which === "front" ? inkCtxF : inkCtxB;
 
-  // Copy at native pixel size with no transform interference
+  // Force the GPU to flush any pending draw calls
+  // before we copy the canvas pixels
+  ctx.save();
+  ctx.restore();
+
   const copy = document.createElement("canvas");
   copy.width  = src.width;
   copy.height = src.height;
@@ -4049,6 +4054,10 @@ function continueStroke(clientX, clientY) {
 function endStroke() {
   if (drawing && strokePath.length === 1) {
     const ctx = getActiveInkCtx();
+    // Match fill to current draw color/eraser
+    ctx.fillStyle = state.eraser ? "rgba(0,0,0,1)" : state.color;
+    ctx.globalCompositeOperation = state.eraser
+      ? "destination-out" : "source-over";
     ctx.beginPath();
     ctx.arc(
       strokePath[0].x, strokePath[0].y,
@@ -4065,15 +4074,20 @@ function endStroke() {
   dragging   = null;
   last       = null;
 
-  // Reset context to a known clean state after every stroke
-  // so the next stroke always starts fresh
   const ctx = getActiveInkCtx();
   ctx.globalCompositeOperation = "source-over";
   ctx.globalAlpha = 1;
   ctx.shadowBlur  = 0;
   ctx.filter      = "none";
 
-  if (wasDrawing) snapshot(which);
+  if (wasDrawing) {
+    // Defer snapshot to next idle frame so canvas flushes first
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        snapshot(which);
+      });
+    });
+  }
 }
 
 // ── TOUCH EVENTS (mobile/tablet) ──────────────────────────────────────

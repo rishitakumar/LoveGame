@@ -1903,11 +1903,30 @@ function updateCardCounter(land, cardNum, infinity = false) {
     counter.style.fontSize = '48px';
     void counter.offsetWidth;
     counter.classList.add('ecstasy');
-  } else {
-    counter.style.fontSize = '';
-    counter.textContent = `${cardNum}/24 CARDS`;
+    return;
   }
+
+  counter.textContent = `${cardNum}/24 CARDS`;
+  counter.style.fontSize = '28px';
+
+  // Shrink font until it fits without hitting the exit button
+  requestAnimationFrame(() => {
+    const exitBtn = document.getElementById('exit-btn');
+    const exitLeft = exitBtn
+      ? exitBtn.getBoundingClientRect().left
+      : window.innerWidth - 80;
+    const available = exitLeft - 22 - 12; // left offset + gap
+
+    let fs = 28;
+    counter.style.fontSize = fs + 'px';
+
+    while (counter.offsetWidth > available && fs > 12) {
+      fs--;
+      counter.style.fontSize = fs + 'px';
+    }
+  });
 }
+
 
 function showQuestionCard(cardData) {
    const savedScroll = window.scrollY

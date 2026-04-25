@@ -1768,7 +1768,7 @@ input[type="range"]::-webkit-slider-thumb:active{
 
 @media (max-width: 480px) {
   .character {
-    width: clamp(65px, 22vw, 120px);
+    width: clamp(75px, 28vw, 100px);
   }
 
   .character-grid {
@@ -1787,7 +1787,7 @@ input[type="range"]::-webkit-slider-thumb:active{
   }
 
   .character {
-    width: clamp(55px, 20vw, 100px);
+    width: clamp(68px, 26vw, 90px);
   }
 
   .character-grid {

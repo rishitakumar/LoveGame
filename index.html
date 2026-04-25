@@ -4009,6 +4009,8 @@ function startStroke(clientX, clientY) {
 
   // Set context style — NO save/restore, just set directly
   const ctx = getActiveInkCtx();
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
   ctx.globalAlpha              = 1;
   ctx.filter                   = "";
   ctx.shadowBlur               = 0;
@@ -4028,6 +4030,7 @@ function continueStroke(clientX, clientY) {
     console.log("continueStroke called, drawing =", drawing, "mouseDrawing =", mouseDrawing);
   if (!drawing) return;
   const ctx = getActiveInkCtx();
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const newPoint = getPos(clientX, clientY);
   strokePath.push(newPoint);
   const len = strokePath.length;

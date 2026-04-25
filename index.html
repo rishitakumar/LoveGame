@@ -3820,9 +3820,6 @@ function restore(which, index) {
   ctx.putImageData(snap.data, 0, 0);
   ctx.restore();
 
-  // Restore DPR transform
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
   textItems[which] = snap.texts.map(t => ({ ...t }));
   selectedText = null;
   repaintText(which);
@@ -4057,6 +4054,13 @@ function continueStroke(clientX, clientY) {
     ctx.moveTo(mx, my);
     ctx.quadraticCurveTo(p2.x, p2.y, mx2, my2);
   }
+
+    ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = state.eraser ? "destination-out" : "source-over";
+  ctx.strokeStyle = state.eraser ? "rgba(0,0,0,1)" : state.color;
+  ctx.lineWidth = state.size;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
   ctx.stroke();
 }
 

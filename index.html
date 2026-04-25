@@ -1481,38 +1481,12 @@ if (playerChar) {
   char.style.left = `${x}px`;
   char.style.top  = `${y}px`;
 
- // Replace the current scroll logic in positionCharacter() with this:
-
-const absoluteTop = char.getBoundingClientRect().top + window.scrollY;
-const absoluteBottom = char.getBoundingClientRect().bottom + window.scrollY;
-const viewportHeight = window.innerHeight;
-const scrollY = window.scrollY;
-
-// Character should be between 25% and 65% of viewport height
-const targetTop = absoluteTop - viewportHeight * 0.35;
-const targetBottom = absoluteBottom - viewportHeight * 0.65;
-
-let newScrollTop;
-
-// If character is above visible area, scroll up
-if (absoluteTop < scrollY + viewportHeight * 0.25) {
-  newScrollTop = Math.max(0, targetTop);
-} 
-// If character is below visible area, scroll down  
-else if (absoluteBottom > scrollY + viewportHeight * 0.75) {
-  newScrollTop = Math.max(0, targetBottom);
-}
-// If character is visible, don't scroll (allows manual control)
-else {
-  newScrollTop = scrollY;
-}
-
-if (newScrollTop !== scrollY) {
-  window.scrollTo({ 
-    top: newScrollTop, 
-    behavior: instant ? "instant" : "smooth"
-  });
-}
+  const absoluteTop = char.getBoundingClientRect().top + window.scrollY;
+const targetTop = absoluteTop - window.innerHeight * 0.35;
+window.scrollTo({ 
+  top: Math.max(0, targetTop), 
+  behavior: instant ? "instant" : "smooth"
+});
 }
 
 function spawnStreakTrail(fromX, fromY, toX, toY, color) {

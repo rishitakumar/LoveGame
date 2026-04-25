@@ -2565,6 +2565,7 @@ startDots(dots);
         setTimeout(() => {
           // ---- Beat 3: reflection cards
            // Hide wrap contents before attaching
+            msg.remove(); 
             end.style.opacity = "0";
             end.style.transition = "opacity 0.8s ease";
             attachReflectionCards(end, finalLand);

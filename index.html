@@ -3095,12 +3095,6 @@ freshCharOverlay.querySelector('#confirm-character').addEventListener('click', (
 
 // Also set these CSS properties directly on the overlay and stage
 // Safari respects these at the element level
-endOverlayEl.style.touchAction  = "none";
-endOverlayEl.style.overscrollBehavior = "none";
-stage.style.touchAction          = "none";
-stage.style.overscrollBehavior   = "none";
-wrap.style.touchAction           = "none";
-wrap.style.overscrollBehavior    = "none";
 
       const screen = document.getElementById('game-screen');
       if (screen) screen.style.setProperty('display', 'none', 'important');

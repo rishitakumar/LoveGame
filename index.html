@@ -4266,7 +4266,11 @@ let boundMouseMove = null;
 let boundMouseUp   = null;
 
 stage.addEventListener("mousedown", e => {
+    console.log("MOUSEDOWN FIRED on stage, drawing =", drawing, "mouseDrawing =", mouseDrawing);
     console.log("mousedown fired");
+  document.addEventListener("mousedown", e => {
+  console.log("GLOBAL MOUSEDOWN on:", e.target.tagName, e.target.className.substring(0,30), "drawing =", drawing);
+}, true);
   // Clean up any leftover listeners from a previous stroke
   if (boundMouseMove) {
     document.removeEventListener("mousemove", boundMouseMove);

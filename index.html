@@ -1482,23 +1482,28 @@ if (playerChar) {
   char.style.top  = `${y}px`;
 
 // Wait for CSS transition to update position before calculating scroll
-setTimeout(() => {
-  const charRect = char.getBoundingClientRect();
-  const viewH = window.innerHeight;
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    const charRect = char.getBoundingClientRect();
+    const viewH = window.innerHeight;
 
-  // Where we want the character on screen — centered vertically
-  const targetScreenY = viewH * 0.45;
+    const targetScreenY = viewH * 0.45;
+    const currentScrollY = window.scrollY;
+    const charScreenY = charRect.top + (charRect.height / 2);
 
-  // How far we need to scroll to put char at targetScreenY
-  const currentScrollY = window.scrollY;
-  const charScreenY = charRect.top + (charRect.height / 2);
-  const scrollTarget = currentScrollY + (charScreenY - targetScreenY);
+    const delta = charScreenY - targetScreenY;
 
-  window.scrollTo({
-    top: Math.max(0, scrollTarget),
-    behavior: instant ? "instant" : "smooth"
+    // Prevent tiny unnecessary upward scrolls
+    if (Math.abs(delta) < 2) return;
+
+    const scrollTarget = currentScrollY + delta;
+
+    window.scrollTo({
+      top: Math.max(0, scrollTarget),
+      behavior: instant ? "auto" : "smooth"
+    });
   });
-}, instant ? 0 : 100);
+});
   
 }
 

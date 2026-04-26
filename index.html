@@ -1451,60 +1451,54 @@ async function preloadAllAssets(onProgress) {
 // CHARACTER MOVEMENT
 // =============================
 function positionCharacter(instant = false) {
-  const char   = document.getElementById("player-star");
-  const img    = document.getElementById("game-background");
-  const screen = document.getElementById("game-screen");
-
+  const char = document.getElementById("player-star");
+  const img = document.getElementById("game-background");
   const rung = RUNG_COORDS[GameState.land][GameState.rungIndex];
+
+  // 1. Calculate positions
   const x = (rung.x / 1545) * img.clientWidth;
   const y = (rung.y / 2000) * img.clientHeight;
 
   const letterHeightPct = 101 / 2000;
-  const scaledHeight = Math.round((letterHeightPct * img.clientHeight) / 0.5);  // compensate for scale(0.66)
+  const scaledHeight = Math.round((letterHeightPct * img.clientHeight) / 0.5);
   const playerChar = document.getElementById("player-character");
-if (playerChar) {
-  playerChar.style.width = "auto";
-  playerChar.style.height = `${scaledHeight}px`;
-}
+  
+  if (playerChar) {
+    playerChar.style.width = "auto";
+    playerChar.style.height = `${scaledHeight}px`;
+  }
 
-  // Get current position for streak
   const fromX = parseFloat(char.style.left) || x;
-  const fromY = parseFloat(char.style.top)  || y;
+  const fromY = parseFloat(char.style.top) || y;
   const charColor = getComputedStyle(char).getPropertyValue('--char-color').trim() || '#f5ff3a';
 
   if (!instant && (Math.abs(fromX - x) > 2 || Math.abs(fromY - y) > 2)) {
     spawnStreakTrail(fromX, fromY, x, y, charColor);
   }
 
-  // Slower movement — 0.9s instead of instant
+  // 2. Apply movement
   char.style.transition = instant ? "none" : "left 1.8s cubic-bezier(0.4, 0, 0.2, 1), top 1.8s cubic-bezier(0.4, 0, 0.2, 1)";
   char.style.left = `${x}px`;
-  char.style.top  = `${y}px`;
+  char.style.top = `${y}px`;
 
-// Wait for CSS transition to update position before calculating scroll
-requestAnimationFrame(() => {
-  requestAnimationFrame(() => {
-    const charRect = char.getBoundingClientRect();
-    const viewH = window.innerHeight;
+  // 3. SCROLL LOGIC: Center the target position, not the current position
+  // Instead of getBoundingClientRect (which gets current anim frame), 
+  // calculate the absolute document Y target.
+  const containerRect = document.getElementById("game-screen").getBoundingClientRect();
+  const absoluteCharTop = containerRect.top + window.scrollY + y;
+  const viewportHeight = window.innerHeight;
+  
+  // Center the character by subtracting half the viewport height 
+  // and adding half the character height (approx scaledHeight)
+  const targetScroll = absoluteCharTop - (viewportHeight / 2) + (scaledHeight / 2);
 
-    const targetScreenY = viewH * 0.45;
-    const currentScrollY = window.scrollY;
-    const charScreenY = charRect.top + (charRect.height / 2);
-
-    const delta = charScreenY - targetScreenY;
-
-    // Prevent tiny unnecessary upward scrolls
-    if (Math.abs(delta) < 2) return;
-
-    const scrollTarget = currentScrollY + delta;
-
+  // Check if we actually need to move (threshold of 5px to prevent jitter)
+  if (Math.abs(window.scrollY - targetScroll) > 5) {
     window.scrollTo({
-      top: Math.max(0, scrollTarget),
+      top: Math.max(0, targetScroll),
       behavior: instant ? "auto" : "smooth"
     });
-  });
-});
-  
+  }
 }
 
 function spawnStreakTrail(fromX, fromY, toX, toY, color) {

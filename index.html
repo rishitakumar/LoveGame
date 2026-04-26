@@ -1481,12 +1481,25 @@ if (playerChar) {
   char.style.left = `${x}px`;
   char.style.top  = `${y}px`;
 
-  const absoluteTop = char.getBoundingClientRect().top + window.scrollY;
-const targetTop = absoluteTop - window.innerHeight * 0.35;
-window.scrollTo({ 
-  top: Math.max(0, targetTop), 
-  behavior: instant ? "instant" : "smooth"
-});
+// Wait for CSS transition to update position before calculating scroll
+setTimeout(() => {
+  const charRect = char.getBoundingClientRect();
+  const viewH = window.innerHeight;
+
+  // Where we want the character on screen — centered vertically
+  const targetScreenY = viewH * 0.45;
+
+  // How far we need to scroll to put char at targetScreenY
+  const currentScrollY = window.scrollY;
+  const charScreenY = charRect.top + (charRect.height / 2);
+  const scrollTarget = currentScrollY + (charScreenY - targetScreenY);
+
+  window.scrollTo({
+    top: Math.max(0, scrollTarget),
+    behavior: instant ? "instant" : "smooth"
+  });
+}, instant ? 0 : 100);
+  
 }
 
 function spawnStreakTrail(fromX, fromY, toX, toY, color) {

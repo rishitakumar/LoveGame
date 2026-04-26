@@ -2683,8 +2683,20 @@ window.__starBorderTheme('ecstasy'); // ← ADD
   const img = document.getElementById("game-background");
   if (!img) return;
  img.onload = () => {
-  // ✅ wait one frame so layout/scrollHeight is correct
-  requestAnimationFrame(() => scrollGameToMiddle());
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const screen = document.getElementById("game-screen");
+      if (!screen) return;
+      // Scroll the page so game screen is centered in viewport
+      const screenRect = screen.getBoundingClientRect();
+      const screenMidY = screenRect.top + window.scrollY + screenRect.height / 2;
+      const targetScrollY = screenMidY - window.innerHeight / 2;
+      window.scrollTo({
+        top: Math.max(0, targetScrollY),
+        behavior: "smooth"
+      });
+    });
+  });
 };
 img.src = "ecstasy_screen.png";
 }
